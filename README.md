@@ -9,6 +9,7 @@
 ## References
 
 [Intro to QSVT](https://pennylane.ai/qml/demos/tutorial_intro_qsvt)
+
 [Quantum singular value transformation and beyond: exponential improvements for quantum matrix arithmetics](https://arxiv.org/abs/1806.01838)
 
 ---
