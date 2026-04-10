@@ -74,6 +74,7 @@ import matplotlib.pyplot as plt
 # It does *not* approximate sgn(x) sharply, but it already pushes values
 # away from 0 in a sign-consistent way.
 
+
 # %%
 def T3(x):
     return 4 * x**3 - 3 * x
@@ -108,6 +109,7 @@ plt.show()
 # They remain bounded on [-1,1], so they are QSVT-admissible.
 #
 # Below we plot several odd degrees and compare them against sgn(x).
+
 
 # %%
 def Tn(n, x):
@@ -196,6 +198,7 @@ plt.show()
 #
 # suppresses the negative eigencomponent (b0) and keeps the positive one (b1).
 
+
 # %%
 def apply_diag(P, a, b):
     """Apply P(A) to b for A = diag(-a, +a)."""
@@ -213,7 +216,8 @@ a = 0.5
 b = np.array([1.0, 1.0])  # equal components
 
 for n in [1, 3, 5, 7, 9]:
-    P = lambda x, n=n: Tn(n, x)
+    def P(x, n=n):
+        return Tn(n, x)
     out = projector_plus_from_P(P, a, b)
     out_norm = out / np.linalg.norm(out)
     print(f"n={n:2d}  Pi_+ b (normalized) = {np.round(out_norm, 6)}")
@@ -242,7 +246,8 @@ degrees = [1, 3, 5, 7, 9, 11, 13]
 pos_weight = []
 
 for n in degrees:
-    P = lambda x, n=n: Tn(n, x)
+    def P(x, n=n):
+        return Tn(n, x)
     out = projector_plus_from_P(P, a, b)
     out_norm = out / np.linalg.norm(out)
     pos_weight.append(out_norm[1] ** 2)
@@ -281,6 +286,7 @@ plt.show()
 # The projector still selects the +a eigenspace, but now that eigenspace
 # is a rotated direction in the computational basis.
 
+
 # %%
 def rotation_U(theta):
     """A real orthogonal rotation matrix (also unitary)."""
@@ -310,6 +316,7 @@ print("Eigenvectors (columns) =\n", np.round(eigvecs, 6))
 #
 # This is exactly what QSVT does conceptually (spectral transformation).
 
+
 # %%
 def projector_plus_general(P, A, b):
     """Apply (I + P(A))/2 to b using eigendecomposition (classical spectral calc)."""
@@ -338,7 +345,8 @@ plt.arrow(0, 0, b2n[0], b2n[1], width=0.01, length_includes_head=True, label="b"
 
 # plot projected directions for different degrees
 for n in [1, 3, 5, 7, 9]:
-    P = lambda x, n=n: Tn(n, x)
+    def P(x, n=n):
+        return Tn(n, x)
     out = projector_plus_general(P, A, b2)
     outn = out / np.linalg.norm(out)
     plt.arrow(0, 0, outn[0], outn[1], width=0.005, length_includes_head=True)

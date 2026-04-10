@@ -1,18 +1,81 @@
-# Python
+# -----------------------------
+# Python bytecode
+# -----------------------------
 __pycache__/
 *.py[cod]
+*$py.class
 
+# -----------------------------
+# Build artefacts
+# -----------------------------
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# setuptools editable installs
+*.egg
+
+# -----------------------------
+# Testing
+# -----------------------------
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# hypothesis (if added later)
+.hypothesis/
+
+# -----------------------------
 # Virtual environments
+# -----------------------------
 .venv/
 venv/
 env/
 
+# -----------------------------
 # Jupyter
+# -----------------------------
 .ipynb_checkpoints/
+*.nbconvert.ipynb
 
-# macOS
+# -----------------------------
+# OS files
+# -----------------------------
 .DS_Store
+Thumbs.db
 
-# Editor / IDE
+# -----------------------------
+# Editors / IDE
+# -----------------------------
 .vscode/
 .idea/
+
+# -----------------------------
+# Logs
+# -----------------------------
+*.log
+
+# -----------------------------
+# Ruff / Black cache
+# -----------------------------
+.cache/
+.ruff_cache/
+
+# -----------------------------
+# Coverage tools
+# -----------------------------
+coverage.xml
+
+# -----------------------------
+# mypy (if added later)
+# -----------------------------
+.mypy_cache/
+
+# -----------------------------
+# PyPI upload artefacts
+# -----------------------------
+*.tar.gz
+*.whl

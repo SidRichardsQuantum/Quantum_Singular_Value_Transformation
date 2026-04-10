@@ -48,6 +48,7 @@ import matplotlib.pyplot as plt
 #
 # so that all functions we consider are well-defined.
 
+
 # %%
 def rotation(theta):
     return np.array(
@@ -79,6 +80,7 @@ print("Eigenvalues =", eigvals)
 # - sharpens spectral separation.
 #
 # This already hints at filtering behaviour.
+
 
 # %%
 def matrix_power(A, k):
@@ -129,6 +131,7 @@ plt.show()
 # For demonstration, we use a Chebyshev interpolation on [a,1].
 # This is not the only method, but it illustrates the idea cleanly.
 
+
 # %%
 def chebyshev_fit(func, a, degree):
     """Chebyshev polynomial approximation on [a,1]."""
@@ -168,6 +171,7 @@ plt.show()
 # - approximate P(A),
 #
 # and compare the results.
+
 
 # %%
 def apply_function(A, f):

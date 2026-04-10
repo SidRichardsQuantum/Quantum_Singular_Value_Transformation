@@ -63,10 +63,12 @@ import matplotlib.pyplot as plt
 #
 # These properties make Chebyshev polynomials **ideal building blocks** for QSVT.
 
+
 # %%
 def T(n, x):
     """Chebyshev polynomial of the first kind T_n(x)."""
     return np.cos(n * np.arccos(x))
+
 
 # Plot a few Chebyshev polynomials
 x = np.linspace(-1, 1, 400)
@@ -115,9 +117,11 @@ plt.show()
 # Note: we are *not* matching magnitudes exactly—only **relative scaling**
 # matters after normalization.
 
+
 # %%
 def inv(x):
     return 1 / x
+
 
 x_pos = np.linspace(0.3, 1.0, 400)
 
