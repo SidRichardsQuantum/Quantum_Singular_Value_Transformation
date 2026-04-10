@@ -1,6 +1,6 @@
 # Theory: Quantum Singular Value Transformation (QSVT)
 
-This document provides the theoretical background underlying the notebooks in this repository. It is intentionally concise and focused on the concepts that are *directly exercised* in the examples, rather than a full survey of the QSVT literature.
+This document provides the theoretical background underlying the notebooks in this repository. It is intentionally concise and focused on the concepts that are *directly exercised- in the examples, rather than a full survey of the QSVT literature.
 
 The emphasis is on:
 - how **polynomials act on singular values and eigenvalues**,
@@ -23,8 +23,8 @@ A unitary $U$ acting on an enlarged Hilbert space is said to be a block encoding
 $$
 U =
 \begin{pmatrix}
-A / \alpha & * \\
-* & *
+A / \alpha & - \\
+- & *
 \end{pmatrix},
 $$
 
@@ -38,7 +38,7 @@ Operationally, this means that when the ancilla qubits are prepared in $|0\rangl
 - This automatically constructs a valid block encoding for small, explicitly specified matrices.
 - The notebooks frequently **extract the top-left block** of the resulting unitary to verify that it matches the expected transformed operator.
 
-This is a simulator-friendly convenience; the theoretical statements of QSVT apply to *any* valid block encoding.
+This is a simulator-friendly convenience; the theoretical statements of QSVT apply to *any- valid block encoding.
 
 ---
 
@@ -157,6 +157,119 @@ Notebook 06 demonstrates this process explicitly and shows how Chebyshev approxi
 
 ---
 
+## 6.5 Practical polynomial construction
+
+In practice, QSVT workflows typically begin by constructing a bounded polynomial with the desired qualitative behaviour on the spectral interval.
+
+Common examples include:
+
+- sign-like polynomials
+- inverse-like polynomials
+- soft threshold filters
+- square-root–type transforms
+- power-law transforms
+
+The key requirement is always boundedness:
+
+$$
+|P(x)| \le 1
+\quad \text{for } x \in [-1,1].
+$$
+
+Different design approaches emphasise different trade-offs:
+
+### Template polynomials
+
+Certain bounded functional forms are repeatedly useful in QSVT experiments.
+
+Examples include:
+
+- smooth sign surrogates using $\tanh(\kappa x)$
+- regularised inverse-like functions
+- soft threshold filters based on $|x|$
+- shifted square-root profiles
+
+These functions can be approximated by Chebyshev polynomials to produce admissible QSVT transforms.
+
+Such constructions prioritise:
+
+- simplicity
+- stability
+- ease of interpretation
+
+over optimal approximation guarantees.
+
+### Task-oriented polynomial design
+
+More structured workflows begin from a desired spectral transformation:
+
+$$
+g(x)
+$$
+
+and construct a bounded polynomial approximation
+
+$$
+P(x) \approx g(x)
+$$
+
+on a restricted interval such as
+
+$$
+[-1,-\gamma] \cup [\gamma,1].
+$$
+
+Examples include:
+
+#### sign approximation
+
+$$
+P(x) \approx \mathrm{sgn}(x)
+$$
+
+away from zero.
+
+#### inverse-like transforms
+
+$$
+P(x) \approx \frac{\gamma}{x}
+$$
+
+for $|x| \ge \gamma$.
+
+This produces relative scaling behaviour similar to matrix inversion while preserving boundedness.
+
+#### spectral filters
+
+$$
+P(x) \approx
+\begin{cases}
+0 & |x| < \tau \
+1 & |x| > \tau
+\end{cases}
+$$
+
+using smooth bounded approximations.
+
+### Role of Chebyshev approximation
+
+Chebyshev polynomials provide a convenient basis for constructing bounded approximations because they:
+
+- minimise worst-case approximation error
+- preserve parity structure
+- remain bounded on $[-1,1]$
+
+In practice:
+
+1. choose a smooth bounded surrogate for the target function
+2. approximate using Chebyshev polynomials
+3. verify boundedness
+4. apply via QSVT
+
+Notebook 09 demonstrates these workflows explicitly.
+
+---
+
 ## 7. QSVT as matrix functional calculus
 
 For a diagonalizable matrix:
@@ -171,7 +284,7 @@ $$
 f(A) = U f(\Lambda) U^\dagger.
 $$
 
-QSVT implements this *functional calculus* using polynomial approximations.
+QSVT implements this *functional calculus- using polynomial approximations.
 
 Notebook 07 demonstrates this viewpoint using:
 - matrix powers,
@@ -269,19 +382,19 @@ The notebooks in this repository are concrete realizations of these ideas in the
 ## References and further reading
 
 1. Gilyén, A., Su, Y., Low, G. H., & Wiebe, N.  
-   *Quantum singular value transformation and beyond: exponential improvements for quantum matrix arithmetics.*  
+   *Quantum singular value transformation and beyond: exponential improvements for quantum matrix arithmetics.-  
    arXiv:1806.01838
 
 2. Low, G. H., & Chuang, I. L.  
-   *Optimal Hamiltonian simulation by quantum signal processing.*  
+   *Optimal Hamiltonian simulation by quantum signal processing.-  
    Physical Review Letters 118, 010501 (2017).
 
 3. Low, G. H., & Chuang, I. L.  
-   *Hamiltonian simulation by qubitization.*  
+   *Hamiltonian simulation by qubitization.-  
    Quantum 3, 163 (2019).
 
 4. PennyLane documentation:  
-   *Introduction to Quantum Singular Value Transformation (QSVT).*  
+   *Introduction to Quantum Singular Value Transformation (QSVT).-  
    https://pennylane.ai/qml/demos/tutorial_intro_qsvt
 
 ---

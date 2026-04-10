@@ -2,6 +2,67 @@
 
 ---
 
+## [0.1.2] – 10th April 2026
+
+### Added
+
+New module: `qsvt.design`
+
+Provides higher-level bounded polynomial construction helpers for common
+QSVT/QSP design tasks, with outputs returned in standard ascending-degree
+monomial coefficient form.
+
+Included design helpers:
+
+- `design_inverse_polynomial(gamma, degree)`
+  - bounded odd inverse-like polynomial
+  - approximates the normalized inverse profile `gamma / x` away from zero
+  - intended for linear-solver-style or regularized inverse experiments
+
+- `design_sign_polynomial(gamma, degree)`
+  - bounded odd sign surrogate
+  - useful for spectral sign and threshold-style workflows
+
+- `design_projector_polynomial(gamma, degree)`
+  - bounded projector-style polynomial based on `(1 + sign(x)) / 2`
+  - useful for positive/negative spectral subspace experiments
+
+- `design_sqrt_polynomial(a, degree)`
+  - bounded square-root surrogate on a positive interval
+  - useful for matrix-function and amplitude-scaling experiments
+
+- `design_power_polynomial(alpha, degree, a=0.0)`
+  - bounded positive-power surrogate on a positive interval
+  - useful for simple spectral shaping workflows
+
+- `design_filter_polynomial(cutoff, degree)`
+  - bounded even soft-threshold filter
+  - useful for singular-value filtering and smooth pass/reject experiments
+
+### Implementation notes
+
+- reuses the existing lightweight Chebyshev fitting helper in
+  `qsvt.approximation`
+- converts fitted Chebyshev polynomials back to ascending monomial coefficients
+- numerically enforces boundedness on `[-1, 1]` by rescaling when necessary
+- enforces odd/even parity where structurally appropriate
+- keeps implementations NumPy-only and notebook-friendly
+
+### Tests
+
+Added minimal smoke tests covering:
+
+- construction of all design helpers
+- boundedness on `[-1, 1]`
+- expected parity for inverse/sign/filter builders
+- basic qualitative behaviour checks for inverse/sign/projector/sqrt/power
+
+### Public API
+
+Updated `qsvt.__init__` to export the new design helpers.
+
+---
+
 ## [0.1.1] – 10th April 2026
 
 ### Added

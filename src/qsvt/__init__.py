@@ -19,6 +19,14 @@ classical validation of QSVT/QSP ideas.
 
 from importlib.metadata import PackageNotFoundError, version as _pkg_version
 
+from .design import (
+    design_filter_polynomial,
+    design_inverse_polynomial,
+    design_power_polynomial,
+    design_projector_polynomial,
+    design_sign_polynomial,
+    design_sqrt_polynomial,
+)
 from .templates import (
     exponential_approximation_polynomial,
     inverse_like_polynomial,
@@ -116,6 +124,12 @@ __all__ = [
     "normalized_vector",
     "pauli_x",
     "pauli_z",
+    "design_filter_polynomial",
+    "design_inverse_polynomial",
+    "design_power_polynomial",
+    "design_projector_polynomial",
+    "design_sign_polynomial",
+    "design_sqrt_polynomial",
     "rotated_diagonal",
     "rotation",
     "chebyshev_t",
