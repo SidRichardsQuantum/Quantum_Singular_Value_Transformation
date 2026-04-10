@@ -1,5 +1,10 @@
 # Quantum Singular Value Transformation (QSVT)
 
+[![PyPI version](https://img.shields.io/pypi/v/qsvt-pennylane.svg)](https://pypi.org/project/qsvt-pennylane/)
+[![Python versions](https://img.shields.io/pypi/pyversions/qsvt-pennylane.svg)](https://pypi.org/project/qsvt-pennylane/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)](tests/)
+
 This repository provides both:
 
 • a **notebook-first introduction** to Quantum Singular Value Transformation (QSVT)  
@@ -28,7 +33,11 @@ The notebooks use PennyLane’s high-level `qml.qsvt` interface
 (with `block_encoding="embedding"`) to emphasise mathematical structure,
 spectral intuition, and polynomial design rather than circuit engineering.
 
-For theoretical background see [THEORY.md](THEORY.md).
+## Documentation
+
+- [Theory](THEORY.md)
+- [API reference](docs/qsvt/api_reference.md)
+- [Index](docs/qsvt/index.md)
 
 ---
 

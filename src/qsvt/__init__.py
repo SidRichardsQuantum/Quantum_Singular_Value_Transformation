@@ -17,6 +17,15 @@ The project is designed for small-scale demonstrations, notebooks, and
 classical validation of QSVT/QSP ideas.
 """
 
+from importlib.metadata import PackageNotFoundError, version as _pkg_version
+
+from .templates import (
+    exponential_approximation_polynomial,
+    inverse_like_polynomial,
+    sign_approximation_polynomial,
+    soft_threshold_filter_polynomial,
+    sqrt_approximation_polynomial,
+)
 from .approximation import (
     chebyshev_approximant,
     chebyshev_eval,
@@ -76,7 +85,12 @@ from .spectral import (
     transformed_eigenvalues,
 )
 
-__version__ = "0.1.0"
+# Version ----------------------------------------------------------------------
+try:
+    __version__ = _pkg_version("qsvt-pennylane")
+except PackageNotFoundError:  # pragma: no cover
+    # Allows editable installs / local runs without installed dist metadata.
+    __version__ = "0.0.0"
 
 __all__ = [
     "__version__",
@@ -91,6 +105,11 @@ __all__ = [
     "scale_to_chebyshev_domain",
     "diagonal_matrix",
     "embed_vector",
+    "exponential_approximation_polynomial",
+    "inverse_like_polynomial",
+    "sign_approximation_polynomial",
+    "soft_threshold_filter_polynomial",
+    "sqrt_approximation_polynomial",
     "hermitian_from_eigendecomposition",
     "identity",
     "involutory_diagonal",

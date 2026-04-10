@@ -2,6 +2,60 @@
 
 ---
 
+## [0.1.1] – 10th April 2026
+
+### Added
+
+New module: `qsvt.templates`
+
+Provides ready-to-use bounded polynomial templates for QSVT/QSP-style
+experiments, returned in standard ascending-degree coefficient form.
+
+Included template families:
+
+- `inverse_like_polynomial`
+  - smooth bounded odd inverse-like surrogate on `[-1, 1]`
+  - useful for regularised small-scale linear-solver style experiments
+
+- `sign_approximation_polynomial`
+  - smooth odd sign surrogate based on a steep bounded transition
+  - useful for spectral sign and projector-style workflows
+
+- `soft_threshold_filter_polynomial`
+  - even soft pass/reject filter based on `|x|`
+  - useful for singular-value filtering intuition and threshold experiments
+
+- `sqrt_approximation_polynomial`
+  - bounded square-root-like template on the canonical interval
+  - useful for matrix-function and amplitude-scaling experiments
+
+- `exponential_approximation_polynomial`
+  - bounded exponential-like weighting polynomial
+  - useful for smooth spectral damping and low-degree filter examples
+
+### Implementation notes
+
+- templates are constructed via lightweight Chebyshev fitting on `[-1, 1]`
+- outputs are converted back to standard monomial coefficients
+- boundedness on `[-1, 1]` is enforced numerically by rescaling if needed
+- odd/even parity is enforced where appropriate for sign/inverse/filter families
+
+### Tests
+
+Added minimal smoke tests covering:
+
+- template construction
+- boundedness on `[-1, 1]`
+- expected parity for odd/even templates
+- basic qualitative behaviour checks
+
+### Public API
+
+Updated `qsvt.__init__` to export the new template builders and bumped the
+package version to `0.1.1`.
+
+---
+
 ## [0.1.0] – 10th April 2026
 
 ### Added
