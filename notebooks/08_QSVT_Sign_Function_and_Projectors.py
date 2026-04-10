@@ -216,8 +216,10 @@ a = 0.5
 b = np.array([1.0, 1.0])  # equal components
 
 for n in [1, 3, 5, 7, 9]:
+
     def P(x, n=n):
         return Tn(n, x)
+
     out = projector_plus_from_P(P, a, b)
     out_norm = out / np.linalg.norm(out)
     print(f"n={n:2d}  Pi_+ b (normalized) = {np.round(out_norm, 6)}")
@@ -246,8 +248,10 @@ degrees = [1, 3, 5, 7, 9, 11, 13]
 pos_weight = []
 
 for n in degrees:
+
     def P(x, n=n):
         return Tn(n, x)
+
     out = projector_plus_from_P(P, a, b)
     out_norm = out / np.linalg.norm(out)
     pos_weight.append(out_norm[1] ** 2)
@@ -345,8 +349,10 @@ plt.arrow(0, 0, b2n[0], b2n[1], width=0.01, length_includes_head=True, label="b"
 
 # plot projected directions for different degrees
 for n in [1, 3, 5, 7, 9]:
+
     def P(x, n=n):
         return Tn(n, x)
+
     out = projector_plus_general(P, A, b2)
     outn = out / np.linalg.norm(out)
     plt.arrow(0, 0, outn[0], outn[1], width=0.005, length_includes_head=True)
