@@ -286,7 +286,18 @@ The notebooks in this repository are concrete realizations of these ideas in the
 
 ---
 
-Author: Sid Richards (SidRichardsQuantum)  
-LinkedIn: https://www.linkedin.com/in/sid-richards-21374b30b/
+## Author
 
-This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
+**Sid Richards**
+
+LinkedIn:
+[https://www.linkedin.com/in/sid-richards-21374b30b/](https://www.linkedin.com/in/sid-richards-21374b30b/)
+
+GitHub:
+[https://github.com/SidRichardsQuantum](https://github.com/SidRichardsQuantum)
+
+---
+
+## License
+
+MIT License — see [LICENSE](LICENSE)

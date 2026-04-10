@@ -1,25 +1,34 @@
 # Quantum Singular Value Transformation (QSVT)
 
-This repository is a notebook-first, PennyLane-based introduction to **Quantum Singular Value Transformation (QSVT)** and its close relationship to **Quantum Signal Processing (QSP)**. The focus is on small, explicit examples that show—end to end—how **bounded polynomials** can be applied to the **singular values / eigenvalues** of an operator via a (simulator-friendly) block-encoding.
+This repository provides both:
 
-The notebooks use PennyLane’s high-level `qml.qsvt` interface (with `block_encoding="embedding"`) to keep the emphasis on the mathematical mechanism, spectral intuition, and polynomial design rather than circuit engineering.
+• a **notebook-first introduction** to Quantum Singular Value Transformation (QSVT)  
+• a lightweight **PyPI package** implementing reusable utilities for QSVT experiments in PennyLane  
 
----
+The focus is on small, explicit examples showing how **bounded polynomials**
+can be applied to the **singular values / eigenvalues** of an operator via
+(simulator-friendly) block-encodings.
 
-## What is QSVT
+The included Python package:
 
-QSVT is a framework for implementing **polynomial transformations** of an operator’s singular values using a quantum circuit, provided the operator is available via a **block-encoding**.
+```bash
+pip install qsvt-pennylane
+```
 
-Concretely: given a block-encoding of a matrix $A$, QSVT enables a circuit whose action corresponds (in the encoded subspace) to applying a polynomial $f$ so that singular values $\sigma_i$ are mapped to $f(\sigma_i)$, subject to standard QSVT admissibility constraints such as boundedness on $[-1,1]$ and parity structure.
+provides helpers for:
 
-From this single mechanism follow:
-- filtering and suppression,
-- matrix functions,
-- spectral projectors,
-- inverse-like transformations,
-- and linear-system–style behaviour.
+- Chebyshev and polynomial utilities
+- bounded polynomial approximation
+- small Hermitian matrix construction
+- spectral matrix-function reference calculations
+- explicit QSVT matrix extraction
+- comparison between classical and QSVT polynomial transforms
 
-For a more extensive theoretical discussion, see [THEORY.md](THEORY.md).
+The notebooks use PennyLane’s high-level `qml.qsvt` interface
+(with `block_encoding="embedding"`) to emphasise mathematical structure,
+spectral intuition, and polynomial design rather than circuit engineering.
+
+For theoretical background see [THEORY.md](THEORY.md).
 
 ---
 
@@ -30,6 +39,16 @@ Quantum_Singular_Value_Transformation
 ├── LICENSE
 ├── README.md
 ├── THEORY.md
+├── pyproject.toml
+├── src/qsvt
+│   ├── polynomials.py
+│   ├── approximation.py
+│   ├── matrices.py
+│   ├── spectral.py
+│   ├── qsvt.py
+│   └── __main__.py
+├── tests
+│   └── test_qsvt_smoke.py
 └── notebooks
     ├── 01_QSVT_Scalar_and_Diagonal_Matrix.ipynb
     ├── 02_QSVT_Singular_Value_Filter.ipynb
@@ -95,7 +114,7 @@ Quantum_Singular_Value_Transformation
 ### 06 — Polynomial design and approximation  
 **`06_QSVT_Polynomial_Design_and_Approximation.ipynb`**
 
-- Explains *how* QSVT polynomials are designed.
+- Explains *how- QSVT polynomials are designed.
 - Introduces Chebyshev approximation as the natural basis for bounded polynomials.
 - Shows how polynomial degree controls accuracy and circuit depth.
 - Connects approximation quality to linear-system behaviour.
@@ -139,51 +158,124 @@ The goal is conceptual understanding, not algorithmic optimization.
 
 ---
 
-## Requirements
+## Python package
 
+The repository now includes a reusable Python package:
 
-- Python 3.10+ (recommended)
-- PennyLane
-- NumPy
-- Matplotlib
-- Jupyter (or JupyterLab)
+```bash
+pip install qsvt-pennylane
+```
+
+### Example usage
+
+```python
+from qsvt.qsvt import qsvt_scalar_output
+from qsvt.polynomials import chebyshev_t3
+
+# apply polynomial x^2 via QSVT
+qsvt_scalar_output(0.5, [0,0,1], encoding_wires=[0])
+```
+
+```python
+from qsvt.qsvt import qsvt_diagonal_transform
+
+vals = qsvt_diagonal_transform(
+    [1.0, 0.7, 0.3, 0.1],
+    [0,0,1],
+    encoding_wires=[0,1,2],
+)
+```
+
+### CLI
+
+After installation:
+
+```bash
+qsvt scalar --x 0.5 --poly "0,0,1"
+
+qsvt diag \
+  --values "1.0,0.7,0.3,0.1" \
+  --poly "0,0,1" \
+  --wires 3
+
+qsvt cheb --degree 3 --x 0.5
+```
+
+### Modules
+
+| module               | purpose                                    |
+| -------------------- | ------------------------------------------ |
+| `qsvt.polynomials`   | Chebyshev utilities and polynomial helpers |
+| `qsvt.approximation` | bounded polynomial approximation           |
+| `qsvt.matrices`      | small Hermitian test matrices              |
+| `qsvt.spectral`      | classical spectral matrix functions        |
+| `qsvt.qsvt`          | PennyLane QSVT wrappers                    |
 
 ---
 
-## Quickstart
+## Installation
 
-1. Clone the repository:
+### Install from PyPI
+
+```
+pip install qsvt-pennylane
+```
+
+### Install from source
 
 ```bash
 git clone https://github.com/SidRichardsQuantum/Quantum_Singular_Value_Transformation.git
 cd Quantum_Singular_Value_Transformation
+
+pip install -e .
 ```
 
-2.	Create and activate an environment:
+### Dependencies
+
+- Python $\geq$ 3.10
+- PennyLane $\geq$ 0.36
+- NumPy $\geq$ 1.23
+- Matplotlib $\geq$ 3.7
+
+---
+
+## Quickstart (notebooks)
 
 ```bash
+git clone https://github.com/SidRichardsQuantum/Quantum_Singular_Value_Transformation.git
+cd Quantum_Singular_Value_Transformation
+
 python -m venv .venv
-source .venv/bin/activate  # macOS/Linux
-# .venv\Scripts\activate   # Windows PowerShell
-```
+source .venv/bin/activate
 
-3.	Install dependencies:
+pip install -e .
 
-```bash
-pip install pennylane numpy matplotlib jupyter
-```
-
-4.	Launch Jupyter:
-
-```bash
 jupyter lab
 ```
 
-⸻
+Open the notebooks in order:
+1. scalar QSVT intuition
+2. singular value filtering
+3. QSP polynomials
+4. linear solvers
+5. polynomial approximation
+6. matrix functions
+7. spectral projectors
 
-Author
+---
 
-Sid Richards (SidRichardsQuantum)
-LinkedIn: https://www.linkedin.com/in/sid-richards-21374b30b/
+## Author
 
-This project is licensed under the MIT License – see the LICENSE￼ file for details.
+**Sid Richards**
+
+LinkedIn:
+[https://www.linkedin.com/in/sid-richards-21374b30b/](https://www.linkedin.com/in/sid-richards-21374b30b/)
+
+GitHub:
+[https://github.com/SidRichardsQuantum](https://github.com/SidRichardsQuantum)
+
+---
+
+## License
+
+MIT License — see [LICENSE](LICENSE)
