@@ -13,7 +13,50 @@ using PennyLane's QSVT implementation.
 
 ---
 
-# Core idea
+## Table of Contents
+
+- [Core idea](#core-idea)
+
+- [Installation](#installation)
+
+- [Typical workflow](#typical-workflow)
+
+  - [Step 1 — design or choose a polynomial](#step-1--design-or-choose-a-polynomial)
+  - [Step 2 — inspect the scalar transform](#step-2--inspect-the-scalar-transform)
+  - [Step 3 — apply the polynomial to a matrix](#step-3--apply-the-polynomial-to-a-matrix)
+  - [Step 4 — compare classical vs QSVT output](#step-4--compare-classical-vs-qsvt-output)
+
+- [Common tasks](#common-tasks)
+
+  - [Sign transform](#sign-transform)
+  - [Spectral projector](#spectral-projector)
+  - [Inverse-like transform](#inverse-like-transform)
+  - [Spectral filtering](#spectral-filtering)
+  - [Matrix functions](#matrix-functions)
+
+- [Module overview](#module-overview)
+
+  - [qsvt.polynomials](#qsvtpolynomials)
+  - [qsvt.approximation](#qsvtapproximation)
+  - [qsvt.templates](#qsvttemplates)
+  - [qsvt.design](#qsvtdesign)
+  - [qsvt.matrices](#qsvtmatrices)
+  - [qsvt.spectral](#qsvtspectral)
+  - [qsvt.qsvt](#qsvtqsvt)
+
+- [CLI usage](#cli-usage)
+
+- [Recommended notebook path](#recommended-notebook-path)
+
+- [Summary](#summary)
+
+- [Author](#author)
+
+- [License](#license)
+
+---
+
+## Core idea
 
 QSVT implements a polynomial transformation
 
@@ -37,7 +80,7 @@ Most workflows therefore consist of:
 
 ---
 
-# Installation
+## Installation
 
 ```bash
 pip install qsvt-pennylane
@@ -45,11 +88,11 @@ pip install qsvt-pennylane
 
 ---
 
-# Typical workflow
+## Typical workflow
 
-## Step 1 — design or choose a polynomial
+### Step 1 — design or choose a polynomial
 
-### Option A — use a ready-made template
+#### Option A — use a ready-made template
 
 ```python
 from qsvt.templates import sign_approximation_polynomial
@@ -60,7 +103,7 @@ coeffs = sign_approximation_polynomial(
 )
 ```
 
-### Option B — construct a polynomial for a task
+#### Option B — construct a polynomial for a task
 
 ```python
 from qsvt.design import design_inverse_polynomial
@@ -71,7 +114,7 @@ coeffs = design_inverse_polynomial(
 )
 ```
 
-### Option C — fit a polynomial approximation directly
+#### Option C — fit a polynomial approximation directly
 
 ```python
 from qsvt.approximation import chebyshev_fit_function
@@ -84,7 +127,7 @@ coeffs = chebyshev_fit_function(
 
 ---
 
-## Step 2 — inspect the scalar transform
+### Step 2 — inspect the scalar transform
 
 ```python
 import numpy as np
@@ -107,9 +150,9 @@ is_bounded_on_interval(coeffs)
 
 ---
 
-## Step 3 — apply the polynomial to a matrix
+### Step 3 — apply the polynomial to a matrix
 
-### diagonal matrix
+#### diagonal matrix
 
 ```python
 from qsvt.matrices import diagonal_matrix
@@ -125,7 +168,7 @@ P_A = apply_function_to_hermitian(
 
 ---
 
-## Step 4 — compare classical vs QSVT output
+### Step 4 — compare classical vs QSVT output
 
 ```python
 from qsvt.qsvt import qsvt_diagonal_transform
@@ -139,9 +182,9 @@ vals_qsvt = qsvt_diagonal_transform(
 
 ---
 
-# Common tasks
+## Common tasks
 
-## Sign transform
+### Sign transform
 
 ```python
 from qsvt.design import design_sign_polynomial
@@ -166,7 +209,7 @@ useful for:
 
 ---
 
-## Spectral projector
+### Spectral projector
 
 ```python
 from qsvt.design import design_projector_polynomial
@@ -185,7 +228,7 @@ $$
 
 ---
 
-## Inverse-like transform
+### Inverse-like transform
 
 ```python
 from qsvt.design import design_inverse_polynomial
@@ -210,7 +253,7 @@ useful for:
 
 ---
 
-## Spectral filtering
+### Spectral filtering
 
 ```python
 from qsvt.design import design_filter_polynomial
@@ -225,7 +268,7 @@ Suppresses small singular values while preserving larger ones.
 
 ---
 
-## Matrix functions
+### Matrix functions
 
 ```python
 from qsvt.design import design_power_polynomial
@@ -246,9 +289,9 @@ Examples:
 
 ---
 
-# Module overview
+## Module overview
 
-## qsvt.polynomials
+### qsvt.polynomials
 
 Basic polynomial utilities:
 
@@ -259,7 +302,7 @@ Basic polynomial utilities:
 
 ---
 
-## qsvt.approximation
+### qsvt.approximation
 
 Chebyshev approximation helpers:
 
@@ -268,7 +311,7 @@ Chebyshev approximation helpers:
 
 ---
 
-## qsvt.templates
+### qsvt.templates
 
 Ready-made bounded polynomial families:
 
@@ -282,7 +325,7 @@ Best for quick experiments.
 
 ---
 
-## qsvt.design
+### qsvt.design
 
 Higher-level polynomial builders:
 
@@ -297,7 +340,7 @@ Best for structured workflows.
 
 ---
 
-## qsvt.matrices
+### qsvt.matrices
 
 Small Hermitian test matrices:
 
@@ -307,7 +350,7 @@ Small Hermitian test matrices:
 
 ---
 
-## qsvt.spectral
+### qsvt.spectral
 
 Classical reference implementations:
 
@@ -319,7 +362,7 @@ Useful for validating QSVT behaviour.
 
 ---
 
-## qsvt.qsvt
+### qsvt.qsvt
 
 Thin wrappers around PennyLane QSVT:
 
@@ -329,7 +372,7 @@ Thin wrappers around PennyLane QSVT:
 
 ---
 
-# CLI usage
+## CLI usage
 
 Scalar example:
 
@@ -354,7 +397,7 @@ qsvt cheb --degree 3 --x 0.5
 
 ---
 
-# Recommended notebook path
+## Recommended notebook path
 
 1. scalar intuition
 2. filtering
@@ -367,7 +410,7 @@ qsvt cheb --degree 3 --x 0.5
 
 ---
 
-# Summary
+## Summary
 
 Typical QSVT workflow:
 
@@ -377,3 +420,19 @@ Typical QSVT workflow:
 4. compare classical vs QSVT output
 
 The package is designed to make each step explicit and easy to experiment with.
+
+---
+
+## Author
+
+Sid Richards
+
+GitHub: [https://github.com/SidRichardsQuantum](https://github.com/SidRichardsQuantum)
+
+LinkedIn: [https://www.linkedin.com/in/sid-richards-21374b30b/](https://www.linkedin.com/in/sid-richards-21374b30b/)
+
+---
+
+## License
+
+MIT License — see [LICENSE](LICENSE)
