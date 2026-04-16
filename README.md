@@ -18,7 +18,39 @@ how bounded polynomials transform singular values or eigenvalues via block encod
 
 ---
 
-# Installation
+## Table of Contents
+
+- [Installation](#installation)
+
+- [Quick example](#quick-example)
+
+- [Package overview](#package-overview)
+
+  - [Polynomial utilities](#polynomial-utilities)
+  - [Polynomial approximation](#polynomial-approximation)
+  - [Polynomial templates](#polynomial-templates)
+  - [Polynomial design](#polynomial-design)
+  - [Matrix helpers](#matrix-helpers)
+  - [Classical spectral reference](#classical-spectral-reference)
+  - [QSVT simulation utilities](#qsvt-simulation-utilities)
+
+- [Documentation](#documentation)
+
+- [Notebooks](#notebooks)
+
+- [CLI](#cli)
+
+- [Scope and philosophy](#scope-and-philosophy)
+
+- [Support development](#support-development)
+
+- [Author](#author)
+
+- [License](#license)
+
+---
+
+## Installation
 
 Install from PyPI:
 
@@ -44,7 +76,7 @@ Requirements:
 
 ---
 
-# Quick example
+## Quick example
 
 Scalar polynomial transform:
 
@@ -53,7 +85,7 @@ from qsvt.qsvt import qsvt_scalar_output
 
 qsvt_scalar_output(
     x=0.5,
-    poly=[0,0,1],  # x²
+    poly=[0,0,1],  ## x²
     encoding_wires=[0],
 )
 ```
@@ -83,11 +115,11 @@ coeffs = design_sign_polynomial(
 
 ---
 
-# Package overview
+## Package overview
 
 The package provides small, composable utilities for constructing and applying bounded polynomial transforms.
 
-## Polynomial utilities
+### Polynomial utilities
 
 `qsvt.polynomials`
 
@@ -98,7 +130,7 @@ The package provides small, composable utilities for constructing and applying b
 
 ---
 
-## Polynomial approximation
+### Polynomial approximation
 
 `qsvt.approximation`
 
@@ -108,7 +140,7 @@ The package provides small, composable utilities for constructing and applying b
 
 ---
 
-## Polynomial templates
+### Polynomial templates
 
 `qsvt.templates`
 
@@ -124,7 +156,7 @@ Useful for quick experiments.
 
 ---
 
-## Polynomial design
+### Polynomial design
 
 `qsvt.design`
 
@@ -141,7 +173,7 @@ Designed for reusable QSVT workflows.
 
 ---
 
-## Matrix helpers
+### Matrix helpers
 
 `qsvt.matrices`
 
@@ -153,7 +185,7 @@ Small Hermitian test matrices:
 
 ---
 
-## Classical spectral reference
+### Classical spectral reference
 
 `qsvt.spectral`
 
@@ -168,7 +200,7 @@ Useful for validating polynomial transforms.
 
 ---
 
-## QSVT simulation utilities
+### QSVT simulation utilities
 
 `qsvt.qsvt`
 
@@ -181,7 +213,7 @@ Thin wrappers around PennyLane QSVT:
 
 ---
 
-# Documentation
+## Documentation
 
 Full documentation:
 
@@ -192,7 +224,7 @@ Full documentation:
 
 ---
 
-# Notebooks
+## Notebooks
 
 The notebooks provide a guided introduction to QSVT as polynomial functional calculus.
 
@@ -215,7 +247,7 @@ The examples emphasise:
 
 ---
 
-# CLI
+## CLI
 
 After installation:
 
@@ -232,7 +264,7 @@ qsvt cheb --degree 3 --x 0.5
 
 ---
 
-# Scope and philosophy
+## Scope and philosophy
 
 This repository is intentionally:
 
@@ -255,18 +287,28 @@ The emphasis is understanding how polynomial transforms act on spectra.
 
 ---
 
-# Author
+## Support development
 
-Sid Richards
+If this repository is useful for research, learning, or experimentation, you can support continued development via GitHub Sponsors:
 
-GitHub:
-[https://github.com/SidRichardsQuantum](https://github.com/SidRichardsQuantum)
+[https://github.com/sponsors/SidRichardsQuantum](https://github.com/sponsors/SidRichardsQuantum)
 
-LinkedIn:
-[https://www.linkedin.com/in/sid-richards-21374b30b/](https://www.linkedin.com/in/sid-richards-21374b30b/)
+Sponsorship supports continued work on open-source implementations of quantum algorithms, including polynomial-based quantum signal processing, spectral transforms, and reproducible research tooling.
+
+Support helps maintain accessible reference implementations for experimenting with QSVT, QSP, and matrix functional calculus workflows.
 
 ---
 
-# License
+## Author
 
-MIT License — see LICENSE
+Sid Richards
+
+GitHub: [https://github.com/SidRichardsQuantum](https://github.com/SidRichardsQuantum)
+
+LinkedIn: [https://www.linkedin.com/in/sid-richards-21374b30b/](https://www.linkedin.com/in/sid-richards-21374b30b/)
+
+---
+
+## License
+
+MIT License — see [LICENSE](LICENSE)
