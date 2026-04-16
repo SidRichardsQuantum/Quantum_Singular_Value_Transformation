@@ -12,6 +12,44 @@ The emphasis is on:
 
 ---
 
+## Table of Contents
+
+- [Block encodings](#1-block-encodings)
+
+- [Singular values, eigenvalues, and normalization](#2-singular-values-eigenvalues-and-normalization)
+
+- [Quantum Singular Value Transformation (QSVT)](#3-quantum-singular-value-transformation-qsvt)
+
+  - [Admissibility constraints](#admissibility-constraints)
+
+- [Scalar case and Quantum Signal Processing (QSP)](#4-scalar-case-and-quantum-signal-processing-qsp)
+
+- [Chebyshev polynomials and boundedness](#5-chebyshev-polynomials-and-boundedness)
+
+- [Polynomial design and approximation](#6-polynomial-design-and-approximation)
+
+- [Practical polynomial construction](#65-practical-polynomial-construction)
+
+  - [Template polynomials](#template-polynomials)
+  - [Task-oriented polynomial design](#task-oriented-polynomial-design)
+  - [Role of Chebyshev approximation](#role-of-chebyshev-approximation)
+
+- [QSVT as matrix functional calculus](#7-qsvt-as-matrix-functional-calculus)
+
+- [Sign function and spectral projectors](#8-sign-function-and-spectral-projectors)
+
+- [Linear systems via inverse-like polynomials](#9-linear-systems-via-inverse-like-polynomials)
+
+- [Summary](#summary)
+
+- [References and further reading](#references-and-further-reading)
+
+- [Author](#author)
+
+- [License](#license)
+
+---
+
 ## 1. Block encodings
 
 QSVT operates on matrices that are provided via a **block encoding**.
@@ -403,11 +441,9 @@ The notebooks in this repository are concrete realizations of these ideas in the
 
 **Sid Richards**
 
-LinkedIn:
-[https://www.linkedin.com/in/sid-richards-21374b30b/](https://www.linkedin.com/in/sid-richards-21374b30b/)
+LinkedIn: [https://www.linkedin.com/in/sid-richards-21374b30b/](https://www.linkedin.com/in/sid-richards-21374b30b/)
 
-GitHub:
-[https://github.com/SidRichardsQuantum](https://github.com/SidRichardsQuantum)
+GitHub: [https://github.com/SidRichardsQuantum](https://github.com/SidRichardsQuantum)
 
 ---
 
