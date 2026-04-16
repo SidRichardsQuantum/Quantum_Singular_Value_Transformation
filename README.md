@@ -1,9 +1,28 @@
 # Quantum Singular Value Transformation (QSVT)
 
-[![PyPI version](https://img.shields.io/pypi/v/qsvt-pennylane.svg)](https://pypi.org/project/qsvt-pennylane/)
-[![Python versions](https://img.shields.io/pypi/pyversions/qsvt-pennylane.svg)](https://pypi.org/project/qsvt-pennylane/)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)](tests/)
+<p align="center">
+
+<a href="https://pypi.org/project/qsvt-pennylane/">
+<img src="https://img.shields.io/pypi/v/qsvt-pennylane?style=flat-square" alt="PyPI Version">
+</a>
+
+<a href="https://pypi.org/project/qsvt-pennylane/">
+<img src="https://img.shields.io/pypi/pyversions/qsvt-pennylane?style=flat-square" alt="Python Versions">
+</a>
+
+<a href="LICENSE">
+<img src="https://img.shields.io/github/license/SidRichardsQuantum/Quantum_Singular_Value_Transformation?style=flat-square" alt="License">
+</a>
+
+<a href="tests/">
+<img src="https://img.shields.io/badge/tests-passing-brightgreen?style=flat-square" alt="Tests">
+</a>
+
+<a href="https://github.com/sponsors/SidRichardsQuantum">
+<img src="https://img.shields.io/badge/sponsor-GitHub-ea4aaa?style=flat-square&logo=githubsponsors" alt="Sponsor">
+</a>
+
+</p>
 
 Lightweight tools for experimenting with **Quantum Singular Value Transformation (QSVT)** using PennyLane.
 
