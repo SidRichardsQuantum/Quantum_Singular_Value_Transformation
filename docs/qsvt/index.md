@@ -27,9 +27,7 @@ Mathematical background and conceptual overview:
 - inverse-like behaviour via bounded polynomials
 - projectors and sign functions
 
-See:
-
-[Theory](THEORY.md)
+See: [Theory](THEORY.md)
 
 ---
 
@@ -140,10 +138,6 @@ It does not aim to implement production-scale quantum linear solvers or hardware
 
 ## Links
 
-GitHub repository:
+GitHub repository: [https://github.com/SidRichardsQuantum/Quantum_Singular_Value_Transformation](https://github.com/SidRichardsQuantum/Quantum_Singular_Value_Transformation)
 
-[https://github.com/SidRichardsQuantum/Quantum_Singular_Value_Transformation](https://github.com/SidRichardsQuantum/Quantum_Singular_Value_Transformation)
-
-PyPI package:
-
-[https://pypi.org/project/qsvt-pennylane/](https://pypi.org/project/qsvt-pennylane/)
+PyPI package: [https://pypi.org/project/qsvt-pennylane/](https://pypi.org/project/qsvt-pennylane/)
