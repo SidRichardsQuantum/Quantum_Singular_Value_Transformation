@@ -7,6 +7,8 @@
 
 Lightweight tools for experimenting with **Quantum Singular Value Transformation (QSVT)** using PennyLane.
 
+PyPI package: [https://pypi.org/project/qsvt-pennylane/](https://pypi.org/project/qsvt-pennylane/)
+
 This repository combines:
 
 • a **notebook-first introduction** to QSVT
