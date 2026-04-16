@@ -430,7 +430,9 @@ def qsvt_diagonal_transform(
 
     Examples
     --------
-    >>> vals = qsvt_diagonal_transform([1.0, 0.7, 0.3, 0.1], [0, 0, 1], encoding_wires=[0,1,2])
+    >>> vals = qsvt_diagonal_transform(
+    ...     [1.0, 0.7, 0.3, 0.1], [0, 0, 1], encoding_wires=[0, 1, 2]
+    ... )
     >>> vals.shape
     (4,)
     """
