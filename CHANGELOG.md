@@ -2,6 +2,21 @@
 
 ---
 
+## Unreleased
+
+### Changed
+
+- cleaned generated local build, test, and lint artifacts after the `v0.1.5`
+  release
+- added repository archive attributes for consistent line endings and cleaner
+  generated source archives
+- added source-distribution manifest rules so docs, notebooks, tests, and
+  release notes are included predictably
+- added a package-build CI workflow that runs `python -m build` and
+  `twine check` on pushes and pull requests
+
+---
+
 ## [0.1.5] – 23rd April 2026
 
 ### Changed

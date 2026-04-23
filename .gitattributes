@@ -1,0 +1,27 @@
+* text=auto eol=lf
+
+*.py text eol=lf
+*.md text eol=lf
+*.toml text eol=lf
+*.txt text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.ipynb text eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.whl binary
+*.gz binary
+*.zip binary
+
+dist/ export-ignore
+build/ export-ignore
+*.egg-info/ export-ignore
+.pytest_cache/ export-ignore
+.ruff_cache/ export-ignore
+__pycache__/ export-ignore
+.coverage export-ignore
+htmlcov/ export-ignore

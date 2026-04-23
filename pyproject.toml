@@ -62,6 +62,11 @@ dev = [
   "jupytext",
 ]
 
+release = [
+  "build",
+  "twine",
+]
+
 
 [project.urls]
 Homepage = "https://github.com/SidRichardsQuantum/Quantum_Singular_Value_Transformation"
