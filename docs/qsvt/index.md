@@ -10,9 +10,11 @@ The package provides small, explicit utilities for:
 - applying classical spectral matrix functions
 - extracting explicit QSVT transforms using `qml.qsvt`
 - comparing classical polynomial transforms with QSVT outputs
+- reporting QSVT-vs-classical transform error
 - building task-oriented polynomial designs
 - reusing ready-made polynomial templates
 - reporting fit error and boundedness for polynomial builders
+- saving, loading, and plotting diagnostics reports
 
 The repository also includes a sequence of notebooks that introduce QSVT concepts step-by-step.
 
@@ -58,6 +60,7 @@ qsvt
 ├── spectral.py
 ├── design.py
 ├── templates.py
+├── reports.py
 ├── qsvt.py
 └── __main__.py
 
@@ -73,6 +76,7 @@ Each module is intentionally small and focused:
 | `spectral` | classical spectral matrix functions |
 | `design` | task-oriented bounded polynomial builders |
 | `templates` | ready-made bounded polynomial families |
+| `reports` | diagnostics serialization and plotting helpers |
 | `qsvt` | PennyLane QSVT wrappers |
 | `__main__` | command line interface |
 
@@ -124,6 +128,29 @@ qsvt diag \
   --wires 3
 
 qsvt cheb --degree 3 --x 0.5
+
+qsvt design-report --kind sign --gamma 0.2 --degree 13 \
+  --output sign-report.json \
+  --plot sign-report.png
+
+qsvt compatibility-report --poly "0,0,1"
+
+qsvt design-compatibility \
+  --kind sign \
+  --degree 13 \
+  --gamma 0.2
+
+qsvt compare-report \
+  --values "1.0,0.7,0.3,0.1" \
+  --poly "0,0,1" \
+  --wires 3
+
+qsvt apply-design \
+  --kind sign \
+  --values="-0.8,-0.3,0.3,0.8" \
+  --degree 13 \
+  --gamma 0.2 \
+  --wires 3
 ```
 
 ---

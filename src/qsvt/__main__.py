@@ -11,7 +11,14 @@ and demonstration of core functionality:
     python -m qsvt diag --values "1.0,0.7,0.3,0.1" --poly "0,0,1"
     python -m qsvt cheb --degree 3 --x 0.5
     python -m qsvt design-report --kind sign --gamma 0.2 --degree 13
+    python -m qsvt design-report --kind sign --gamma 0.2 --degree 13 \
+        --output sign.json
     python -m qsvt template-report --kind inverse --degree 7 --mu 0.3
+    python -m qsvt compatibility-report --poly "0,0,1"
+    python -m qsvt design-compatibility --kind sign --degree 13 --gamma 0.2
+    python -m qsvt compare-report --values "1.0,0.7,0.3,0.1" --poly "0,0,1"
+    python -m qsvt apply-design --kind sign --values="-0.8,-0.3,0.3,0.8" \
+        --degree 13
 
 The CLI is not intended to replace notebooks; it provides simple smoke
 tests and reproducible command-line demonstrations.
@@ -23,18 +30,28 @@ import argparse
 import json
 from typing import Iterable
 
-import numpy as np
-
 from .design import (
+    design_filter_polynomial,
     design_filter_diagnostics,
+    design_inverse_polynomial,
     design_inverse_diagnostics,
+    design_power_polynomial,
     design_power_diagnostics,
+    design_projector_polynomial,
     design_projector_diagnostics,
+    design_sign_polynomial,
     design_sign_diagnostics,
+    design_sqrt_polynomial,
     design_sqrt_diagnostics,
 )
 from .polynomials import chebyshev_t, eval_polynomial
-from .qsvt import compare_qsvt_vs_classical_diagonal, qsvt_scalar_output
+from .qsvt import (
+    compare_qsvt_vs_classical_diagonal,
+    qsvt_compatibility_report,
+    qsvt_scalar_output,
+    qsvt_transform_report,
+)
+from .reports import report_to_jsonable, save_report, save_report_plot
 from .templates import (
     exponential_approximation_diagnostics,
     inverse_like_diagnostics,
@@ -60,21 +77,6 @@ def _parse_poly(text: str) -> list[float]:
     "0,0,1"
     """
     return _parse_float_list(text)
-
-
-def _to_jsonable(obj):
-    """
-    Recursively convert NumPy/Python mixed objects into JSON-serializable types.
-    """
-    if isinstance(obj, np.ndarray):
-        return obj.tolist()
-    if isinstance(obj, np.generic):
-        return obj.item()
-    if isinstance(obj, dict):
-        return {str(k): _to_jsonable(v) for k, v in obj.items()}
-    if isinstance(obj, (list, tuple)):
-        return [_to_jsonable(v) for v in obj]
-    return obj
 
 
 def cmd_scalar(args: argparse.Namespace) -> dict:
@@ -250,6 +252,135 @@ def cmd_template_report(args: argparse.Namespace) -> dict:
     }
 
 
+def cmd_compare_report(args: argparse.Namespace) -> dict:
+    """
+    Build a QSVT-vs-classical transform report for explicit coefficients.
+    """
+    values = _parse_float_list(args.values)
+    poly = _parse_poly(args.poly)
+
+    return qsvt_transform_report(
+        values,
+        poly,
+        encoding_wires=list(range(args.wires)),
+    )
+
+
+def cmd_compatibility_report(args: argparse.Namespace) -> dict:
+    """
+    Build a QSVT compatibility report for explicit coefficients.
+    """
+    poly = _parse_poly(args.poly)
+
+    return qsvt_compatibility_report(
+        poly,
+        bounded_num_points=args.bounded_num_points,
+        attempt_synthesis=args.attempt_synthesis,
+    )
+
+
+def cmd_design_compatibility(args: argparse.Namespace) -> dict:
+    """
+    Build a design polynomial and check QSVT compatibility.
+    """
+    builders = {
+        "inverse": lambda: design_inverse_polynomial(
+            gamma=args.gamma,
+            degree=args.degree,
+        ),
+        "sign": lambda: design_sign_polynomial(
+            gamma=args.gamma,
+            degree=args.degree,
+        ),
+        "projector": lambda: design_projector_polynomial(
+            gamma=args.gamma,
+            degree=args.degree,
+        ),
+        "sqrt": lambda: design_sqrt_polynomial(
+            a=args.a,
+            degree=args.degree,
+        ),
+        "power": lambda: design_power_polynomial(
+            alpha=args.alpha,
+            degree=args.degree,
+            a=args.a,
+        ),
+        "filter": lambda: design_filter_polynomial(
+            cutoff=args.cutoff,
+            degree=args.degree,
+            sharpness=args.sharpness,
+        ),
+    }
+
+    coeffs = builders[args.kind]()
+    report = qsvt_compatibility_report(
+        coeffs,
+        bounded_num_points=args.bounded_num_points,
+        attempt_synthesis=args.attempt_synthesis,
+    )
+    report.update(
+        {
+            "mode": "design-compatibility",
+            "kind": args.kind,
+            "builder": f"design_{args.kind}_polynomial",
+        }
+    )
+    return report
+
+
+def cmd_apply_design(args: argparse.Namespace) -> dict:
+    """
+    Build a design polynomial and compare its QSVT transform against classical.
+    """
+    builders = {
+        "inverse": lambda: design_inverse_polynomial(
+            gamma=args.gamma,
+            degree=args.degree,
+        ),
+        "sign": lambda: design_sign_polynomial(
+            gamma=args.gamma,
+            degree=args.degree,
+        ),
+        "projector": lambda: design_projector_polynomial(
+            gamma=args.gamma,
+            degree=args.degree,
+        ),
+        "sqrt": lambda: design_sqrt_polynomial(
+            a=args.a,
+            degree=args.degree,
+        ),
+        "power": lambda: design_power_polynomial(
+            alpha=args.alpha,
+            degree=args.degree,
+            a=args.a,
+        ),
+        "filter": lambda: design_filter_polynomial(
+            cutoff=args.cutoff,
+            degree=args.degree,
+            sharpness=args.sharpness,
+        ),
+    }
+
+    values = _parse_float_list(args.values)
+    coeffs = builders[args.kind]()
+    compatibility = qsvt_compatibility_report(coeffs)
+    report = qsvt_transform_report(
+        values,
+        coeffs,
+        encoding_wires=list(range(args.wires)),
+        allow_qsvt_failure=True,
+    )
+    report.update(
+        {
+            "mode": "apply-design",
+            "kind": args.kind,
+            "builder": f"design_{args.kind}_polynomial",
+            "compatibility": compatibility,
+        }
+    )
+    return report
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="qsvt",
@@ -342,6 +473,16 @@ def build_parser() -> argparse.ArgumentParser:
         type=int,
         default=4001,
     )
+    p_design_report.add_argument(
+        "--output",
+        type=str,
+        help="Optional path for writing the report JSON.",
+    )
+    p_design_report.add_argument(
+        "--plot",
+        type=str,
+        help="Optional path for writing a target-vs-polynomial plot.",
+    )
     p_design_report.set_defaults(func=cmd_design_report)
 
     p_template_report = sub.add_parser(
@@ -370,7 +511,143 @@ def build_parser() -> argparse.ArgumentParser:
         type=int,
         default=4001,
     )
+    p_template_report.add_argument(
+        "--output",
+        type=str,
+        help="Optional path for writing the report JSON.",
+    )
+    p_template_report.add_argument(
+        "--plot",
+        type=str,
+        help="Optional path for writing a target-vs-polynomial plot.",
+    )
     p_template_report.set_defaults(func=cmd_template_report)
+
+    p_compare_report = sub.add_parser(
+        "compare-report",
+        help="Compare QSVT and classical transforms for explicit coefficients",
+    )
+    p_compare_report.add_argument(
+        "--values",
+        type=str,
+        required=True,
+        help='Diagonal entries, e.g. "1.0,0.7,0.3,0.1"',
+    )
+    p_compare_report.add_argument(
+        "--poly",
+        type=str,
+        required=True,
+        help='Polynomial coefficients, e.g. "0,0,1"',
+    )
+    p_compare_report.add_argument(
+        "--wires",
+        type=int,
+        default=3,
+        help="Number of qubits for block encoding",
+    )
+    p_compare_report.add_argument(
+        "--output",
+        type=str,
+        help="Optional path for writing the report JSON.",
+    )
+    p_compare_report.set_defaults(func=cmd_compare_report)
+
+    p_compatibility = sub.add_parser(
+        "compatibility-report",
+        help="Check QSVT compatibility for explicit coefficients",
+    )
+    p_compatibility.add_argument(
+        "--poly",
+        type=str,
+        required=True,
+        help='Polynomial coefficients, e.g. "0,0,1"',
+    )
+    p_compatibility.add_argument(
+        "--bounded-num-points",
+        dest="bounded_num_points",
+        type=int,
+        default=4001,
+    )
+    p_compatibility.add_argument(
+        "--no-synthesis",
+        dest="attempt_synthesis",
+        action="store_false",
+        help="Skip the PennyLane synthesis attempt.",
+    )
+    p_compatibility.add_argument(
+        "--output",
+        type=str,
+        help="Optional path for writing the report JSON.",
+    )
+    p_compatibility.set_defaults(func=cmd_compatibility_report)
+
+    p_design_compatibility = sub.add_parser(
+        "design-compatibility",
+        help="Build a design polynomial and check QSVT compatibility",
+    )
+    p_design_compatibility.add_argument(
+        "--kind",
+        choices=["inverse", "sign", "projector", "sqrt", "power", "filter"],
+        required=True,
+    )
+    p_design_compatibility.add_argument("--degree", type=int, required=True)
+    p_design_compatibility.add_argument("--gamma", type=float, default=0.25)
+    p_design_compatibility.add_argument("--a", type=float, default=0.2)
+    p_design_compatibility.add_argument("--alpha", type=float, default=0.5)
+    p_design_compatibility.add_argument("--cutoff", type=float, default=0.45)
+    p_design_compatibility.add_argument("--sharpness", type=float, default=12.0)
+    p_design_compatibility.add_argument(
+        "--bounded-num-points",
+        dest="bounded_num_points",
+        type=int,
+        default=4001,
+    )
+    p_design_compatibility.add_argument(
+        "--no-synthesis",
+        dest="attempt_synthesis",
+        action="store_false",
+        help="Skip the PennyLane synthesis attempt.",
+    )
+    p_design_compatibility.add_argument(
+        "--output",
+        type=str,
+        help="Optional path for writing the report JSON.",
+    )
+    p_design_compatibility.set_defaults(func=cmd_design_compatibility)
+
+    p_apply_design = sub.add_parser(
+        "apply-design",
+        help="Build a design polynomial and run a QSVT comparison report",
+    )
+    p_apply_design.add_argument(
+        "--kind",
+        choices=["inverse", "sign", "projector", "sqrt", "power", "filter"],
+        required=True,
+    )
+    p_apply_design.add_argument(
+        "--values",
+        type=str,
+        required=True,
+        help='Diagonal entries, e.g. "-0.8,-0.3,0.3,0.8"',
+    )
+    p_apply_design.add_argument("--degree", type=int, required=True)
+    p_apply_design.add_argument("--gamma", type=float, default=0.25)
+    p_apply_design.add_argument("--a", type=float, default=0.2)
+    p_apply_design.add_argument("--alpha", type=float, default=0.5)
+    p_apply_design.add_argument("--cutoff", type=float, default=0.45)
+    p_apply_design.add_argument("--sharpness", type=float, default=12.0)
+    p_apply_design.add_argument(
+        "--wires",
+        type=int,
+        default=3,
+        help="Number of qubits for block encoding",
+    )
+    p_apply_design.add_argument(
+        "--output",
+        type=str,
+        help="Optional path for writing the report JSON.",
+    )
+    p_apply_design.set_defaults(func=cmd_apply_design)
 
     return parser
 
@@ -380,7 +657,12 @@ def main(argv: Iterable[str] | None = None) -> None:
     args = parser.parse_args(argv)
 
     result = args.func(args)
-    print(json.dumps(_to_jsonable(result), indent=2))
+    if getattr(args, "output", None):
+        save_report(result, args.output)
+    if getattr(args, "plot", None):
+        save_report_plot(result, args.plot)
+
+    print(json.dumps(report_to_jsonable(result), indent=2))
 
 
 if __name__ == "__main__":

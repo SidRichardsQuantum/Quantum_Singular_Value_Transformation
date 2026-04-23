@@ -51,6 +51,7 @@ how bounded polynomials transform singular values or eigenvalues via block encod
   - [Polynomial approximation](#polynomial-approximation)
   - [Polynomial templates](#polynomial-templates)
   - [Polynomial design](#polynomial-design)
+  - [Reports](#reports)
   - [Matrix helpers](#matrix-helpers)
   - [Classical spectral reference](#classical-spectral-reference)
   - [QSVT simulation utilities](#qsvt-simulation-utilities)
@@ -196,6 +197,19 @@ Designed for reusable QSVT workflows.
 
 ---
 
+### Reports
+
+`qsvt.reports`
+
+- convert diagnostics reports to JSON-safe containers
+- save and load report JSON files
+- plot target, polynomial, and error curves
+
+Useful for recording approximation quality and making report output reusable
+outside notebooks.
+
+---
+
 ### Matrix helpers
 
 `qsvt.matrices`
@@ -233,6 +247,7 @@ Thin wrappers around PennyLane QSVT:
 - diagonal transforms
 - block extraction
 - classical vs QSVT comparisons
+- QSVT transform reports
 
 ---
 
@@ -246,7 +261,7 @@ Full documentation:
 - Package index: [docs/qsvt/index.md](docs/qsvt/index.md)
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
 
-Current release: `0.1.5`
+Current release: `0.1.6`
 
 ---
 
@@ -287,13 +302,41 @@ qsvt diag \
 
 qsvt cheb --degree 3 --x 0.5
 
-qsvt design-report --kind sign --gamma 0.2 --degree 13
+qsvt design-report --kind sign --gamma 0.2 --degree 13 \
+  --output sign-report.json \
+  --plot sign-report.png
 
-qsvt template-report --kind inverse --degree 7 --mu 0.3
+qsvt template-report --kind inverse --degree 7 --mu 0.3 \
+  --output inverse-report.json
+
+qsvt compatibility-report --poly "0,0,1"
+
+qsvt design-compatibility \
+  --kind sign \
+  --degree 13 \
+  --gamma 0.2
+
+qsvt compare-report \
+  --values "1.0,0.7,0.3,0.1" \
+  --poly "0,0,1" \
+  --wires 3 \
+  --output qsvt-report.json
+
+qsvt apply-design \
+  --kind sign \
+  --values="-0.8,-0.3,0.3,0.8" \
+  --degree 13 \
+  --gamma 0.2 \
+  --wires 3
 ```
 
 The report commands print the same JSON diagnostics used by the Python
-helpers, including fit error and boundedness information.
+helpers, including fit error and boundedness information. `--output` writes the
+report to JSON, and `--plot` writes a target-vs-polynomial plot for
+approximation reports.
+
+Compatibility reports distinguish bounded polynomial approximation from
+PennyLane QSVT synthesis compatibility.
 
 ---
 

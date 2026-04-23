@@ -321,9 +321,12 @@ Example:
 
 ```python
 from qsvt.templates import inverse_like_diagnostics
+from qsvt.reports import save_report
 
 report = inverse_like_diagnostics(7, mu=0.3)
 print(report["max_error"], report["bounded_margin"])
+
+save_report(report, "inverse-report.json")
 ```
 
 ## Summary

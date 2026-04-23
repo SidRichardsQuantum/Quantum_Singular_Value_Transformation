@@ -107,6 +107,13 @@ def test_qsvt_top_left_block_rejects_scalar_input():
         qsvt_top_left_block(0.5, [0.0, 0.0, 1.0], encoding_wires=[0])
 
 
+def test_qsvt_transform_report_rejects_values_outside_qsvt_domain():
+    from qsvt.qsvt import qsvt_transform_report
+
+    with pytest.raises(ValueError, match=r"\[-1, 1\]"):
+        qsvt_transform_report([1.2], [0.0, 1.0], encoding_wires=[0])
+
+
 def test_cli_poly_command_emits_json(capsys):
     main(["poly", "--x", "0.5", "--poly", "0,0,1"])
     payload = json.loads(capsys.readouterr().out)
@@ -149,3 +156,166 @@ def test_cli_template_report_emits_json(capsys):
     assert payload["builder"] == "inverse_like_polynomial"
     assert payload["max_error"] >= 0.0
     assert payload["bounded_margin"] >= -1e-8
+
+
+def test_cli_design_report_writes_output_and_plot(tmp_path, capsys):
+    output_path = tmp_path / "design-report.json"
+    plot_path = tmp_path / "design-report.png"
+
+    main(
+        [
+            "design-report",
+            "--kind",
+            "sign",
+            "--gamma",
+            "0.2",
+            "--degree",
+            "7",
+            "--num-points",
+            "51",
+            "--bounded-num-points",
+            "101",
+            "--output",
+            str(output_path),
+            "--plot",
+            str(plot_path),
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+    written = json.loads(output_path.read_text(encoding="utf-8"))
+
+    assert payload["mode"] == "design-report"
+    assert written["builder"] == "design_sign_polynomial"
+    assert plot_path.exists()
+    assert plot_path.stat().st_size > 0
+
+
+def test_cli_template_report_writes_output(tmp_path, capsys):
+    output_path = tmp_path / "template-report.json"
+
+    main(
+        [
+            "template-report",
+            "--kind",
+            "inverse",
+            "--degree",
+            "7",
+            "--mu",
+            "0.3",
+            "--num-points",
+            "51",
+            "--bounded-num-points",
+            "101",
+            "--output",
+            str(output_path),
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+    written = json.loads(output_path.read_text(encoding="utf-8"))
+
+    assert payload["mode"] == "template-report"
+    assert written["builder"] == "inverse_like_polynomial"
+    assert len(written["xs"]) == 51
+
+
+def test_cli_compare_report_emits_json(capsys):
+    main(
+        [
+            "compare-report",
+            "--values",
+            "1.0,0.7,0.3,0.1",
+            "--poly",
+            "0,0,1",
+            "--wires",
+            "3",
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["mode"] == "qsvt-transform-report"
+    assert payload["qsvt_succeeded"] is True
+    assert payload["polynomial_degree"] == 2
+    assert payload["matrix_dimension"] == 4
+    assert payload["max_error"] < 1e-10
+
+
+def test_cli_compare_report_writes_output(tmp_path, capsys):
+    output_path = tmp_path / "qsvt-report.json"
+
+    main(
+        [
+            "compare-report",
+            "--values",
+            "1.0,0.7,0.3,0.1",
+            "--poly",
+            "0,0,1",
+            "--wires",
+            "3",
+            "--output",
+            str(output_path),
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+    written = json.loads(output_path.read_text(encoding="utf-8"))
+
+    assert payload["mode"] == "qsvt-transform-report"
+    assert written["max_error"] < 1e-10
+    assert len(written["qsvt"]) == len(written["classical"])
+
+
+def test_cli_compatibility_report_emits_json(capsys):
+    main(["compatibility-report", "--poly", "0,0,1"])
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["mode"] == "qsvt-compatibility-report"
+    assert payload["compatible"] is True
+    assert payload["parity"] == "even"
+    assert payload["pennylane_synthesis_succeeded"] is True
+
+
+def test_cli_design_compatibility_reports_synthesis_failure(capsys):
+    main(
+        [
+            "design-compatibility",
+            "--kind",
+            "sign",
+            "--degree",
+            "5",
+            "--gamma",
+            "0.2",
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["mode"] == "design-compatibility"
+    assert payload["kind"] == "sign"
+    assert payload["builder"] == "design_sign_polynomial"
+    assert payload["compatible"] is False
+    assert "synthesis_failed" in payload["reasons"]
+
+
+def test_cli_apply_design_emits_json(capsys):
+    main(
+        [
+            "apply-design",
+            "--kind",
+            "sign",
+            "--values=-0.8,-0.3,0.3,0.8",
+            "--degree",
+            "5",
+            "--gamma",
+            "0.2",
+            "--wires",
+            "3",
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["mode"] == "apply-design"
+    assert payload["kind"] == "sign"
+    assert payload["builder"] == "design_sign_polynomial"
+    assert payload["polynomial_degree"] == 5
+    assert payload["compatibility"]["compatible"] is False
+    assert "synthesis_failed" in payload["compatibility"]["reasons"]
+    assert payload["qsvt_succeeded"] is False
+    assert payload["qsvt_error_type"]

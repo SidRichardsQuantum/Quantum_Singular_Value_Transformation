@@ -425,9 +425,13 @@ Example:
 
 ```python
 from qsvt.design import design_sign_diagnostics
+from qsvt.reports import save_report, save_report_plot
 
 report = design_sign_diagnostics(gamma=0.2, degree=13)
 print(report["max_error"], report["bounded_margin"])
+
+save_report(report, "sign-report.json")
+save_report_plot(report, "sign-report.png")
 ```
 
 ## Notes and limitations

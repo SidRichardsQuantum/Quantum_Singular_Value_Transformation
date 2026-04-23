@@ -2,10 +2,23 @@
 
 ---
 
-## Unreleased
+## [0.1.6] – 23rd April 2026
 
 ### Changed
 
+- added `qsvt.reports` helpers for JSON-safe diagnostics payloads, report
+  save/load, and target-vs-polynomial plotting
+- added `--output` and `--plot` options to `design-report` and
+  `template-report`
+- added `qsvt_transform_report` for comparing QSVT diagonal transforms with
+  direct classical polynomial evaluation
+- added `qsvt_compatibility_report` for parity, boundedness, coefficient
+  finiteness, and PennyLane synthesis checks
+- added `compare-report` and `apply-design` CLI commands for QSVT transform
+  reports
+- added `compatibility-report` and `design-compatibility` CLI commands
+- documented diagnostics report workflows in the README, API reference, and
+  dedicated reports guide
 - cleaned generated local build, test, and lint artifacts after the `v0.1.5`
   release
 - added repository archive attributes for consistent line endings and cleaner

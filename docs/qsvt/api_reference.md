@@ -28,6 +28,7 @@ The package is organised into the following modules:
 - `qsvt.spectral`
 - `qsvt.design`
 - `qsvt.templates`
+- `qsvt.reports`
 - `qsvt.qsvt`
 - `qsvt.__main__`
 
@@ -48,6 +49,8 @@ For the higher-level polynomial builders and ready-made templates, see:
 
 - [Polynomial design helpers](design.md)
 - [Polynomial templates](templates.md)
+- [Diagnostics reports](reports.md)
+- [QSVT transform reports](qsvt_reports.md)
 
 ---
 
@@ -268,6 +271,8 @@ Build a compact sampled report with:
 This is the shared reporting helper used by the `qsvt.design` and
 `qsvt.templates` diagnostics functions.
 
+For JSON serialization, saving, loading, and plotting, see `qsvt.reports`.
+
 ### Report fields
 
 | field | meaning |
@@ -284,6 +289,44 @@ This is the shared reporting helper used by the `qsvt.design` and
 | `xs`, `target_values`, `polynomial_values`, `errors` | Fit-domain sample arrays |
 | `bounded_xs`, `bounded_polynomial_values` | Bounded-domain sample arrays |
 | `coeffs` | Generated coefficient array |
+
+---
+
+## `qsvt.reports`
+
+Helpers for converting diagnostics reports into reusable artifacts.
+
+### `report_to_jsonable(report)`
+
+Convert a diagnostics report containing NumPy arrays/scalars into plain Python
+containers that can be passed to `json.dumps`.
+
+---
+
+### `save_report(report, path, indent=2)`
+
+Write a diagnostics report to JSON.
+
+---
+
+### `load_report(path)`
+
+Load a JSON diagnostics report from disk.
+
+---
+
+### `plot_approximation_report(report, ax=None)`
+
+Plot the sampled target values, polynomial values, and error curve from a
+diagnostics report.
+
+Returns a Matplotlib `(fig, axes)` pair.
+
+---
+
+### `save_report_plot(report, path, dpi=150)`
+
+Save a target-vs-polynomial diagnostics plot to an image file.
 
 ---
 
@@ -591,6 +634,59 @@ Return a comparison dictionary containing:
 - absolute error
 
 This is useful for smoke tests and validation.
+
+---
+
+### `qsvt_compatibility_report(poly, ...)`
+
+Check whether polynomial coefficients are structurally suitable for PennyLane
+QSVT synthesis.
+
+The report includes:
+
+- coefficient finiteness
+- parity classification
+- sampled boundedness on `[-1, 1]`
+- optional PennyLane synthesis status
+- structured failure reasons such as `mixed_parity`, `out_of_bounds`, and
+  `synthesis_failed`
+
+Example:
+
+```python
+from qsvt.qsvt import qsvt_compatibility_report
+
+report = qsvt_compatibility_report([0, 0, 1])
+print(report["compatible"], report["reasons"])
+```
+
+---
+
+### `qsvt_transform_report(diagonal, poly, ...)`
+
+Build a QSVT-vs-classical report for a diagonal transform.
+
+The report includes:
+
+- input values and polynomial coefficients
+- QSVT output and direct classical output
+- absolute error, max error, and RMS error
+- `qsvt_succeeded` plus synthesis error details when requested by callers
+- encoding wires, wire order, block-encoding mode, and dimension metadata
+
+Example:
+
+```python
+from qsvt.qsvt import qsvt_transform_report
+
+report = qsvt_transform_report(
+    [1.0, 0.7, 0.3, 0.1],
+    [0, 0, 1],
+    encoding_wires=[0, 1, 2],
+)
+
+print(report["max_error"])
+```
 
 ---
 
