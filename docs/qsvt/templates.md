@@ -1,6 +1,6 @@
 # Polynomial Templates
 
-The `qsvt.templates` module provides ready-to-use bounded polynomial families for common Quantum Singular Value Transformation (QSVT) and Quantum Signal Processing (QSP) style experiments. It is intended as a practical starting point when you want a useful polynomial quickly, without setting up a full approximation workflow by hand. :contentReference[oaicite:0]{index=0}
+The `qsvt.templates` module provides ready-to-use bounded polynomial families for common Quantum Singular Value Transformation (QSVT) and Quantum Signal Processing (QSP) style experiments. It is intended as a practical starting point when you want a useful polynomial quickly, without setting up a full approximation workflow by hand.
 
 These templates are especially useful for:
 
@@ -10,18 +10,18 @@ These templates are especially useful for:
 - square-root style matrix-function surrogates
 - smooth exponential weighting experiments
 
-They are designed to remain lightweight, readable, and notebook-friendly, while still producing bounded coefficient arrays that work naturally with the rest of the package. :contentReference[oaicite:1]{index=1}
+They are designed to remain lightweight, readable, and notebook-friendly, while still producing bounded coefficient arrays that work naturally with the rest of the package.
 
 ## Overview
 
-In many QSVT workflows, the goal is not to derive a best-possible polynomial from scratch, but to obtain a small bounded polynomial with the right qualitative behaviour. The `qsvt.templates` module provides exactly that: a collection of simple polynomial families that are easy to inspect, evaluate, and reuse. :contentReference[oaicite:2]{index=2}
+In many QSVT workflows, the goal is not to derive a best-possible polynomial from scratch, but to obtain a small bounded polynomial with the right qualitative behaviour. The `qsvt.templates` module provides exactly that: a collection of simple polynomial families that are easy to inspect, evaluate, and reuse.
 
 All template builders return:
 
 - `numpy.ndarray`
 - one-dimensional coefficient arrays
 - coefficients in ascending monomial degree order
-- numerically bounded outputs on $[-1,1]$ :contentReference[oaicite:3]{index=3}
+- numerically bounded outputs on $[-1,1]$
 
 This makes them immediately compatible with the rest of the package’s polynomial and QSVT simulation utilities.
 
@@ -34,9 +34,11 @@ The templates module follows the same overall design principles as the package:
 - ascending degree ordering
 - boundedness on $[-1,1]$
 - lightweight fitting rather than heavy optimisation
-- implementations simple enough to read directly in notebooks or source form :contentReference[oaicite:4]{index=4}
+- implementations simple enough to read directly in notebooks or source form
 
-These templates are not intended to be minimax-optimal constructions. They are practical, readable starting points for prototyping and intuition building before moving to more specialised polynomial design workflows. :contentReference[oaicite:5]{index=5}
+These templates are not intended to be minimax-optimal constructions. They are practical, readable starting points for prototyping and intuition building before moving to more specialised polynomial design workflows.
+
+For task-oriented builders that start from the desired transformation rather than a canned family, see [Polynomial Design Helpers](design.md).
 
 ## Available functions
 
@@ -296,6 +298,33 @@ These templates are intentionally lightweight. They do not currently provide:
 - constrained optimisation-based design
 
 Instead, they provide bounded, readable, and immediately usable polynomial families for educational and practical experimentation. 
+
+## Diagnostics
+
+The module also provides report helpers that return sampled approximation
+quality data for each template:
+
+- `inverse_like_diagnostics`
+- `sign_approximation_diagnostics`
+- `soft_threshold_filter_diagnostics`
+- `sqrt_approximation_diagnostics`
+- `exponential_approximation_diagnostics`
+
+Each report includes:
+
+- fit error metrics
+- boundedness margin
+- sampled target and polynomial values
+- the generated coefficient array
+
+Example:
+
+```python
+from qsvt.templates import inverse_like_diagnostics
+
+report = inverse_like_diagnostics(7, mu=0.3)
+print(report["max_error"], report["bounded_margin"])
+```
 
 ## Summary
 

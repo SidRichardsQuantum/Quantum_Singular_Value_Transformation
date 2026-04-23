@@ -2,6 +2,49 @@
 
 ---
 
+## [0.1.5] – 23rd April 2026
+
+### Changed
+
+- added diagnostics helpers for `qsvt.design` and `qsvt.templates`
+- added `design-report` and `template-report` CLI commands for JSON
+  approximation-quality reports
+- expanded the markdown docs to cover the new diagnostics surface area
+
+### Documentation
+
+- updated the README to show the report commands and current release
+- documented the report field structure in the API reference
+- added short diagnostics examples to the design and template guides
+
+---
+
+## [0.1.4] – 23rd April 2026
+
+### Changed
+
+- refreshed the release metadata and rebuilt the package for `v0.1.4`
+- published the `0.1.4` release to PyPI
+- updated the documentation set to cover the newer `qsvt.design` and
+  `qsvt.templates` modules more clearly
+
+### Documentation
+
+- expanded the package index to include the full module set
+- cleaned up the API reference module overview and cross-links
+- removed stale citation placeholders from the templates docs
+
+---
+
+## [0.1.3] – 23rd April 2026
+
+### Changed
+
+- intermediate release tag used to validate the automated build and publishing
+  workflow
+
+---
+
 ## [0.1.2] – 10th April 2026
 
 ### Added

@@ -384,23 +384,51 @@ For diagonal test problems, these polynomials also work naturally with:
 
 ## Relationship to other modules
 
-## `qsvt.approximation`
+### `qsvt.approximation`
 
 Use `qsvt.approximation` when you want low-level fitting utilities and direct control over approximation workflows.
 
 Use `qsvt.design` when you want task-oriented builders for common spectral transforms.
 
-## `qsvt.templates`
+### `qsvt.templates`
 
 Use `qsvt.templates` when you want predefined coefficient families or notebook-friendly canned examples.
 
 Use `qsvt.design` when you want a more direct construction API for practical polynomial generation from high-level intent.
 
-## `qsvt.polynomials`
+### `qsvt.polynomials`
 
 Use `qsvt.polynomials` for low-level polynomial manipulation, evaluation, parity checks, and boundedness checks.
 
 The `qsvt.design` functions are intended to produce coefficient arrays that can be passed directly into those utilities.
+
+## Diagnostics
+
+The module also provides report helpers that return sampled approximation
+quality data for each builder:
+
+- `design_inverse_diagnostics`
+- `design_sign_diagnostics`
+- `design_projector_diagnostics`
+- `design_sqrt_diagnostics`
+- `design_power_diagnostics`
+- `design_filter_diagnostics`
+
+Each report includes:
+
+- fit error metrics
+- boundedness margin
+- sampled target and polynomial values
+- the generated coefficient array
+
+Example:
+
+```python
+from qsvt.design import design_sign_diagnostics
+
+report = design_sign_diagnostics(gamma=0.2, degree=13)
+print(report["max_error"], report["bounded_margin"])
+```
 
 ## Notes and limitations
 

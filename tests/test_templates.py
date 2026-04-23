@@ -4,10 +4,15 @@ import numpy as np
 
 from qsvt.polynomials import is_bounded_on_interval, polynomial_parity
 from qsvt.templates import (
+    exponential_approximation_diagnostics,
     exponential_approximation_polynomial,
+    inverse_like_diagnostics,
     inverse_like_polynomial,
+    sign_approximation_diagnostics,
     sign_approximation_polynomial,
+    soft_threshold_filter_diagnostics,
     soft_threshold_filter_polynomial,
+    sqrt_approximation_diagnostics,
     sqrt_approximation_polynomial,
 )
 
@@ -73,3 +78,39 @@ def test_filter_and_sqrt_templates_have_expected_basic_shape():
 
     assert sqrt_vals[0] >= -1e-6
     assert sqrt_vals[-1] <= 1.0 + 1e-6
+
+
+def test_template_diagnostics_report_fit_and_boundedness():
+    report = inverse_like_diagnostics(7, mu=0.3)
+    coeffs = inverse_like_polynomial(7, mu=0.3)
+
+    assert report["builder"] == "inverse_like_polynomial"
+    assert np.allclose(report["coeffs"], coeffs)
+    assert report["max_error"] < 0.2
+    assert report["bounded_margin"] >= -1e-8
+    assert (
+        report["xs"].shape
+        == report["target_values"].shape
+        == report["polynomial_values"].shape
+    )
+    assert report["errors"].shape == report["xs"].shape
+
+
+def test_template_diagnostics_cover_sign_filter_sqrt_and_exponential():
+    sign_report = sign_approximation_diagnostics(9, sharpness=8.0)
+    filter_report = soft_threshold_filter_diagnostics(
+        10,
+        threshold=0.45,
+        sharpness=10.0,
+    )
+    sqrt_report = sqrt_approximation_diagnostics(8)
+    exp_report = exponential_approximation_diagnostics(6, beta=1.5)
+
+    assert sign_report["builder"] == "sign_approximation_polynomial"
+    assert filter_report["builder"] == "soft_threshold_filter_polynomial"
+    assert sqrt_report["builder"] == "sqrt_approximation_polynomial"
+    assert exp_report["builder"] == "exponential_approximation_polynomial"
+    assert sign_report["max_error"] < 0.35
+    assert filter_report["max_error"] < 0.35
+    assert sqrt_report["bounded_margin"] >= -1e-8
+    assert exp_report["bounded_margin"] >= -1e-8

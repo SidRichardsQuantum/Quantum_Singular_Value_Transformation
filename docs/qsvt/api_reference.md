@@ -26,7 +26,10 @@ The package is organised into the following modules:
 - `qsvt.approximation`
 - `qsvt.matrices`
 - `qsvt.spectral`
+- `qsvt.design`
+- `qsvt.templates`
 - `qsvt.qsvt`
+- `qsvt.__main__`
 
 You can either import from submodules directly:
 
@@ -40,6 +43,11 @@ or import selected names from the package root:
 ```python
 from qsvt import qsvt_scalar_output, chebyshev_t
 ```
+
+For the higher-level polynomial builders and ready-made templates, see:
+
+- [Polynomial design helpers](design.md)
+- [Polynomial templates](templates.md)
 
 ---
 
@@ -246,6 +254,36 @@ Convenience function returning both:
 Sample the true function and approximation on a shared grid.
 
 Useful for plotting.
+
+---
+
+### `approximation_quality_report(func, approx, domain=(-1.0, 1.0), num_points=1000, bound=1.0, ...)`
+
+Build a compact sampled report with:
+
+- fit error metrics
+- boundedness margin
+- target vs polynomial sample arrays
+
+This is the shared reporting helper used by the `qsvt.design` and
+`qsvt.templates` diagnostics functions.
+
+### Report fields
+
+| field | meaning |
+| --- | --- |
+| `mode` | CLI wrapper label for the selected report command |
+| `kind` | The chosen report kind, such as `sign` or `inverse` |
+| `builder` | Underlying builder function name |
+| `fit_domain` | Interval used for fit-error sampling |
+| `bounded_domain` | Interval used for boundedness sampling |
+| `max_error` | Maximum sampled absolute error on the fit domain |
+| `rms_error` | Root-mean-square sampled error on the fit domain |
+| `bounded_margin` | `bound - max_abs_value` on the boundedness domain |
+| `is_bounded` | Whether the sampled values stayed within the bound |
+| `xs`, `target_values`, `polynomial_values`, `errors` | Fit-domain sample arrays |
+| `bounded_xs`, `bounded_polynomial_values` | Bounded-domain sample arrays |
+| `coeffs` | Generated coefficient array |
 
 ---
 

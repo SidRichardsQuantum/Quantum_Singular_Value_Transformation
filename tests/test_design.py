@@ -4,11 +4,17 @@ import numpy as np
 
 from qsvt.design import (
     design_filter_polynomial,
+    design_filter_diagnostics,
     design_inverse_polynomial,
+    design_inverse_diagnostics,
     design_power_polynomial,
+    design_power_diagnostics,
     design_projector_polynomial,
+    design_projector_diagnostics,
     design_sign_polynomial,
+    design_sign_diagnostics,
     design_sqrt_polynomial,
+    design_sqrt_diagnostics,
 )
 from qsvt.polynomials import is_bounded_on_interval, polynomial_parity
 
@@ -97,3 +103,48 @@ def test_projector_sqrt_and_power_have_basic_shape_properties():
 
     assert np.max(np.abs(sqrt_vals[pos_mask] - np.sqrt(xs[pos_mask]))) < 0.1
     assert np.max(np.abs(power_vals[pos_mask] - xs[pos_mask] ** 0.5)) < 0.1
+
+
+def test_design_diagnostics_report_fit_and_boundedness():
+    report = design_sqrt_diagnostics(a=0.2, degree=12)
+    coeffs = design_sqrt_polynomial(a=0.2, degree=12)
+
+    assert report["builder"] == "design_sqrt_polynomial"
+    assert report["fit_domain"] == (0.2, 1.0)
+    assert report["bounded_domain"] == (-1.0, 1.0)
+    assert np.allclose(report["coeffs"], coeffs)
+    assert report["max_error"] < 0.1
+    assert report["bounded_margin"] >= -1e-8
+    assert (
+        report["xs"].shape
+        == report["target_values"].shape
+        == report["polynomial_values"].shape
+    )
+    assert report["errors"].shape == report["xs"].shape
+    assert report["bounded_xs"].shape == report["bounded_polynomial_values"].shape
+
+
+def test_design_diagnostics_cover_inverse_and_filter_wrappers():
+    inverse_report = design_inverse_diagnostics(gamma=0.25, degree=11)
+    filter_report = design_filter_diagnostics(cutoff=0.45, degree=10)
+
+    assert inverse_report["builder"] == "design_inverse_polynomial"
+    assert filter_report["builder"] == "design_filter_polynomial"
+    assert inverse_report["max_error"] < 1.0
+    assert filter_report["max_error"] < 0.35
+    assert inverse_report["bounded_margin"] >= -1e-8
+    assert filter_report["bounded_margin"] >= -1e-8
+
+
+def test_design_diagnostics_cover_sign_projector_and_power_wrappers():
+    sign_report = design_sign_diagnostics(gamma=0.2, degree=13)
+    projector_report = design_projector_diagnostics(gamma=0.2, degree=13)
+    power_report = design_power_diagnostics(alpha=0.5, degree=12, a=0.2)
+
+    assert sign_report["builder"] == "design_sign_polynomial"
+    assert projector_report["builder"] == "design_projector_polynomial"
+    assert power_report["builder"] == "design_power_polynomial"
+    assert sign_report["max_error"] < 0.35
+    assert projector_report["max_error"] < 0.5
+    assert power_report["fit_domain"] == (0.2, 1.0)
+    assert power_report["bounded_margin"] >= -1e-8

@@ -32,11 +32,51 @@ from __future__ import annotations
 
 import numpy as np
 
-from .approximation import chebyshev_fit_function
+from .approximation import approximation_quality_report, chebyshev_fit_function
 from .polynomials import normalize_coefficients
 
 _DEF_NUM_POINTS = 2001
 _DEF_BOUND_GRID = 4001
+
+
+def _design_inverse_target(x: np.ndarray, gamma: float) -> np.ndarray:
+    x = np.asarray(x, dtype=float)
+    out = np.sign(x)
+    mask = np.abs(x) >= gamma
+    out[mask] = gamma / x[mask]
+    out[x == 0.0] = 0.0
+    return out
+
+
+def _design_sign_target(x: np.ndarray, gamma: float) -> np.ndarray:
+    sharpness = _tanh_sharpness_from_margin(gamma, target_value=0.98)
+    return np.tanh(sharpness * np.asarray(x, dtype=float))
+
+
+def _design_projector_target(x: np.ndarray, gamma: float) -> np.ndarray:
+    return 0.5 * (1.0 + _design_sign_target(x, gamma))
+
+
+def _design_sqrt_target(x: np.ndarray) -> np.ndarray:
+    x = np.asarray(x, dtype=float)
+    out = np.zeros_like(x, dtype=float)
+    mask = x >= 0.0
+    out[mask] = np.sqrt(np.clip(x[mask], 0.0, 1.0))
+    return out
+
+
+def _design_power_target(x: np.ndarray, alpha: float) -> np.ndarray:
+    x = np.asarray(x, dtype=float)
+    return np.clip(x, 0.0, 1.0) ** alpha
+
+
+def _design_filter_target(x: np.ndarray, cutoff: float, sharpness: float) -> np.ndarray:
+    return 0.5 * (
+        1.0
+        + np.tanh(
+            sharpness * (np.abs(np.asarray(x, dtype=float)) - cutoff),
+        )
+    )
 
 
 def _validate_degree(degree: int) -> int:
@@ -237,6 +277,31 @@ def _fit_on_canonical_interval(
     return _enforce_boundedness(coeffs, num_points=max(_DEF_BOUND_GRID, num_points))
 
 
+def _fit_on_interval(
+    func,
+    domain: tuple[float, float],
+    *,
+    degree: int,
+    num_points: int = _DEF_NUM_POINTS,
+) -> np.ndarray:
+    """
+    Fit a target on a general interval, convert to monomials, and bound it.
+    """
+    degree = _validate_degree(degree)
+    num_points = _validate_num_points(num_points)
+
+    cheb_coeffs = chebyshev_fit_function(
+        func,
+        degree=degree,
+        domain=domain,
+        num_points=num_points,
+    )
+    poly = np.polynomial.Chebyshev(cheb_coeffs, domain=domain)
+    coeffs = np.asarray(poly.convert(kind=np.polynomial.Polynomial).coef, dtype=float)
+    coeffs = normalize_coefficients(coeffs)
+    return _enforce_boundedness(coeffs, num_points=max(_DEF_BOUND_GRID, num_points))
+
+
 def design_inverse_polynomial(
     gamma: float,
     degree: int,
@@ -276,17 +341,8 @@ def design_inverse_polynomial(
     1
     """
     gamma = _validate_unit_interval_parameter(gamma, "gamma")
-
-    def target(x: np.ndarray) -> np.ndarray:
-        x = np.asarray(x, dtype=float)
-        out = np.sign(x)
-        mask = np.abs(x) >= gamma
-        out[mask] = gamma / x[mask]
-        out[x == 0.0] = 0.0
-        return out
-
     return _fit_on_canonical_interval(
-        target,
+        lambda x: _design_inverse_target(x, gamma),
         degree=degree,
         parity="odd",
         num_points=num_points,
@@ -325,13 +381,9 @@ def design_sign_polynomial(
     1
     """
     gamma = _validate_unit_interval_parameter(gamma, "gamma")
-    sharpness = _tanh_sharpness_from_margin(gamma, target_value=0.98)
-
-    def target(x: np.ndarray) -> np.ndarray:
-        return np.tanh(sharpness * np.asarray(x, dtype=float))
 
     return _fit_on_canonical_interval(
-        target,
+        lambda x: _design_sign_target(x, gamma),
         degree=degree,
         parity="odd",
         num_points=num_points,
@@ -417,12 +469,8 @@ def design_sqrt_polynomial(
     if not (0.0 <= a < 1.0):
         raise ValueError("a must satisfy 0 <= a < 1.")
 
-    def target(x: np.ndarray) -> np.ndarray:
-        x = np.asarray(x, dtype=float)
-        return np.sqrt(np.clip(x, 0.0, 1.0))
-
     return _fit_on_canonical_interval(
-        target,
+        _design_sqrt_target,
         degree=degree,
         parity=None,
         num_points=num_points,
@@ -474,12 +522,8 @@ def design_power_polynomial(
     if not (0.0 <= a < 1.0):
         raise ValueError("a must satisfy 0 <= a < 1.")
 
-    def target(x: np.ndarray) -> np.ndarray:
-        x = np.asarray(x, dtype=float)
-        return np.clip(x, 0.0, 1.0) ** alpha
-
     return _fit_on_canonical_interval(
-        target,
+        lambda x: _design_power_target(x, alpha),
         degree=degree,
         parity=None,
         num_points=num_points,
@@ -527,19 +571,247 @@ def design_filter_polynomial(
     if sharpness <= 0.0:
         raise ValueError("sharpness must be positive.")
 
-    def target(x: np.ndarray) -> np.ndarray:
-        x = np.asarray(x, dtype=float)
-        return 0.5 * (1.0 + np.tanh(sharpness * (np.abs(x) - cutoff)))
-
     return _fit_on_canonical_interval(
-        target,
+        lambda x: _design_filter_target(x, cutoff, sharpness),
         degree=degree,
         parity="even",
         num_points=num_points,
     )
 
 
+def _design_quality_report(
+    target,
+    coeffs: np.ndarray,
+    *,
+    fit_domain: tuple[float, float] = (-1.0, 1.0),
+    fit_num_points: int = _DEF_NUM_POINTS,
+    bounded_domain: tuple[float, float] = (-1.0, 1.0),
+    bounded_num_points: int = _DEF_BOUND_GRID,
+    bound: float = 1.0,
+) -> dict[str, object]:
+    """
+    Assemble a quality report for a design polynomial.
+    """
+    coeffs = np.asarray(coeffs, dtype=float)
+
+    def approx(x: np.ndarray) -> np.ndarray:
+        return np.polynomial.polynomial.polyval(x, coeffs)
+
+    return approximation_quality_report(
+        target,
+        approx,
+        domain=fit_domain,
+        num_points=fit_num_points,
+        bound=bound,
+        bounded_domain=bounded_domain,
+        bounded_num_points=bounded_num_points,
+        coeffs=coeffs,
+    )
+
+
+def design_inverse_diagnostics(
+    gamma: float,
+    degree: int,
+    num_points: int = _DEF_NUM_POINTS,
+    bounded_num_points: int = _DEF_BOUND_GRID,
+) -> dict[str, object]:
+    """
+    Build a report for the inverse-like design polynomial.
+    """
+    gamma = _validate_unit_interval_parameter(gamma, "gamma")
+    coeffs = design_inverse_polynomial(
+        gamma=gamma,
+        degree=degree,
+        num_points=num_points,
+    )
+    report = _design_quality_report(
+        lambda x: _design_inverse_target(x, gamma),
+        coeffs,
+        fit_num_points=num_points,
+        bounded_num_points=bounded_num_points,
+    )
+    report.update(
+        {
+            "builder": "design_inverse_polynomial",
+            "gamma": gamma,
+            "degree": int(degree),
+        }
+    )
+    return report
+
+
+def design_sign_diagnostics(
+    gamma: float,
+    degree: int,
+    num_points: int = _DEF_NUM_POINTS,
+    bounded_num_points: int = _DEF_BOUND_GRID,
+) -> dict[str, object]:
+    """
+    Build a report for the sign design polynomial.
+    """
+    gamma = _validate_unit_interval_parameter(gamma, "gamma")
+    coeffs = design_sign_polynomial(gamma=gamma, degree=degree, num_points=num_points)
+    report = _design_quality_report(
+        lambda x: _design_sign_target(x, gamma),
+        coeffs,
+        fit_num_points=num_points,
+        bounded_num_points=bounded_num_points,
+    )
+    report.update(
+        {
+            "builder": "design_sign_polynomial",
+            "gamma": gamma,
+            "degree": int(degree),
+        }
+    )
+    return report
+
+
+def design_projector_diagnostics(
+    gamma: float,
+    degree: int,
+    num_points: int = _DEF_NUM_POINTS,
+    bounded_num_points: int = _DEF_BOUND_GRID,
+) -> dict[str, object]:
+    """
+    Build a report for the projector-style design polynomial.
+    """
+    gamma = _validate_unit_interval_parameter(gamma, "gamma")
+    coeffs = design_projector_polynomial(
+        gamma=gamma,
+        degree=degree,
+        num_points=num_points,
+    )
+    report = _design_quality_report(
+        lambda x: _design_projector_target(x, gamma),
+        coeffs,
+        fit_num_points=num_points,
+        bounded_num_points=bounded_num_points,
+    )
+    report.update(
+        {
+            "builder": "design_projector_polynomial",
+            "gamma": gamma,
+            "degree": int(degree),
+        }
+    )
+    return report
+
+
+def design_sqrt_diagnostics(
+    a: float,
+    degree: int,
+    num_points: int = _DEF_NUM_POINTS,
+    bounded_num_points: int = _DEF_BOUND_GRID,
+) -> dict[str, object]:
+    """
+    Build a report for the sqrt design polynomial.
+    """
+    a = float(a)
+    if not (0.0 <= a < 1.0):
+        raise ValueError("a must satisfy 0 <= a < 1.")
+
+    coeffs = design_sqrt_polynomial(a=a, degree=degree, num_points=num_points)
+    report = _design_quality_report(
+        _design_sqrt_target,
+        coeffs,
+        fit_domain=(a, 1.0),
+        fit_num_points=num_points,
+        bounded_domain=(-1.0, 1.0),
+        bounded_num_points=bounded_num_points,
+    )
+    report.update({"builder": "design_sqrt_polynomial", "a": a, "degree": int(degree)})
+    return report
+
+
+def design_power_diagnostics(
+    alpha: float,
+    degree: int,
+    a: float = 0.0,
+    num_points: int = _DEF_NUM_POINTS,
+    bounded_num_points: int = _DEF_BOUND_GRID,
+) -> dict[str, object]:
+    """
+    Build a report for the positive-power design polynomial.
+    """
+    alpha = float(alpha)
+    if alpha < 0.0:
+        raise ValueError("alpha must be non-negative.")
+
+    a = float(a)
+    if not (0.0 <= a < 1.0):
+        raise ValueError("a must satisfy 0 <= a < 1.")
+
+    coeffs = design_power_polynomial(
+        alpha=alpha,
+        degree=degree,
+        a=a,
+        num_points=num_points,
+    )
+    report = _design_quality_report(
+        lambda x: _design_power_target(x, alpha),
+        coeffs,
+        fit_domain=(a, 1.0),
+        fit_num_points=num_points,
+        bounded_domain=(-1.0, 1.0),
+        bounded_num_points=bounded_num_points,
+    )
+    report.update(
+        {
+            "builder": "design_power_polynomial",
+            "alpha": alpha,
+            "a": a,
+            "degree": int(degree),
+        }
+    )
+    return report
+
+
+def design_filter_diagnostics(
+    cutoff: float,
+    degree: int,
+    sharpness: float = 12.0,
+    num_points: int = _DEF_NUM_POINTS,
+    bounded_num_points: int = _DEF_BOUND_GRID,
+) -> dict[str, object]:
+    """
+    Build a report for the threshold-filter design polynomial.
+    """
+    cutoff = _validate_unit_interval_parameter(cutoff, "cutoff")
+    sharpness = float(sharpness)
+    if sharpness <= 0.0:
+        raise ValueError("sharpness must be positive.")
+
+    coeffs = design_filter_polynomial(
+        cutoff=cutoff,
+        degree=degree,
+        sharpness=sharpness,
+        num_points=num_points,
+    )
+    report = _design_quality_report(
+        lambda x: _design_filter_target(x, cutoff, sharpness),
+        coeffs,
+        fit_num_points=num_points,
+        bounded_num_points=bounded_num_points,
+    )
+    report.update(
+        {
+            "builder": "design_filter_polynomial",
+            "cutoff": cutoff,
+            "sharpness": sharpness,
+            "degree": int(degree),
+        }
+    )
+    return report
+
+
 __all__ = [
+    "design_inverse_diagnostics",
+    "design_sign_diagnostics",
+    "design_projector_diagnostics",
+    "design_sqrt_diagnostics",
+    "design_power_diagnostics",
+    "design_filter_diagnostics",
     "design_filter_polynomial",
     "design_inverse_polynomial",
     "design_power_polynomial",

@@ -34,7 +34,38 @@ from __future__ import annotations
 
 import numpy as np
 
+from .approximation import approximation_quality_report
 from .polynomials import normalize_coefficients
+
+
+def _inverse_like_target(x: np.ndarray, mu: float) -> np.ndarray:
+    x = np.asarray(x, dtype=float)
+    return (2.0 * mu * x) / (x**2 + mu**2)
+
+
+def _sign_target(x: np.ndarray, sharpness: float) -> np.ndarray:
+    return np.tanh(sharpness * np.asarray(x, dtype=float))
+
+
+def _soft_threshold_target(
+    x: np.ndarray,
+    threshold: float,
+    sharpness: float,
+) -> np.ndarray:
+    return 0.5 * (
+        1.0
+        + np.tanh(
+            sharpness * (np.abs(np.asarray(x, dtype=float)) - threshold),
+        )
+    )
+
+
+def _sqrt_target(x: np.ndarray) -> np.ndarray:
+    return np.sqrt(np.clip(0.5 * (np.asarray(x, dtype=float) + 1.0), 0.0, 1.0))
+
+
+def _exponential_target(x: np.ndarray, beta: float) -> np.ndarray:
+    return np.exp(beta * np.asarray(x, dtype=float) - abs(beta))
 
 
 def _validate_degree(degree: int) -> int:
@@ -216,10 +247,12 @@ def inverse_like_polynomial(
     if mu <= 0.0:
         raise ValueError("mu must be positive.")
 
-    def target(x: np.ndarray) -> np.ndarray:
-        return (2.0 * mu * x) / (x**2 + mu**2)
-
-    return _fit_template(target, degree, parity="odd", num_points=num_points)
+    return _fit_template(
+        lambda x: _inverse_like_target(x, mu),
+        degree,
+        parity="odd",
+        num_points=num_points,
+    )
 
 
 def sign_approximation_polynomial(
@@ -270,10 +303,12 @@ def sign_approximation_polynomial(
     if sharpness <= 0.0:
         raise ValueError("sharpness must be positive.")
 
-    def target(x: np.ndarray) -> np.ndarray:
-        return np.tanh(sharpness * x)
-
-    return _fit_template(target, degree, parity="odd", num_points=num_points)
+    return _fit_template(
+        lambda x: _sign_target(x, sharpness),
+        degree,
+        parity="odd",
+        num_points=num_points,
+    )
 
 
 def soft_threshold_filter_polynomial(
@@ -330,10 +365,12 @@ def soft_threshold_filter_polynomial(
     if sharpness <= 0.0:
         raise ValueError("sharpness must be positive.")
 
-    def target(x: np.ndarray) -> np.ndarray:
-        return 0.5 * (1.0 + np.tanh(sharpness * (np.abs(x) - threshold)))
-
-    return _fit_template(target, degree, parity="even", num_points=num_points)
+    return _fit_template(
+        lambda x: _soft_threshold_target(x, threshold, sharpness),
+        degree,
+        parity="even",
+        num_points=num_points,
+    )
 
 
 def sqrt_approximation_polynomial(
@@ -373,10 +410,7 @@ def sqrt_approximation_polynomial(
     degree = _validate_degree(degree)
     num_points = _validate_num_points(num_points)
 
-    def target(x: np.ndarray) -> np.ndarray:
-        return np.sqrt(np.clip(0.5 * (x + 1.0), 0.0, 1.0))
-
-    return _fit_template(target, degree, num_points=num_points)
+    return _fit_template(_sqrt_target, degree, num_points=num_points)
 
 
 def exponential_approximation_polynomial(
@@ -420,13 +454,184 @@ def exponential_approximation_polynomial(
     degree = _validate_degree(degree)
     num_points = _validate_num_points(num_points)
 
-    def target(x: np.ndarray) -> np.ndarray:
-        return np.exp(beta * x - abs(beta))
+    return _fit_template(
+        lambda x: _exponential_target(x, beta),
+        degree,
+        num_points=num_points,
+    )
 
-    return _fit_template(target, degree, num_points=num_points)
+
+def _template_quality_report(
+    target,
+    coeffs: np.ndarray,
+    *,
+    domain: tuple[float, float] = (-1.0, 1.0),
+    num_points: int = 2001,
+    bounded_num_points: int = 4001,
+) -> dict[str, object]:
+    """
+    Assemble a quality report for a template polynomial.
+    """
+    coeffs = np.asarray(coeffs, dtype=float)
+
+    def approx(x: np.ndarray) -> np.ndarray:
+        return np.polynomial.polynomial.polyval(x, coeffs)
+
+    return approximation_quality_report(
+        target,
+        approx,
+        domain=domain,
+        num_points=num_points,
+        bounded_domain=(-1.0, 1.0),
+        bounded_num_points=bounded_num_points,
+        coeffs=coeffs,
+    )
+
+
+def inverse_like_diagnostics(
+    degree: int,
+    mu: float = 0.25,
+    num_points: int = 2001,
+    bounded_num_points: int = 4001,
+) -> dict[str, object]:
+    """
+    Build a report for the inverse-like template polynomial.
+    """
+    coeffs = inverse_like_polynomial(degree, mu=mu, num_points=num_points)
+    report = _template_quality_report(
+        lambda x: _inverse_like_target(x, mu),
+        coeffs,
+        num_points=num_points,
+        bounded_num_points=bounded_num_points,
+    )
+    report.update(
+        {
+            "builder": "inverse_like_polynomial",
+            "mu": float(mu),
+            "degree": int(degree),
+        }
+    )
+    return report
+
+
+def sign_approximation_diagnostics(
+    degree: int,
+    sharpness: float = 6.0,
+    num_points: int = 2001,
+    bounded_num_points: int = 4001,
+) -> dict[str, object]:
+    """
+    Build a report for the sign template polynomial.
+    """
+    coeffs = sign_approximation_polynomial(
+        degree,
+        sharpness=sharpness,
+        num_points=num_points,
+    )
+    report = _template_quality_report(
+        lambda x: _sign_target(x, sharpness),
+        coeffs,
+        num_points=num_points,
+        bounded_num_points=bounded_num_points,
+    )
+    report.update(
+        {
+            "builder": "sign_approximation_polynomial",
+            "sharpness": float(sharpness),
+            "degree": int(degree),
+        }
+    )
+    return report
+
+
+def soft_threshold_filter_diagnostics(
+    degree: int,
+    threshold: float = 0.5,
+    sharpness: float = 12.0,
+    num_points: int = 2001,
+    bounded_num_points: int = 4001,
+) -> dict[str, object]:
+    """
+    Build a report for the soft-threshold template polynomial.
+    """
+    coeffs = soft_threshold_filter_polynomial(
+        degree,
+        threshold=threshold,
+        sharpness=sharpness,
+        num_points=num_points,
+    )
+    report = _template_quality_report(
+        lambda x: _soft_threshold_target(x, threshold, sharpness),
+        coeffs,
+        num_points=num_points,
+        bounded_num_points=bounded_num_points,
+    )
+    report.update(
+        {
+            "builder": "soft_threshold_filter_polynomial",
+            "threshold": float(threshold),
+            "sharpness": float(sharpness),
+            "degree": int(degree),
+        }
+    )
+    return report
+
+
+def sqrt_approximation_diagnostics(
+    degree: int,
+    num_points: int = 2001,
+    bounded_num_points: int = 4001,
+) -> dict[str, object]:
+    """
+    Build a report for the shifted square-root template polynomial.
+    """
+    coeffs = sqrt_approximation_polynomial(degree, num_points=num_points)
+    report = _template_quality_report(
+        _sqrt_target,
+        coeffs,
+        num_points=num_points,
+        bounded_num_points=bounded_num_points,
+    )
+    report.update({"builder": "sqrt_approximation_polynomial", "degree": int(degree)})
+    return report
+
+
+def exponential_approximation_diagnostics(
+    degree: int,
+    beta: float = 1.0,
+    num_points: int = 2001,
+    bounded_num_points: int = 4001,
+) -> dict[str, object]:
+    """
+    Build a report for the exponential template polynomial.
+    """
+    coeffs = exponential_approximation_polynomial(
+        degree,
+        beta=beta,
+        num_points=num_points,
+    )
+    report = _template_quality_report(
+        lambda x: _exponential_target(x, beta),
+        coeffs,
+        num_points=num_points,
+        bounded_num_points=bounded_num_points,
+    )
+    report.update(
+        {
+            "builder": "exponential_approximation_polynomial",
+            "beta": float(beta),
+            "degree": int(degree),
+        }
+    )
+    return report
 
 
 __all__ = [
+    "inverse_like_diagnostics",
+    "sign_approximation_diagnostics",
+    "soft_threshold_filter_diagnostics",
+    "sqrt_approximation_diagnostics",
+    "exponential_approximation_diagnostics",
     "inverse_like_polynomial",
     "sign_approximation_polynomial",
     "soft_threshold_filter_polynomial",

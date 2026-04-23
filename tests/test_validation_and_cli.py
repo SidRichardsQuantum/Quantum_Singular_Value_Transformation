@@ -127,3 +127,25 @@ def test_cli_cheb_command_emits_json(capsys):
         "x": 0.5,
         "value": -1.0,
     }
+
+
+def test_cli_design_report_emits_json(capsys):
+    main(["design-report", "--kind", "sign", "--gamma", "0.2", "--degree", "13"])
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["mode"] == "design-report"
+    assert payload["kind"] == "sign"
+    assert payload["builder"] == "design_sign_polynomial"
+    assert payload["max_error"] >= 0.0
+    assert payload["bounded_margin"] >= -1e-8
+
+
+def test_cli_template_report_emits_json(capsys):
+    main(["template-report", "--kind", "inverse", "--degree", "7", "--mu", "0.3"])
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["mode"] == "template-report"
+    assert payload["kind"] == "inverse"
+    assert payload["builder"] == "inverse_like_polynomial"
+    assert payload["max_error"] >= 0.0
+    assert payload["bounded_margin"] >= -1e-8

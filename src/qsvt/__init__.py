@@ -21,20 +21,20 @@ from importlib.metadata import PackageNotFoundError, version as _pkg_version
 
 from .design import (
     design_filter_polynomial,
+    design_filter_diagnostics,
     design_inverse_polynomial,
+    design_inverse_diagnostics,
     design_power_polynomial,
+    design_power_diagnostics,
     design_projector_polynomial,
+    design_projector_diagnostics,
     design_sign_polynomial,
+    design_sign_diagnostics,
     design_sqrt_polynomial,
-)
-from .templates import (
-    exponential_approximation_polynomial,
-    inverse_like_polynomial,
-    sign_approximation_polynomial,
-    soft_threshold_filter_polynomial,
-    sqrt_approximation_polynomial,
+    design_sqrt_diagnostics,
 )
 from .approximation import (
+    approximation_quality_report,
     chebyshev_approximant,
     chebyshev_eval,
     chebyshev_fit_function,
@@ -44,6 +44,18 @@ from .approximation import (
     sample_approximation,
     scale_from_chebyshev_domain,
     scale_to_chebyshev_domain,
+)
+from .templates import (
+    exponential_approximation_polynomial,
+    exponential_approximation_diagnostics,
+    inverse_like_polynomial,
+    inverse_like_diagnostics,
+    sign_approximation_polynomial,
+    sign_approximation_diagnostics,
+    soft_threshold_filter_polynomial,
+    soft_threshold_filter_diagnostics,
+    sqrt_approximation_polynomial,
+    sqrt_approximation_diagnostics,
 )
 from .matrices import (
     diagonal_matrix,
@@ -102,6 +114,7 @@ except PackageNotFoundError:  # pragma: no cover
 
 __all__ = [
     "__version__",
+    "approximation_quality_report",
     "chebyshev_approximant",
     "chebyshev_eval",
     "chebyshev_fit_function",
@@ -114,10 +127,15 @@ __all__ = [
     "diagonal_matrix",
     "embed_vector",
     "exponential_approximation_polynomial",
+    "exponential_approximation_diagnostics",
     "inverse_like_polynomial",
+    "inverse_like_diagnostics",
     "sign_approximation_polynomial",
+    "sign_approximation_diagnostics",
     "soft_threshold_filter_polynomial",
+    "soft_threshold_filter_diagnostics",
     "sqrt_approximation_polynomial",
+    "sqrt_approximation_diagnostics",
     "hermitian_from_eigendecomposition",
     "identity",
     "involutory_diagonal",
@@ -125,11 +143,17 @@ __all__ = [
     "pauli_x",
     "pauli_z",
     "design_filter_polynomial",
+    "design_filter_diagnostics",
     "design_inverse_polynomial",
+    "design_inverse_diagnostics",
     "design_power_polynomial",
+    "design_power_diagnostics",
     "design_projector_polynomial",
+    "design_projector_diagnostics",
     "design_sign_polynomial",
+    "design_sign_diagnostics",
     "design_sqrt_polynomial",
+    "design_sqrt_diagnostics",
     "rotated_diagonal",
     "rotation",
     "chebyshev_t",

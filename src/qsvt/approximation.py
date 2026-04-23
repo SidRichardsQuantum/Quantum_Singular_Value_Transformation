@@ -458,6 +458,103 @@ def sample_approximation(
     return xs, ys_true, ys_approx
 
 
+def approximation_quality_report(
+    func: Callable[[np.ndarray], np.ndarray | float],
+    approx: Callable[[np.ndarray], np.ndarray | float],
+    domain: tuple[float, float] = (-1.0, 1.0),
+    num_points: int = 1000,
+    bound: float = 1.0,
+    *,
+    bounded_domain: tuple[float, float] | None = None,
+    bounded_num_points: int | None = None,
+    coeffs: Iterable[float] | None = None,
+) -> dict[str, object]:
+    """
+    Build a compact approximation-quality report for a sampled polynomial fit.
+
+    The report includes sampled target/polynomial values, fit error statistics,
+    and a boundedness check on a second interval. By default the fit and
+    boundedness domains are the same, but callers can request a broader
+    boundedness interval while measuring fit error on a smaller design window.
+
+    Parameters
+    ----------
+    func
+        Target function.
+    approx
+        Approximation function.
+    domain
+        Interval on which to measure approximation error.
+    num_points
+        Number of sample points used for the error estimate.
+    bound
+        Absolute-value bound used when computing the boundedness margin.
+    bounded_domain
+        Optional interval on which to assess boundedness. Defaults to `domain`.
+    bounded_num_points
+        Optional grid size for the boundedness check. Defaults to `num_points`.
+    coeffs
+        Optional coefficient array to include in the returned report.
+
+    Returns
+    -------
+    dict[str, object]
+        A dictionary containing sampled values and summary metrics.
+    """
+    domain = _validate_domain(domain)
+    num_points = _validate_num_points(num_points)
+
+    if bounded_domain is None:
+        bounded_domain = domain
+    bounded_domain = _validate_domain(bounded_domain)
+
+    if bounded_num_points is None:
+        bounded_num_points = num_points
+    bounded_num_points = _validate_num_points(
+        bounded_num_points,
+        name="bounded_num_points",
+    )
+
+    xs, ys_true, ys_approx = sample_approximation(
+        func,
+        approx,
+        domain=domain,
+        num_points=num_points,
+    )
+    errors = ys_true - ys_approx
+    abs_errors = np.abs(errors)
+
+    bounded_xs = np.linspace(bounded_domain[0], bounded_domain[1], bounded_num_points)
+    bounded_values = np.asarray(approx(bounded_xs), dtype=float)
+    max_abs_value = float(np.max(np.abs(bounded_values)))
+
+    report: dict[str, object] = {
+        "domain": domain,
+        "fit_domain": domain,
+        "num_points": num_points,
+        "fit_num_points": num_points,
+        "bounded_domain": bounded_domain,
+        "bounded_num_points": bounded_num_points,
+        "bound": float(bound),
+        "xs": xs,
+        "target_values": ys_true,
+        "polynomial_values": ys_approx,
+        "errors": errors,
+        "max_error": float(np.max(abs_errors)),
+        "rms_error": float(np.sqrt(np.mean(errors**2))),
+        "bounded_xs": bounded_xs,
+        "bounded_polynomial_values": bounded_values,
+        "max_abs_value": max_abs_value,
+        "bounded_margin": float(bound - max_abs_value),
+        "is_bounded": bool(max_abs_value <= float(bound) + 1e-12),
+    }
+
+    if coeffs is not None:
+        report["coeffs"] = np.asarray(list(coeffs), dtype=float)
+
+    return report
+
+
 __all__ = [
     "scale_to_chebyshev_domain",
     "scale_from_chebyshev_domain",
@@ -468,4 +565,5 @@ __all__ = [
     "rms_error",
     "fit_and_build_approximant",
     "sample_approximation",
+    "approximation_quality_report",
 ]

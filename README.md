@@ -30,8 +30,8 @@ PyPI package: [https://pypi.org/project/qsvt-pennylane/](https://pypi.org/projec
 
 This repository combines:
 
-• a **notebook-first introduction** to QSVT
-• a reusable **Python package** for bounded polynomial transforms
+- a **notebook-first introduction** to QSVT
+- a reusable **Python package** for bounded polynomial transforms
 
 The focus is on **spectral intuition**:
 
@@ -172,6 +172,7 @@ Ready-to-use bounded polynomial families:
 - soft threshold filters
 - sqrt approximations
 - exponential weighting functions
+- approximation-quality reports
 
 Useful for quick experiments.
 
@@ -189,6 +190,7 @@ Task-oriented polynomial builders:
 - sqrt approximations
 - power-law transforms
 - smooth spectral filters
+- approximation-quality reports
 
 Designed for reusable QSVT workflows.
 
@@ -242,6 +244,9 @@ Full documentation:
 - Usage guide: [USAGE.md](USAGE.md)
 - API reference: [docs/qsvt/api_reference.md](docs/qsvt/api_reference.md)
 - Package index: [docs/qsvt/index.md](docs/qsvt/index.md)
+- Changelog: [CHANGELOG.md](CHANGELOG.md)
+
+Current release: `0.1.5`
 
 ---
 
@@ -281,7 +286,14 @@ qsvt diag \
   --wires 3
 
 qsvt cheb --degree 3 --x 0.5
+
+qsvt design-report --kind sign --gamma 0.2 --degree 13
+
+qsvt template-report --kind inverse --degree 7 --mu 0.3
 ```
+
+The report commands print the same JSON diagnostics used by the Python
+helpers, including fit error and boundedness information.
 
 ---
 

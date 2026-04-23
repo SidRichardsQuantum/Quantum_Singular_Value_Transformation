@@ -10,6 +10,9 @@ The package provides small, explicit utilities for:
 - applying classical spectral matrix functions
 - extracting explicit QSVT transforms using `qml.qsvt`
 - comparing classical polynomial transforms with QSVT outputs
+- building task-oriented polynomial designs
+- reusing ready-made polynomial templates
+- reporting fit error and boundedness for polynomial builders
 
 The repository also includes a sequence of notebooks that introduce QSVT concepts step-by-step.
 
@@ -27,7 +30,7 @@ Mathematical background and conceptual overview:
 - inverse-like behaviour via bounded polynomials
 - projectors and sign functions
 
-See: [Theory](THEORY.md)
+See: [Theory](../../THEORY.md)
 
 ---
 
@@ -40,9 +43,7 @@ Detailed reference for the Python package:
 - input and output conventions
 - minimal usage examples
 
-See:
-
-api_reference.md
+See: [API reference](api_reference.md)
 
 ---
 
@@ -55,8 +56,10 @@ qsvt
 ├── approximation.py
 ├── matrices.py
 ├── spectral.py
+├── design.py
+├── templates.py
 ├── qsvt.py
-└── **main**.py
+└── __main__.py
 
 ```
 
@@ -68,6 +71,8 @@ Each module is intentionally small and focused:
 | `approximation` | bounded polynomial approximation tools |
 | `matrices` | small Hermitian test matrices |
 | `spectral` | classical spectral matrix functions |
+| `design` | task-oriented bounded polynomial builders |
+| `templates` | ready-made bounded polynomial families |
 | `qsvt` | PennyLane QSVT wrappers |
 | `__main__` | command line interface |
 
