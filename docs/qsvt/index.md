@@ -145,6 +145,10 @@ qsvt compare-report \
   --poly "0,0,1" \
   --wires 3
 
+qsvt matrix-report \
+  --matrix "0.31351701,-0.23499807;-0.23499807,0.68648299" \
+  --poly "0,0,1"
+
 qsvt apply-design \
   --kind sign \
   --values="-0.8,-0.3,0.3,0.8" \

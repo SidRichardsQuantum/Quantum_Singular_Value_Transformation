@@ -17,6 +17,8 @@ and demonstration of core functionality:
     python -m qsvt compatibility-report --poly "0,0,1"
     python -m qsvt design-compatibility --kind sign --degree 13 --gamma 0.2
     python -m qsvt compare-report --values "1.0,0.7,0.3,0.1" --poly "0,0,1"
+    python -m qsvt matrix-report --matrix "0.3135,-0.235;-0.235,0.6865" \
+        --poly "0,0,1"
     python -m qsvt apply-design --kind sign --values="-0.8,-0.3,0.3,0.8" \
         --degree 13
 
@@ -48,6 +50,7 @@ from .polynomials import chebyshev_t, eval_polynomial
 from .qsvt import (
     compare_qsvt_vs_classical_diagonal,
     qsvt_compatibility_report,
+    qsvt_matrix_transform_report,
     qsvt_scalar_output,
     qsvt_transform_report,
 )
@@ -77,6 +80,25 @@ def _parse_poly(text: str) -> list[float]:
     "0,0,1"
     """
     return _parse_float_list(text)
+
+
+def _parse_matrix(text: str) -> list[list[float]]:
+    """
+    Parse a semicolon-separated matrix.
+
+    Example
+    -------
+    "0.5,0.1;0.1,0.3"
+    """
+    rows = [_parse_float_list(row) for row in text.split(";") if row.strip()]
+    if not rows:
+        raise ValueError("matrix must contain at least one row.")
+
+    width = len(rows[0])
+    if width == 0 or any(len(row) != width for row in rows):
+        raise ValueError("matrix rows must all have the same nonzero length.")
+
+    return rows
 
 
 def cmd_scalar(args: argparse.Namespace) -> dict:
@@ -261,6 +283,20 @@ def cmd_compare_report(args: argparse.Namespace) -> dict:
 
     return qsvt_transform_report(
         values,
+        poly,
+        encoding_wires=list(range(args.wires)),
+    )
+
+
+def cmd_matrix_report(args: argparse.Namespace) -> dict:
+    """
+    Build a QSVT-vs-classical transform report for a full Hermitian matrix.
+    """
+    matrix = _parse_matrix(args.matrix)
+    poly = _parse_poly(args.poly)
+
+    return qsvt_matrix_transform_report(
+        matrix,
         poly,
         encoding_wires=list(range(args.wires)),
     )
@@ -551,6 +587,35 @@ def build_parser() -> argparse.ArgumentParser:
         help="Optional path for writing the report JSON.",
     )
     p_compare_report.set_defaults(func=cmd_compare_report)
+
+    p_matrix_report = sub.add_parser(
+        "matrix-report",
+        help="Compare QSVT and classical transforms for a Hermitian matrix",
+    )
+    p_matrix_report.add_argument(
+        "--matrix",
+        type=str,
+        required=True,
+        help='Rows separated by semicolons, e.g. "0.5,0.1;0.1,0.3"',
+    )
+    p_matrix_report.add_argument(
+        "--poly",
+        type=str,
+        required=True,
+        help='Polynomial coefficients, e.g. "0,0,1"',
+    )
+    p_matrix_report.add_argument(
+        "--wires",
+        type=int,
+        default=2,
+        help="Number of qubits for block encoding",
+    )
+    p_matrix_report.add_argument(
+        "--output",
+        type=str,
+        help="Optional path for writing the report JSON.",
+    )
+    p_matrix_report.set_defaults(func=cmd_matrix_report)
 
     p_compatibility = sub.add_parser(
         "compatibility-report",

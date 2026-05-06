@@ -610,6 +610,27 @@ print(vals)
 
 ---
 
+### `qsvt_matrix_transform(operator, poly, ...)`
+
+Apply QSVT to a small Hermitian matrix and return the logical matrix block.
+
+When `real_output=True`, this returns the real part of the extracted block,
+which is the matrix compared against the classical spectral polynomial
+reference.
+
+**Example**
+
+```python
+from qsvt.matrices import rotated_diagonal
+from qsvt.qsvt import qsvt_matrix_transform
+
+A = rotated_diagonal([0.2, 0.8], theta=0.45)
+block = qsvt_matrix_transform(A, [0, 0, 1])
+print(block)
+```
+
+---
+
 ### `apply_qsvt_to_embedded_vector(operator, vector, poly, ...)`
 
 Embed a logical vector into the enlarged Hilbert space, apply the full QSVT unitary, and extract the logical output.
@@ -634,6 +655,20 @@ Return a comparison dictionary containing:
 - absolute error
 
 This is useful for smoke tests and validation.
+
+---
+
+### `compare_qsvt_vs_classical_matrix(operator, poly, ...)`
+
+Return a comparison dictionary for a Hermitian matrix containing:
+
+- input matrix
+- QSVT real block
+- QSVT imaginary block
+- classical spectral polynomial matrix
+- absolute error
+
+This is useful for validating non-diagonal block-encoded examples.
 
 ---
 
@@ -686,6 +721,34 @@ report = qsvt_transform_report(
 )
 
 print(report["max_error"])
+```
+
+---
+
+### `qsvt_matrix_transform_report(operator, poly, ...)`
+
+Build a QSVT-vs-classical report for a non-diagonal Hermitian matrix.
+
+The report includes:
+
+- input matrix, eigenvalues, and polynomial coefficients
+- real and imaginary parts of the extracted QSVT logical block
+- classical spectral polynomial matrix `P(A)`
+- absolute error, max error, RMS error, and Frobenius error
+- maximum absolute imaginary block entry
+- `qsvt_succeeded` plus synthesis error details when requested by callers
+- encoding wires, wire order, block-encoding mode, and dimension metadata
+
+Example:
+
+```python
+from qsvt.matrices import rotated_diagonal
+from qsvt.qsvt import qsvt_matrix_transform_report
+
+A = rotated_diagonal([0.2, 0.8], theta=0.45)
+report = qsvt_matrix_transform_report(A, [0, 0, 1])
+
+print(report["max_error"], report["max_imag_abs"])
 ```
 
 ---

@@ -2,6 +2,17 @@
 
 ---
 
+## [0.1.7] – 23rd April 2026
+
+### Changed
+
+- added non-diagonal Hermitian QSVT matrix transform helpers and reports
+- added a `matrix-report` CLI command for comparing extracted QSVT blocks with
+  classical spectral polynomial references
+- fixed default matrix QSVT wire selection for embedding block encodings
+
+---
+
 ## [0.1.6] – 23rd April 2026
 
 ### Changed

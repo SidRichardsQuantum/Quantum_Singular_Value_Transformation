@@ -263,6 +263,50 @@ def test_cli_compare_report_writes_output(tmp_path, capsys):
     assert len(written["qsvt"]) == len(written["classical"])
 
 
+def test_cli_matrix_report_emits_json(capsys):
+    main(
+        [
+            "matrix-report",
+            "--matrix",
+            "0.31351701,-0.23499807;-0.23499807,0.68648299",
+            "--poly",
+            "0,0,1",
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["mode"] == "qsvt-matrix-transform-report"
+    assert payload["qsvt_succeeded"] is True
+    assert payload["polynomial_degree"] == 2
+    assert payload["matrix_dimension"] == 2
+    assert payload["unitary_dimension"] == 4
+    assert payload["max_error"] < 1e-10
+    assert payload["max_imag_abs"] > 0.0
+
+
+def test_cli_matrix_report_writes_output(tmp_path, capsys):
+    output_path = tmp_path / "matrix-report.json"
+
+    main(
+        [
+            "matrix-report",
+            "--matrix",
+            "0.31351701,-0.23499807;-0.23499807,0.68648299",
+            "--poly",
+            "0,0,1",
+            "--output",
+            str(output_path),
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+    written = json.loads(output_path.read_text(encoding="utf-8"))
+
+    assert payload["mode"] == "qsvt-matrix-transform-report"
+    assert written["max_error"] < 1e-10
+    assert len(written["qsvt"]) == len(written["classical"])
+    assert len(written["qsvt_imag"]) == len(written["classical"])
+
+
 def test_cli_compatibility_report_emits_json(capsys):
     main(["compatibility-report", "--poly", "0,0,1"])
     payload = json.loads(capsys.readouterr().out)

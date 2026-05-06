@@ -2,13 +2,18 @@
 
 import numpy as np
 
+from qsvt.matrices import rotated_diagonal
 from qsvt.polynomials import chebyshev_t, polynomial_parity
 from qsvt.qsvt import (
+    compare_qsvt_vs_classical_matrix,
     qsvt_diagonal_transform,
     qsvt_compatibility_report,
+    qsvt_matrix_transform,
+    qsvt_matrix_transform_report,
     qsvt_scalar_output,
     qsvt_transform_report,
 )
+from qsvt.spectral import apply_polynomial_to_hermitian
 
 
 def test_chebyshev_t3_at_half():
@@ -34,6 +39,24 @@ def test_qsvt_diagonal_x_squared():
     assert np.allclose(vals, expected, atol=1e-10)
 
 
+def test_qsvt_matrix_transform_matches_rotated_hermitian_reference():
+    matrix = rotated_diagonal([0.2, 0.8], theta=0.45)
+    qsvt_block = qsvt_matrix_transform(matrix, [0, 0, 1])
+    classical = apply_polynomial_to_hermitian(matrix, [0, 0, 1])
+
+    assert np.allclose(qsvt_block, classical, atol=1e-10)
+
+
+def test_compare_qsvt_vs_classical_matrix_tracks_imaginary_block():
+    matrix = rotated_diagonal([0.2, 0.8], theta=0.45)
+    comparison = compare_qsvt_vs_classical_matrix(matrix, [0, 0, 1])
+
+    assert np.allclose(comparison["qsvt"], comparison["classical"], atol=1e-10)
+    assert np.max(comparison["abs_error"]) < 1e-10
+    assert comparison["qsvt_imag"].shape == matrix.shape
+    assert np.max(np.abs(comparison["qsvt_imag"])) > 0.0
+
+
 def test_qsvt_transform_report_matches_classical_polynomial():
     report = qsvt_transform_report(
         [1.0, 0.7, 0.3, 0.1],
@@ -48,6 +71,21 @@ def test_qsvt_transform_report_matches_classical_polynomial():
     assert np.allclose(report["classical"], [1.0, 0.49, 0.09, 0.01])
     assert np.allclose(report["qsvt"], report["classical"], atol=1e-10)
     assert report["max_error"] < 1e-10
+
+
+def test_qsvt_matrix_transform_report_matches_classical_polynomial():
+    matrix = rotated_diagonal([0.2, 0.8], theta=0.45)
+    report = qsvt_matrix_transform_report(matrix, [0, 0, 1])
+
+    assert report["mode"] == "qsvt-matrix-transform-report"
+    assert report["qsvt_succeeded"] is True
+    assert report["polynomial_degree"] == 2
+    assert report["matrix_dimension"] == 2
+    assert report["unitary_dimension"] == 4
+    assert np.allclose(report["eigenvalues"], [0.2, 0.8])
+    assert np.allclose(report["qsvt"], report["classical"], atol=1e-10)
+    assert report["max_error"] < 1e-10
+    assert report["max_imag_abs"] > 0.0
 
 
 def test_qsvt_compatibility_report_accepts_x_squared():

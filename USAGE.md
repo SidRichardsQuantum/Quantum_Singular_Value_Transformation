@@ -389,6 +389,14 @@ qsvt diag \
   --wires 3
 ```
 
+Non-diagonal Hermitian matrix report:
+
+```bash
+qsvt matrix-report \
+  --matrix "0.31351701,-0.23499807;-0.23499807,0.68648299" \
+  --poly "0,0,1"
+```
+
 Chebyshev evaluation:
 
 ```bash

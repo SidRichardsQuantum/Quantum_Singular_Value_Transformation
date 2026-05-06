@@ -245,6 +245,7 @@ Thin wrappers around PennyLane QSVT:
 
 - scalar QSVT transforms
 - diagonal transforms
+- non-diagonal Hermitian matrix transforms
 - block extraction
 - classical vs QSVT comparisons
 - QSVT transform reports
@@ -261,7 +262,7 @@ Full documentation:
 - Package index: [docs/qsvt/index.md](docs/qsvt/index.md)
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
 
-Current release: `0.1.6`
+Current release: `0.1.7`
 
 ---
 
@@ -321,6 +322,11 @@ qsvt compare-report \
   --poly "0,0,1" \
   --wires 3 \
   --output qsvt-report.json
+
+qsvt matrix-report \
+  --matrix "0.31351701,-0.23499807;-0.23499807,0.68648299" \
+  --poly "0,0,1" \
+  --output matrix-report.json
 
 qsvt apply-design \
   --kind sign \

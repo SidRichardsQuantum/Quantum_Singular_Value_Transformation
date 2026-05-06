@@ -38,6 +38,7 @@ import numpy as np
 import pennylane as qml
 
 from .polynomials import eval_polynomial, polynomial_parity
+from .spectral import apply_polynomial_to_hermitian, eigh_hermitian
 
 
 def _as_numeric_operator(operator: float | np.ndarray) -> float | np.ndarray:
@@ -74,8 +75,8 @@ def _default_wire_order_from_operator(operator: float | np.ndarray) -> list[int]
     Choose a simple default wire order for a scalar or matrix operator.
 
     For scalar examples we use one wire.
-    For an n x n matrix, we choose the smallest number of qubits such that
-    2**num_wires >= n.
+    For an n x n matrix in PennyLane's embedding mode, we choose the smallest
+    number of qubits such that 2**num_wires >= 2*n.
 
     Parameters
     ----------
@@ -91,7 +92,7 @@ def _default_wire_order_from_operator(operator: float | np.ndarray) -> list[int]
         return [0]
 
     n = np.asarray(operator).shape[0]
-    num_wires = max(1, int(np.ceil(np.log2(n))))
+    num_wires = max(1, int(np.ceil(np.log2(2 * n))))
     return list(range(num_wires))
 
 
@@ -451,6 +452,61 @@ def qsvt_diagonal_transform(
     return np.real(transformed).astype(float) if real_output else transformed
 
 
+def qsvt_matrix_transform(
+    operator: np.ndarray,
+    poly: Iterable[float],
+    *,
+    encoding_wires: Iterable[int] | None = None,
+    wire_order: Iterable[int] | None = None,
+    block_encoding: str = "embedding",
+    real_output: bool = True,
+) -> np.ndarray:
+    """
+    Apply QSVT to a small Hermitian matrix and return the logical block.
+
+    This generalizes `qsvt_diagonal_transform` to non-diagonal Hermitian test
+    matrices. PennyLane's QSVT matrix can include convention-dependent complex
+    phases in the extracted block; when `real_output=True`, this returns the
+    real part, which is the matrix compared against the classical spectral
+    polynomial reference in this package's reports.
+
+    Parameters
+    ----------
+    operator
+        Square Hermitian matrix with spectrum in [-1, 1].
+    poly
+        Polynomial coefficients in ascending degree order.
+    encoding_wires
+        Wires used for the QSVT encoding.
+    wire_order
+        Wire order passed to `qml.matrix`.
+    block_encoding
+        PennyLane block-encoding mode.
+    real_output
+        If True, return the real part of the logical block.
+
+    Returns
+    -------
+    numpy.ndarray
+        Logical QSVT block, or its real part.
+
+    Raises
+    ------
+    ValueError
+        If the operator is not a finite Hermitian matrix with spectrum in
+        [-1, 1].
+    """
+    A = _validate_hermitian_qsvt_matrix(operator)
+    block = qsvt_top_left_block(
+        A,
+        poly,
+        encoding_wires=encoding_wires,
+        wire_order=wire_order,
+        block_encoding=block_encoding,
+    )
+    return np.real(block).astype(float) if real_output else block
+
+
 def apply_qsvt_to_embedded_vector(
     operator: np.ndarray,
     vector: Iterable[float | complex],
@@ -608,6 +664,61 @@ def compare_qsvt_vs_classical_diagonal(
     }
 
 
+def compare_qsvt_vs_classical_matrix(
+    operator: np.ndarray,
+    poly: Iterable[float],
+    *,
+    encoding_wires: Iterable[int] | None = None,
+    wire_order: Iterable[int] | None = None,
+    block_encoding: str = "embedding",
+) -> dict[str, np.ndarray]:
+    """
+    Compare a non-diagonal QSVT block against a classical spectral polynomial.
+
+    Parameters
+    ----------
+    operator
+        Square Hermitian matrix with spectrum in [-1, 1].
+    poly
+        Polynomial coefficients in ascending degree order.
+    encoding_wires
+        Wires used for the QSVT encoding.
+    wire_order
+        Wire order passed to `qml.matrix`.
+    block_encoding
+        PennyLane block-encoding mode.
+
+    Returns
+    -------
+    dict[str, numpy.ndarray]
+        Dictionary with keys:
+        - "input"
+        - "qsvt"
+        - "qsvt_imag"
+        - "classical"
+        - "abs_error"
+    """
+    A = _validate_hermitian_qsvt_matrix(operator)
+    block = qsvt_matrix_transform(
+        A,
+        poly,
+        encoding_wires=encoding_wires,
+        wire_order=wire_order,
+        block_encoding=block_encoding,
+        real_output=False,
+    )
+    qsvt_real = np.real(block).astype(float)
+    classical = apply_polynomial_to_hermitian(A, poly)
+
+    return {
+        "input": A,
+        "qsvt": qsvt_real,
+        "qsvt_imag": np.imag(block).astype(float),
+        "classical": classical,
+        "abs_error": np.abs(qsvt_real - classical),
+    }
+
+
 def qsvt_transform_report(
     diagonal: Iterable[float],
     poly: Iterable[float],
@@ -709,6 +820,119 @@ def qsvt_transform_report(
             "abs_error": abs_error,
             "max_error": float(np.max(abs_error)),
             "rms_error": float(np.sqrt(np.mean(abs_error**2))),
+        }
+    )
+    return report
+
+
+def qsvt_matrix_transform_report(
+    operator: np.ndarray,
+    poly: Iterable[float],
+    *,
+    encoding_wires: Iterable[int] | None = None,
+    wire_order: Iterable[int] | None = None,
+    block_encoding: str = "embedding",
+    allow_qsvt_failure: bool = False,
+) -> dict[str, object]:
+    """
+    Build a report comparing a non-diagonal QSVT block with P(A).
+
+    The input matrix must be finite, Hermitian/symmetric, and have eigenvalues
+    in [-1, 1]. The classical reference is computed spectrally as P(A).
+
+    Parameters
+    ----------
+    operator
+        Square Hermitian matrix with spectrum in [-1, 1].
+    poly
+        Polynomial coefficients in ascending degree order.
+    encoding_wires
+        Wires used for the QSVT encoding.
+    wire_order
+        Wire order passed to `qml.matrix`.
+    block_encoding
+        PennyLane block-encoding mode.
+    allow_qsvt_failure
+        If True, return a report with classical values and synthesis error
+        details when PennyLane cannot synthesize the QSVT transform.
+
+    Returns
+    -------
+    dict[str, object]
+        Report containing the input matrix, eigenvalues, coefficients, QSVT
+        real block, QSVT imaginary block, classical P(A), error metrics, and
+        basic wire/dimension metadata.
+    """
+    A = _validate_hermitian_qsvt_matrix(operator)
+    coeffs = np.asarray(list(poly), dtype=float)
+
+    if coeffs.ndim != 1 or coeffs.size == 0:
+        raise ValueError("poly must contain at least one coefficient.")
+    if not np.all(np.isfinite(coeffs)):
+        raise ValueError("polynomial coefficients must be finite.")
+
+    eigenvalues, _ = eigh_hermitian(A)
+    if encoding_wires is None:
+        encoding_wires = _default_wire_order_from_operator(A)
+    enc, order = _validate_wire_inputs(encoding_wires, wire_order)
+
+    classical = apply_polynomial_to_hermitian(A, coeffs)
+
+    report: dict[str, object] = {
+        "mode": "qsvt-matrix-transform-report",
+        "input": A,
+        "eigenvalues": eigenvalues,
+        "poly": coeffs,
+        "classical": classical,
+        "encoding_wires": enc,
+        "wire_order": order,
+        "block_encoding": block_encoding,
+        "matrix_dimension": int(A.shape[0]),
+        "unitary_dimension": int(2 ** len(order)),
+        "polynomial_degree": int(coeffs.size - 1),
+    }
+
+    try:
+        block = qsvt_matrix_transform(
+            A,
+            coeffs,
+            encoding_wires=enc,
+            wire_order=order,
+            block_encoding=block_encoding,
+            real_output=False,
+        )
+    except Exception as exc:
+        if not allow_qsvt_failure:
+            raise
+        report.update(
+            {
+                "qsvt_succeeded": False,
+                "qsvt": None,
+                "qsvt_imag": None,
+                "abs_error": None,
+                "max_error": None,
+                "rms_error": None,
+                "frobenius_error": None,
+                "max_imag_abs": None,
+                "qsvt_error_type": type(exc).__name__,
+                "qsvt_error": str(exc),
+            }
+        )
+        return report
+
+    qsvt_real = np.real(block).astype(float)
+    qsvt_imag = np.imag(block).astype(float)
+    abs_error = np.abs(qsvt_real - classical)
+    report.update(
+        {
+            "qsvt_succeeded": True,
+            "qsvt": qsvt_real,
+            "qsvt_imag": qsvt_imag,
+            "abs_error": abs_error,
+            "max_error": float(np.max(abs_error)),
+            "rms_error": float(np.sqrt(np.mean(abs_error**2))),
+            "frobenius_error": float(np.linalg.norm(qsvt_real - classical)),
+            "max_imag_abs": float(np.max(np.abs(qsvt_imag))),
         }
     )
     return report
@@ -838,6 +1062,24 @@ def qsvt_compatibility_report(
     return report
 
 
+def _validate_hermitian_qsvt_matrix(operator: np.ndarray) -> np.ndarray:
+    """
+    Validate a finite Hermitian matrix for small QSVT matrix workflows.
+    """
+    if np.isscalar(operator):
+        raise ValueError("operator must be a square Hermitian matrix, not a scalar.")
+
+    A = _as_numeric_operator(operator)
+    if not np.all(np.isfinite(A)):
+        raise ValueError("operator entries must be finite.")
+
+    eigenvalues, _ = eigh_hermitian(A)
+    if np.max(np.abs(eigenvalues)) > 1.0 + 1e-12:
+        raise ValueError("QSVT matrix eigenvalues must lie in [-1, 1].")
+
+    return A
+
+
 __all__ = [
     "qsvt_operator",
     "qsvt_unitary",
@@ -845,9 +1087,12 @@ __all__ = [
     "qsvt_scalar_output",
     "qsvt_scalar_scan",
     "qsvt_diagonal_transform",
+    "qsvt_matrix_transform",
     "apply_qsvt_to_embedded_vector",
     "classical_diagonal_polynomial_transform",
     "compare_qsvt_vs_classical_diagonal",
+    "compare_qsvt_vs_classical_matrix",
     "qsvt_compatibility_report",
     "qsvt_transform_report",
+    "qsvt_matrix_transform_report",
 ]
