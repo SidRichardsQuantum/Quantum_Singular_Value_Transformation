@@ -24,9 +24,11 @@
 
 </p>
 
-Lightweight tools for experimenting with **Quantum Singular Value Transformation (QSVT)** using PennyLane.
+**PyPI:** [https://pypi.org/project/qsvt-pennylane/](https://pypi.org/project/qsvt-pennylane/)
 
-PyPI package: [https://pypi.org/project/qsvt-pennylane/](https://pypi.org/project/qsvt-pennylane/)
+**Website:** [https://SidRichardsQuantum.github.io/Quantum_Singular_Value_Transformation/](https://SidRichardsQuantum.github.io/Quantum_Singular_Value_Transformation/)
+
+Lightweight tools for experimenting with **Quantum Singular Value Transformation (QSVT)** using PennyLane.
 
 This repository combines:
 

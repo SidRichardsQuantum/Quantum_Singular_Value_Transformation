@@ -62,6 +62,12 @@ dev = [
   "jupytext",
 ]
 
+docs = [
+  "sphinx",
+  "furo",
+  "myst-parser",
+]
+
 release = [
   "build",
   "twine",
