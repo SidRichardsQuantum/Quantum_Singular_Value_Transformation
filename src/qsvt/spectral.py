@@ -7,8 +7,8 @@ Spectral matrix-function utilities for small Hermitian test problems.
 This module provides lightweight helpers for applying scalar functions to the
 spectrum of a Hermitian matrix. The core viewpoint is:
 
-    A = V diag(lambda) V^T
-    f(A) = V diag(f(lambda)) V^T
+    A = V diag(lambda) V^dagger
+    f(A) = V diag(f(lambda)) V^dagger
 
 These routines are intended for:
 
@@ -16,7 +16,7 @@ These routines are intended for:
 - validating spectral transforms on small matrices
 - illustrating matrix functions such as powers, roots, filters, and sign maps
 
-All routines assume real symmetric / Hermitian inputs and return NumPy arrays.
+All routines assume Hermitian inputs and return NumPy arrays.
 """
 
 from __future__ import annotations
@@ -24,6 +24,24 @@ from __future__ import annotations
 from collections.abc import Callable, Iterable
 
 import numpy as np
+
+
+def _as_hermitian_matrix(matrix: np.ndarray) -> np.ndarray:
+    """
+    Normalize and validate a Hermitian matrix input.
+
+    Real symmetric and complex Hermitian matrices are both accepted.
+    """
+    A = np.asarray(matrix)
+
+    if A.ndim != 2 or A.shape[0] != A.shape[1]:
+        raise ValueError("matrix must be a square 2D array.")
+
+    if not np.allclose(A, A.conj().T, atol=1e-10, rtol=1e-10):
+        raise ValueError("matrix must be Hermitian / symmetric.")
+
+    dtype = complex if np.iscomplexobj(A) else float
+    return A.astype(dtype, copy=False)
 
 
 def eigh_hermitian(matrix: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
@@ -46,14 +64,7 @@ def eigh_hermitian(matrix: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     ValueError
         If the input is not square or not Hermitian within numerical tolerance.
     """
-    A = np.asarray(matrix, dtype=float)
-
-    if A.ndim != 2 or A.shape[0] != A.shape[1]:
-        raise ValueError("matrix must be a square 2D array.")
-
-    if not np.allclose(A, A.T, atol=1e-10, rtol=1e-10):
-        raise ValueError("matrix must be Hermitian / symmetric.")
-
+    A = _as_hermitian_matrix(matrix)
     evals, evecs = np.linalg.eigh(A)
     return evals, evecs
 
@@ -83,7 +94,7 @@ def matrix_from_eigendecomposition(
         If dimensions are inconsistent.
     """
     vals = np.asarray(list(eigenvalues), dtype=float)
-    vecs = np.asarray(eigenvectors, dtype=float)
+    vecs = np.asarray(eigenvectors)
 
     if vecs.ndim != 2 or vecs.shape[0] != vecs.shape[1]:
         raise ValueError("eigenvectors must be a square 2D array.")
@@ -91,7 +102,7 @@ def matrix_from_eigendecomposition(
     if len(vals) != vecs.shape[0]:
         raise ValueError("Mismatch between number of eigenvalues and matrix size.")
 
-    return vecs @ np.diag(vals) @ vecs.T
+    return vecs @ np.diag(vals) @ vecs.conj().T
 
 
 def apply_function_to_hermitian(
@@ -103,11 +114,11 @@ def apply_function_to_hermitian(
 
     If
 
-        A = V diag(lambda) V^T,
+        A = V diag(lambda) V^dagger,
 
     then this routine returns
 
-        f(A) = V diag(f(lambda)) V^T.
+        f(A) = V diag(f(lambda)) V^dagger.
 
     Parameters
     ----------
@@ -130,12 +141,12 @@ def apply_function_to_hermitian(
            [0.  , 0.64]])
     """
     evals, evecs = eigh_hermitian(matrix)
-    transformed = np.asarray(func(evals), dtype=float)
+    transformed = np.asarray(func(evals))
 
     if transformed.shape != evals.shape:
         raise ValueError("func must return values with the same shape as eigenvalues.")
 
-    return evecs @ np.diag(transformed) @ evecs.T
+    return evecs @ np.diag(transformed) @ evecs.conj().T
 
 
 def apply_polynomial_to_hermitian(
@@ -239,7 +250,7 @@ def matrix_fractional_power(
         )
 
     transformed = np.power(np.clip(evals, 0.0, None), power)
-    return evecs @ np.diag(transformed) @ evecs.T
+    return evecs @ np.diag(transformed) @ evecs.conj().T
 
 
 def matrix_square_root(matrix: np.ndarray) -> np.ndarray:
@@ -287,7 +298,7 @@ def matrix_sign(matrix: np.ndarray, zero_tol: float = 1e-12) -> np.ndarray:
     signed[evals > zero_tol] = 1.0
     signed[evals < -zero_tol] = -1.0
 
-    return evecs @ np.diag(signed) @ evecs.T
+    return evecs @ np.diag(signed) @ evecs.conj().T
 
 
 def spectral_projector_positive(
@@ -314,7 +325,7 @@ def spectral_projector_positive(
     """
     evals, evecs = eigh_hermitian(matrix)
     mask = (evals > zero_tol).astype(float)
-    return evecs @ np.diag(mask) @ evecs.T
+    return evecs @ np.diag(mask) @ evecs.conj().T
 
 
 def spectral_projector_negative(
@@ -339,7 +350,7 @@ def spectral_projector_negative(
     """
     evals, evecs = eigh_hermitian(matrix)
     mask = (evals < -zero_tol).astype(float)
-    return evecs @ np.diag(mask) @ evecs.T
+    return evecs @ np.diag(mask) @ evecs.conj().T
 
 
 def positive_projector_from_sign(
@@ -369,9 +380,9 @@ def positive_projector_from_sign(
     numpy.ndarray
         Sign-based positive projector surrogate.
     """
-    A = np.asarray(matrix, dtype=float)
+    A = _as_hermitian_matrix(matrix)
     sign_A = matrix_sign(A, zero_tol=zero_tol)
-    return 0.5 * (np.eye(A.shape[0], dtype=float) + sign_A)
+    return 0.5 * (np.eye(A.shape[0], dtype=sign_A.dtype) + sign_A)
 
 
 def negative_projector_from_sign(
@@ -396,9 +407,9 @@ def negative_projector_from_sign(
     numpy.ndarray
         Sign-based negative projector surrogate.
     """
-    A = np.asarray(matrix, dtype=float)
+    A = _as_hermitian_matrix(matrix)
     sign_A = matrix_sign(A, zero_tol=zero_tol)
-    return 0.5 * (np.eye(A.shape[0], dtype=float) - sign_A)
+    return 0.5 * (np.eye(A.shape[0], dtype=sign_A.dtype) - sign_A)
 
 
 def transformed_eigenvalues(
@@ -421,7 +432,7 @@ def transformed_eigenvalues(
         Transformed eigenvalues.
     """
     evals, _ = eigh_hermitian(matrix)
-    transformed = np.asarray(func(evals), dtype=float)
+    transformed = np.asarray(func(evals))
 
     if transformed.shape != evals.shape:
         raise ValueError("func must return values with the same shape as eigenvalues.")

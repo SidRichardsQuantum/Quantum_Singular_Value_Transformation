@@ -34,6 +34,27 @@ def test_report_to_jsonable_converts_numpy_values():
     json.dumps(payload)
 
 
+def test_report_to_jsonable_converts_complex_values():
+    report = {
+        "matrix": np.array([[1 + 2j, 0 - 1j], [0 + 1j, 3 + 0j]]),
+        "value": np.complex128(0.5 + 0.25j),
+    }
+
+    payload = report_to_jsonable(report)
+
+    assert payload == {
+        "matrix": {
+            "real": [[1.0, 0.0], [0.0, 3.0]],
+            "imag": [[2.0, -1.0], [1.0, 0.0]],
+        },
+        "value": {
+            "real": 0.5,
+            "imag": 0.25,
+        },
+    }
+    json.dumps(payload)
+
+
 def test_save_and_load_report_round_trip(tmp_path):
     report = design_sign_diagnostics(
         gamma=0.2,

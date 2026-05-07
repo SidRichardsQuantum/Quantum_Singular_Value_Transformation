@@ -75,9 +75,10 @@ The report contains:
 
 ## Non-diagonal matrix workflow
 
-For small Hermitian matrices, use `qsvt_matrix_transform_report`. The report
-extracts the logical QSVT block and compares its real part with the classical
-spectral polynomial reference `P(A)`.
+For small Hermitian matrices, use `qsvt_matrix_transform_report`. For
+real-symmetric inputs, the report compares the real part of the logical QSVT
+block against the classical spectral polynomial reference `P(A)`. For complex
+Hermitian inputs, it compares the full complex block directly.
 
 ```python
 from qsvt.matrices import rotated_diagonal
@@ -101,15 +102,16 @@ The matrix report includes the diagonal report fields that still apply, plus:
 | --- | --- |
 | `input` | Hermitian input matrix |
 | `eigenvalues` | eigenvalues used to validate the QSVT domain |
-| `qsvt` | real part of the extracted logical QSVT block |
+| `qsvt` | comparison-ready QSVT block: real part for real inputs, full complex block for complex Hermitian inputs |
 | `qsvt_imag` | imaginary part of the extracted logical QSVT block |
 | `classical` | classical spectral polynomial matrix `P(A)` |
+| `comparison_basis` | whether the report compares `real_part` or `full_complex` QSVT data |
 | `frobenius_error` | Frobenius norm of `qsvt - classical` |
 | `max_imag_abs` | maximum absolute imaginary entry in the extracted QSVT block |
 
 `max_imag_abs` is reported because PennyLane's QSVT convention can leave
 complex phases in the extracted block even when the real part matches the
-classical Hermitian polynomial reference.
+classical Hermitian polynomial reference for real-symmetric inputs.
 
 ## CLI workflow
 
@@ -129,6 +131,10 @@ qsvt matrix-report \
   --poly "0,0,1" \
   --output matrix-report.json
 ```
+
+When `--output` is used, the CLI writes the full JSON report to disk and
+prints a compact write summary to stdout. Add `--print-report` to also emit
+the full JSON payload on stdout.
 
 For a designed polynomial:
 

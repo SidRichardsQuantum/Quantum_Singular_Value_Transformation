@@ -185,6 +185,8 @@ def test_cli_design_report_writes_output_and_plot(tmp_path, capsys):
     written = json.loads(output_path.read_text(encoding="utf-8"))
 
     assert payload["mode"] == "design-report"
+    assert payload["report_written"] is True
+    assert payload["plot_written"] is True
     assert written["builder"] == "design_sign_polynomial"
     assert plot_path.exists()
     assert plot_path.stat().st_size > 0
@@ -214,6 +216,8 @@ def test_cli_template_report_writes_output(tmp_path, capsys):
     written = json.loads(output_path.read_text(encoding="utf-8"))
 
     assert payload["mode"] == "template-report"
+    assert payload["report_written"] is True
+    assert payload["plot_written"] is False
     assert written["builder"] == "inverse_like_polynomial"
     assert len(written["xs"]) == 51
 
@@ -259,6 +263,7 @@ def test_cli_compare_report_writes_output(tmp_path, capsys):
     written = json.loads(output_path.read_text(encoding="utf-8"))
 
     assert payload["mode"] == "qsvt-transform-report"
+    assert payload["report_written"] is True
     assert written["max_error"] < 1e-10
     assert len(written["qsvt"]) == len(written["classical"])
 
@@ -284,6 +289,23 @@ def test_cli_matrix_report_emits_json(capsys):
     assert payload["max_imag_abs"] > 0.0
 
 
+def test_cli_matrix_report_supports_complex_hermitian_inputs(capsys):
+    main(
+        [
+            "matrix-report",
+            "--matrix",
+            "0,0.2j;-0.2j,0",
+            "--poly",
+            "0,1",
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["mode"] == "qsvt-matrix-transform-report"
+    assert payload["comparison_basis"] == "full_complex"
+    assert payload["max_error"] < 1e-6
+
+
 def test_cli_matrix_report_writes_output(tmp_path, capsys):
     output_path = tmp_path / "matrix-report.json"
 
@@ -302,9 +324,29 @@ def test_cli_matrix_report_writes_output(tmp_path, capsys):
     written = json.loads(output_path.read_text(encoding="utf-8"))
 
     assert payload["mode"] == "qsvt-matrix-transform-report"
+    assert payload["report_written"] is True
     assert written["max_error"] < 1e-10
     assert len(written["qsvt"]) == len(written["classical"])
     assert len(written["qsvt_imag"]) == len(written["classical"])
+
+
+def test_cli_report_can_still_print_full_payload_with_output(tmp_path, capsys):
+    output_path = tmp_path / "compatibility-report.json"
+
+    main(
+        [
+            "compatibility-report",
+            "--poly",
+            "0,0,1",
+            "--output",
+            str(output_path),
+            "--print-report",
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["mode"] == "qsvt-compatibility-report"
+    assert payload["compatible"] is True
 
 
 def test_cli_compatibility_report_emits_json(capsys):

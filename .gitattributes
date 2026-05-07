@@ -19,6 +19,7 @@
 
 dist/ export-ignore
 build/ export-ignore
+docs/_build/ export-ignore
 *.egg-info/ export-ignore
 .pytest_cache/ export-ignore
 .ruff_cache/ export-ignore

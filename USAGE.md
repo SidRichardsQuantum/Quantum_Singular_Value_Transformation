@@ -397,11 +397,23 @@ qsvt matrix-report \
   --poly "0,0,1"
 ```
 
+Complex Hermitian matrix report:
+
+```bash
+qsvt matrix-report \
+  --matrix "0,0.2j;-0.2j,0" \
+  --poly "0,1"
+```
+
 Chebyshev evaluation:
 
 ```bash
 qsvt cheb --degree 3 --x 0.5
 ```
+
+When a report command is given `--output` or `--plot`, it writes the full
+artifact to disk and prints a compact summary to stdout. Add `--print-report`
+to also emit the full JSON payload on stdout.
 
 ---
 

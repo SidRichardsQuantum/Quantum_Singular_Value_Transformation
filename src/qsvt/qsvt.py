@@ -41,7 +41,7 @@ from .polynomials import eval_polynomial, polynomial_parity
 from .spectral import apply_polynomial_to_hermitian, eigh_hermitian
 
 
-def _as_numeric_operator(operator: float | np.ndarray) -> float | np.ndarray:
+def _as_numeric_operator(operator: float | complex | np.ndarray):
     """
     Normalize a scalar or matrix operator into a numeric form suitable for QSVT.
 
@@ -61,13 +61,14 @@ def _as_numeric_operator(operator: float | np.ndarray) -> float | np.ndarray:
         If a matrix input is not square.
     """
     if np.isscalar(operator):
-        return float(operator)
+        return complex(operator) if np.iscomplexobj(operator) else float(operator)
 
-    arr = np.asarray(operator, dtype=float)
+    arr = np.asarray(operator)
     if arr.ndim != 2 or arr.shape[0] != arr.shape[1]:
         raise ValueError("operator must be a scalar or a square 2D array.")
 
-    return arr
+    dtype = complex if np.iscomplexobj(arr) else float
+    return arr.astype(dtype, copy=False)
 
 
 def _default_wire_order_from_operator(operator: float | np.ndarray) -> list[int]:
@@ -467,8 +468,8 @@ def qsvt_matrix_transform(
     This generalizes `qsvt_diagonal_transform` to non-diagonal Hermitian test
     matrices. PennyLane's QSVT matrix can include convention-dependent complex
     phases in the extracted block; when `real_output=True`, this returns the
-    real part, which is the matrix compared against the classical spectral
-    polynomial reference in this package's reports.
+    real part, which is the quantity used in this package's standard
+    real-symmetric report comparisons.
 
     Parameters
     ----------
@@ -671,7 +672,7 @@ def compare_qsvt_vs_classical_matrix(
     encoding_wires: Iterable[int] | None = None,
     wire_order: Iterable[int] | None = None,
     block_encoding: str = "embedding",
-) -> dict[str, np.ndarray]:
+) -> dict[str, object]:
     """
     Compare a non-diagonal QSVT block against a classical spectral polynomial.
 
@@ -690,12 +691,13 @@ def compare_qsvt_vs_classical_matrix(
 
     Returns
     -------
-    dict[str, numpy.ndarray]
+    dict[str, object]
         Dictionary with keys:
         - "input"
         - "qsvt"
         - "qsvt_imag"
         - "classical"
+        - "comparison_basis"
         - "abs_error"
     """
     A = _validate_hermitian_qsvt_matrix(operator)
@@ -707,15 +709,16 @@ def compare_qsvt_vs_classical_matrix(
         block_encoding=block_encoding,
         real_output=False,
     )
-    qsvt_real = np.real(block).astype(float)
     classical = apply_polynomial_to_hermitian(A, poly)
+    qsvt_reference, comparison_basis = _matrix_qsvt_reference(block, classical)
 
     return {
         "input": A,
-        "qsvt": qsvt_real,
+        "qsvt": qsvt_reference,
         "qsvt_imag": np.imag(block).astype(float),
         "classical": classical,
-        "abs_error": np.abs(qsvt_real - classical),
+        "comparison_basis": comparison_basis,
+        "abs_error": np.abs(qsvt_reference - classical),
     }
 
 
@@ -920,18 +923,19 @@ def qsvt_matrix_transform_report(
         )
         return report
 
-    qsvt_real = np.real(block).astype(float)
+    qsvt_reference, comparison_basis = _matrix_qsvt_reference(block, classical)
     qsvt_imag = np.imag(block).astype(float)
-    abs_error = np.abs(qsvt_real - classical)
+    abs_error = np.abs(qsvt_reference - classical)
     report.update(
         {
             "qsvt_succeeded": True,
-            "qsvt": qsvt_real,
+            "qsvt": qsvt_reference,
             "qsvt_imag": qsvt_imag,
+            "comparison_basis": comparison_basis,
             "abs_error": abs_error,
             "max_error": float(np.max(abs_error)),
             "rms_error": float(np.sqrt(np.mean(abs_error**2))),
-            "frobenius_error": float(np.linalg.norm(qsvt_real - classical)),
+            "frobenius_error": float(np.linalg.norm(qsvt_reference - classical)),
             "max_imag_abs": float(np.max(np.abs(qsvt_imag))),
         }
     )
@@ -1078,6 +1082,25 @@ def _validate_hermitian_qsvt_matrix(operator: np.ndarray) -> np.ndarray:
         raise ValueError("QSVT matrix eigenvalues must lie in [-1, 1].")
 
     return A
+
+
+def _matrix_qsvt_reference(
+    block: np.ndarray,
+    classical: np.ndarray,
+    *,
+    imag_tol: float = 1e-10,
+) -> tuple[np.ndarray, str]:
+    """
+    Choose the QSVT block representation used for matrix-report comparisons.
+
+    For effectively real classical references, compare against the real part of
+    the extracted QSVT block to preserve the existing report convention. For
+    genuinely complex Hermitian references, compare against the full complex
+    block.
+    """
+    if np.max(np.abs(np.imag(classical))) <= imag_tol:
+        return np.real(block).astype(float), "real_part"
+    return block, "full_complex"
 
 
 __all__ = [

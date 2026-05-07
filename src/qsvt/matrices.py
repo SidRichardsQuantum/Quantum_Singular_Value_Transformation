@@ -13,7 +13,9 @@ designed for:
 - spectral intuition building
 - validating polynomial transforms before QSVT use
 
-All matrices are NumPy arrays with dtype=float.
+All matrices are NumPy arrays. The simple constructors return real arrays,
+while eigendecomposition-based reconstruction preserves complex Hermitian
+eigenvectors when provided.
 """
 
 from __future__ import annotations
@@ -197,14 +199,14 @@ def hermitian_from_eigendecomposition(
     """
     Construct a Hermitian matrix from spectral components.
 
-    A = V diag(lambda) V^T
+    A = V diag(lambda) V^dagger
 
     Parameters
     ----------
     eigenvalues
         Iterable of eigenvalues.
     eigenvectors
-        Orthogonal matrix whose columns are eigenvectors.
+        Orthonormal matrix whose columns are eigenvectors.
 
     Returns
     -------
@@ -215,10 +217,10 @@ def hermitian_from_eigendecomposition(
     -----
     eigenvectors should be orthonormal:
 
-        V^T V = I
+        V^dagger V = I
     """
     eigvals = np.asarray(list(eigenvalues), dtype=float)
-    V = np.asarray(eigenvectors, dtype=float)
+    V = np.asarray(eigenvectors)
 
     if V.shape[0] != V.shape[1]:
         raise ValueError("eigenvectors must form a square matrix.")
@@ -226,7 +228,7 @@ def hermitian_from_eigendecomposition(
     if len(eigvals) != V.shape[0]:
         raise ValueError("Mismatch between eigenvalues and eigenvector dimension.")
 
-    return V @ np.diag(eigvals) @ V.T
+    return V @ np.diag(eigvals) @ V.conj().T
 
 
 def involutory_diagonal(sign_pattern: Iterable[int | float]) -> np.ndarray:

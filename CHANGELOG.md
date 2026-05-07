@@ -2,6 +2,35 @@
 
 ---
 
+## [0.1.8] – 6th May 2026
+
+### Changed
+
+- fixed Hermitian matrix handling across `qsvt.spectral`, `qsvt.matrices`, and
+  `qsvt.qsvt` so complex Hermitian inputs are preserved instead of being
+  silently cast to real arrays
+- updated non-diagonal QSVT matrix comparison reports to distinguish between
+  real-symmetric comparisons (`comparison_basis = "real_part"`) and full
+  complex Hermitian comparisons (`comparison_basis = "full_complex"`)
+- extended report serialization so complex scalars and arrays are written as
+  JSON-safe `{real, imag}` payloads
+- updated report-oriented CLI commands so `--output` and `--plot` write compact
+  stdout summaries by default, with `--print-report` available to force full
+  JSON output
+- fixed the package metadata `Documentation` URL to point at the live GitHub
+  Pages site
+- pruned `docs/_build` from source distributions and repository export archives
+  for cleaner release artefacts
+
+### Documentation
+
+- updated the README, usage guide, API reference, and report guides to reflect
+  the new CLI output behaviour and complex Hermitian matrix support
+- refreshed the docs landing page styling so the generated site matches the
+  linked portfolio site more closely
+
+---
+
 ## [0.1.7] – 23rd April 2026
 
 ### Changed

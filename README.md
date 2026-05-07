@@ -341,7 +341,9 @@ qsvt apply-design \
 The report commands print the same JSON diagnostics used by the Python
 helpers, including fit error and boundedness information. `--output` writes the
 report to JSON, and `--plot` writes a target-vs-polynomial plot for
-approximation reports.
+approximation reports. When either flag is used, stdout switches to a compact
+write summary; add `--print-report` if you also want the full JSON report on
+stdout.
 
 Compatibility reports distinguish bounded polynomial approximation from
 PennyLane QSVT synthesis compatibility.

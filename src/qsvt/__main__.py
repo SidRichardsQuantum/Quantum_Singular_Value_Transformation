@@ -82,7 +82,7 @@ def _parse_poly(text: str) -> list[float]:
     return _parse_float_list(text)
 
 
-def _parse_matrix(text: str) -> list[list[float]]:
+def _parse_matrix(text: str) -> list[list[complex]]:
     """
     Parse a semicolon-separated matrix.
 
@@ -90,7 +90,11 @@ def _parse_matrix(text: str) -> list[list[float]]:
     -------
     "0.5,0.1;0.1,0.3"
     """
-    rows = [_parse_float_list(row) for row in text.split(";") if row.strip()]
+    rows = [
+        [complex(x.strip()) for x in row.split(",") if x.strip()]
+        for row in text.split(";")
+        if row.strip()
+    ]
     if not rows:
         raise ValueError("matrix must contain at least one row.")
 
@@ -99,6 +103,35 @@ def _parse_matrix(text: str) -> list[list[float]]:
         raise ValueError("matrix rows must all have the same nonzero length.")
 
     return rows
+
+
+def _add_report_output_args(
+    parser: argparse.ArgumentParser,
+    *,
+    include_plot: bool = False,
+) -> None:
+    """
+    Add common output arguments for report-oriented CLI commands.
+    """
+    parser.add_argument(
+        "--output",
+        type=str,
+        help="Optional path for writing the report JSON.",
+    )
+    if include_plot:
+        parser.add_argument(
+            "--plot",
+            type=str,
+            help="Optional path for writing a target-vs-polynomial plot.",
+        )
+    parser.add_argument(
+        "--print-report",
+        action="store_true",
+        help=(
+            "Print the full report JSON to stdout even when --output or --plot "
+            "is used."
+        ),
+    )
 
 
 def cmd_scalar(args: argparse.Namespace) -> dict:
@@ -509,16 +542,7 @@ def build_parser() -> argparse.ArgumentParser:
         type=int,
         default=4001,
     )
-    p_design_report.add_argument(
-        "--output",
-        type=str,
-        help="Optional path for writing the report JSON.",
-    )
-    p_design_report.add_argument(
-        "--plot",
-        type=str,
-        help="Optional path for writing a target-vs-polynomial plot.",
-    )
+    _add_report_output_args(p_design_report, include_plot=True)
     p_design_report.set_defaults(func=cmd_design_report)
 
     p_template_report = sub.add_parser(
@@ -547,16 +571,7 @@ def build_parser() -> argparse.ArgumentParser:
         type=int,
         default=4001,
     )
-    p_template_report.add_argument(
-        "--output",
-        type=str,
-        help="Optional path for writing the report JSON.",
-    )
-    p_template_report.add_argument(
-        "--plot",
-        type=str,
-        help="Optional path for writing a target-vs-polynomial plot.",
-    )
+    _add_report_output_args(p_template_report, include_plot=True)
     p_template_report.set_defaults(func=cmd_template_report)
 
     p_compare_report = sub.add_parser(
@@ -581,11 +596,7 @@ def build_parser() -> argparse.ArgumentParser:
         default=3,
         help="Number of qubits for block encoding",
     )
-    p_compare_report.add_argument(
-        "--output",
-        type=str,
-        help="Optional path for writing the report JSON.",
-    )
+    _add_report_output_args(p_compare_report)
     p_compare_report.set_defaults(func=cmd_compare_report)
 
     p_matrix_report = sub.add_parser(
@@ -610,11 +621,7 @@ def build_parser() -> argparse.ArgumentParser:
         default=2,
         help="Number of qubits for block encoding",
     )
-    p_matrix_report.add_argument(
-        "--output",
-        type=str,
-        help="Optional path for writing the report JSON.",
-    )
+    _add_report_output_args(p_matrix_report)
     p_matrix_report.set_defaults(func=cmd_matrix_report)
 
     p_compatibility = sub.add_parser(
@@ -639,11 +646,7 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_false",
         help="Skip the PennyLane synthesis attempt.",
     )
-    p_compatibility.add_argument(
-        "--output",
-        type=str,
-        help="Optional path for writing the report JSON.",
-    )
+    _add_report_output_args(p_compatibility)
     p_compatibility.set_defaults(func=cmd_compatibility_report)
 
     p_design_compatibility = sub.add_parser(
@@ -673,11 +676,7 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_false",
         help="Skip the PennyLane synthesis attempt.",
     )
-    p_design_compatibility.add_argument(
-        "--output",
-        type=str,
-        help="Optional path for writing the report JSON.",
-    )
+    _add_report_output_args(p_design_compatibility)
     p_design_compatibility.set_defaults(func=cmd_design_compatibility)
 
     p_apply_design = sub.add_parser(
@@ -707,11 +706,7 @@ def build_parser() -> argparse.ArgumentParser:
         default=3,
         help="Number of qubits for block encoding",
     )
-    p_apply_design.add_argument(
-        "--output",
-        type=str,
-        help="Optional path for writing the report JSON.",
-    )
+    _add_report_output_args(p_apply_design)
     p_apply_design.set_defaults(func=cmd_apply_design)
 
     return parser
@@ -722,12 +717,32 @@ def main(argv: Iterable[str] | None = None) -> None:
     args = parser.parse_args(argv)
 
     result = args.func(args)
-    if getattr(args, "output", None):
-        save_report(result, args.output)
-    if getattr(args, "plot", None):
-        save_report_plot(result, args.plot)
+    output_path = getattr(args, "output", None)
+    plot_path = getattr(args, "plot", None)
 
-    print(json.dumps(report_to_jsonable(result), indent=2))
+    if output_path:
+        save_report(result, output_path)
+    if plot_path:
+        save_report_plot(result, plot_path)
+
+    should_print_report = (
+        getattr(args, "print_report", False)
+        or (output_path is None and plot_path is None)
+    )
+    if should_print_report:
+        payload = report_to_jsonable(result)
+    else:
+        payload = {
+            "mode": result.get("mode", args.command),
+            "report_written": output_path is not None,
+            "plot_written": plot_path is not None,
+        }
+        if output_path is not None:
+            payload["output"] = output_path
+        if plot_path is not None:
+            payload["plot"] = plot_path
+
+    print(json.dumps(payload, indent=2))
 
 
 if __name__ == "__main__":

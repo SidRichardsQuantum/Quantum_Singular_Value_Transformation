@@ -38,9 +38,10 @@ qsvt template-report --kind inverse --degree 7 --mu 0.3 \
   --output inverse-report.json
 ```
 
-The report commands still print JSON to standard output. The `--output` option
-writes the same payload to disk, and `--plot` writes a target-vs-polynomial
-image for quick inspection.
+The report commands print full JSON to standard output by default. When
+`--output` or `--plot` is supplied, the CLI writes the full artifact to disk
+and switches stdout to a compact write summary; add `--print-report` if you
+also want the full JSON payload on stdout.
 
 ## Report fields
 

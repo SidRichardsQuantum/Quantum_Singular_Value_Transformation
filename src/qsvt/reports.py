@@ -19,8 +19,9 @@ def report_to_jsonable(report: Mapping[str, Any]) -> dict[str, Any]:
     """
     Convert a diagnostics report into JSON-serializable Python containers.
 
-    NumPy arrays become lists, NumPy scalars become Python scalars, and nested
-    dictionaries/lists/tuples are converted recursively.
+    NumPy arrays become lists, NumPy scalars become Python scalars, complex
+    values become `{real, imag}` payloads, and nested dictionaries/lists/tuples
+    are converted recursively.
     """
     return _to_jsonable(report)
 
@@ -147,9 +148,24 @@ def save_report_plot(
 
 def _to_jsonable(obj: Any) -> Any:
     if isinstance(obj, np.ndarray):
+        if np.iscomplexobj(obj):
+            return {
+                "real": obj.real.tolist(),
+                "imag": obj.imag.tolist(),
+            }
         return obj.tolist()
     if isinstance(obj, np.generic):
+        if np.iscomplexobj(obj):
+            return {
+                "real": float(np.real(obj)),
+                "imag": float(np.imag(obj)),
+            }
         return obj.item()
+    if isinstance(obj, complex):
+        return {
+            "real": float(obj.real),
+            "imag": float(obj.imag),
+        }
     if isinstance(obj, Mapping):
         return {str(k): _to_jsonable(v) for k, v in obj.items()}
     if isinstance(obj, tuple):

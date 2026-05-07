@@ -448,9 +448,9 @@ Reconstruct a Hermitian matrix from its eigendecomposition.
 Apply a scalar function spectrally:
 
 $$
-A = V \operatorname{diag}(\lambda) V^T
+A = V \operatorname{diag}(\lambda) V^\dagger
 \quad\Rightarrow\quad
-f(A) = V \operatorname{diag}(f(\lambda)) V^T.
+f(A) = V \operatorname{diag}(f(\lambda)) V^\dagger.
 $$
 
 **Example**
@@ -614,9 +614,9 @@ print(vals)
 
 Apply QSVT to a small Hermitian matrix and return the logical matrix block.
 
-When `real_output=True`, this returns the real part of the extracted block,
-which is the matrix compared against the classical spectral polynomial
-reference.
+When `real_output=True`, this returns the real part of the extracted block.
+This is the quantity compared against the classical reference in the standard
+real-symmetric report path.
 
 **Example**
 

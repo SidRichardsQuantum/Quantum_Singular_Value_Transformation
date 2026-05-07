@@ -51,10 +51,20 @@ def test_compare_qsvt_vs_classical_matrix_tracks_imaginary_block():
     matrix = rotated_diagonal([0.2, 0.8], theta=0.45)
     comparison = compare_qsvt_vs_classical_matrix(matrix, [0, 0, 1])
 
+    assert comparison["comparison_basis"] == "real_part"
     assert np.allclose(comparison["qsvt"], comparison["classical"], atol=1e-10)
     assert np.max(comparison["abs_error"]) < 1e-10
     assert comparison["qsvt_imag"].shape == matrix.shape
     assert np.max(np.abs(comparison["qsvt_imag"])) > 0.0
+
+
+def test_compare_qsvt_vs_classical_matrix_supports_complex_hermitian_inputs():
+    matrix = np.array([[0.0, 0.2j], [-0.2j, 0.0]], dtype=complex)
+    comparison = compare_qsvt_vs_classical_matrix(matrix, [0, 1])
+
+    assert comparison["comparison_basis"] == "full_complex"
+    assert np.allclose(comparison["qsvt"], comparison["classical"], atol=1e-6)
+    assert np.max(comparison["abs_error"]) < 1e-6
 
 
 def test_qsvt_transform_report_matches_classical_polynomial():
@@ -86,6 +96,15 @@ def test_qsvt_matrix_transform_report_matches_classical_polynomial():
     assert np.allclose(report["qsvt"], report["classical"], atol=1e-10)
     assert report["max_error"] < 1e-10
     assert report["max_imag_abs"] > 0.0
+
+
+def test_qsvt_matrix_transform_report_supports_complex_hermitian_inputs():
+    matrix = np.array([[0.0, 0.2j], [-0.2j, 0.0]], dtype=complex)
+    report = qsvt_matrix_transform_report(matrix, [0, 1])
+
+    assert report["comparison_basis"] == "full_complex"
+    assert np.allclose(report["qsvt"], report["classical"], atol=1e-6)
+    assert report["max_error"] < 1e-6
 
 
 def test_qsvt_compatibility_report_accepts_x_squared():
