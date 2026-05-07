@@ -725,9 +725,8 @@ def main(argv: Iterable[str] | None = None) -> None:
     if plot_path:
         save_report_plot(result, plot_path)
 
-    should_print_report = (
-        getattr(args, "print_report", False)
-        or (output_path is None and plot_path is None)
+    should_print_report = getattr(args, "print_report", False) or (
+        output_path is None and plot_path is None
     )
     if should_print_report:
         payload = report_to_jsonable(result)
