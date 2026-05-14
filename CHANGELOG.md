@@ -2,6 +2,35 @@
 
 ---
 
+## [0.1.9] – 14th May 2026
+
+### Changed
+
+- split the QSVT implementation into focused operator, diagonal, matrix, and
+  compatibility modules while keeping `qsvt.qsvt` as a compatibility re-export
+- moved CLI command implementation into `qsvt.cli`, leaving `qsvt.__main__` as
+  a small entry point
+- extracted shared Chebyshev fitting, parity projection, and boundedness
+  utilities for design and template builders
+- expanded Ruff checks to include import sorting and bug-prone rule families
+
+### Added
+
+- added `qsvt.workflow.design_workflow` for returning coefficients,
+  diagnostics, and compatibility metadata from one structured API
+- added a `design-workflow` CLI command for writing complete design workflow
+  reports from the command line
+- added regression tests for split-module imports, non-power-of-two matrix
+  defaults, complex report serialization, non-finite compatibility inputs, and
+  design workflow results
+
+### Documentation
+
+- documented the new workflow API and split implementation modules in the
+  README and API reference
+
+---
+
 ## [0.1.8] – 6th May 2026
 
 ### Changed

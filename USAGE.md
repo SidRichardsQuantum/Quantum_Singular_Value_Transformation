@@ -411,6 +411,16 @@ Chebyshev evaluation:
 qsvt cheb --degree 3 --x 0.5
 ```
 
+Complete design workflow report:
+
+```bash
+qsvt design-workflow \
+  --kind sign \
+  --gamma 0.2 \
+  --degree 13 \
+  --output sign-workflow.json
+```
+
 When a report command is given `--output` or `--plot`, it writes the full
 artifact to disk and prints a compact summary to stdout. Add `--print-report`
 to also emit the full JSON payload on stdout.

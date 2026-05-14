@@ -3,18 +3,18 @@
 import numpy as np
 
 from qsvt.design import (
-    design_filter_polynomial,
     design_filter_diagnostics,
-    design_inverse_polynomial,
+    design_filter_polynomial,
     design_inverse_diagnostics,
-    design_power_polynomial,
+    design_inverse_polynomial,
     design_power_diagnostics,
-    design_projector_polynomial,
+    design_power_polynomial,
     design_projector_diagnostics,
-    design_sign_polynomial,
+    design_projector_polynomial,
     design_sign_diagnostics,
-    design_sqrt_polynomial,
+    design_sign_polynomial,
     design_sqrt_diagnostics,
+    design_sqrt_polynomial,
 )
 from qsvt.polynomials import is_bounded_on_interval, polynomial_parity
 

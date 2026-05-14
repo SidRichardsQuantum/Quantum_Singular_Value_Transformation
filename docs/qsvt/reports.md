@@ -34,14 +34,18 @@ qsvt design-report --kind sign --gamma 0.2 --degree 13 \
   --output sign-report.json \
   --plot sign-report.png
 
+qsvt design-workflow --kind sign --gamma 0.2 --degree 13 \
+  --output sign-workflow.json
+
 qsvt template-report --kind inverse --degree 7 --mu 0.3 \
   --output inverse-report.json
 ```
 
-The report commands print full JSON to standard output by default. When
-`--output` or `--plot` is supplied, the CLI writes the full artifact to disk
-and switches stdout to a compact write summary; add `--print-report` if you
-also want the full JSON payload on stdout.
+The report commands print full JSON to standard output by default.
+`design-workflow` combines coefficients, diagnostics, and QSVT compatibility
+metadata in one JSON report. When `--output` or `--plot` is supplied, the CLI
+writes the full artifact to disk and switches stdout to a compact write
+summary; add `--print-report` if you also want the full JSON payload on stdout.
 
 ## Report fields
 

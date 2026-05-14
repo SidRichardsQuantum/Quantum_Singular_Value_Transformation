@@ -6,8 +6,8 @@ from qsvt.matrices import rotated_diagonal
 from qsvt.polynomials import chebyshev_t, polynomial_parity
 from qsvt.qsvt import (
     compare_qsvt_vs_classical_matrix,
-    qsvt_diagonal_transform,
     qsvt_compatibility_report,
+    qsvt_diagonal_transform,
     qsvt_matrix_transform,
     qsvt_matrix_transform_report,
     qsvt_scalar_output,

@@ -28,8 +28,13 @@ The package is organised into the following modules:
 - `qsvt.spectral`
 - `qsvt.design`
 - `qsvt.templates`
+- `qsvt.workflow`
 - `qsvt.reports`
-- `qsvt.qsvt`
+- `qsvt.operators`
+- `qsvt.diagonal`
+- `qsvt.matrix`
+- `qsvt.compatibility`
+- `qsvt.qsvt` compatibility re-exports
 - `qsvt.__main__`
 
 You can either import from submodules directly:
@@ -51,6 +56,26 @@ For the higher-level polynomial builders and ready-made templates, see:
 - [Polynomial templates](templates.md)
 - [Diagnostics reports](reports.md)
 - [QSVT transform reports](qsvt_reports.md)
+
+### `qsvt.workflow`
+
+Use `design_workflow` when you want coefficients, approximation diagnostics,
+and a QSVT compatibility report from one call:
+
+```python
+from qsvt.workflow import design_workflow
+
+result = design_workflow("sign", gamma=0.25, degree=13)
+coeffs = result.coeffs
+payload = result.as_report()
+```
+
+The same combined workflow report is available from the CLI:
+
+```bash
+qsvt design-workflow --kind sign --gamma 0.25 --degree 13 \
+  --output sign-workflow.json
+```
 
 ---
 

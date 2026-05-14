@@ -133,6 +133,9 @@ qsvt design-report --kind sign --gamma 0.2 --degree 13 \
   --output sign-report.json \
   --plot sign-report.png
 
+qsvt design-workflow --kind sign --gamma 0.2 --degree 13 \
+  --output sign-workflow.json
+
 qsvt compatibility-report --poly "0,0,1"
 
 qsvt design-compatibility \

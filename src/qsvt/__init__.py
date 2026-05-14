@@ -17,22 +17,9 @@ The project is designed for small-scale demonstrations, notebooks, and
 classical validation of QSVT/QSP ideas.
 """
 
-from importlib.metadata import PackageNotFoundError, version as _pkg_version
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as _pkg_version
 
-from .design import (
-    design_filter_polynomial,
-    design_filter_diagnostics,
-    design_inverse_polynomial,
-    design_inverse_diagnostics,
-    design_power_polynomial,
-    design_power_diagnostics,
-    design_projector_polynomial,
-    design_projector_diagnostics,
-    design_sign_polynomial,
-    design_sign_diagnostics,
-    design_sqrt_polynomial,
-    design_sqrt_diagnostics,
-)
 from .approximation import (
     approximation_quality_report,
     chebyshev_approximant,
@@ -45,17 +32,19 @@ from .approximation import (
     scale_from_chebyshev_domain,
     scale_to_chebyshev_domain,
 )
-from .templates import (
-    exponential_approximation_polynomial,
-    exponential_approximation_diagnostics,
-    inverse_like_polynomial,
-    inverse_like_diagnostics,
-    sign_approximation_polynomial,
-    sign_approximation_diagnostics,
-    soft_threshold_filter_polynomial,
-    soft_threshold_filter_diagnostics,
-    sqrt_approximation_polynomial,
-    sqrt_approximation_diagnostics,
+from .design import (
+    design_filter_diagnostics,
+    design_filter_polynomial,
+    design_inverse_diagnostics,
+    design_inverse_polynomial,
+    design_power_diagnostics,
+    design_power_polynomial,
+    design_projector_diagnostics,
+    design_projector_polynomial,
+    design_sign_diagnostics,
+    design_sign_polynomial,
+    design_sqrt_diagnostics,
+    design_sqrt_polynomial,
 )
 from .matrices import (
     diagonal_matrix,
@@ -83,11 +72,11 @@ from .qsvt import (
     classical_diagonal_polynomial_transform,
     compare_qsvt_vs_classical_diagonal,
     compare_qsvt_vs_classical_matrix,
+    qsvt_compatibility_report,
     qsvt_diagonal_transform,
     qsvt_matrix_transform,
     qsvt_matrix_transform_report,
     qsvt_operator,
-    qsvt_compatibility_report,
     qsvt_scalar_output,
     qsvt_scalar_scan,
     qsvt_top_left_block,
@@ -116,6 +105,19 @@ from .spectral import (
     spectral_projector_positive,
     transformed_eigenvalues,
 )
+from .templates import (
+    exponential_approximation_diagnostics,
+    exponential_approximation_polynomial,
+    inverse_like_diagnostics,
+    inverse_like_polynomial,
+    sign_approximation_diagnostics,
+    sign_approximation_polynomial,
+    soft_threshold_filter_diagnostics,
+    soft_threshold_filter_polynomial,
+    sqrt_approximation_diagnostics,
+    sqrt_approximation_polynomial,
+)
+from .workflow import DesignWorkflowResult, design_workflow
 
 # Version ----------------------------------------------------------------------
 try:
@@ -148,6 +150,8 @@ __all__ = [
     "soft_threshold_filter_diagnostics",
     "sqrt_approximation_polynomial",
     "sqrt_approximation_diagnostics",
+    "DesignWorkflowResult",
+    "design_workflow",
     "hermitian_from_eigendecomposition",
     "identity",
     "involutory_diagonal",

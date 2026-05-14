@@ -32,8 +32,11 @@ from __future__ import annotations
 
 import numpy as np
 
-from .approximation import approximation_quality_report, chebyshev_fit_function
-from .polynomials import normalize_coefficients
+from ._polyfit import (
+    enforce_boundedness,
+    fit_bounded_monomial,
+)
+from .approximation import approximation_quality_report
 
 _DEF_NUM_POINTS = 2001
 _DEF_BOUND_GRID = 4001
@@ -77,54 +80,6 @@ def _design_filter_target(x: np.ndarray, cutoff: float, sharpness: float) -> np.
             sharpness * (np.abs(np.asarray(x, dtype=float)) - cutoff),
         )
     )
-
-
-def _validate_degree(degree: int) -> int:
-    """
-    Validate a polynomial degree.
-
-    Parameters
-    ----------
-    degree
-        Non-negative polynomial degree.
-
-    Returns
-    -------
-    int
-        Validated degree.
-
-    Raises
-    ------
-    ValueError
-        If degree is negative.
-    """
-    if degree < 0:
-        raise ValueError("degree must be non-negative.")
-    return int(degree)
-
-
-def _validate_num_points(num_points: int) -> int:
-    """
-    Validate a fitting-grid size.
-
-    Parameters
-    ----------
-    num_points
-        Number of fitting/evaluation points.
-
-    Returns
-    -------
-    int
-        Validated point count.
-
-    Raises
-    ------
-    ValueError
-        If num_points is too small.
-    """
-    if num_points < 2:
-        raise ValueError("num_points must be at least 2.")
-    return int(num_points)
 
 
 def _validate_unit_interval_parameter(value: float, name: str) -> float:
@@ -179,56 +134,6 @@ def _tanh_sharpness_from_margin(gamma: float, target_value: float = 0.98) -> flo
     return float(np.arctanh(target_value) / gamma)
 
 
-def _chebyshev_to_monomial(cheb_coeffs: np.ndarray) -> np.ndarray:
-    """
-    Convert Chebyshev-basis coefficients on [-1, 1] to monomial coefficients.
-
-    Parameters
-    ----------
-    cheb_coeffs
-        Chebyshev-basis coefficients.
-
-    Returns
-    -------
-    numpy.ndarray
-        Monomial coefficients in ascending degree order.
-    """
-    poly = np.polynomial.Chebyshev(cheb_coeffs, domain=[-1.0, 1.0])
-    coeffs = np.asarray(poly.convert(kind=np.polynomial.Polynomial).coef, dtype=float)
-    return normalize_coefficients(coeffs)
-
-
-def _enforce_boundedness(
-    coeffs: np.ndarray,
-    *,
-    num_points: int = _DEF_BOUND_GRID,
-) -> np.ndarray:
-    """
-    Rescale a polynomial if necessary so that it is numerically bounded by 1
-    on [-1, 1].
-
-    Parameters
-    ----------
-    coeffs
-        Polynomial coefficients in ascending monomial order.
-    num_points
-        Number of grid points used in the boundedness check.
-
-    Returns
-    -------
-    numpy.ndarray
-        Possibly rescaled coefficient array.
-    """
-    xs = np.linspace(-1.0, 1.0, num_points)
-    values = np.polynomial.polynomial.polyval(xs, coeffs)
-    max_abs = float(np.max(np.abs(values)))
-
-    if max_abs > 1.0:
-        coeffs = coeffs / max_abs
-
-    return normalize_coefficients(coeffs)
-
-
 def _fit_on_canonical_interval(
     func,
     *,
@@ -256,25 +161,13 @@ def _fit_on_canonical_interval(
     numpy.ndarray
         Monomial coefficients in ascending degree order.
     """
-    degree = _validate_degree(degree)
-    num_points = _validate_num_points(num_points)
-
-    cheb_coeffs = chebyshev_fit_function(
+    return fit_bounded_monomial(
         func,
         degree=degree,
-        domain=(-1.0, 1.0),
+        parity=parity,
         num_points=num_points,
+        bound_num_points=_DEF_BOUND_GRID,
     )
-
-    if parity == "odd":
-        cheb_coeffs[::2] = 0.0
-    elif parity == "even":
-        cheb_coeffs[1::2] = 0.0
-    elif parity is not None:
-        raise ValueError("parity must be None, 'even', or 'odd'.")
-
-    coeffs = _chebyshev_to_monomial(cheb_coeffs)
-    return _enforce_boundedness(coeffs, num_points=max(_DEF_BOUND_GRID, num_points))
 
 
 def _fit_on_interval(
@@ -287,19 +180,13 @@ def _fit_on_interval(
     """
     Fit a target on a general interval, convert to monomials, and bound it.
     """
-    degree = _validate_degree(degree)
-    num_points = _validate_num_points(num_points)
-
-    cheb_coeffs = chebyshev_fit_function(
+    return fit_bounded_monomial(
         func,
         degree=degree,
         domain=domain,
         num_points=num_points,
+        bound_num_points=_DEF_BOUND_GRID,
     )
-    poly = np.polynomial.Chebyshev(cheb_coeffs, domain=domain)
-    coeffs = np.asarray(poly.convert(kind=np.polynomial.Polynomial).coef, dtype=float)
-    coeffs = normalize_coefficients(coeffs)
-    return _enforce_boundedness(coeffs, num_points=max(_DEF_BOUND_GRID, num_points))
 
 
 def design_inverse_polynomial(
@@ -430,7 +317,7 @@ def design_projector_polynomial(
     )
     coeffs = 0.5 * sign_coeffs
     coeffs[0] += 0.5
-    return _enforce_boundedness(coeffs)
+    return enforce_boundedness(coeffs)
 
 
 def design_sqrt_polynomial(

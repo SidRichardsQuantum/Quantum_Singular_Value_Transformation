@@ -34,8 +34,8 @@ from __future__ import annotations
 
 import numpy as np
 
+from ._polyfit import fit_bounded_monomial, validate_degree, validate_num_points
 from .approximation import approximation_quality_report
-from .polynomials import normalize_coefficients
 
 
 def _inverse_like_target(x: np.ndarray, mu: float) -> np.ndarray:
@@ -66,75 +66,6 @@ def _sqrt_target(x: np.ndarray) -> np.ndarray:
 
 def _exponential_target(x: np.ndarray, beta: float) -> np.ndarray:
     return np.exp(beta * np.asarray(x, dtype=float) - abs(beta))
-
-
-def _validate_degree(degree: int) -> int:
-    """
-    Validate a polynomial degree.
-
-    Parameters
-    ----------
-    degree
-        Non-negative polynomial degree.
-
-    Returns
-    -------
-    int
-        Validated degree.
-
-    Raises
-    ------
-    ValueError
-        If degree is negative.
-    """
-    if degree < 0:
-        raise ValueError("degree must be non-negative.")
-    return int(degree)
-
-
-def _validate_num_points(num_points: int) -> int:
-    """
-    Validate a sampling-grid size.
-
-    Parameters
-    ----------
-    num_points
-        Number of fitting/evaluation grid points.
-
-    Returns
-    -------
-    int
-        Validated number of points.
-
-    Raises
-    ------
-    ValueError
-        If num_points is too small.
-    """
-    if num_points < 2:
-        raise ValueError("num_points must be at least 2.")
-    return int(num_points)
-
-
-def _grid_max_abs(coeffs: np.ndarray, num_points: int = 4001) -> float:
-    """
-    Estimate max |P(x)| on [-1, 1] using a dense grid.
-
-    Parameters
-    ----------
-    coeffs
-        Polynomial coefficients in ascending monomial order.
-    num_points
-        Number of grid points used in the check.
-
-    Returns
-    -------
-    float
-        Maximum sampled absolute value.
-    """
-    xs = np.linspace(-1.0, 1.0, num_points)
-    values = np.polynomial.polynomial.polyval(xs, coeffs)
-    return float(np.max(np.abs(values)))
 
 
 def _fit_template(
@@ -172,29 +103,13 @@ def _fit_template(
     ValueError
         If parity is invalid.
     """
-    degree = _validate_degree(degree)
-    num_points = _validate_num_points(num_points)
-
-    xs = np.linspace(-1.0, 1.0, num_points)
-    ys = np.asarray(func(xs), dtype=float)
-
-    cheb_coeffs = np.polynomial.chebyshev.chebfit(xs, ys, degree)
-
-    if parity == "odd":
-        cheb_coeffs[::2] = 0.0
-    elif parity == "even":
-        cheb_coeffs[1::2] = 0.0
-    elif parity is not None:
-        raise ValueError("parity must be None, 'even', or 'odd'.")
-
-    poly = np.polynomial.Chebyshev(cheb_coeffs, domain=[-1.0, 1.0])
-    coeffs = np.asarray(poly.convert(kind=np.polynomial.Polynomial).coef, dtype=float)
-
-    max_abs = _grid_max_abs(coeffs, num_points=max(4001, num_points))
-    if max_abs > 1.0:
-        coeffs = coeffs / max_abs
-
-    return normalize_coefficients(coeffs)
+    return fit_bounded_monomial(
+        func,
+        degree=degree,
+        parity=parity,
+        num_points=num_points,
+        bound_num_points=4001,
+    )
 
 
 def inverse_like_polynomial(
@@ -241,8 +156,8 @@ def inverse_like_polynomial(
     >>> abs(coeffs[0]) < 1e-8
     True
     """
-    degree = _validate_degree(degree)
-    num_points = _validate_num_points(num_points)
+    degree = validate_degree(degree)
+    num_points = validate_num_points(num_points)
 
     if mu <= 0.0:
         raise ValueError("mu must be positive.")
@@ -297,8 +212,8 @@ def sign_approximation_polynomial(
     >>> abs(coeffs[0]) < 1e-8
     True
     """
-    degree = _validate_degree(degree)
-    num_points = _validate_num_points(num_points)
+    degree = validate_degree(degree)
+    num_points = validate_num_points(num_points)
 
     if sharpness <= 0.0:
         raise ValueError("sharpness must be positive.")
@@ -357,8 +272,8 @@ def soft_threshold_filter_polynomial(
     >>> coeffs[0] >= 0.0
     True
     """
-    degree = _validate_degree(degree)
-    num_points = _validate_num_points(num_points)
+    degree = validate_degree(degree)
+    num_points = validate_num_points(num_points)
 
     if not 0.0 <= threshold <= 1.0:
         raise ValueError("threshold must lie in [0, 1].")
@@ -407,8 +322,8 @@ def sqrt_approximation_polynomial(
     >>> coeffs[0] > 0.0
     True
     """
-    degree = _validate_degree(degree)
-    num_points = _validate_num_points(num_points)
+    degree = validate_degree(degree)
+    num_points = validate_num_points(num_points)
 
     return _fit_template(_sqrt_target, degree, num_points=num_points)
 
@@ -451,8 +366,8 @@ def exponential_approximation_polynomial(
     >>> np.all(np.isfinite(coeffs))
     True
     """
-    degree = _validate_degree(degree)
-    num_points = _validate_num_points(num_points)
+    degree = validate_degree(degree)
+    num_points = validate_num_points(num_points)
 
     return _fit_template(
         lambda x: _exponential_target(x, beta),

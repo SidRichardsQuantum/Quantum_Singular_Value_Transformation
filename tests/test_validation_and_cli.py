@@ -147,6 +147,33 @@ def test_cli_design_report_emits_json(capsys):
     assert payload["bounded_margin"] >= -1e-8
 
 
+def test_cli_design_workflow_emits_json(capsys):
+    main(
+        [
+            "design-workflow",
+            "--kind",
+            "sign",
+            "--gamma",
+            "0.2",
+            "--degree",
+            "5",
+            "--num-points",
+            "51",
+            "--bounded-num-points",
+            "101",
+            "--no-synthesis",
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["mode"] == "design-workflow"
+    assert payload["kind"] == "sign"
+    assert payload["builder"] == "design_sign_polynomial"
+    assert payload["diagnostics"]["builder"] == "design_sign_polynomial"
+    assert payload["compatibility"]["attempted_pennylane_synthesis"] is False
+    assert len(payload["coeffs"]) == 6
+
+
 def test_cli_template_report_emits_json(capsys):
     main(["template-report", "--kind", "inverse", "--degree", "7", "--mu", "0.3"])
     payload = json.loads(capsys.readouterr().out)
@@ -190,6 +217,37 @@ def test_cli_design_report_writes_output_and_plot(tmp_path, capsys):
     assert written["builder"] == "design_sign_polynomial"
     assert plot_path.exists()
     assert plot_path.stat().st_size > 0
+
+
+def test_cli_design_workflow_writes_output(tmp_path, capsys):
+    output_path = tmp_path / "design-workflow.json"
+
+    main(
+        [
+            "design-workflow",
+            "--kind",
+            "filter",
+            "--degree",
+            "6",
+            "--cutoff",
+            "0.4",
+            "--num-points",
+            "51",
+            "--bounded-num-points",
+            "101",
+            "--no-synthesis",
+            "--output",
+            str(output_path),
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+    written = json.loads(output_path.read_text(encoding="utf-8"))
+
+    assert payload["mode"] == "design-workflow"
+    assert payload["report_written"] is True
+    assert written["kind"] == "filter"
+    assert written["diagnostics"]["builder"] == "design_filter_polynomial"
+    assert written["compatibility"]["attempted_pennylane_synthesis"] is False
 
 
 def test_cli_template_report_writes_output(tmp_path, capsys):

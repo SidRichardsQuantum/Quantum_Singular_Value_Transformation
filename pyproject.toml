@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qsvt-pennylane"
-version = "0.1.8"
+version = "0.1.9"
 description = "Educational utilities and examples for Quantum Singular Value Transformation (QSVT) using PennyLane."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -111,4 +111,4 @@ extend-exclude = ["*.ipynb"]
 
 
 [tool.ruff.lint]
-select = ["E", "F"]
+select = ["B", "E", "F", "I"]

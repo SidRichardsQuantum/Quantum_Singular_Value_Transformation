@@ -53,6 +53,7 @@ how bounded polynomials transform singular values or eigenvalues via block encod
   - [Polynomial approximation](#polynomial-approximation)
   - [Polynomial templates](#polynomial-templates)
   - [Polynomial design](#polynomial-design)
+  - [Design workflows](#design-workflows)
   - [Reports](#reports)
   - [Matrix helpers](#matrix-helpers)
   - [Classical spectral reference](#classical-spectral-reference)
@@ -137,6 +138,21 @@ coeffs = design_sign_polynomial(
 )
 ```
 
+Collect coefficients, diagnostics, and compatibility in one workflow:
+
+```python
+from qsvt.workflow import design_workflow
+
+result = design_workflow(
+    kind="sign",
+    gamma=0.25,
+    degree=13,
+)
+
+coeffs = result.coeffs
+report = result.as_report()
+```
+
 ---
 
 ## Package overview
@@ -196,6 +212,20 @@ Task-oriented polynomial builders:
 - approximation-quality reports
 
 Designed for reusable QSVT workflows.
+
+---
+
+### Design workflows
+
+`qsvt.workflow`
+
+- structured design results
+- coefficients plus diagnostics
+- QSVT compatibility report
+- report-style export via `DesignWorkflowResult.as_report()`
+
+Useful when a script or notebook needs a complete design artefact instead of
+separate calls into `qsvt.design` and `qsvt.qsvt`.
 
 ---
 
@@ -309,6 +339,9 @@ qsvt design-report --kind sign --gamma 0.2 --degree 13 \
   --output sign-report.json \
   --plot sign-report.png
 
+qsvt design-workflow --kind sign --gamma 0.2 --degree 13 \
+  --output sign-workflow.json
+
 qsvt template-report --kind inverse --degree 7 --mu 0.3 \
   --output inverse-report.json
 
@@ -339,11 +372,12 @@ qsvt apply-design \
 ```
 
 The report commands print the same JSON diagnostics used by the Python
-helpers, including fit error and boundedness information. `--output` writes the
-report to JSON, and `--plot` writes a target-vs-polynomial plot for
-approximation reports. When either flag is used, stdout switches to a compact
-write summary; add `--print-report` if you also want the full JSON report on
-stdout.
+helpers, including fit error and boundedness information. `design-workflow`
+combines coefficients, diagnostics, and QSVT compatibility metadata in one
+JSON payload. `--output` writes the report to JSON, and `--plot` writes a
+target-vs-polynomial plot for approximation reports. When either flag is used,
+stdout switches to a compact write summary; add `--print-report` if you also
+want the full JSON report on stdout.
 
 Compatibility reports distinguish bounded polynomial approximation from
 PennyLane QSVT synthesis compatibility.
