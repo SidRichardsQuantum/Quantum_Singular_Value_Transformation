@@ -290,6 +290,51 @@ xs = np.linspace(-1, 1, 200)
 vals = np.polynomial.polynomial.polyval(xs, coeffs)
 ```
 
+## `design_positive_inverse_polynomial`
+
+```python
+design_positive_inverse_polynomial(gamma, degree, extension="auto")
+```
+
+Constructs a bounded polynomial approximating
+
+$$
+f(x) \approx \frac{\gamma}{x}
+\quad \text{for } x \in [\gamma, 1].
+$$
+
+This helper is intended for positive definite operators that have already been
+rescaled so their spectra lie in `[gamma, 1]`. It is useful for finite
+dimensional linear-system and PDE workflows, where the relevant operator has no
+negative spectrum.
+
+### Extension strategies
+
+QSVT-compatible polynomial targets must be bounded on the full interval
+`[-1, 1]`, even when the physical operator only uses the positive part of that
+interval. The `extension` parameter controls how the positive-domain inverse
+target is extended before fitting:
+
+- `"even"` fits `gamma / max(|x|, gamma)`
+- `"flat"` fits `1` for `x < gamma` and `gamma / x` for `x >= gamma`
+- `"auto"` tries both and selects the lower sampled error on `[gamma, 1]`
+
+The default is `"auto"`.
+
+### Example
+
+```python
+import numpy as np
+
+from qsvt.design import design_positive_inverse_polynomial
+
+gamma = 0.1
+coeffs = design_positive_inverse_polynomial(gamma=gamma, degree=30)
+
+xs = np.linspace(gamma, 1.0, 100)
+vals = np.polynomial.polynomial.polyval(xs, coeffs)
+```
+
 ## Return format
 
 All design helpers return:
@@ -343,6 +388,7 @@ These correspond to odd target functions.
 The following helper returns an even polynomial:
 
 - `design_filter_polynomial`
+- `design_positive_inverse_polynomial` when `extension="even"` is selected
 
 because the target depends on $|x|$.
 
@@ -353,6 +399,7 @@ The following helpers generally do not enforce a fixed parity:
 - `design_projector_polynomial`
 - `design_sqrt_polynomial`
 - `design_power_polynomial`
+- `design_positive_inverse_polynomial` when `extension="flat"` is selected
 
 ## Typical workflow
 
@@ -408,6 +455,7 @@ The module also provides report helpers that return sampled approximation
 quality data for each builder:
 
 - `design_inverse_diagnostics`
+- `design_positive_inverse_diagnostics`
 - `design_sign_diagnostics`
 - `design_projector_diagnostics`
 - `design_sqrt_diagnostics`
@@ -464,5 +512,6 @@ The `qsvt.design` module provides simple bounded polynomial builders for common 
 - square-root approximations
 - positive-power transforms
 - smooth spectral filters
+- positive definite inverse-style transforms
 
 The emphasis is on clarity, boundedness, and immediate usability in the package’s existing QSVT simulation and matrix-function workflows.

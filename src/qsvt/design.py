@@ -51,6 +51,64 @@ def _design_inverse_target(x: np.ndarray, gamma: float) -> np.ndarray:
     return out
 
 
+def _design_positive_inverse_target(
+    x: np.ndarray,
+    gamma: float,
+    extension: str,
+) -> np.ndarray:
+    x = np.asarray(x, dtype=float)
+    if extension == "even":
+        return gamma / np.maximum(np.abs(x), gamma)
+    if extension == "flat":
+        out = np.ones_like(x, dtype=float)
+        mask = x >= gamma
+        out[mask] = gamma / x[mask]
+        return out
+    raise ValueError("extension must be 'auto', 'even', or 'flat'.")
+
+
+def _positive_inverse_candidate(
+    gamma: float,
+    degree: int,
+    extension: str,
+    num_points: int,
+) -> np.ndarray:
+    parity = "even" if extension == "even" else None
+    return _fit_on_canonical_interval(
+        lambda x: _design_positive_inverse_target(x, gamma, extension),
+        degree=degree,
+        parity=parity,
+        num_points=num_points,
+    )
+
+
+def _positive_inverse_design_error(
+    coeffs: np.ndarray,
+    gamma: float,
+    num_points: int,
+) -> float:
+    xs = np.linspace(gamma, 1.0, max(101, int(num_points)))
+    values = np.polynomial.polynomial.polyval(xs, coeffs)
+    return float(np.max(np.abs(values - gamma / xs)))
+
+
+def _select_positive_inverse_candidate(
+    gamma: float,
+    degree: int,
+    num_points: int,
+) -> tuple[np.ndarray, str]:
+    candidates = {
+        "even": _positive_inverse_candidate(gamma, degree, "even", num_points),
+        "flat": _positive_inverse_candidate(gamma, degree, "flat", num_points),
+    }
+    errors = {
+        name: _positive_inverse_design_error(coeffs, gamma, num_points)
+        for name, coeffs in candidates.items()
+    }
+    selected = min(errors, key=errors.get)
+    return candidates[selected], selected
+
+
 def _design_sign_target(x: np.ndarray, gamma: float) -> np.ndarray:
     sharpness = _tanh_sharpness_from_margin(gamma, target_value=0.98)
     return np.tanh(sharpness * np.asarray(x, dtype=float))
@@ -234,6 +292,35 @@ def design_inverse_polynomial(
         parity="odd",
         num_points=num_points,
     )
+
+
+def design_positive_inverse_polynomial(
+    gamma: float,
+    degree: int,
+    num_points: int = _DEF_NUM_POINTS,
+    extension: str = "auto",
+) -> np.ndarray:
+    """
+    Construct a bounded polynomial approximating gamma / x on [gamma, 1].
+
+    This helper is intended for positive definite operators rescaled so their
+    spectra lie in [gamma, 1]. The `extension` parameter controls how the
+    positive-domain target is extended to the full QSVT interval:
+
+    - "even": fit gamma / max(|x|, gamma),
+    - "flat": fit 1 for x < gamma and gamma / x for x >= gamma,
+    - "auto": try both and return the lower-error bounded polynomial on
+      [gamma, 1].
+    """
+    gamma = _validate_unit_interval_parameter(gamma, "gamma")
+    if extension not in {"auto", "even", "flat"}:
+        raise ValueError("extension must be 'auto', 'even', or 'flat'.")
+
+    if extension != "auto":
+        return _positive_inverse_candidate(gamma, degree, extension, num_points)
+
+    coeffs, _ = _select_positive_inverse_candidate(gamma, degree, num_points)
+    return coeffs
 
 
 def design_sign_polynomial(
@@ -527,6 +614,51 @@ def design_inverse_diagnostics(
     return report
 
 
+def design_positive_inverse_diagnostics(
+    gamma: float,
+    degree: int,
+    num_points: int = _DEF_NUM_POINTS,
+    bounded_num_points: int = _DEF_BOUND_GRID,
+    extension: str = "auto",
+) -> dict[str, object]:
+    """
+    Build a report for the positive inverse design polynomial.
+    """
+    gamma = _validate_unit_interval_parameter(gamma, "gamma")
+    if extension == "auto":
+        coeffs, selected_extension = _select_positive_inverse_candidate(
+            gamma,
+            degree,
+            num_points,
+        )
+    else:
+        coeffs = design_positive_inverse_polynomial(
+            gamma=gamma,
+            degree=degree,
+            num_points=num_points,
+            extension=extension,
+        )
+        selected_extension = extension
+    report = _design_quality_report(
+        lambda x: gamma / x,
+        coeffs,
+        fit_domain=(gamma, 1.0),
+        fit_num_points=num_points,
+        bounded_num_points=bounded_num_points,
+    )
+    report.update(
+        {
+            "builder": "design_positive_inverse_polynomial",
+            "kind": "positive_inverse",
+            "gamma": gamma,
+            "degree": degree,
+            "extension": extension,
+            "selected_extension": selected_extension,
+        }
+    )
+    return report
+
+
 def design_sign_diagnostics(
     gamma: float,
     degree: int,
@@ -694,6 +826,7 @@ def design_filter_diagnostics(
 
 __all__ = [
     "design_inverse_diagnostics",
+    "design_positive_inverse_diagnostics",
     "design_sign_diagnostics",
     "design_projector_diagnostics",
     "design_sqrt_diagnostics",
@@ -701,6 +834,7 @@ __all__ = [
     "design_filter_diagnostics",
     "design_filter_polynomial",
     "design_inverse_polynomial",
+    "design_positive_inverse_polynomial",
     "design_power_polynomial",
     "design_projector_polynomial",
     "design_sign_polynomial",

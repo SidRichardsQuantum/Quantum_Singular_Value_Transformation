@@ -350,6 +350,38 @@ Small Hermitian test matrices:
 
 ---
 
+### qsvt.hamiltonians / qsvt.pde / qsvt.rescaling
+
+Physics workflow helpers:
+
+- small Hamiltonian constructors
+- finite-difference PDE operators
+- Hermitian spectral rescaling to QSVT-compatible intervals
+
+Example:
+
+```python
+from qsvt.hamiltonians import tight_binding_chain
+from qsvt.rescaling import rescale_hermitian_to_unit_interval
+
+H = tight_binding_chain(8)
+scaled = rescale_hermitian_to_unit_interval(H)
+```
+
+---
+
+### qsvt.matrix_functions / qsvt.diagnostics
+
+General builders and metrics for physics matrix-function workflows:
+
+- real-time and imaginary-time evolution
+- resolvents and Green's-function response
+- Gaussian spectral windows
+- state and operator errors
+- ground-state overlap and spectral weights
+
+---
+
 ### qsvt.spectral
 
 Classical reference implementations:

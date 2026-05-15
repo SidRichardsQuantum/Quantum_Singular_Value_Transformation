@@ -254,6 +254,21 @@ Small Hermitian test matrices:
 
 ---
 
+### Physics workflow helpers
+
+Reusable general-purpose modules for real physics examples:
+
+- `qsvt.hamiltonians`: tight-binding, Ising, Heisenberg, and Pauli-string matrices
+- `qsvt.pde`: finite-difference Laplacian operators
+- `qsvt.rescaling`: Hermitian spectral normalization helpers
+- `qsvt.matrix_functions`: real-time, imaginary-time, resolvent, window, projector, and inverse polynomial builders
+- `qsvt.diagnostics`: state, operator, overlap, and spectral-weight metrics
+
+These are designed to keep notebooks problem-focused while the package supplies
+the reusable spectral machinery.
+
+---
+
 ### Classical spectral reference
 
 `qsvt.spectral`
@@ -292,9 +307,10 @@ Full documentation:
 - Usage guide: [USAGE.md](USAGE.md)
 - API reference: [docs/qsvt/api_reference.md](docs/qsvt/api_reference.md)
 - Package index: [docs/qsvt/index.md](docs/qsvt/index.md)
+- Physics workflows: [docs/qsvt/physics.md](docs/qsvt/physics.md)
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
 
-Current release: `0.1.7`
+Current release: `0.1.10`
 
 ---
 
@@ -318,6 +334,11 @@ The examples emphasise:
 - spectral interpretation
 - simple matrices
 - reproducible results
+
+Real physics examples live in `notebooks/real_examples/` and cover Hamiltonian
+simulation, ground-state filtering, quantum chemistry, Green's functions,
+spectral density estimation, Gibbs states, PDE linear systems, transport
+physics, and tensor-network hybrid filtering.
 
 ---
 

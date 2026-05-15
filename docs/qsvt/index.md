@@ -15,6 +15,9 @@ The package provides small, explicit utilities for:
 - reusing ready-made polynomial templates
 - reporting fit error and boundedness for polynomial builders
 - saving, loading, and plotting diagnostics reports
+- building small Hamiltonians and finite-difference PDE operators
+- designing physics matrix-function polynomials
+- rescaling Hermitian spectra for QSVT-compatible workflows
 
 The repository also includes a sequence of notebooks that introduce QSVT concepts step-by-step.
 
@@ -57,6 +60,11 @@ qsvt
 ├── polynomials.py
 ├── approximation.py
 ├── matrices.py
+├── hamiltonians.py
+├── pde.py
+├── rescaling.py
+├── matrix_functions.py
+├── diagnostics.py
 ├── spectral.py
 ├── design.py
 ├── templates.py
@@ -73,6 +81,11 @@ Each module is intentionally small and focused:
 | `polynomials` | Chebyshev utilities and polynomial helpers |
 | `approximation` | bounded polynomial approximation tools |
 | `matrices` | small Hermitian test matrices |
+| `hamiltonians` | reusable small physics Hamiltonians |
+| `pde` | finite-difference PDE operators |
+| `rescaling` | spectral normalization helpers |
+| `matrix_functions` | polynomial builders for physics matrix functions |
+| `diagnostics` | state, operator, and spectral diagnostics |
 | `spectral` | classical spectral matrix functions |
 | `design` | task-oriented bounded polynomial builders |
 | `templates` | ready-made bounded polynomial families |

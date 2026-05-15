@@ -142,6 +142,21 @@
 
       <article class="project-card">
         <div>
+          <h3>Physics Workflows</h3>
+          <p>Build Hamiltonians, PDE operators, spectral rescalings, and matrix-function polynomials for concrete physics examples.</p>
+        </div>
+        <div class="tags">
+          <span>Physics</span>
+          <span>PDEs</span>
+          <span>Hamiltonians</span>
+        </div>
+        <div class="card-links">
+          <a href="qsvt/physics.html">Open physics guide</a>
+        </div>
+      </article>
+
+      <article class="project-card">
+        <div>
           <h3>Diagnostics Reports</h3>
           <p>Reuse JSON-safe diagnostics, plotting helpers, and CLI report outputs outside notebooks.</p>
         </div>
@@ -222,6 +237,7 @@
 qsvt/index
 qsvt/api_reference
 qsvt/design
+qsvt/physics
 qsvt/templates
 qsvt/reports
 qsvt/qsvt_reports

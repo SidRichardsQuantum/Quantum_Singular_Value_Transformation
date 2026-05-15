@@ -2,6 +2,51 @@
 
 ---
 
+## [0.1.10] – 15th May 2026
+
+### Added
+
+- added real physics example notebooks under `notebooks/real_examples/`
+  covering Hamiltonian simulation, ground-state filtering, quantum chemistry,
+  Green's functions, spectral density estimation, Gibbs states, PDE linear
+  systems, transport physics, and tensor-network hybrid filtering
+- added `qsvt.hamiltonians` with reusable small Hamiltonian constructors for
+  tight-binding chains, transverse-field Ising models, Heisenberg chains, and
+  Pauli strings
+- added `qsvt.pde` with finite-difference Laplacian builders for 1D and 2D
+  PDE examples
+- added `qsvt.rescaling` for Hermitian spectral normalization and cutoff-based
+  rescaling workflows
+- added `qsvt.matrix_functions` with polynomial builders for real-time
+  evolution, imaginary-time evolution, resolvents, Gaussian spectral windows,
+  low-energy projectors, and positive inverse workflows
+- added `qsvt.diagnostics` with reusable state, operator, density-matrix,
+  expectation-value, ground-state-overlap, and spectral-weight metrics
+- added public Chebyshev/monomial basis conversion helpers in
+  `qsvt.polynomials`
+- added `design_positive_inverse_polynomial` and
+  `design_positive_inverse_diagnostics` for positive definite inverse-style
+  workflows
+- added notebook smoke-test coverage for all real physics example notebooks
+
+### Changed
+
+- updated real physics notebooks to use general package APIs instead of local
+  copies of reusable constructors and polynomial builders
+- improved positive inverse design with `extension="auto"`, which compares
+  bounded full-interval extensions and selects the lower sampled error on the
+  positive design interval
+- updated the README, usage guide, API reference, package overview, and docs
+  landing page to document the new physics workflow surface area
+
+### Documentation
+
+- added a dedicated physics workflow guide at `docs/qsvt/physics.md`
+- added a `notebooks/real_examples/README.md` mapping major physics areas to
+  executable notebooks
+
+---
+
 ## [0.1.9] – 14th May 2026
 
 ### Changed

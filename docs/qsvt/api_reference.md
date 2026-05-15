@@ -25,6 +25,11 @@ The package is organised into the following modules:
 - `qsvt.polynomials`
 - `qsvt.approximation`
 - `qsvt.matrices`
+- `qsvt.hamiltonians`
+- `qsvt.pde`
+- `qsvt.rescaling`
+- `qsvt.matrix_functions`
+- `qsvt.diagnostics`
 - `qsvt.spectral`
 - `qsvt.design`
 - `qsvt.templates`
@@ -54,6 +59,7 @@ For the higher-level polynomial builders and ready-made templates, see:
 
 - [Polynomial design helpers](design.md)
 - [Polynomial templates](templates.md)
+- [Physics workflows](physics.md)
 - [Diagnostics reports](reports.md)
 - [QSVT transform reports](qsvt_reports.md)
 
@@ -196,6 +202,16 @@ This is useful for quick QSVT-style boundedness checks.
 ### `normalize_coefficients(coeffs)`
 
 Clean a coefficient list by zeroing tiny values and removing trailing zeros.
+
+---
+
+### `chebyshev_to_monomial(coeffs, domain=(-1.0, 1.0))`
+
+Convert Chebyshev-basis coefficients to ascending monomial coefficients.
+
+### `monomial_to_chebyshev(coeffs, domain=(-1.0, 1.0))`
+
+Convert ascending monomial coefficients to Chebyshev-basis coefficients.
 
 ---
 

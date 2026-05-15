@@ -324,12 +324,54 @@ def normalize_coefficients(coeffs: Iterable[float], tol: float = 1e-12) -> np.nd
     return arr[: nz[-1] + 1]
 
 
+def chebyshev_to_monomial(
+    cheb_coeffs: Iterable[float],
+    *,
+    domain: tuple[float, float] = (-1.0, 1.0),
+) -> np.ndarray:
+    """
+    Convert Chebyshev-basis coefficients to ascending monomial coefficients.
+
+    Parameters
+    ----------
+    cheb_coeffs
+        Chebyshev-series coefficients.
+    domain
+        Physical domain associated with the Chebyshev series.
+
+    Returns
+    -------
+    numpy.ndarray
+        Ascending monomial coefficients for evaluation with `eval_polynomial`.
+    """
+    coeffs = np.asarray(list(cheb_coeffs), dtype=float)
+    series = np.polynomial.Chebyshev(coeffs, domain=domain)
+    poly = series.convert(kind=np.polynomial.Polynomial)
+    return normalize_coefficients(poly.coef)
+
+
+def monomial_to_chebyshev(
+    coeffs: Iterable[float],
+    *,
+    domain: tuple[float, float] = (-1.0, 1.0),
+) -> np.ndarray:
+    """
+    Convert ascending monomial coefficients to Chebyshev-basis coefficients.
+    """
+    coeffs_arr = np.asarray(list(coeffs), dtype=float)
+    poly = np.polynomial.Polynomial(coeffs_arr)
+    series = poly.convert(kind=np.polynomial.Chebyshev, domain=domain)
+    return normalize_coefficients(series.coef)
+
+
 __all__ = [
     "chebyshev_t",
     "chebyshev_t3",
+    "chebyshev_to_monomial",
     "eval_polynomial",
     "polynomial_degree",
     "polynomial_parity",
     "is_bounded_on_interval",
+    "monomial_to_chebyshev",
     "normalize_coefficients",
 ]
