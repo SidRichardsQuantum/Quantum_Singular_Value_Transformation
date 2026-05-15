@@ -2,6 +2,27 @@
 
 ---
 
+## [0.1.12] – 15th May 2026
+
+### Added
+
+- added committed CLI-generated release artefacts under `results/`, including
+  design, diagonal QSVT, and Hermitian matrix transform reports
+- added an extracted introductory notebook plot gallery to `RESULTS.md`
+- added `scripts/extract_notebook_plots.py` to regenerate notebook plot
+  artefacts from embedded notebook PNG outputs
+
+### Changed
+
+- configured pytest with `pythonpath = ["src"]` so fresh checkouts can run
+  tests without requiring an editable install first
+- expanded notebook execution coverage to include both introductory notebooks
+  and real physics example notebooks
+- updated the 2x2 linear-solver notebook plot to use real-valued amplitudes
+  explicitly, removing complex-value matplotlib warnings from the test suite
+
+---
+
 ## [0.1.11] – 15th May 2026
 
 ### Documentation

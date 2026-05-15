@@ -1,10 +1,9 @@
 # Results
 
 This repository is primarily notebook-first: the executable notebooks are the
-source of truth for demonstrations, plots, and numerical checks. There are no
-checked-in `results/`, `plots/`, or `tables/` artefact directories at the time
-of writing. The introductory notebooks contain embedded output figures, while
-the real physics notebooks are kept as clean, executable workflows.
+source of truth for demonstrations, plots, and numerical checks. The
+introductory notebooks contain embedded output figures, while the real physics
+notebooks are kept as clean, executable workflows.
 
 Use this page as an index of the current result-producing workflows and as the
 convention for future saved artefacts.
@@ -25,6 +24,74 @@ convention for future saved artefacts.
 | `notebooks/07_QSVT_Matrix_Functions_Powers_and_Roots.ipynb` | embedded plots | matrix powers and square-root-style transforms |
 | `notebooks/08_QSVT_Sign_Function_and_Projectors.ipynb` | embedded plots | sign functions and spectral projectors |
 | `notebooks/09_QSVT_Design_and_Templates.ipynb` | embedded plots | reusable design and template families |
+
+---
+
+## Introductory notebook plot gallery
+
+These PNG files are extracted from the embedded outputs in the introductory
+notebooks so the notebook figures are visible from the results index.
+
+Regenerate them after updating notebook outputs with:
+
+```bash
+python scripts/extract_notebook_plots.py
+```
+
+### `01_QSVT_Scalar_and_Diagonal_Matrix.ipynb`
+
+<a href="results/plots/notebooks/01_QSVT_Scalar_and_Diagonal_Matrix-plot-01.png"><img src="results/plots/notebooks/01_QSVT_Scalar_and_Diagonal_Matrix-plot-01.png" alt="QSVT scalar and diagonal matrix plot 1" width="320"></a>
+<a href="results/plots/notebooks/01_QSVT_Scalar_and_Diagonal_Matrix-plot-02.png"><img src="results/plots/notebooks/01_QSVT_Scalar_and_Diagonal_Matrix-plot-02.png" alt="QSVT scalar and diagonal matrix plot 2" width="320"></a>
+
+### `02_QSVT_Singular_Value_Filter.ipynb`
+
+<a href="results/plots/notebooks/02_QSVT_Singular_Value_Filter-plot-01.png"><img src="results/plots/notebooks/02_QSVT_Singular_Value_Filter-plot-01.png" alt="QSVT singular value filter plot 1" width="320"></a>
+<a href="results/plots/notebooks/02_QSVT_Singular_Value_Filter-plot-02.png"><img src="results/plots/notebooks/02_QSVT_Singular_Value_Filter-plot-02.png" alt="QSVT singular value filter plot 2" width="320"></a>
+
+### `03_QSP_Polynomial_Demo.ipynb`
+
+<a href="results/plots/notebooks/03_QSP_Polynomial_Demo-plot-01.png"><img src="results/plots/notebooks/03_QSP_Polynomial_Demo-plot-01.png" alt="QSP polynomial demo plot 1" width="320"></a>
+<a href="results/plots/notebooks/03_QSP_Polynomial_Demo-plot-02.png"><img src="results/plots/notebooks/03_QSP_Polynomial_Demo-plot-02.png" alt="QSP polynomial demo plot 2" width="320"></a>
+
+### `04_QSVT_Linear_Solver_2x2.ipynb`
+
+<a href="results/plots/notebooks/04_QSVT_Linear_Solver_2x2-plot-01.png"><img src="results/plots/notebooks/04_QSVT_Linear_Solver_2x2-plot-01.png" alt="QSVT 2 by 2 linear solver plot 1" width="320"></a>
+<a href="results/plots/notebooks/04_QSVT_Linear_Solver_2x2-plot-02.png"><img src="results/plots/notebooks/04_QSVT_Linear_Solver_2x2-plot-02.png" alt="QSVT 2 by 2 linear solver plot 2" width="320"></a>
+
+### `04_QSVT_Linear_Solver_4x4.ipynb`
+
+<a href="results/plots/notebooks/04_QSVT_Linear_Solver_4x4-plot-01.png"><img src="results/plots/notebooks/04_QSVT_Linear_Solver_4x4-plot-01.png" alt="QSVT 4 by 4 linear solver plot 1" width="320"></a>
+<a href="results/plots/notebooks/04_QSVT_Linear_Solver_4x4-plot-02.png"><img src="results/plots/notebooks/04_QSVT_Linear_Solver_4x4-plot-02.png" alt="QSVT 4 by 4 linear solver plot 2" width="320"></a>
+
+### `05_QSVT_Linear_Solver_Approximate.ipynb`
+
+<a href="results/plots/notebooks/05_QSVT_Linear_Solver_Approximate-plot-01.png"><img src="results/plots/notebooks/05_QSVT_Linear_Solver_Approximate-plot-01.png" alt="QSVT approximate linear solver plot 1" width="320"></a>
+<a href="results/plots/notebooks/05_QSVT_Linear_Solver_Approximate-plot-02.png"><img src="results/plots/notebooks/05_QSVT_Linear_Solver_Approximate-plot-02.png" alt="QSVT approximate linear solver plot 2" width="320"></a>
+
+### `06_QSVT_Polynomial_Design_and_Approximation.ipynb`
+
+<a href="results/plots/notebooks/06_QSVT_Polynomial_Design_and_Approximation-plot-01.png"><img src="results/plots/notebooks/06_QSVT_Polynomial_Design_and_Approximation-plot-01.png" alt="QSVT polynomial design and approximation plot 1" width="320"></a>
+<a href="results/plots/notebooks/06_QSVT_Polynomial_Design_and_Approximation-plot-02.png"><img src="results/plots/notebooks/06_QSVT_Polynomial_Design_and_Approximation-plot-02.png" alt="QSVT polynomial design and approximation plot 2" width="320"></a>
+<a href="results/plots/notebooks/06_QSVT_Polynomial_Design_and_Approximation-plot-03.png"><img src="results/plots/notebooks/06_QSVT_Polynomial_Design_and_Approximation-plot-03.png" alt="QSVT polynomial design and approximation plot 3" width="320"></a>
+
+### `07_QSVT_Matrix_Functions_Powers_and_Roots.ipynb`
+
+<a href="results/plots/notebooks/07_QSVT_Matrix_Functions_Powers_and_Roots-plot-01.png"><img src="results/plots/notebooks/07_QSVT_Matrix_Functions_Powers_and_Roots-plot-01.png" alt="QSVT matrix functions powers and roots plot 1" width="320"></a>
+<a href="results/plots/notebooks/07_QSVT_Matrix_Functions_Powers_and_Roots-plot-02.png"><img src="results/plots/notebooks/07_QSVT_Matrix_Functions_Powers_and_Roots-plot-02.png" alt="QSVT matrix functions powers and roots plot 2" width="320"></a>
+<a href="results/plots/notebooks/07_QSVT_Matrix_Functions_Powers_and_Roots-plot-03.png"><img src="results/plots/notebooks/07_QSVT_Matrix_Functions_Powers_and_Roots-plot-03.png" alt="QSVT matrix functions powers and roots plot 3" width="320"></a>
+
+### `08_QSVT_Sign_Function_and_Projectors.ipynb`
+
+<a href="results/plots/notebooks/08_QSVT_Sign_Function_and_Projectors-plot-01.png"><img src="results/plots/notebooks/08_QSVT_Sign_Function_and_Projectors-plot-01.png" alt="QSVT sign function and projectors plot 1" width="320"></a>
+<a href="results/plots/notebooks/08_QSVT_Sign_Function_and_Projectors-plot-02.png"><img src="results/plots/notebooks/08_QSVT_Sign_Function_and_Projectors-plot-02.png" alt="QSVT sign function and projectors plot 2" width="320"></a>
+
+### `09_QSVT_Design_and_Templates.ipynb`
+
+<a href="results/plots/notebooks/09_QSVT_Design_and_Templates-plot-01.png"><img src="results/plots/notebooks/09_QSVT_Design_and_Templates-plot-01.png" alt="QSVT design and templates plot 1" width="320"></a>
+<a href="results/plots/notebooks/09_QSVT_Design_and_Templates-plot-02.png"><img src="results/plots/notebooks/09_QSVT_Design_and_Templates-plot-02.png" alt="QSVT design and templates plot 2" width="320"></a>
+<a href="results/plots/notebooks/09_QSVT_Design_and_Templates-plot-03.png"><img src="results/plots/notebooks/09_QSVT_Design_and_Templates-plot-03.png" alt="QSVT design and templates plot 3" width="320"></a>
+<a href="results/plots/notebooks/09_QSVT_Design_and_Templates-plot-04.png"><img src="results/plots/notebooks/09_QSVT_Design_and_Templates-plot-04.png" alt="QSVT design and templates plot 4" width="320"></a>
+<a href="results/plots/notebooks/09_QSVT_Design_and_Templates-plot-05.png"><img src="results/plots/notebooks/09_QSVT_Design_and_Templates-plot-05.png" alt="QSVT design and templates plot 5" width="320"></a>
 
 ---
 
@@ -53,9 +120,27 @@ the command line.
 
 ---
 
+## Committed release artefacts
+
+The following artefacts provide small, reproducible release snapshots generated
+from the package CLI.
+
+| artefact | workflow | max error | RMS error | notes |
+| --- | --- | ---: | ---: | --- |
+| `results/reports/sign-report.json` | sign polynomial design | `2.091981425741754e-01` | `1.1105097545055853e-01` | degree-13 sign approximation with `gamma=0.2`; bounded on `[-1, 1]` |
+| `results/plots/sign-report.png` | sign polynomial design plot | n/a | n/a | target-vs-polynomial plot for `sign-report.json` |
+| `results/reports/qsvt-report.json` | diagonal QSVT transform | `9.999778782798785e-13` | `5.585577546102077e-13` | compares QSVT output with direct evaluation of `x^2` |
+| `results/reports/matrix-report.json` | Hermitian matrix QSVT transform | `5.264677582772492e-13` | `3.2060825311797223e-13` | real-part comparison against the classical spectral polynomial |
+| `results/tables/qsvt-error-summary.csv` | release summary table | n/a | n/a | compact index over the generated JSON reports |
+
+Generated for package version `0.1.11` as preparation for the next patch
+release.
+
+---
+
 ## Report and plot artefact convention
 
-Future generated artefacts should be saved in predictable locations:
+Generated artefacts should be saved in predictable locations:
 
 | artefact type | suggested path | examples |
 | --- | --- | --- |
@@ -63,7 +148,7 @@ Future generated artefacts should be saved in predictable locations:
 | static plots | `results/plots/` | `sign-report.png`, `filter-response.png` |
 | tabular summaries | `results/tables/` | `qsvt-error-summary.csv` |
 
-These paths are not required for using the package. They are a repository
+These paths are not required for using the package. They are the repository
 convention for committed result snapshots when a notebook or release needs
 stable figures and tables.
 

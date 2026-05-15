@@ -312,7 +312,7 @@ Full documentation:
 - Results index: [RESULTS.md](RESULTS.md)
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
 
-Current release: `0.1.11`
+Current release: `0.1.12`
 
 ---
 
