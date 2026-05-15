@@ -308,9 +308,11 @@ Full documentation:
 - API reference: [docs/qsvt/api_reference.md](docs/qsvt/api_reference.md)
 - Package index: [docs/qsvt/index.md](docs/qsvt/index.md)
 - Physics workflows: [docs/qsvt/physics.md](docs/qsvt/physics.md)
+- Notebooks index: [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md)
+- Results index: [RESULTS.md](RESULTS.md)
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
 
-Current release: `0.1.10`
+Current release: `0.1.11`
 
 ---
 

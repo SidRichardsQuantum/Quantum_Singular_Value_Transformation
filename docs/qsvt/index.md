@@ -35,7 +35,7 @@ Mathematical background and conceptual overview:
 - inverse-like behaviour via bounded polynomials
 - projectors and sign functions
 
-See: [Theory](../../THEORY.md)
+See: [Theory](theory.md)
 
 ---
 
@@ -49,6 +49,44 @@ Detailed reference for the Python package:
 - minimal usage examples
 
 See: [API reference](api_reference.md)
+
+### Usage guide
+
+Practical workflows and command line examples:
+
+- installing `qsvt-pennylane`
+- choosing or designing bounded polynomials
+- applying transforms to scalars, diagonal matrices, and Hermitian matrices
+- comparing classical and QSVT outputs
+- using the package CLI
+
+See: [Usage guide](usage.md)
+
+### Notebooks
+
+Notebook-first examples cover the core QSVT path and real physics workflows,
+including matrix functions, spectral filters, PDE operators, Hamiltonian
+simulation, and transport examples.
+
+See: [Notebooks](notebooks.md)
+
+### Results
+
+Notebook-derived outcomes and reproducible artefact conventions:
+
+- which notebooks currently include embedded plots
+- which real physics workflows are clean execution sources
+- where future JSON reports, plots, and tables should live
+- command line examples for regenerating report artefacts
+
+See: [Results](results.md)
+
+### Changelog
+
+Release notes document package, notebook, documentation, and generated artefact
+changes.
+
+See: [Changelog](changelog.md)
 
 ---
 

@@ -2,6 +2,30 @@
 
 ---
 
+## [0.1.11] – 15th May 2026
+
+### Documentation
+
+- refreshed the GitHub Pages landing page and Sphinx/Furo styling to better
+  match the main Sid Richards portfolio site
+- reorganised the documentation sidebar into Start Here, Guides, and Reference
+  sections
+- added first-class Sphinx pages for theory, usage, notebooks, results, and the
+  changelog
+- added `RESULTS.md` as a notebook result index and convention for future
+  reports, plots, and tables
+- replaced fragile author links in rendered documentation with the main
+  portfolio link
+
+### Changed
+
+- normalised real physics example notebooks with explicit cell IDs for future
+  `nbformat` compatibility
+- verified all introductory and real physics notebooks execute with
+  `nbconvert`
+
+---
+
 ## [0.1.10] – 15th May 2026
 
 ### Added

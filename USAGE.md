@@ -491,10 +491,10 @@ Sid Richards
 
 GitHub: [https://github.com/SidRichardsQuantum](https://github.com/SidRichardsQuantum)
 
-LinkedIn: [https://www.linkedin.com/in/sid-richards-21374b30b/](https://www.linkedin.com/in/sid-richards-21374b30b/)
+Portfolio: [https://sidrichardsquantum.github.io/](https://sidrichardsquantum.github.io/)
 
 ---
 
 ## License
 
-MIT License — see [LICENSE](LICENSE)
+MIT License.

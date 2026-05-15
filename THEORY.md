@@ -441,7 +441,7 @@ The notebooks in this repository are concrete realizations of these ideas in the
 
 **Sid Richards**
 
-LinkedIn: [https://www.linkedin.com/in/sid-richards-21374b30b/](https://www.linkedin.com/in/sid-richards-21374b30b/)
+Portfolio: [https://sidrichardsquantum.github.io/](https://sidrichardsquantum.github.io/)
 
 GitHub: [https://github.com/SidRichardsQuantum](https://github.com/SidRichardsQuantum)
 
@@ -449,4 +449,4 @@ GitHub: [https://github.com/SidRichardsQuantum](https://github.com/SidRichardsQu
 
 ## License
 
-MIT License — see [LICENSE](LICENSE)
+MIT License.

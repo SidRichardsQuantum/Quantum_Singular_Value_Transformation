@@ -2,6 +2,20 @@
 
 ```{raw} html
 <div class="doc-home">
+  <header class="site-header" aria-label="Project navigation">
+    <a class="brand" href="#" aria-label="qsvt-pennylane home">
+      <span class="brand-mark">SR</span>
+      <span>qsvt-pennylane</span>
+    </a>
+    <nav class="nav-links" aria-label="Primary navigation">
+      <a href="#documentation">Docs</a>
+      <a href="#package">Package</a>
+      <a href="#project-links">Project</a>
+      <a href="search.html">Search</a>
+      <a href="https://sidrichardsquantum.github.io/">Portfolio</a>
+    </nav>
+  </header>
+
   <section class="hero section">
     <div class="hero-copy">
       <p class="eyebrow">Quantum singular value transformation and PennyLane tooling</p>
@@ -35,24 +49,26 @@
           <rect class="visual-bg" width="520" height="360" rx="8" />
           <rect class="visual-grid" width="520" height="360" rx="8" fill="url(#hero-grid)" />
           <g class="visual-circuit">
-            <path d="M72 86h344M72 146h344M72 206h344M72 266h344" />
-            <path d="M150 86v180M258 146v120M366 86v180" />
-            <circle cx="150" cy="86" r="13" />
-            <circle cx="150" cy="266" r="13" />
-            <circle cx="258" cy="146" r="13" />
-            <circle cx="258" cy="266" r="13" />
-            <circle cx="366" cy="86" r="13" />
-            <circle cx="366" cy="266" r="13" />
-            <path d="M103 68v36M85 86h36M211 128l36 36M247 128l-36 36M339 188l54 36M393 188l-54 36" />
-            <rect x="200" y="66" width="52" height="40" rx="8" />
-            <rect x="398" y="126" width="52" height="40" rx="8" />
+            <path d="M74 96h372M74 174h372M74 252h372" />
+            <path d="M122 96v156M398 96v156" />
+            <circle cx="122" cy="96" r="11" />
+            <circle cx="122" cy="252" r="11" />
+            <circle cx="398" cy="96" r="11" />
+            <circle cx="398" cy="252" r="11" />
+            <rect x="170" y="68" width="70" height="56" rx="8" />
+            <rect x="280" y="68" width="70" height="56" rx="8" />
+            <rect x="162" y="146" width="86" height="56" rx="8" />
+            <rect x="272" y="146" width="86" height="56" rx="8" />
+            <rect x="206" y="224" width="108" height="56" rx="8" />
           </g>
           <g class="visual-labels">
-            <text x="60" y="322">QSVT</text>
-            <text x="148" y="322">QSP</text>
-            <text x="224" y="322">POLY</text>
-            <text x="314" y="322">DIAG</text>
-            <text x="404" y="322">QML</text>
+            <text x="190" y="101">&Pi;&phi;0</text>
+            <text x="306" y="101">U_A</text>
+            <text x="184" y="180">&Pi;&phi;1</text>
+            <text x="298" y="180">U_A&dagger;</text>
+            <text x="227" y="258">&Pi;&phi;2</text>
+            <text x="78" y="322">QSVT phase sequence</text>
+            <text x="332" y="322">p(A)</text>
           </g>
         </svg>
       </div>
@@ -69,7 +85,7 @@
     </div>
   </section>
 
-  <section class="section">
+  <section id="documentation" class="section">
     <div class="section-heading">
       <p class="eyebrow">Documentation</p>
       <h2>Read the package the same way it is built</h2>
@@ -92,6 +108,66 @@
         </div>
         <div class="card-links">
           <a href="qsvt/index.html">Open overview</a>
+        </div>
+      </article>
+
+      <article class="project-card">
+        <div>
+          <h3>Theory Notes</h3>
+          <p>Read the QSVT background on block encodings, bounded polynomials, QSP, projectors, and inverse-like transforms.</p>
+        </div>
+        <div class="tags">
+          <span>Theory</span>
+          <span>QSVT</span>
+          <span>QSP</span>
+        </div>
+        <div class="card-links">
+          <a href="qsvt/theory.html">Open theory</a>
+        </div>
+      </article>
+
+      <article class="project-card">
+        <div>
+          <h3>Usage Guide</h3>
+          <p>Follow practical workflows for choosing polynomials, applying matrix transforms, and using the command line interface.</p>
+        </div>
+        <div class="tags">
+          <span>Usage</span>
+          <span>CLI</span>
+          <span>Workflow</span>
+        </div>
+        <div class="card-links">
+          <a href="qsvt/usage.html">Open usage guide</a>
+        </div>
+      </article>
+
+      <article class="project-card">
+        <div>
+          <h3>Notebooks</h3>
+          <p>Browse the introductory and real physics notebook sequence, including PDEs, Hamiltonians, spectral density, and transport examples.</p>
+        </div>
+        <div class="tags">
+          <span>Notebooks</span>
+          <span>Examples</span>
+          <span>Physics</span>
+        </div>
+        <div class="card-links">
+          <a href="qsvt/notebooks.html">Open notebooks</a>
+        </div>
+      </article>
+
+      <article class="project-card">
+        <div>
+          <h3>Results</h3>
+          <p>Track notebook output status, reproducible report commands, and conventions for future plots, tables, and JSON artefacts.</p>
+        </div>
+        <div class="tags">
+          <span>Results</span>
+          <span>Plots</span>
+          <span>Reports</span>
+        </div>
+        <div class="card-links">
+          <a href="qsvt/results.html">Open results</a>
         </div>
       </article>
 
@@ -184,10 +260,25 @@
           <a href="qsvt/qsvt_reports.html">Open QSVT reports</a>
         </div>
       </article>
+
+      <article class="project-card">
+        <div>
+          <h3>Changelog</h3>
+          <p>Track release notes for package APIs, documentation, notebooks, physics workflows, and generated artefacts.</p>
+        </div>
+        <div class="tags">
+          <span>Release Notes</span>
+          <span>Package</span>
+          <span>Docs</span>
+        </div>
+        <div class="card-links">
+          <a href="qsvt/changelog.html">Open changelog</a>
+        </div>
+      </article>
     </div>
   </section>
 
-  <section class="section">
+  <section id="package" class="section">
     <div class="section-heading">
       <p class="eyebrow">Package</p>
       <h2>Install and link out</h2>
@@ -213,18 +304,23 @@
     </div>
   </section>
 
-  <section class="section split-section">
+  <section id="project-links" class="section split-section">
     <div class="section-heading">
       <p class="eyebrow">Project links</p>
       <h2>Documentation with the rest of the project nearby</h2>
     </div>
     <div class="about-copy">
       <p>The repo also includes a sequence of notebooks that introduce QSVT concepts step by step, from scalar transforms to linear-solver style experiments and polynomial design workflows.</p>
-      <p><a href="https://github.com/SidRichardsQuantum/Quantum_Singular_Value_Transformation/tree/main/notebooks" target="_blank" rel="noopener noreferrer">Browse notebooks</a></p>
-      <p><a href="https://github.com/SidRichardsQuantum/Quantum_Singular_Value_Transformation/blob/main/THEORY.md" target="_blank" rel="noopener noreferrer">Read theory notes</a></p>
-      <p><a href="https://github.com/SidRichardsQuantum/Quantum_Singular_Value_Transformation/blob/main/USAGE.md" target="_blank" rel="noopener noreferrer">Open CLI and usage guide</a></p>
+      <p><a href="qsvt/notebooks.html">Browse notebooks</a></p>
+      <p><a href="qsvt/theory.html">Read theory notes</a></p>
+      <p><a href="qsvt/usage.html">Open CLI and usage guide</a></p>
     </div>
   </section>
+
+  <footer class="site-footer">
+    <span>qsvt-pennylane documentation</span>
+    <a href="https://sidrichardsquantum.github.io/">Back to Sid Richards portfolio</a>
+  </footer>
 </div>
 ```
 
@@ -232,13 +328,34 @@
 :hidden:
 :maxdepth: 1
 :titlesonly:
-:caption: Documentation
+:caption: Start Here
 
-qsvt/index
-qsvt/api_reference
-qsvt/design
-qsvt/physics
-qsvt/templates
-qsvt/reports
-qsvt/qsvt_reports
+Overview <qsvt/index>
+Theory <qsvt/theory>
+Usage Guide <qsvt/usage>
+Results <qsvt/results>
+```
+
+```{toctree}
+:hidden:
+:maxdepth: 1
+:titlesonly:
+:caption: Guides
+
+Polynomial Design <qsvt/design>
+Physics Workflows <qsvt/physics>
+Polynomial Templates <qsvt/templates>
+Diagnostics Reports <qsvt/reports>
+QSVT Transform Reports <qsvt/qsvt_reports>
+```
+
+```{toctree}
+:hidden:
+:maxdepth: 1
+:titlesonly:
+:caption: Reference
+
+API Reference <qsvt/api_reference>
+Notebooks <qsvt/notebooks>
+Changelog <qsvt/changelog>
 ```
