@@ -2,6 +2,29 @@
 
 ---
 
+## [0.1.13] – 16th May 2026
+
+### Added
+
+- added five real-world physics example notebooks under
+  `notebooks/real_examples/`:
+  - `24_ising_phase_transition_filtering.ipynb`
+  - `25_diffusion_heat_treatment_slab.ipynb`
+  - `26_graphene_nanoribbon_density_of_states.ipynb`
+  - `27_fermi_dirac_electronic_occupations.ipynb`
+  - `28_photonic_crystal_band_gap_filtering.ipynb`
+- added executable validation cells for the new notebooks covering spin-chain
+  phase diagnostics, thermal diffusion, graphene nanoribbon density of states,
+  Fermi-Dirac occupations, and photonic band-gap filtering
+
+### Documentation
+
+- updated the README, physics workflow guide, notebook index, real-example
+  notebook index, and results index to include the expanded physics examples
+- updated the documented current release to `0.1.13`
+
+---
+
 ## [0.1.12] – 15th May 2026
 
 ### Added

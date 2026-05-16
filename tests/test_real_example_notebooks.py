@@ -33,7 +33,8 @@ def _execute_notebooks(notebooks):
 
 def test_introductory_notebooks_execute():
     repo_root = Path(__file__).resolve().parents[1]
-    notebooks = sorted((repo_root / "notebooks").glob("*.ipynb"))
+    notebook_dir = repo_root / "notebooks" / "tutorials"
+    notebooks = sorted(notebook_dir.glob("*.ipynb"))
 
     _execute_notebooks(notebooks)
 

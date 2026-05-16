@@ -14,16 +14,16 @@ convention for future saved artefacts.
 
 | notebook | current output status | result focus |
 | --- | --- | --- |
-| `notebooks/01_QSVT_Scalar_and_Diagonal_Matrix.ipynb` | embedded plots | scalar and diagonal polynomial transforms |
-| `notebooks/02_QSVT_Singular_Value_Filter.ipynb` | embedded plots | soft singular-value filtering |
-| `notebooks/03_QSP_Polynomial_Demo.ipynb` | embedded plots | QSP polynomial behaviour from two perspectives |
-| `notebooks/04_QSVT_Linear_Solver_2x2.ipynb` | embedded plots | small exact linear-solver-style check |
-| `notebooks/04_QSVT_Linear_Solver_4x4.ipynb` | embedded plots | larger diagonal linear-solver-style check |
-| `notebooks/05_QSVT_Linear_Solver_Approximate.ipynb` | embedded plots | Chebyshev inverse-like approximation |
-| `notebooks/06_QSVT_Polynomial_Design_and_Approximation.ipynb` | embedded plots | polynomial approximation and boundedness |
-| `notebooks/07_QSVT_Matrix_Functions_Powers_and_Roots.ipynb` | embedded plots | matrix powers and square-root-style transforms |
-| `notebooks/08_QSVT_Sign_Function_and_Projectors.ipynb` | embedded plots | sign functions and spectral projectors |
-| `notebooks/09_QSVT_Design_and_Templates.ipynb` | embedded plots | reusable design and template families |
+| `notebooks/tutorials/01_QSVT_Scalar_and_Diagonal_Matrix.ipynb` | embedded plots | scalar and diagonal polynomial transforms |
+| `notebooks/tutorials/02_QSVT_Singular_Value_Filter.ipynb` | embedded plots | soft singular-value filtering |
+| `notebooks/tutorials/03_QSP_Polynomial_Demo.ipynb` | embedded plots | QSP polynomial behaviour from two perspectives |
+| `notebooks/tutorials/04_QSVT_Linear_Solver_2x2.ipynb` | embedded plots | small exact linear-solver-style check |
+| `notebooks/tutorials/05_QSVT_Linear_Solver_4x4.ipynb` | embedded plots | larger diagonal linear-solver-style check |
+| `notebooks/tutorials/06_QSVT_Linear_Solver_Approximate.ipynb` | embedded plots | Chebyshev inverse-like approximation |
+| `notebooks/tutorials/07_QSVT_Polynomial_Design_and_Approximation.ipynb` | embedded plots | polynomial approximation and boundedness |
+| `notebooks/tutorials/08_QSVT_Matrix_Functions_Powers_and_Roots.ipynb` | embedded plots | matrix powers and square-root-style transforms |
+| `notebooks/tutorials/09_QSVT_Sign_Function_and_Projectors.ipynb` | embedded plots | sign functions and spectral projectors |
+| `notebooks/tutorials/10_QSVT_Design_and_Templates.ipynb` | embedded plots | reusable design and template families |
 
 ---
 
@@ -117,6 +117,22 @@ the command line.
 | `10_gibbs_state_thermal_weights.ipynb` | Gibbs-state thermal weights |
 | `11_transport_physics_landauer_chain.ipynb` | Landauer-style chain transmission |
 | `12_tensor_network_hybrid_filtering.ipynb` | product-state energy filtering |
+| `13_heat_equation_2d_pde.ipynb` | 2D heat-equation diffusion workflow |
+| `14_advection_diffusion_pde.ipynb` | advection-diffusion PDE workflow |
+| `15_wave_equation_dynamics.ipynb` | wave-equation dynamics |
+| `16_helmholtz_equation_pde.ipynb` | Helmholtz-equation PDE workflow |
+| `17_quantum_walk_search_toy.ipynb` | quantum-walk search toy model |
+| `18_ssh_chain_edge_state_filtering.ipynb` | SSH-chain edge-state filtering |
+| `19_anderson_localization.ipynb` | Anderson localization |
+| `20_schrodinger_bound_states.ipynb` | Schrödinger bound states |
+| `21_quantum_harmonic_oscillator_grid.ipynb` | harmonic-oscillator grid spectrum |
+| `22_electrostatic_green_function_poisson.ipynb` | electrostatic Green's function |
+| `23_coupled_oscillator_normal_modes.ipynb` | coupled-oscillator normal modes |
+| `24_ising_phase_transition_filtering.ipynb` | Ising phase-transition filtering |
+| `25_diffusion_heat_treatment_slab.ipynb` | diffusion-limited heat treatment |
+| `26_graphene_nanoribbon_density_of_states.ipynb` | graphene nanoribbon density of states |
+| `27_fermi_dirac_electronic_occupations.ipynb` | Fermi-Dirac electronic occupations |
+| `28_photonic_crystal_band_gap_filtering.ipynb` | photonic-crystal band-gap filtering |
 
 ---
 
@@ -133,7 +149,7 @@ from the package CLI.
 | `results/reports/matrix-report.json` | Hermitian matrix QSVT transform | `5.264677582772492e-13` | `3.2060825311797223e-13` | real-part comparison against the classical spectral polynomial |
 | `results/tables/qsvt-error-summary.csv` | release summary table | n/a | n/a | compact index over the generated JSON reports |
 
-Generated for package version `0.1.11` as preparation for the next patch
+Generated for package version `0.1.12` as preparation for the next patch
 release.
 
 ---

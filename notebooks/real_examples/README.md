@@ -14,11 +14,42 @@ an exact classical spectral reference.
 | Spectral density estimation | `09_spectral_density_estimation.ipynb` |
 | Gibbs states | `10_gibbs_state_thermal_weights.ipynb` |
 | PDE linear systems | `05_poisson_equation_pde.ipynb` |
+| PDE heat flow | `13_heat_equation_2d_pde.ipynb` |
+| Advection-diffusion PDE | `14_advection_diffusion_pde.ipynb` |
+| Wave equation dynamics | `15_wave_equation_dynamics.ipynb` |
+| Helmholtz PDE | `16_helmholtz_equation_pde.ipynb` |
+| Quantum walk search | `17_quantum_walk_search_toy.ipynb` |
+| SSH edge states | `18_ssh_chain_edge_state_filtering.ipynb` |
+| Anderson localization | `19_anderson_localization.ipynb` |
+| Schrödinger bound states | `20_schrodinger_bound_states.ipynb` |
+| Harmonic oscillator | `21_quantum_harmonic_oscillator_grid.ipynb` |
+| Electrostatic Green's function | `22_electrostatic_green_function_poisson.ipynb` |
+| Coupled oscillator modes | `23_coupled_oscillator_normal_modes.ipynb` |
+| Ising phase transition | `24_ising_phase_transition_filtering.ipynb` |
+| Diffusion heat treatment | `25_diffusion_heat_treatment_slab.ipynb` |
+| Graphene nanoribbon DOS | `26_graphene_nanoribbon_density_of_states.ipynb` |
+| Fermi-Dirac occupations | `27_fermi_dirac_electronic_occupations.ipynb` |
+| Photonic crystal band gap | `28_photonic_crystal_band_gap_filtering.ipynb` |
 | Transport physics | `11_transport_physics_landauer_chain.ipynb` |
 | Tensor-network hybrids | `12_tensor_network_hybrid_filtering.ipynb` |
 
 Additional PDE and filtering examples:
 
 - `04_heat_equation_pde.ipynb`
+- `13_heat_equation_2d_pde.ipynb`
+- `14_advection_diffusion_pde.ipynb`
+- `15_wave_equation_dynamics.ipynb`
+- `16_helmholtz_equation_pde.ipynb`
+- `18_ssh_chain_edge_state_filtering.ipynb`
+- `19_anderson_localization.ipynb`
+- `20_schrodinger_bound_states.ipynb`
+- `21_quantum_harmonic_oscillator_grid.ipynb`
+- `22_electrostatic_green_function_poisson.ipynb`
+- `23_coupled_oscillator_normal_modes.ipynb`
+- `24_ising_phase_transition_filtering.ipynb`
+- `25_diffusion_heat_treatment_slab.ipynb`
+- `26_graphene_nanoribbon_density_of_states.ipynb`
+- `27_fermi_dirac_electronic_occupations.ipynb`
+- `28_photonic_crystal_band_gap_filtering.ipynb`
 - `02_tight_binding_band_filter.ipynb`
 - `03_imaginary_time_filtering.ipynb`

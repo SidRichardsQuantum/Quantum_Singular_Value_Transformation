@@ -12,7 +12,9 @@ recommended pattern is:
 The real-example notebooks in `notebooks/real_examples/` use this pattern for
 Hamiltonian simulation, ground-state filtering, quantum chemistry, Green's
 functions, spectral density estimation, Gibbs states, PDE linear systems,
-transport physics, and tensor-network hybrid filtering.
+transport physics, spin-chain phase diagnostics, electronic occupations,
+photonic band gaps, graphene nanoribbon density of states, and tensor-network
+hybrid filtering.
 
 ## Hamiltonians
 

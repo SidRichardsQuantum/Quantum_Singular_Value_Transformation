@@ -4,22 +4,26 @@ The repository includes notebook-first examples that introduce QSVT and QSP
 concepts step by step, followed by real physics workflows that reuse the package
 APIs.
 
-## Introductory notebooks
+## Tutorial notebooks
+
+Tutorial notebooks live in `notebooks/tutorials/`.
 
 | notebook | focus |
 |---|---|
-| `01_QSVT_Scalar_and_Diagonal_Matrix.ipynb` | scalar and diagonal QSVT transforms |
-| `02_QSVT_Singular_Value_Filter.ipynb` | singular-value filtering |
-| `03_QSP_Polynomial_Demo.ipynb` | QSP polynomial behaviour |
-| `04_QSVT_Linear_Solver_2x2.ipynb` | small linear-solver intuition |
-| `04_QSVT_Linear_Solver_4x4.ipynb` | larger diagonal linear-solver experiment |
-| `05_QSVT_Linear_Solver_Approximate.ipynb` | approximate inverse-like transforms |
-| `06_QSVT_Polynomial_Design_and_Approximation.ipynb` | polynomial design and approximation |
-| `07_QSVT_Matrix_Functions_Powers_and_Roots.ipynb` | matrix functions, powers, and roots |
-| `08_QSVT_Sign_Function_and_Projectors.ipynb` | sign functions and projectors |
-| `09_QSVT_Design_and_Templates.ipynb` | design helpers and templates |
+| `tutorials/01_QSVT_Scalar_and_Diagonal_Matrix.ipynb` | scalar and diagonal QSVT transforms |
+| `tutorials/02_QSVT_Singular_Value_Filter.ipynb` | singular-value filtering |
+| `tutorials/03_QSP_Polynomial_Demo.ipynb` | QSP polynomial behaviour |
+| `tutorials/04_QSVT_Linear_Solver_2x2.ipynb` | small linear-solver intuition |
+| `tutorials/05_QSVT_Linear_Solver_4x4.ipynb` | larger diagonal linear-solver experiment |
+| `tutorials/06_QSVT_Linear_Solver_Approximate.ipynb` | approximate inverse-like transforms |
+| `tutorials/07_QSVT_Polynomial_Design_and_Approximation.ipynb` | polynomial design and approximation |
+| `tutorials/08_QSVT_Matrix_Functions_Powers_and_Roots.ipynb` | matrix functions, powers, and roots |
+| `tutorials/09_QSVT_Sign_Function_and_Projectors.ipynb` | sign functions and projectors |
+| `tutorials/10_QSVT_Design_and_Templates.ipynb` | design helpers and templates |
 
 ## Real physics examples
+
+Real physics examples live in `notebooks/real_examples/`.
 
 | notebook | focus |
 |---|---|
@@ -35,6 +39,22 @@ APIs.
 | `10_gibbs_state_thermal_weights.ipynb` | Gibbs-state thermal weights |
 | `11_transport_physics_landauer_chain.ipynb` | transport physics and Landauer chains |
 | `12_tensor_network_hybrid_filtering.ipynb` | tensor-network hybrid filtering |
+| `13_heat_equation_2d_pde.ipynb` | 2D heat-equation PDE workflow |
+| `14_advection_diffusion_pde.ipynb` | advection-diffusion PDE workflow |
+| `15_wave_equation_dynamics.ipynb` | wave-equation dynamics |
+| `16_helmholtz_equation_pde.ipynb` | Helmholtz-equation PDE workflow |
+| `17_quantum_walk_search_toy.ipynb` | quantum-walk search toy model |
+| `18_ssh_chain_edge_state_filtering.ipynb` | SSH-chain edge-state filtering |
+| `19_anderson_localization.ipynb` | Anderson localization |
+| `20_schrodinger_bound_states.ipynb` | Schrödinger bound states |
+| `21_quantum_harmonic_oscillator_grid.ipynb` | harmonic-oscillator grid spectrum |
+| `22_electrostatic_green_function_poisson.ipynb` | electrostatic Green's function |
+| `23_coupled_oscillator_normal_modes.ipynb` | coupled-oscillator normal modes |
+| `24_ising_phase_transition_filtering.ipynb` | Ising phase-transition filtering |
+| `25_diffusion_heat_treatment_slab.ipynb` | diffusion-limited heat treatment |
+| `26_graphene_nanoribbon_density_of_states.ipynb` | graphene nanoribbon density of states |
+| `27_fermi_dirac_electronic_occupations.ipynb` | Fermi-Dirac electronic occupations |
+| `28_photonic_crystal_band_gap_filtering.ipynb` | photonic-crystal band-gap filtering |
 
 See the repository notebook directory for executable files:
 [notebooks](https://github.com/SidRichardsQuantum/Quantum_Singular_Value_Transformation/tree/main/notebooks).

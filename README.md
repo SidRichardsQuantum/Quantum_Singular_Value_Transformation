@@ -312,23 +312,25 @@ Full documentation:
 - Results index: [RESULTS.md](RESULTS.md)
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
 
-Current release: `0.1.12`
+Current release: `0.1.13`
 
 ---
 
 ## Notebooks
 
-The notebooks provide a guided introduction to QSVT as polynomial functional calculus.
+The tutorial notebooks in `notebooks/tutorials/` provide a guided introduction
+to QSVT as polynomial functional calculus.
 
 1. scalar intuition
 2. singular value filtering
 3. QSP polynomials
-4. exact linear solvers
-5. approximate inverse behaviour
-6. polynomial design and approximation
-7. matrix powers and roots
-8. sign function and projectors
-9. reusable polynomial workflows
+4. exact 2x2 linear solver
+5. exact 4x4 linear solver
+6. approximate inverse behaviour
+7. polynomial design and approximation
+8. matrix powers and roots
+9. sign function and projectors
+10. reusable polynomial workflows
 
 The examples emphasise:
 
@@ -340,7 +342,9 @@ The examples emphasise:
 Real physics examples live in `notebooks/real_examples/` and cover Hamiltonian
 simulation, ground-state filtering, quantum chemistry, Green's functions,
 spectral density estimation, Gibbs states, PDE linear systems, transport
-physics, and tensor-network hybrid filtering.
+physics, spin-chain phase diagnostics, electronic occupations, photonic band
+gaps, graphene nanoribbon density of states, and tensor-network hybrid
+filtering.
 
 ---
 
