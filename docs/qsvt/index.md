@@ -81,6 +81,11 @@ Notebook-derived outcomes and reproducible artefact conventions:
 
 See: [Results](results.md)
 
+Rendered notebook artefacts are kept separately from the root result index.
+
+- Tutorial plots: [Result plot gallery](result_gallery.md)
+- Real-example plots and tables: [Real-example results](real_example_results.md)
+
 ### Changelog
 
 Release notes document package, notebook, documentation, and generated artefact

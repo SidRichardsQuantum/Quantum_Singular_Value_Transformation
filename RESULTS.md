@@ -1,16 +1,15 @@
 # Results
 
-This repository is primarily notebook-first: the executable notebooks are the
-source of truth for demonstrations, plots, and numerical checks. The
-introductory notebooks contain embedded output figures, while the real physics
-notebooks are kept as clean, executable workflows.
+This repository is notebook-first: executable notebooks are the source of truth
+for demonstrations, plots, and numerical checks. Use this page as the root
+index for result-producing workflows and committed reproducibility artefacts.
 
-Use this page as an index of the current result-producing workflows and as the
-convention for future saved artefacts.
+Rendered result pages:
 
----
+- Tutorial plot gallery: [docs/qsvt/result_gallery.md](docs/qsvt/result_gallery.md)
+- Real-example plots and tables: [docs/qsvt/real_example_results.md](docs/qsvt/real_example_results.md)
 
-## Current notebook results
+## Tutorial Notebook Results
 
 | notebook | current output status | result focus |
 | --- | --- | --- |
@@ -25,118 +24,47 @@ convention for future saved artefacts.
 | `notebooks/tutorials/09_QSVT_Sign_Function_and_Projectors.ipynb` | embedded plots | sign functions and spectral projectors |
 | `notebooks/tutorials/10_QSVT_Design_and_Templates.ipynb` | embedded plots | reusable design and template families |
 
----
+## Real-Example Notebook Results
 
-## Introductory notebook plot gallery
+Real physics examples live in `notebooks/real_examples/`. They are currently
+tracked as clean, executable workflows rather than committed static-output
+notebooks. Their results are produced when the notebooks are executed locally.
+When real-example plots or tables are committed, this section should link to
+the generated files while [docs/qsvt/real_example_results.md](docs/qsvt/real_example_results.md)
+renders the visual/table gallery.
 
-These PNG files are extracted from the embedded outputs in the introductory
-notebooks so the notebook figures are visible from the results index.
+| notebook | current output status | result focus |
+| --- | --- | --- |
+| `notebooks/real_examples/01_ground_state_filtering.ipynb` | executable workflow | ground-state filtering and overlap checks |
+| `notebooks/real_examples/02_tight_binding_band_filter.ipynb` | executable workflow | band-pass and band-rejection filters |
+| `notebooks/real_examples/03_imaginary_time_filtering.ipynb` | executable workflow | imaginary-time exponential filtering |
+| `notebooks/real_examples/04_heat_equation_pde.ipynb` | executable workflow | heat-equation diffusion workflow |
+| `notebooks/real_examples/05_poisson_equation_pde.ipynb` | executable workflow | Poisson-equation inverse workflow |
+| `notebooks/real_examples/06_hamiltonian_simulation_schrodinger_dynamics.ipynb` | executable workflow | real-time Hamiltonian dynamics |
+| `notebooks/real_examples/07_quantum_chemistry_h2_toy_solver.ipynb` | executable workflow | toy H2 Hamiltonian solver |
+| `notebooks/real_examples/08_greens_function_response.ipynb` | executable workflow | resolvent and Green's-function response |
+| `notebooks/real_examples/09_spectral_density_estimation.ipynb` | executable workflow | spectral density estimation |
+| `notebooks/real_examples/10_gibbs_state_thermal_weights.ipynb` | executable workflow | Gibbs-state thermal weights |
+| `notebooks/real_examples/11_transport_physics_landauer_chain.ipynb` | executable workflow | Landauer-style chain transmission |
+| `notebooks/real_examples/12_tensor_network_hybrid_filtering.ipynb` | executable workflow | product-state energy filtering |
+| `notebooks/real_examples/13_heat_equation_2d_pde.ipynb` | executable workflow | 2D heat-equation diffusion workflow |
+| `notebooks/real_examples/14_advection_diffusion_pde.ipynb` | executable workflow | advection-diffusion PDE workflow |
+| `notebooks/real_examples/15_wave_equation_dynamics.ipynb` | executable workflow | wave-equation dynamics |
+| `notebooks/real_examples/16_helmholtz_equation_pde.ipynb` | executable workflow | Helmholtz-equation PDE workflow |
+| `notebooks/real_examples/17_quantum_walk_search_toy.ipynb` | executable workflow | quantum-walk search toy model |
+| `notebooks/real_examples/18_ssh_chain_edge_state_filtering.ipynb` | executable workflow | SSH-chain edge-state filtering |
+| `notebooks/real_examples/19_anderson_localization.ipynb` | executable workflow | Anderson localization |
+| `notebooks/real_examples/20_schrodinger_bound_states.ipynb` | executable workflow | Schrodinger bound states |
+| `notebooks/real_examples/21_quantum_harmonic_oscillator_grid.ipynb` | executable workflow | harmonic-oscillator grid spectrum |
+| `notebooks/real_examples/22_electrostatic_green_function_poisson.ipynb` | executable workflow | electrostatic Green's function |
+| `notebooks/real_examples/23_coupled_oscillator_normal_modes.ipynb` | executable workflow | coupled-oscillator normal modes |
+| `notebooks/real_examples/24_ising_phase_transition_filtering.ipynb` | executable workflow | Ising phase-transition filtering |
+| `notebooks/real_examples/25_diffusion_heat_treatment_slab.ipynb` | executable workflow | diffusion-limited heat treatment |
+| `notebooks/real_examples/26_graphene_nanoribbon_density_of_states.ipynb` | executable workflow | graphene nanoribbon density of states |
+| `notebooks/real_examples/27_fermi_dirac_electronic_occupations.ipynb` | executable workflow | Fermi-Dirac electronic occupations |
+| `notebooks/real_examples/28_photonic_crystal_band_gap_filtering.ipynb` | executable workflow | photonic-crystal band-gap filtering |
 
-Regenerate them after updating notebook outputs with:
-
-```bash
-python scripts/extract_notebook_plots.py
-```
-
-### `01_QSVT_Scalar_and_Diagonal_Matrix.ipynb`
-
-<a href="results/plots/notebooks/01_QSVT_Scalar_and_Diagonal_Matrix-plot-01.png"><img src="results/plots/notebooks/01_QSVT_Scalar_and_Diagonal_Matrix-plot-01.png" alt="QSVT scalar and diagonal matrix plot 1" width="320"></a>
-<a href="results/plots/notebooks/01_QSVT_Scalar_and_Diagonal_Matrix-plot-02.png"><img src="results/plots/notebooks/01_QSVT_Scalar_and_Diagonal_Matrix-plot-02.png" alt="QSVT scalar and diagonal matrix plot 2" width="320"></a>
-
-### `02_QSVT_Singular_Value_Filter.ipynb`
-
-<a href="results/plots/notebooks/02_QSVT_Singular_Value_Filter-plot-01.png"><img src="results/plots/notebooks/02_QSVT_Singular_Value_Filter-plot-01.png" alt="QSVT singular value filter plot 1" width="320"></a>
-<a href="results/plots/notebooks/02_QSVT_Singular_Value_Filter-plot-02.png"><img src="results/plots/notebooks/02_QSVT_Singular_Value_Filter-plot-02.png" alt="QSVT singular value filter plot 2" width="320"></a>
-
-### `03_QSP_Polynomial_Demo.ipynb`
-
-<a href="results/plots/notebooks/03_QSP_Polynomial_Demo-plot-01.png"><img src="results/plots/notebooks/03_QSP_Polynomial_Demo-plot-01.png" alt="QSP polynomial demo plot 1" width="320"></a>
-<a href="results/plots/notebooks/03_QSP_Polynomial_Demo-plot-02.png"><img src="results/plots/notebooks/03_QSP_Polynomial_Demo-plot-02.png" alt="QSP polynomial demo plot 2" width="320"></a>
-
-### `04_QSVT_Linear_Solver_2x2.ipynb`
-
-<a href="results/plots/notebooks/04_QSVT_Linear_Solver_2x2-plot-01.png"><img src="results/plots/notebooks/04_QSVT_Linear_Solver_2x2-plot-01.png" alt="QSVT 2 by 2 linear solver plot 1" width="320"></a>
-<a href="results/plots/notebooks/04_QSVT_Linear_Solver_2x2-plot-02.png"><img src="results/plots/notebooks/04_QSVT_Linear_Solver_2x2-plot-02.png" alt="QSVT 2 by 2 linear solver plot 2" width="320"></a>
-
-### `04_QSVT_Linear_Solver_4x4.ipynb`
-
-<a href="results/plots/notebooks/04_QSVT_Linear_Solver_4x4-plot-01.png"><img src="results/plots/notebooks/04_QSVT_Linear_Solver_4x4-plot-01.png" alt="QSVT 4 by 4 linear solver plot 1" width="320"></a>
-<a href="results/plots/notebooks/04_QSVT_Linear_Solver_4x4-plot-02.png"><img src="results/plots/notebooks/04_QSVT_Linear_Solver_4x4-plot-02.png" alt="QSVT 4 by 4 linear solver plot 2" width="320"></a>
-
-### `05_QSVT_Linear_Solver_Approximate.ipynb`
-
-<a href="results/plots/notebooks/05_QSVT_Linear_Solver_Approximate-plot-01.png"><img src="results/plots/notebooks/05_QSVT_Linear_Solver_Approximate-plot-01.png" alt="QSVT approximate linear solver plot 1" width="320"></a>
-<a href="results/plots/notebooks/05_QSVT_Linear_Solver_Approximate-plot-02.png"><img src="results/plots/notebooks/05_QSVT_Linear_Solver_Approximate-plot-02.png" alt="QSVT approximate linear solver plot 2" width="320"></a>
-
-### `06_QSVT_Polynomial_Design_and_Approximation.ipynb`
-
-<a href="results/plots/notebooks/06_QSVT_Polynomial_Design_and_Approximation-plot-01.png"><img src="results/plots/notebooks/06_QSVT_Polynomial_Design_and_Approximation-plot-01.png" alt="QSVT polynomial design and approximation plot 1" width="320"></a>
-<a href="results/plots/notebooks/06_QSVT_Polynomial_Design_and_Approximation-plot-02.png"><img src="results/plots/notebooks/06_QSVT_Polynomial_Design_and_Approximation-plot-02.png" alt="QSVT polynomial design and approximation plot 2" width="320"></a>
-<a href="results/plots/notebooks/06_QSVT_Polynomial_Design_and_Approximation-plot-03.png"><img src="results/plots/notebooks/06_QSVT_Polynomial_Design_and_Approximation-plot-03.png" alt="QSVT polynomial design and approximation plot 3" width="320"></a>
-
-### `07_QSVT_Matrix_Functions_Powers_and_Roots.ipynb`
-
-<a href="results/plots/notebooks/07_QSVT_Matrix_Functions_Powers_and_Roots-plot-01.png"><img src="results/plots/notebooks/07_QSVT_Matrix_Functions_Powers_and_Roots-plot-01.png" alt="QSVT matrix functions powers and roots plot 1" width="320"></a>
-<a href="results/plots/notebooks/07_QSVT_Matrix_Functions_Powers_and_Roots-plot-02.png"><img src="results/plots/notebooks/07_QSVT_Matrix_Functions_Powers_and_Roots-plot-02.png" alt="QSVT matrix functions powers and roots plot 2" width="320"></a>
-<a href="results/plots/notebooks/07_QSVT_Matrix_Functions_Powers_and_Roots-plot-03.png"><img src="results/plots/notebooks/07_QSVT_Matrix_Functions_Powers_and_Roots-plot-03.png" alt="QSVT matrix functions powers and roots plot 3" width="320"></a>
-
-### `08_QSVT_Sign_Function_and_Projectors.ipynb`
-
-<a href="results/plots/notebooks/08_QSVT_Sign_Function_and_Projectors-plot-01.png"><img src="results/plots/notebooks/08_QSVT_Sign_Function_and_Projectors-plot-01.png" alt="QSVT sign function and projectors plot 1" width="320"></a>
-<a href="results/plots/notebooks/08_QSVT_Sign_Function_and_Projectors-plot-02.png"><img src="results/plots/notebooks/08_QSVT_Sign_Function_and_Projectors-plot-02.png" alt="QSVT sign function and projectors plot 2" width="320"></a>
-
-### `09_QSVT_Design_and_Templates.ipynb`
-
-<a href="results/plots/notebooks/09_QSVT_Design_and_Templates-plot-01.png"><img src="results/plots/notebooks/09_QSVT_Design_and_Templates-plot-01.png" alt="QSVT design and templates plot 1" width="320"></a>
-<a href="results/plots/notebooks/09_QSVT_Design_and_Templates-plot-02.png"><img src="results/plots/notebooks/09_QSVT_Design_and_Templates-plot-02.png" alt="QSVT design and templates plot 2" width="320"></a>
-<a href="results/plots/notebooks/09_QSVT_Design_and_Templates-plot-03.png"><img src="results/plots/notebooks/09_QSVT_Design_and_Templates-plot-03.png" alt="QSVT design and templates plot 3" width="320"></a>
-<a href="results/plots/notebooks/09_QSVT_Design_and_Templates-plot-04.png"><img src="results/plots/notebooks/09_QSVT_Design_and_Templates-plot-04.png" alt="QSVT design and templates plot 4" width="320"></a>
-<a href="results/plots/notebooks/09_QSVT_Design_and_Templates-plot-05.png"><img src="results/plots/notebooks/09_QSVT_Design_and_Templates-plot-05.png" alt="QSVT design and templates plot 5" width="320"></a>
-
----
-
-## Real physics workflows
-
-The notebooks under `notebooks/real_examples/` are designed to produce
-comparison results when executed locally. They use package APIs for
-Hamiltonians, PDE operators, spectral rescaling, diagnostics, and matrix
-function polynomials so the same result can be reproduced from scripts or from
-the command line.
-
-| notebook | result focus |
-| --- | --- |
-| `01_ground_state_filtering.ipynb` | ground-state filtering and overlap checks |
-| `02_tight_binding_band_filter.ipynb` | band-pass and band-rejection filters |
-| `03_imaginary_time_filtering.ipynb` | imaginary-time exponential filtering |
-| `04_heat_equation_pde.ipynb` | heat-equation diffusion workflow |
-| `05_poisson_equation_pde.ipynb` | Poisson-equation inverse workflow |
-| `06_hamiltonian_simulation_schrodinger_dynamics.ipynb` | real-time Hamiltonian dynamics |
-| `07_quantum_chemistry_h2_toy_solver.ipynb` | toy H2 Hamiltonian solver |
-| `08_greens_function_response.ipynb` | resolvent and Green's-function response |
-| `09_spectral_density_estimation.ipynb` | spectral density estimation |
-| `10_gibbs_state_thermal_weights.ipynb` | Gibbs-state thermal weights |
-| `11_transport_physics_landauer_chain.ipynb` | Landauer-style chain transmission |
-| `12_tensor_network_hybrid_filtering.ipynb` | product-state energy filtering |
-| `13_heat_equation_2d_pde.ipynb` | 2D heat-equation diffusion workflow |
-| `14_advection_diffusion_pde.ipynb` | advection-diffusion PDE workflow |
-| `15_wave_equation_dynamics.ipynb` | wave-equation dynamics |
-| `16_helmholtz_equation_pde.ipynb` | Helmholtz-equation PDE workflow |
-| `17_quantum_walk_search_toy.ipynb` | quantum-walk search toy model |
-| `18_ssh_chain_edge_state_filtering.ipynb` | SSH-chain edge-state filtering |
-| `19_anderson_localization.ipynb` | Anderson localization |
-| `20_schrodinger_bound_states.ipynb` | Schrödinger bound states |
-| `21_quantum_harmonic_oscillator_grid.ipynb` | harmonic-oscillator grid spectrum |
-| `22_electrostatic_green_function_poisson.ipynb` | electrostatic Green's function |
-| `23_coupled_oscillator_normal_modes.ipynb` | coupled-oscillator normal modes |
-| `24_ising_phase_transition_filtering.ipynb` | Ising phase-transition filtering |
-| `25_diffusion_heat_treatment_slab.ipynb` | diffusion-limited heat treatment |
-| `26_graphene_nanoribbon_density_of_states.ipynb` | graphene nanoribbon density of states |
-| `27_fermi_dirac_electronic_occupations.ipynb` | Fermi-Dirac electronic occupations |
-| `28_photonic_crystal_band_gap_filtering.ipynb` | photonic-crystal band-gap filtering |
-
----
-
-## Committed release artefacts
+## Committed Release Artefacts
 
 The following artefacts provide small, reproducible release snapshots generated
 from the package CLI.
@@ -149,30 +77,32 @@ from the package CLI.
 | `results/reports/matrix-report.json` | Hermitian matrix QSVT transform | `5.264677582772492e-13` | `3.2060825311797223e-13` | real-part comparison against the classical spectral polynomial |
 | `results/tables/qsvt-error-summary.csv` | release summary table | n/a | n/a | compact index over the generated JSON reports |
 
-Generated for package version `0.1.12` as preparation for the next patch
-release.
+These snapshots were generated for package version `0.1.12`. Regenerate and
+update the version note when refreshing release artefacts.
 
----
+## Real-Example Artefacts
 
-## Report and plot artefact convention
+No real-example plot or table artefacts are currently committed. When they are
+added, record them here as a compact index and render them in
+[docs/qsvt/real_example_results.md](docs/qsvt/real_example_results.md).
 
-Generated artefacts should be saved in predictable locations:
+| artefact | notebook | result type | notes |
+| --- | --- | --- | --- |
+| n/a | n/a | n/a | no committed real-example artefacts yet |
 
-| artefact type | suggested path | examples |
-| --- | --- | --- |
-| JSON reports | `results/reports/` | `sign-report.json`, `matrix-report.json` |
-| static plots | `results/plots/` | `sign-report.png`, `filter-response.png` |
-| tabular summaries | `results/tables/` | `qsvt-error-summary.csv` |
+## Regeneration Commands
 
-These paths are not required for using the package. They are the repository
-convention for committed result snapshots when a notebook or release needs
-stable figures and tables.
+Extract embedded notebook plots:
 
----
+```bash
+python scripts/extract_notebook_plots.py
+```
 
-## Reproducible CLI examples
+Generate the committed report examples:
 
-The package can already write JSON reports and plots from the command line:
+```bash
+mkdir -p results/reports results/plots results/tables
+```
 
 ```bash
 qsvt design-report --kind sign --gamma 0.2 --degree 13 \
@@ -195,24 +125,26 @@ qsvt matrix-report \
   --output results/reports/matrix-report.json
 ```
 
-Create the output directories first when saving artefacts:
+## Artefact Convention
 
-```bash
-mkdir -p results/reports results/plots results/tables
-```
+Generated artefacts should be saved in predictable locations:
 
----
-
-## What belongs here
+| artefact type | suggested path | examples |
+| --- | --- | --- |
+| JSON reports | `results/reports/` | `sign-report.json`, `matrix-report.json` |
+| static plots | `results/plots/` | `sign-report.png`, `filter-response.png` |
+| extracted notebook plots | `results/plots/notebooks/` | `01_QSVT_Scalar_and_Diagonal_Matrix-plot-01.png` |
+| real-example plots | `results/plots/real_examples/` | `01_ground_state_filtering-overlap.png` |
+| real-example tables | `results/tables/real_examples/` | `01_ground_state_filtering-summary.csv` |
+| tabular summaries | `results/tables/` | `qsvt-error-summary.csv` |
 
 `RESULTS.md` should summarize stable outcomes and point to reproducible
 artefacts. It should not duplicate notebook explanations or paste large raw
-outputs. Good additions include:
+outputs. Good additions include short benchmark tables, links to committed JSON
+reports, package versions, seeds, backend details, and the command used to
+generate each artefact.
 
-- a short table of benchmark or approximation errors
-- a small set of committed figures used in the documentation
-- links to JSON reports generated by release notebooks
-- notes on the package version and command used to create each artefact
+Large visual galleries belong in docs pages:
 
-If a result depends on random sampling or an external backend, record the seed,
-backend, package version, and command in the table.
+- tutorial notebook plots: `docs/qsvt/result_gallery.md`
+- real-example plots and tables: `docs/qsvt/real_example_results.md`

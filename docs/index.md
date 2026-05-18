@@ -334,6 +334,8 @@ Overview <qsvt/index>
 Theory <qsvt/theory>
 Usage Guide <qsvt/usage>
 Results <qsvt/results>
+Tutorial Plot Gallery <qsvt/result_gallery>
+Real-Example Results <qsvt/real_example_results>
 ```
 
 ```{toctree}

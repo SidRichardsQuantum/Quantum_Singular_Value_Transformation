@@ -1,6 +1,6 @@
 # Theory: Quantum Singular Value Transformation (QSVT)
 
-This document provides the theoretical background underlying the notebooks in this repository. It is intentionally concise and focused on the concepts that are *directly exercised- in the examples, rather than a full survey of the QSVT literature.
+This document provides the theoretical background underlying the notebooks in this repository. It is intentionally concise and focused on the concepts that are *directly exercised* in the examples, rather than a full survey of the QSVT literature.
 
 The emphasis is on:
 - how **polynomials act on singular values and eigenvalues**,
@@ -28,17 +28,17 @@ The emphasis is on:
 
 - [Polynomial design and approximation](#6-polynomial-design-and-approximation)
 
-- [Practical polynomial construction](#65-practical-polynomial-construction)
+- [Practical polynomial construction](#7-practical-polynomial-construction)
 
   - [Template polynomials](#template-polynomials)
   - [Task-oriented polynomial design](#task-oriented-polynomial-design)
   - [Role of Chebyshev approximation](#role-of-chebyshev-approximation)
 
-- [QSVT as matrix functional calculus](#7-qsvt-as-matrix-functional-calculus)
+- [QSVT as matrix functional calculus](#8-qsvt-as-matrix-functional-calculus)
 
-- [Sign function and spectral projectors](#8-sign-function-and-spectral-projectors)
+- [Sign function and spectral projectors](#9-sign-function-and-spectral-projectors)
 
-- [Linear systems via inverse-like polynomials](#9-linear-systems-via-inverse-like-polynomials)
+- [Linear systems via inverse-like polynomials](#10-linear-systems-via-inverse-like-polynomials)
 
 - [Summary](#summary)
 
@@ -76,7 +76,7 @@ Operationally, this means that when the ancilla qubits are prepared in $|0\rangl
 - This automatically constructs a valid block encoding for small, explicitly specified matrices.
 - The notebooks frequently **extract the top-left block** of the resulting unitary to verify that it matches the expected transformed operator.
 
-This is a simulator-friendly convenience; the theoretical statements of QSVT apply to *any- valid block encoding.
+This is a simulator-friendly convenience; the theoretical statements of QSVT apply to *any* valid block encoding.
 
 ---
 
@@ -195,7 +195,7 @@ Notebook 06 demonstrates this process explicitly and shows how Chebyshev approxi
 
 ---
 
-## 6.5 Practical polynomial construction
+## 7. Practical polynomial construction
 
 In practice, QSVT workflows typically begin by constructing a bounded polynomial with the desired qualitative behaviour on the spectral interval.
 
@@ -308,7 +308,7 @@ Notebook 09 demonstrates these workflows explicitly.
 
 ---
 
-## 7. QSVT as matrix functional calculus
+## 8. QSVT as matrix functional calculus
 
 For a diagonalizable matrix:
 
@@ -322,7 +322,7 @@ $$
 f(A) = U f(\Lambda) U^\dagger.
 $$
 
-QSVT implements this *functional calculus- using polynomial approximations.
+QSVT implements this *functional calculus* using polynomial approximations.
 
 Notebook 07 demonstrates this viewpoint using:
 - matrix powers,
@@ -338,7 +338,7 @@ This perspective unifies filtering, inversion, and simulation under a single mec
 
 ---
 
-## 8. Sign function and spectral projectors
+## 9. Sign function and spectral projectors
 
 The **sign function**:
 
@@ -373,7 +373,7 @@ This mechanism is demonstrated in Notebook 08 and forms the foundation of:
 
 ---
 
-## 9. Linear systems via inverse-like polynomials
+## 10. Linear systems via inverse-like polynomials
 
 Solving a linear system
 
@@ -419,20 +419,20 @@ The notebooks in this repository are concrete realizations of these ideas in the
 
 ## References and further reading
 
-1. Gilyén, A., Su, Y., Low, G. H., & Wiebe, N.  
-   *Quantum singular value transformation and beyond: exponential improvements for quantum matrix arithmetics.-  
+1. Gilyén, A., Su, Y., Low, G. H., & Wiebe, N.
+   *Quantum singular value transformation and beyond: exponential improvements for quantum matrix arithmetics.*
    arXiv:1806.01838
 
-2. Low, G. H., & Chuang, I. L.  
-   *Optimal Hamiltonian simulation by quantum signal processing.-  
+2. Low, G. H., & Chuang, I. L.
+   *Optimal Hamiltonian simulation by quantum signal processing.*
    Physical Review Letters 118, 010501 (2017).
 
-3. Low, G. H., & Chuang, I. L.  
-   *Hamiltonian simulation by qubitization.-  
+3. Low, G. H., & Chuang, I. L.
+   *Hamiltonian simulation by qubitization.*
    Quantum 3, 163 (2019).
 
-4. PennyLane documentation:  
-   *Introduction to Quantum Singular Value Transformation (QSVT).-  
+4. PennyLane documentation:
+   *Introduction to Quantum Singular Value Transformation (QSVT).*
    https://pennylane.ai/qml/demos/tutorial_intro_qsvt
 
 ---

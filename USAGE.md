@@ -1,84 +1,14 @@
 # Usage Guide
 
-This guide shows how to use the `qsvt-pennylane` package for practical
-Quantum Singular Value Transformation (QSVT) experiments.
+This guide shows how to use `qsvt-pennylane` for practical Quantum Singular
+Value Transformation (QSVT) experiments.
 
-The focus is on **bounded polynomial transforms** applied to:
+The package is organized around one workflow:
 
-- scalars
-- diagonal matrices
-- small Hermitian matrices
-
-using PennyLane's QSVT implementation.
-
----
-
-## Table of Contents
-
-- [Core idea](#core-idea)
-
-- [Installation](#installation)
-
-- [Typical workflow](#typical-workflow)
-
-  - [Step 1 — design or choose a polynomial](#step-1--design-or-choose-a-polynomial)
-  - [Step 2 — inspect the scalar transform](#step-2--inspect-the-scalar-transform)
-  - [Step 3 — apply the polynomial to a matrix](#step-3--apply-the-polynomial-to-a-matrix)
-  - [Step 4 — compare classical vs QSVT output](#step-4--compare-classical-vs-qsvt-output)
-
-- [Common tasks](#common-tasks)
-
-  - [Sign transform](#sign-transform)
-  - [Spectral projector](#spectral-projector)
-  - [Inverse-like transform](#inverse-like-transform)
-  - [Spectral filtering](#spectral-filtering)
-  - [Matrix functions](#matrix-functions)
-
-- [Module overview](#module-overview)
-
-  - [qsvt.polynomials](#qsvtpolynomials)
-  - [qsvt.approximation](#qsvtapproximation)
-  - [qsvt.templates](#qsvttemplates)
-  - [qsvt.design](#qsvtdesign)
-  - [qsvt.matrices](#qsvtmatrices)
-  - [qsvt.spectral](#qsvtspectral)
-  - [qsvt.qsvt](#qsvtqsvt)
-
-- [CLI usage](#cli-usage)
-
-- [Recommended notebook path](#recommended-notebook-path)
-
-- [Summary](#summary)
-
-- [Author](#author)
-
-- [License](#license)
-
----
-
-## Core idea
-
-QSVT implements a polynomial transformation
-
-$$
-A \;\rightarrow\; P(A)
-$$
-
-where:
-
-- $A$ is a block-encoded operator with spectrum in $[-1,1]$
-- $P(x)$ is a bounded polynomial
-- eigenvectors are preserved
-- eigenvalues are transformed
-
-Most workflows therefore consist of:
-
-1. designing a bounded polynomial
-2. inspecting its scalar behaviour
-3. applying it to a matrix
-4. comparing classical vs QSVT output
-
----
+1. choose or design a bounded polynomial,
+2. inspect its scalar behavior,
+3. apply it to a matrix spectrum,
+4. compare the classical spectral transform with the QSVT output.
 
 ## Installation
 
@@ -86,13 +16,31 @@ Most workflows therefore consist of:
 pip install qsvt-pennylane
 ```
 
----
+For local development:
 
-## Typical workflow
+```bash
+git clone https://github.com/SidRichardsQuantum/Quantum_Singular_Value_Transformation.git
+cd Quantum_Singular_Value_Transformation
+pip install -e .
+```
 
-### Step 1 — design or choose a polynomial
+## Core Idea
 
-#### Option A — use a ready-made template
+QSVT implements a polynomial transformation
+
+$$
+A \rightarrow P(A)
+$$
+
+where `A` is a block-encoded operator with spectrum normalized to the QSVT
+domain and `P(x)` is a bounded polynomial. In the Hermitian examples in this
+repository, eigenvectors are preserved and eigenvalues are transformed.
+
+## Typical Workflow
+
+### 1. Choose Or Design A Polynomial
+
+Use a ready-made template:
 
 ```python
 from qsvt.templates import sign_approximation_polynomial
@@ -103,7 +51,7 @@ coeffs = sign_approximation_polynomial(
 )
 ```
 
-#### Option B — construct a polynomial for a task
+Construct a task-oriented polynomial:
 
 ```python
 from qsvt.design import design_inverse_polynomial
@@ -114,7 +62,7 @@ coeffs = design_inverse_polynomial(
 )
 ```
 
-#### Option C — fit a polynomial approximation directly
+Fit a polynomial approximation directly:
 
 ```python
 from qsvt.approximation import chebyshev_fit_function
@@ -125,34 +73,25 @@ coeffs = chebyshev_fit_function(
 )
 ```
 
----
-
-### Step 2 — inspect the scalar transform
+### 2. Inspect The Scalar Transform
 
 ```python
 import numpy as np
 
-xs = np.linspace(-1,1,200)
-
+xs = np.linspace(-1, 1, 200)
 values = np.polynomial.polynomial.polyval(xs, coeffs)
 ```
 
 Useful checks:
 
 ```python
-from qsvt.polynomials import polynomial_parity
-from qsvt.polynomials import is_bounded_on_interval
+from qsvt.polynomials import is_bounded_on_interval, polynomial_parity
 
-polynomial_parity(coeffs)
-
-is_bounded_on_interval(coeffs)
+parity = polynomial_parity(coeffs)
+bounded = is_bounded_on_interval(coeffs)
 ```
 
----
-
-### Step 3 — apply the polynomial to a matrix
-
-#### diagonal matrix
+### 3. Apply The Polynomial To A Matrix
 
 ```python
 from qsvt.matrices import diagonal_matrix
@@ -166,25 +105,36 @@ P_A = apply_function_to_hermitian(
 )
 ```
 
----
-
-### Step 4 — compare classical vs QSVT output
+### 4. Compare Classical And QSVT Output
 
 ```python
 from qsvt.qsvt import qsvt_diagonal_transform
 
 vals_qsvt = qsvt_diagonal_transform(
-    [0.9,0.6,0.3,0.1],
+    [0.9, 0.6, 0.3, 0.1],
     coeffs,
-    encoding_wires=[0,1,2],
+    encoding_wires=[0, 1, 2],
 )
 ```
 
----
+For a complete coefficient, diagnostic, and compatibility payload:
 
-## Common tasks
+```python
+from qsvt.workflow import design_workflow
 
-### Sign transform
+result = design_workflow(
+    kind="sign",
+    gamma=0.2,
+    degree=13,
+)
+
+coeffs = result.coeffs
+report = result.as_report()
+```
+
+## Common Tasks
+
+### Sign Transform
 
 ```python
 from qsvt.design import design_sign_polynomial
@@ -195,21 +145,16 @@ coeffs = design_sign_polynomial(
 )
 ```
 
-Produces:
+This produces a bounded odd polynomial with
 
 $$
 P(x) \approx \mathrm{sign}(x)
 $$
 
-useful for:
+away from the transition region around zero. It is useful for spectral
+separation, thresholding, and projector construction.
 
-- spectral separation
-- projectors
-- thresholding
-
----
-
-### Spectral projector
+### Spectral Projector
 
 ```python
 from qsvt.design import design_projector_polynomial
@@ -220,15 +165,13 @@ coeffs = design_projector_polynomial(
 )
 ```
 
-Approximates:
+This approximates
 
 $$
-\frac{1 + \mathrm{sign}(x)}{2}
+\frac{1 + \mathrm{sign}(x)}{2}.
 $$
 
----
-
-### Inverse-like transform
+### Inverse-Like Transform
 
 ```python
 from qsvt.design import design_inverse_polynomial
@@ -239,21 +182,16 @@ coeffs = design_inverse_polynomial(
 )
 ```
 
-Approximates:
+This approximates
 
 $$
 \frac{\gamma}{x}
-\quad \text{for } |x|\ge\gamma
+\quad \text{for } |x| \ge \gamma.
 $$
 
-useful for:
+The scaling keeps the target bounded on the design interval.
 
-- linear solver intuition
-- pseudo-inverse behaviour
-
----
-
-### Spectral filtering
+### Spectral Filtering
 
 ```python
 from qsvt.design import design_filter_polynomial
@@ -264,11 +202,9 @@ coeffs = design_filter_polynomial(
 )
 ```
 
-Suppresses small singular values while preserving larger ones.
+This suppresses small singular values while preserving larger ones.
 
----
-
-### Matrix functions
+### Matrix Functions
 
 ```python
 from qsvt.design import design_power_polynomial
@@ -281,132 +217,46 @@ coeffs = design_power_polynomial(
 
 Examples:
 
-| function | alpha |
-| -------- | ----- |
-| sqrt     | 0.5   |
-| square   | 2     |
-| cube     | 3     |
+| function | `alpha` |
+| --- | ---: |
+| square root | `0.5` |
+| square | `2` |
+| cube | `3` |
 
----
+## Physics-Style Workflow
 
-## Module overview
+The physics helpers use the same bounded-polynomial pattern:
 
-### qsvt.polynomials
-
-Basic polynomial utilities:
-
-- Chebyshev polynomials
-- degree
-- parity
-- boundedness checks
-
----
-
-### qsvt.approximation
-
-Chebyshev approximation helpers:
-
-- function fitting
-- approximation error metrics
-
----
-
-### qsvt.templates
-
-Ready-made bounded polynomial families:
-
-- inverse-like
-- sign approximation
-- soft threshold filters
-- sqrt approximations
-- exponential weighting
-
-Best for quick experiments.
-
----
-
-### qsvt.design
-
-Higher-level polynomial builders:
-
-- inverse-like transforms
-- sign polynomials
-- projector polynomials
-- sqrt approximations
-- power transforms
-- smooth filters
-
-Best for structured workflows.
-
----
-
-### qsvt.matrices
-
-Small Hermitian test matrices:
-
-- diagonal matrices
-- rotated matrices
-- involutory matrices
-
----
-
-### qsvt.hamiltonians / qsvt.pde / qsvt.rescaling
-
-Physics workflow helpers:
-
-- small Hamiltonian constructors
-- finite-difference PDE operators
-- Hermitian spectral rescaling to QSVT-compatible intervals
-
-Example:
+1. build a Hamiltonian or PDE operator,
+2. rescale its spectrum,
+3. design a bounded matrix-function polynomial,
+4. validate against a classical spectral transform.
 
 ```python
 from qsvt.hamiltonians import tight_binding_chain
+from qsvt.matrix_functions import design_real_time_evolution_polynomials
 from qsvt.rescaling import rescale_hermitian_to_unit_interval
+from qsvt.spectral import apply_polynomial_to_hermitian
 
 H = tight_binding_chain(8)
 scaled = rescale_hermitian_to_unit_interval(H)
+
+polys = design_real_time_evolution_polynomials(
+    time=1.0,
+    scale=scaled.scale,
+    degree=19,
+)
+
+cos_Ht = apply_polynomial_to_hermitian(scaled.matrix, polys.cos_coeffs)
+sin_Ht = apply_polynomial_to_hermitian(scaled.matrix, polys.sin_coeffs)
 ```
 
----
+See [docs/qsvt/physics.md](docs/qsvt/physics.md) for the detailed physics API
+map.
 
-### qsvt.matrix_functions / qsvt.diagnostics
+## CLI Usage
 
-General builders and metrics for physics matrix-function workflows:
-
-- real-time and imaginary-time evolution
-- resolvents and Green's-function response
-- Gaussian spectral windows
-- state and operator errors
-- ground-state overlap and spectral weights
-
----
-
-### qsvt.spectral
-
-Classical reference implementations:
-
-- matrix powers
-- matrix sign
-- spectral transforms
-
-Useful for validating QSVT behaviour.
-
----
-
-### qsvt.qsvt
-
-Thin wrappers around PennyLane QSVT:
-
-- scalar transforms
-- diagonal transforms
-- classical vs QSVT comparisons
-
----
-
-## CLI usage
-
-Scalar example:
+Scalar transform:
 
 ```bash
 qsvt scalar --x 0.5 --poly "0,0,1"
@@ -419,22 +269,6 @@ qsvt diag \
   --values "1.0,0.7,0.3,0.1" \
   --poly "0,0,1" \
   --wires 3
-```
-
-Non-diagonal Hermitian matrix report:
-
-```bash
-qsvt matrix-report \
-  --matrix "0.31351701,-0.23499807;-0.23499807,0.68648299" \
-  --poly "0,0,1"
-```
-
-Complex Hermitian matrix report:
-
-```bash
-qsvt matrix-report \
-  --matrix "0,0.2j;-0.2j,0" \
-  --poly "0,1"
 ```
 
 Chebyshev evaluation:
@@ -453,48 +287,27 @@ qsvt design-workflow \
   --output sign-workflow.json
 ```
 
+Non-diagonal Hermitian matrix report:
+
+```bash
+qsvt matrix-report \
+  --matrix "0.31351701,-0.23499807;-0.23499807,0.68648299" \
+  --poly "0,0,1" \
+  --output matrix-report.json
+```
+
 When a report command is given `--output` or `--plot`, it writes the full
 artifact to disk and prints a compact summary to stdout. Add `--print-report`
 to also emit the full JSON payload on stdout.
 
----
+Compatibility reports distinguish bounded polynomial approximation from
+PennyLane QSVT synthesis compatibility.
 
-## Recommended notebook path
+## Where To Go Next
 
-1. scalar intuition
-2. filtering
-3. QSP polynomials
-4. linear solvers
-5. polynomial approximation
-6. matrix functions
-7. sign and projectors
-8. reusable polynomial workflows
-
----
-
-## Summary
-
-Typical QSVT workflow:
-
-1. choose a bounded polynomial
-2. inspect scalar behaviour
-3. apply to matrix spectrum
-4. compare classical vs QSVT output
-
-The package is designed to make each step explicit and easy to experiment with.
-
----
-
-## Author
-
-Sid Richards
-
-GitHub: [https://github.com/SidRichardsQuantum](https://github.com/SidRichardsQuantum)
-
-Portfolio: [https://sidrichardsquantum.github.io/](https://sidrichardsquantum.github.io/)
-
----
-
-## License
-
-MIT License.
+- [THEORY.md](THEORY.md): conceptual background
+- [docs/qsvt/api_reference.md](docs/qsvt/api_reference.md): public API details
+- [docs/qsvt/design.md](docs/qsvt/design.md): design helper reference
+- [docs/qsvt/templates.md](docs/qsvt/templates.md): reusable template families
+- [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial and real-example notebooks
+- [RESULTS.md](RESULTS.md): reproducible report and plot conventions
