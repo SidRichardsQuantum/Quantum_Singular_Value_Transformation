@@ -13,6 +13,8 @@ import argparse
 import base64
 import csv
 import json
+import re
+import struct
 import subprocess
 import sys
 from dataclasses import dataclass, field
@@ -31,11 +33,20 @@ class TextOutput:
     text: str
 
 
+@dataclass(frozen=True)
+class PlotOutput:
+    path: Path
+    cell_index: int
+    plot_index: int
+    width_px: int
+    height_px: int
+
+
 @dataclass
 class NotebookResult:
     path: Path
     title: str
-    plots: list[Path] = field(default_factory=list)
+    plots: list[PlotOutput] = field(default_factory=list)
     text_outputs: list[TextOutput] = field(default_factory=list)
 
 
@@ -43,6 +54,12 @@ def _decode_png_payload(payload: str | list[str]) -> bytes:
     if isinstance(payload, list):
         payload = "".join(payload)
     return base64.b64decode(payload)
+
+
+def _png_dimensions(payload: bytes) -> tuple[int, int]:
+    if not payload.startswith(b"\x89PNG\r\n\x1a\n"):
+        raise ValueError("embedded image payload is not a PNG")
+    return struct.unpack(">II", payload[16:24])
 
 
 def _coerce_text(payload: str | list[str]) -> str:
@@ -76,7 +93,90 @@ def _extract_text_output(cell_index: int, output: dict) -> TextOutput | None:
 
     if _is_noise_text(text):
         return None
-    return TextOutput(cell_index=cell_index, text=text.rstrip())
+    return TextOutput(cell_index=cell_index, text=_format_text_output(text))
+
+
+def _format_text_output(text: str) -> str:
+    formatted = text.rstrip()
+    formatted = _unwrap_numpy_scalars(formatted)
+    formatted = _unwrap_numpy_array_reprs(formatted)
+    return _strip_standalone_array_repr(formatted)
+
+
+def _unwrap_numpy_scalars(text: str) -> str:
+    scalar_pattern = re.compile(
+        r"\b(?:np\.)?(?:float(?:16|32|64)|int(?:8|16|32|64)|bool_)\(([^()]*)\)"
+    )
+    previous = None
+    while previous != text:
+        previous = text
+        text = scalar_pattern.sub(r"\1", text)
+    return text
+
+
+def _strip_standalone_array_repr(text: str) -> str:
+    stripped = text.strip()
+    if not stripped.startswith("array(") or not stripped.endswith(")"):
+        return text
+    inner = stripped[len("array(") : -1]
+    if ", dtype=" in inner:
+        return text
+    if not inner.lstrip().startswith("["):
+        return text
+    return inner
+
+
+def _unwrap_numpy_array_reprs(text: str) -> str:
+    cursor = 0
+    chunks: list[str] = []
+    while True:
+        start = text.find("array(", cursor)
+        if start == -1:
+            chunks.append(text[cursor:])
+            return "".join(chunks)
+
+        list_start = start + len("array(")
+        while list_start < len(text) and text[list_start].isspace():
+            list_start += 1
+        if list_start >= len(text) or text[list_start] != "[":
+            chunks.append(text[cursor : start + len("array(")])
+            cursor = start + len("array(")
+            continue
+
+        list_end = _matching_bracket_index(text, list_start)
+        if list_end is None:
+            chunks.append(text[cursor : start + len("array(")])
+            cursor = start + len("array(")
+            continue
+
+        close_index = list_end + 1
+        while close_index < len(text) and text[close_index].isspace():
+            close_index += 1
+        if text.startswith(", dtype=", close_index):
+            chunks.append(text[cursor : list_end + 1])
+            cursor = list_end + 1
+            continue
+        if close_index >= len(text) or text[close_index] != ")":
+            chunks.append(text[cursor : start + len("array(")])
+            cursor = start + len("array(")
+            continue
+
+        chunks.append(text[cursor:start])
+        chunks.append(text[list_start : list_end + 1])
+        cursor = close_index + 1
+
+
+def _matching_bracket_index(text: str, start: int) -> int | None:
+    depth = 0
+    for index in range(start, len(text)):
+        character = text[index]
+        if character == "[":
+            depth += 1
+        elif character == "]":
+            depth -= 1
+            if depth == 0:
+                return index
+    return None
 
 
 def extract_notebook_plots(
@@ -113,8 +213,18 @@ def extract_notebook_plots(
                     plot_path = (
                         destination / f"{notebook_path.stem}-plot-{plot_index:02d}.png"
                     )
-                    plot_path.write_bytes(_decode_png_payload(png_payload))
-                    result.plots.append(plot_path)
+                    plot_bytes = _decode_png_payload(png_payload)
+                    plot_path.write_bytes(plot_bytes)
+                    width_px, height_px = _png_dimensions(plot_bytes)
+                    result.plots.append(
+                        PlotOutput(
+                            path=plot_path,
+                            cell_index=cell_index,
+                            plot_index=plot_index,
+                            width_px=width_px,
+                            height_px=height_px,
+                        )
+                    )
 
                 text_output = _extract_text_output(cell_index, output)
                 if text_output is not None:
@@ -157,17 +267,42 @@ def _display_notebook_path(path: Path) -> str:
     return path.as_posix()
 
 
+def _doc_image_width(plot: PlotOutput) -> int:
+    if plot.width_px >= 1000 or plot.width_px / max(plot.height_px, 1) >= 2.0:
+        return 760
+    if plot.width_px >= 800:
+        return 640
+    return 520
+
+
 def write_plot_manifest(results: list[NotebookResult], manifest_path: Path) -> None:
     manifest_path.parent.mkdir(parents=True, exist_ok=True)
     with manifest_path.open("w", newline="", encoding="utf-8") as file:
-        writer = csv.writer(file)
-        writer.writerow(["artefact", "notebook", "result_type", "notes"])
+        writer = csv.writer(file, lineterminator="\n")
+        writer.writerow(
+            [
+                "artefact",
+                "notebook",
+                "title",
+                "plot_index",
+                "cell_index",
+                "width_px",
+                "height_px",
+                "result_type",
+                "notes",
+            ]
+        )
         for result in results:
             for plot in result.plots:
                 writer.writerow(
                     [
-                        plot.as_posix(),
+                        plot.path.as_posix(),
                         result.path.as_posix(),
+                        result.title,
+                        plot.plot_index,
+                        plot.cell_index,
+                        plot.width_px,
+                        plot.height_px,
                         "plot",
                         "embedded notebook PNG output",
                     ]
@@ -257,9 +392,9 @@ def write_results_page(
         for index, plot in enumerate(result.plots, start=1):
             lines.extend(
                 [
-                    f"```{{image}} {_path_from_doc(doc_path, plot)}",
+                    f"```{{image}} {_path_from_doc(doc_path, plot.path)}",
                     f":alt: {result.title} plot {index}",
-                    ":width: 520px",
+                    f":width: {_doc_image_width(plot)}px",
                     "```",
                     "",
                 ]
@@ -268,7 +403,7 @@ def write_results_page(
         for index, output in enumerate(result.text_outputs, start=1):
             lines.extend(
                 [
-                    f"Result output {index} from cell {output.cell_index}:",
+                    f"Output {index} (cell {output.cell_index}):",
                     "",
                     "```text",
                     output.text,
@@ -308,7 +443,7 @@ def _preset_args(preset: str) -> list[tuple[str, str, Path, str, str, Path | Non
                 "Tutorial Results",
                 (
                     "This generated page displays the embedded plots and text "
-                    "results from every tutorial notebook."
+                    "outputs from every tutorial notebook."
                 ),
                 None,
             )
@@ -321,8 +456,9 @@ def _preset_args(preset: str) -> list[tuple[str, str, Path, str, str, Path | Non
                 REAL_EXAMPLES_DOC,
                 "Real-Example Results",
                 (
-                    "This generated page displays the embedded plots and text "
-                    "results from every real-example notebook."
+                    "This generated page displays embedded setup schematics, "
+                    "diagnostic plots, and text outputs from every "
+                    "real-example notebook."
                 ),
                 REAL_EXAMPLES_MANIFEST,
             )
@@ -419,7 +555,7 @@ def main() -> None:
                 manifest_path=manifest,
             )
 
-    plots = [plot for result in all_results for plot in result.plots]
+    plots = [plot.path for result in all_results for plot in result.plots]
     for path in plots:
         print(path)
     print(f"Wrote {len(plots)} notebook plot(s) from {len(all_results)} notebook(s).")

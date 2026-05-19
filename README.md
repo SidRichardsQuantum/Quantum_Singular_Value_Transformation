@@ -148,7 +148,7 @@ inline type annotations shipped with the public modules.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial and real-example
   notebook index
 
-Current release: `0.1.19`
+Current release: `0.1.20`
 
 ## Notebooks
 
@@ -162,7 +162,8 @@ simulation, ground-state filtering, quantum chemistry, Green's functions,
 spectral density estimation, Gibbs states, PDE systems, transport physics,
 spin-chain diagnostics, electronic occupations, photonic band gaps, graphene
 density of states, topological band projectors, and tensor-network hybrid
-filtering.
+filtering. Each real-example notebook includes a near-top orientation block for
+the system, QSVT implementation strategy, and quantum relevance.
 
 See [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md) for the full notebook map.
 

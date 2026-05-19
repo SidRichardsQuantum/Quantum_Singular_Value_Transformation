@@ -93,7 +93,14 @@ def plot_approximation_report(
     errors = _require_array(report, "errors")
 
     if ax is None:
-        fig, axes = plt.subplots(2, 1, sharex=True, figsize=(7.0, 5.0))
+        fig, axes = plt.subplots(
+            2,
+            1,
+            sharex=True,
+            figsize=(7.2, 5.2),
+            height_ratios=(2.2, 1.0),
+            constrained_layout=True,
+        )
         fit_ax, error_ax = axes
     else:
         fit_ax = ax
@@ -101,20 +108,32 @@ def plot_approximation_report(
         error_ax = fit_ax.twinx()
         axes = (fit_ax, error_ax)
 
-    label = report.get("builder", "polynomial")
-    fit_ax.plot(xs, target_values, label="target")
-    fit_ax.plot(xs, polynomial_values, label=str(label))
+    polynomial_label = _polynomial_label(report)
+    fit_ax.plot(xs, target_values, label="target", color="tab:blue", linewidth=2.0)
+    fit_ax.plot(
+        xs,
+        polynomial_values,
+        "--",
+        label=polynomial_label,
+        color="tab:orange",
+        linewidth=2.0,
+    )
     fit_ax.set_ylabel("value")
-    fit_ax.legend(loc="best")
+    fit_ax.grid(True, color="0.88", linewidth=0.8)
+    fit_ax.legend(loc="best", frameon=False)
 
-    error_ax.plot(xs, errors, color="tab:red", label="error")
-    error_ax.axhline(0.0, color="0.5", linewidth=0.8)
+    error_ax.plot(xs, errors, color="tab:red", linewidth=1.5, label="error")
+    error_ax.axhline(0.0, color="0.35", linewidth=0.8)
     error_ax.set_xlabel("x")
     error_ax.set_ylabel("error")
+    error_ax.grid(True, color="0.9", linewidth=0.8)
+    _set_symmetric_error_limits(error_ax, errors)
 
     title_parts = []
     if "kind" in report:
         title_parts.append(str(report["kind"]))
+    if "degree" in report:
+        title_parts.append(f"degree={int(report['degree'])}")
     if "max_error" in report:
         title_parts.append(f"max error={float(report['max_error']):.3g}")
     if "bounded_margin" in report:
@@ -122,7 +141,8 @@ def plot_approximation_report(
     if title_parts:
         fit_ax.set_title(" | ".join(title_parts))
 
-    fig.tight_layout()
+    if ax is not None:
+        fig.tight_layout()
     return fig, axes
 
 
@@ -182,6 +202,23 @@ def _require_array(report: Mapping[str, Any], key: str) -> np.ndarray:
     if values.ndim != 1:
         raise ValueError(f"report[{key!r}] must be one-dimensional.")
     return values
+
+
+def _polynomial_label(report: Mapping[str, Any]) -> str:
+    label = str(report.get("builder", "polynomial"))
+    return label.removeprefix("design_").removeprefix("template_")
+
+
+def _set_symmetric_error_limits(ax, errors: np.ndarray) -> None:
+    finite_errors = errors[np.isfinite(errors)]
+    if finite_errors.size == 0:
+        return
+    limit = float(np.max(np.abs(finite_errors)))
+    if limit == 0.0:
+        limit = 1.0
+    else:
+        limit *= 1.08
+    ax.set_ylim(-limit, limit)
 
 
 __all__ = [

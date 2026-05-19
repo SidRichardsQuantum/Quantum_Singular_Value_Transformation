@@ -40,6 +40,9 @@ Tutorial notebooks live in `notebooks/tutorials/`.
 ## Real physics examples
 
 Real physics examples live in `notebooks/real_examples/`.
+Each notebook now starts with a short orientation block that identifies the
+physical system, the QSVT-style implementation used, and the classical reference
+or quantum-relevance context for the toy-scale example.
 
 | notebook | focus |
 |---|---|

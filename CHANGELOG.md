@@ -2,6 +2,34 @@
 
 ---
 
+## [0.1.20] – 19th May 2026
+
+### Added
+
+- added reproducible Matplotlib setup schematics to real-example notebooks,
+  including spin chains, tight-binding chains, PDE domains, transport devices,
+  molecular H2, SSH, bound-state wells, photonic crystals, graphene ribbons,
+  and Chern-insulator lattices
+- added richer real-example plot manifests with notebook titles, plot indices,
+  source cell indices, and PNG dimensions
+- added near-top orientation blocks to every real-example notebook covering the
+  system/problem, QSVT implementation strategy, and quantum relevance
+- added regression coverage for notebook plot-manifest metadata and adaptive
+  result-page image sizing
+
+### Changed
+
+- refreshed real-example notebook outputs and committed PNG artefacts so the
+  rendered result pages now show 53 real-example plots, including setup
+  schematics and quantitative diagnostics
+- improved generated notebook result pages by widening multi-panel figures and
+  cleaning noisy NumPy scalar/array representations in text outputs
+- improved diagnostics report plots with clearer line styling, gridlines,
+  degree metadata, and symmetric residual scaling
+- updated package metadata and release markers for `0.1.20`
+
+---
+
 ## [0.1.19] – 19th May 2026
 
 ### Added

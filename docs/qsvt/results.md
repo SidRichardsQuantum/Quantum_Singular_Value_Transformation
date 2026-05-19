@@ -33,7 +33,7 @@ documentation.
     <span class="metric-label">diagonal QSVT max-error scale</span>
   </div>
   <div class="metric-card">
-    <span class="metric-value">0.1.19</span>
+    <span class="metric-value">0.1.20</span>
     <span class="metric-label">current release marker</span>
   </div>
 </div>
@@ -44,7 +44,7 @@ documentation.
 | real-example notebooks | all execute in notebook validation | `notebooks/real_examples/` |
 | fast unit/regression suite | algorithm workflows and CLI report paths covered | `tests/` |
 | package artefacts | source distribution and wheel build cleanly | `pyproject.toml` |
-| rendered plots | tutorial and real-example PNG artefacts committed | `results/plots/` |
+| rendered plots | tutorial and real-example PNG artefacts committed, including setup schematics | `results/plots/` |
 
 ## Key Outcomes
 
@@ -156,7 +156,7 @@ End-to-end algorithm workflow diagnostics from the tutorial sequence.
 Degree/error tradeoff results for bounded QSVT-compatible polynomial design.
 ```
 
-```{figure} ../../results/plots/real_examples/29_topological_band_projector_chern_marker-plot-01.png
+```{figure} ../../results/plots/real_examples/29_topological_band_projector_chern_marker-plot-02.png
 :alt: Topological band projector Chern marker plot
 :width: 520px
 
@@ -164,6 +164,8 @@ Topological band-projector example using a small Qi-Wu-Zhang lattice model.
 ```
 
 Generated notebook output pages:
+
+The real-example output page now includes setup schematics alongside quantitative diagnostics for the physical systems represented in the notebooks.
 
 - [Tutorial notebook outputs](tutorial_results.md)
 - [Real-example notebook outputs](real_example_results.md)
