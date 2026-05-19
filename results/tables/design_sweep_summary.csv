@@ -1,0 +1,9 @@
+artefact,kind,degree,builder,max_error,rms_error,bounded_margin,compatible,attempted_pennylane_synthesis
+results/reports/sign-degree-sweep.json,sign,5,design_sign_polynomial,0.5182981115359634,0.269514881780653,0.0,True,False
+results/reports/sign-degree-sweep.json,sign,9,design_sign_polynomial,0.32890441955436117,0.16331014490913145,8.881784197001252e-15,True,False
+results/reports/sign-degree-sweep.json,sign,13,design_sign_polynomial,0.20027921114395442,0.09744948051610955,1.865174681370263e-14,True,False
+results/reports/sign-degree-sweep.json,sign,17,design_sign_polynomial,0.11763108913453346,0.055703040513734356,2.509992214072554e-12,True,False
+results/reports/filter-degree-sweep.json,filter,6,design_filter_polynomial,0.19114394433639115,0.10036845569027071,0.0,True,False
+results/reports/filter-degree-sweep.json,filter,10,design_filter_polynomial,0.20033894918818795,0.08135058832372982,3.382605660240401e-06,True,False
+results/reports/filter-degree-sweep.json,filter,14,design_filter_polynomial,0.07397752073483832,0.03469153756628215,1.978004437797054e-06,True,False
+results/reports/filter-degree-sweep.json,filter,18,design_filter_polynomial,0.06783434474077632,0.03391969914072474,4.808597964256478e-12,True,False

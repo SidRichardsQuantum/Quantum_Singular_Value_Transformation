@@ -2,6 +2,32 @@
 
 ---
 
+## [0.1.18] – 19th May 2026
+
+### Added
+
+- added `qsvt design-sweep` for compact degree/error/boundedness manifests
+  across polynomial design degrees
+- added committed sign and filter degree-sweep report artefacts plus a
+  machine-readable sweep summary table
+- added deterministic algorithm-workflow regression tests for linear systems,
+  ground-state filtering, Hamiltonian simulation, resolvents, spectral density,
+  and thermal Gibbs workflows
+- added top-level public API status and policy metadata
+
+### Changed
+
+- redesigned rendered results pages around portfolio-style summaries,
+  representative figures, benchmark tables, artefact ledgers, and regeneration
+  commands
+- added rendered algorithm and implementation notes covering workflow targets,
+  diagnostics, rescaling conventions, report serialization, and API scope
+- documented `design-sweep` in README, usage, diagnostics report, and results
+  documentation
+- updated package metadata and release markers for `0.1.18`
+
+---
+
 ## [0.1.17] – 19th May 2026
 
 ### Added

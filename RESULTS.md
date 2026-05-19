@@ -76,8 +76,11 @@ from the package CLI.
 | --- | --- | ---: | ---: | --- |
 | `results/reports/sign-report.json` | sign polynomial design | `2.091981425741754e-01` | `1.1105097545055853e-01` | degree-13 sign approximation with `gamma=0.2`; bounded on `[-1, 1]` |
 | `results/plots/sign-report.png` | sign polynomial design plot | n/a | n/a | target-vs-polynomial plot for `sign-report.json` |
+| `results/reports/sign-degree-sweep.json` | sign polynomial degree sweep | n/a | n/a | compact degree/error/boundedness manifest for degrees `5,9,13,17` with `gamma=0.2` |
+| `results/reports/filter-degree-sweep.json` | filter polynomial degree sweep | n/a | n/a | compact degree/error/boundedness manifest for degrees `6,10,14,18` with `cutoff=0.4` |
 | `results/reports/qsvt-report.json` | diagonal QSVT transform | `9.999778782798785e-13` | `5.585577546102077e-13` | compares QSVT output with direct evaluation of `x^2` |
 | `results/reports/matrix-report.json` | Hermitian matrix QSVT transform | `5.264677582772492e-13` | `3.2060825311797223e-13` | real-part comparison against the classical spectral polynomial |
+| `results/tables/design_sweep_summary.csv` | design sweep summary table | n/a | n/a | tabular summary of committed design-sweep JSON reports |
 | `results/tables/qsvt-error-summary.csv` | release summary table | n/a | n/a | compact index over the generated JSON reports |
 
 These snapshots were refreshed for package version `0.1.14`.
@@ -123,6 +126,23 @@ mkdir -p results/reports results/plots results/tables
 qsvt design-report --kind sign --gamma 0.2 --degree 13 \
   --output results/reports/sign-report.json \
   --plot results/plots/sign-report.png
+```
+
+```bash
+qsvt design-sweep --kind sign --degrees "5,9,13,17" --gamma 0.2 \
+  --num-points 401 \
+  --bounded-num-points 801 \
+  --no-synthesis \
+  --output results/reports/sign-degree-sweep.json
+```
+
+```bash
+qsvt design-sweep --kind filter --degrees "6,10,14,18" --cutoff 0.4 \
+  --sharpness 12 \
+  --num-points 401 \
+  --bounded-num-points 801 \
+  --no-synthesis \
+  --output results/reports/filter-degree-sweep.json
 ```
 
 ```bash

@@ -1,15 +1,48 @@
-# Tutorial Result Plot Gallery
+# Tutorial Results
 
-These PNG files are extracted from the embedded outputs in the introductory
-notebooks so the notebook figures are visible outside Jupyter.
+This page curates the tutorial notebook outputs that explain the main QSVT
+workflow: design a bounded polynomial, apply it to a scalar or matrix spectrum,
+compare against a classical reference, and inspect approximation error.
 
-Regenerate them after updating notebook outputs with:
+For the compact numerical summary and CLI-generated reports, see
+[Results](results.md). The complete root ledger remains
+[`RESULTS.md`](../../RESULTS.md).
+
+## Highlights
+
+```{figure} ../../results/plots/notebooks/07_QSVT_Polynomial_Design_and_Approximation-plot-01.png
+:alt: Polynomial design and approximation plot
+:width: 520px
+
+Polynomial design diagnostics show the target function, bounded approximation,
+and error structure on the design interval.
+```
+
+```{figure} ../../results/plots/notebooks/09_QSVT_Sign_Function_and_Projectors-plot-01.png
+:alt: Sign function and projector plot
+:width: 520px
+
+Sign and projector tutorials connect approximation quality to spectral
+filtering behavior.
+```
+
+```{figure} ../../results/plots/notebooks/13_Degree_Error_and_Boundedness_Tradeoffs-plot-02.png
+:alt: Boundedness tradeoff plot
+:width: 520px
+
+Degree/error tradeoff plots make the central QSVT constraint visible:
+polynomials must remain bounded while approximating useful functions.
+```
+
+## Regeneration
+
+Regenerate the tutorial plot artefacts after updating notebook outputs with:
 
 ```bash
 python scripts/extract_notebook_plots.py
 ```
 
-## Tutorial Notebook Plots
+## Complete Tutorial Plot Ledger
 
 ### `01_QSVT_Scalar_and_Diagonal_Matrix.ipynb`
 

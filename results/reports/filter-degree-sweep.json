@@ -1,0 +1,68 @@
+{
+  "mode": "design-sweep",
+  "kind": "filter",
+  "degrees": [
+    6,
+    10,
+    14,
+    18
+  ],
+  "parameters": {
+    "gamma": 0.25,
+    "a": 0.2,
+    "alpha": 0.5,
+    "cutoff": 0.4,
+    "lower": -0.25,
+    "upper": 0.25,
+    "sharpness": 12.0,
+    "num_points": 401,
+    "bounded_num_points": 801,
+    "attempt_synthesis": false
+  },
+  "rows": [
+    {
+      "degree": 6,
+      "builder": "design_filter_polynomial",
+      "max_error": 0.19114394433639115,
+      "rms_error": 0.10036845569027071,
+      "bounded": null,
+      "bounded_margin": 0.0,
+      "compatible": true,
+      "compatibility_reasons": [],
+      "attempted_pennylane_synthesis": false
+    },
+    {
+      "degree": 10,
+      "builder": "design_filter_polynomial",
+      "max_error": 0.20033894918818795,
+      "rms_error": 0.08135058832372982,
+      "bounded": null,
+      "bounded_margin": 3.382605660240401e-06,
+      "compatible": true,
+      "compatibility_reasons": [],
+      "attempted_pennylane_synthesis": false
+    },
+    {
+      "degree": 14,
+      "builder": "design_filter_polynomial",
+      "max_error": 0.07397752073483832,
+      "rms_error": 0.03469153756628215,
+      "bounded": null,
+      "bounded_margin": 1.978004437797054e-06,
+      "compatible": true,
+      "compatibility_reasons": [],
+      "attempted_pennylane_synthesis": false
+    },
+    {
+      "degree": 18,
+      "builder": "design_filter_polynomial",
+      "max_error": 0.06783434474077632,
+      "rms_error": 0.03391969914072474,
+      "bounded": null,
+      "bounded_margin": 4.808597964256478e-12,
+      "compatible": true,
+      "compatibility_reasons": [],
+      "attempted_pennylane_synthesis": false
+    }
+  ]
+}

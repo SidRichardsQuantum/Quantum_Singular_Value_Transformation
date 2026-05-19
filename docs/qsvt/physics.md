@@ -16,6 +16,11 @@ transport physics, spin-chain phase diagnostics, electronic occupations,
 photonic band gaps, graphene nanoribbon density of states, and tensor-network
 hybrid filtering.
 
+For concise theory and diagnostics notes on the high-level workflow functions,
+see [Algorithm notes](algorithms.md). For coefficient conventions, rescaling,
+boundedness checks, and report serialization choices, see
+[Implementation notes](implementation.md).
+
 ## Hamiltonians
 
 `qsvt.hamiltonians` contains reusable small physics operators:

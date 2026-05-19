@@ -287,6 +287,22 @@ qsvt design-workflow \
   --output sign-workflow.json
 ```
 
+Degree/error/boundedness sweep:
+
+```bash
+qsvt design-sweep \
+  --kind sign \
+  --degrees "5,9,13,17" \
+  --gamma 0.2 \
+  --no-synthesis \
+  --output sign-degree-sweep.json
+```
+
+The sweep command writes a compact manifest with one row per degree, including
+sampled maximum error, RMS error, boundedness margin, and compatibility-check
+metadata. Use it when comparing approximation quality across candidate degrees
+without opening a notebook.
+
 Non-diagonal Hermitian matrix report:
 
 ```bash

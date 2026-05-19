@@ -37,15 +37,21 @@ qsvt design-report --kind sign --gamma 0.2 --degree 13 \
 qsvt design-workflow --kind sign --gamma 0.2 --degree 13 \
   --output sign-workflow.json
 
+qsvt design-sweep --kind sign --degrees "5,9,13,17" --gamma 0.2 \
+  --no-synthesis \
+  --output sign-degree-sweep.json
+
 qsvt template-report --kind inverse --degree 7 --mu 0.3 \
   --output inverse-report.json
 ```
 
 The report commands print full JSON to standard output by default.
 `design-workflow` combines coefficients, diagnostics, and QSVT compatibility
-metadata in one JSON report. When `--output` or `--plot` is supplied, the CLI
-writes the full artifact to disk and switches stdout to a compact write
-summary; add `--print-report` if you also want the full JSON payload on stdout.
+metadata in one JSON report. `design-sweep` runs the same design workflow over
+multiple degrees and writes a compact manifest suitable for release summaries
+and result tables. When `--output` or `--plot` is supplied, the CLI writes the
+full artifact to disk and switches stdout to a compact write summary; add
+`--print-report` if you also want the full JSON payload on stdout.
 
 ## Report fields
 

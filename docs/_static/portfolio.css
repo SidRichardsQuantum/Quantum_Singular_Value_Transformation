@@ -404,6 +404,56 @@ article[role="main"] table.docutils th {
   background: var(--surface-muted);
 }
 
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 1.5rem 0 2rem;
+}
+
+.metric-card {
+  display: grid;
+  gap: 0.35rem;
+  min-height: 7rem;
+  align-content: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 1rem;
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.metric-value {
+  color: var(--accent-strong);
+  font-size: clamp(1.6rem, 3vw, 2.3rem);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.metric-label {
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.figure {
+  margin: 1.5rem 0;
+}
+
+.figure img {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.figure .caption,
+figcaption {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
 html[data-content_root="./"] article[role="main"] > section#qsvt-pennylane > h1,
 html[data-content_root="./"] article[role="main"] > section#qsvt-pennylane > a.headerlink {
   position: absolute;
@@ -822,7 +872,8 @@ html[data-content_root="./"] article[role="main"] > section#qsvt-pennylane > a.h
 
 @media (max-width: 960px) {
   .project-grid,
-  .doc-card-grid {
+  .doc-card-grid,
+  .metric-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -883,6 +934,7 @@ html[data-content_root="./"] article[role="main"] > section#qsvt-pennylane > a.h
 
   .project-grid,
   .doc-card-grid,
+  .metric-grid,
   .hero-side {
     grid-template-columns: 1fr;
   }

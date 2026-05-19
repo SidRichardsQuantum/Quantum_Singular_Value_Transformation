@@ -182,8 +182,17 @@ except PackageNotFoundError:  # pragma: no cover
     # Allows editable installs / local runs without installed dist metadata.
     __version__ = "0.0.0"
 
+__api_status__ = "alpha"
+__public_api_policy__ = (
+    "Names exported from qsvt.__all__ are the intended public API. During the "
+    "0.x series, incompatible changes should be documented in the changelog and "
+    "prefer a deprecation period when practical."
+)
+
 __all__ = [
     "__version__",
+    "__api_status__",
+    "__public_api_policy__",
     "GroundStateFilteringWorkflowResult",
     "HamiltonianSimulationWorkflowResult",
     "LinearSystemWorkflowResult",

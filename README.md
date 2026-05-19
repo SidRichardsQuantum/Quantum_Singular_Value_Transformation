@@ -94,6 +94,8 @@ Use the command line interface:
 ```bash
 qsvt scalar --x 0.5 --poly "0,0,1"
 qsvt design-workflow --kind sign --gamma 0.2 --degree 13
+qsvt design-sweep --kind sign --degrees "5,9,13,17" --gamma 0.2 \
+  --no-synthesis --output sign-degree-sweep.json
 ```
 
 See [USAGE.md](USAGE.md) for full Python and CLI workflows.
@@ -135,14 +137,18 @@ inline type annotations shipped with the public modules.
 - [docs/qsvt/real_example_results.md](docs/qsvt/real_example_results.md):
   real-example plot and table gallery
 - [docs/qsvt/design.md](docs/qsvt/design.md): polynomial design helpers
+- [docs/qsvt/algorithms.md](docs/qsvt/algorithms.md): workflow-level
+  algorithm notes, diagnostics, and limitations
 - [docs/qsvt/templates.md](docs/qsvt/templates.md): template polynomial
   families
 - [docs/qsvt/physics.md](docs/qsvt/physics.md): Hamiltonian, PDE, rescaling,
   and matrix-function workflows
+- [docs/qsvt/implementation.md](docs/qsvt/implementation.md): implementation
+  conventions, report serialization, and API status
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial and real-example
   notebook index
 
-Current release: `0.1.17`
+Current release: `0.1.18`
 
 ## Notebooks
 

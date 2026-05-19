@@ -4,6 +4,7 @@ from importlib import resources
 import numpy as np
 import pytest
 
+import qsvt
 from qsvt.__main__ import main
 from qsvt.design import (
     design_filter_polynomial,
@@ -27,6 +28,30 @@ def test_package_exposes_pep561_type_marker():
     marker = resources.files("qsvt").joinpath("py.typed")
 
     assert marker.is_file()
+
+
+def test_top_level_public_api_exports_are_resolvable():
+    assert qsvt.__api_status__ == "alpha"
+    assert "qsvt.__all__" in qsvt.__public_api_policy__
+
+    exported = set(qsvt.__all__)
+    for name in exported:
+        assert hasattr(qsvt, name), name
+
+    expected_stable_surface = {
+        "design_workflow",
+        "linear_system_workflow",
+        "hamiltonian_simulation_workflow",
+        "ground_state_filtering_workflow",
+        "resolvent_workflow",
+        "spectral_density_workflow",
+        "thermal_gibbs_workflow",
+        "qsvt_transform_report",
+        "qsvt_matrix_transform_report",
+        "report_to_jsonable",
+        "save_report",
+    }
+    assert expected_stable_surface <= exported
 
 
 @pytest.mark.parametrize("n", [-1, -3])
@@ -266,6 +291,101 @@ def test_cli_design_workflow_writes_output(tmp_path, capsys):
     assert written["kind"] == "filter"
     assert written["diagnostics"]["builder"] == "design_filter_polynomial"
     assert written["compatibility"]["attempted_pennylane_synthesis"] is False
+
+
+def test_cli_design_sweep_writes_compact_manifest(tmp_path, capsys):
+    output_path = tmp_path / "design-sweep.json"
+
+    main(
+        [
+            "design-sweep",
+            "--kind",
+            "sign",
+            "--degrees",
+            "5,7",
+            "--gamma",
+            "0.2",
+            "--num-points",
+            "51",
+            "--bounded-num-points",
+            "101",
+            "--no-synthesis",
+            "--output",
+            str(output_path),
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+    written = json.loads(output_path.read_text(encoding="utf-8"))
+
+    assert payload["mode"] == "design-sweep"
+    assert payload["report_written"] is True
+    assert written["kind"] == "sign"
+    assert written["degrees"] == [5, 7]
+    assert [row["degree"] for row in written["rows"]] == [5, 7]
+    assert {row["builder"] for row in written["rows"]} == {
+        "design_sign_polynomial",
+    }
+    assert all(row["max_error"] >= 0.0 for row in written["rows"])
+    assert all(row["attempted_pennylane_synthesis"] is False for row in written["rows"])
+
+
+def test_cli_design_sweep_can_print_full_payload_with_output(tmp_path, capsys):
+    output_path = tmp_path / "filter-sweep.json"
+
+    main(
+        [
+            "design-sweep",
+            "--kind",
+            "filter",
+            "--degrees",
+            "6,10",
+            "--cutoff",
+            "0.4",
+            "--num-points",
+            "51",
+            "--bounded-num-points",
+            "101",
+            "--no-synthesis",
+            "--output",
+            str(output_path),
+            "--print-report",
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+    written = json.loads(output_path.read_text(encoding="utf-8"))
+
+    assert payload["mode"] == "design-sweep"
+    assert payload["kind"] == "filter"
+    assert payload["degrees"] == [6, 10]
+    assert payload == written
+
+
+def test_cli_design_sweep_rejects_empty_degree_list():
+    with pytest.raises(ValueError, match="expected at least one integer"):
+        main(
+            [
+                "design-sweep",
+                "--kind",
+                "sign",
+                "--degrees",
+                "",
+                "--no-synthesis",
+            ]
+        )
+
+
+def test_cli_design_sweep_rejects_malformed_degree_list():
+    with pytest.raises(ValueError, match="invalid literal"):
+        main(
+            [
+                "design-sweep",
+                "--kind",
+                "sign",
+                "--degrees",
+                "5,nope",
+                "--no-synthesis",
+            ]
+        )
 
 
 def test_cli_template_report_writes_output(tmp_path, capsys):

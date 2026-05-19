@@ -60,7 +60,9 @@ For the higher-level polynomial builders and ready-made templates, see:
 
 - [Polynomial design helpers](design.md)
 - [Polynomial templates](templates.md)
+- [Algorithm notes](algorithms.md)
 - [Physics workflows](physics.md)
+- [Implementation notes](implementation.md)
 - [Diagnostics reports](reports.md)
 - [QSVT transform reports](qsvt_reports.md)
 
@@ -116,6 +118,9 @@ matrix-function polynomial builders with exact spectral references:
 
 Each returns a frozen dataclass with numerical outputs, diagnostics, and an
 `as_report()` helper.
+
+For workflow-level targets, rescaling conventions, diagnostics, and limitations,
+see [Algorithm notes](algorithms.md).
 
 ---
 

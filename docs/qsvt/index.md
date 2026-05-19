@@ -86,6 +86,16 @@ Rendered notebook artefacts are kept separately from the root result index.
 - Tutorial plots: [Result plot gallery](result_gallery.md)
 - Real-example plots and tables: [Real-example results](real_example_results.md)
 
+### Algorithm and implementation notes
+
+Workflow-level theory and implementation conventions:
+
+- [Algorithm notes](algorithms.md): concise descriptions of the high-level
+  algorithm workflows, their mathematical targets, diagnostics, and limits
+- [Implementation notes](implementation.md): coefficient conventions,
+  rescaling choices, boundedness/compatibility checks, report serialization,
+  and public API status
+
 ### Changelog
 
 Release notes document package, notebook, documentation, and generated artefact
@@ -102,6 +112,12 @@ See: [Changelog](changelog.md)
 qsvt
 ├── polynomials.py
 ├── approximation.py
+├── design.py
+├── templates.py
+├── workflow.py
+├── algorithms.py
+├── reports.py
+├── compatibility.py
 ├── matrices.py
 ├── hamiltonians.py
 ├── pde.py
@@ -109,9 +125,9 @@ qsvt
 ├── matrix_functions.py
 ├── diagnostics.py
 ├── spectral.py
-├── design.py
-├── templates.py
-├── reports.py
+├── operators.py
+├── diagonal.py
+├── matrix.py
 ├── qsvt.py
 └── __main__.py
 
@@ -123,6 +139,12 @@ Each module is intentionally small and focused:
 |--------|--------|
 | `polynomials` | Chebyshev utilities and polynomial helpers |
 | `approximation` | bounded polynomial approximation tools |
+| `design` | task-oriented bounded polynomial builders |
+| `templates` | ready-made bounded polynomial families |
+| `workflow` | combined coefficient, diagnostic, and compatibility workflows |
+| `algorithms` | end-to-end simulator-scale algorithm workflows |
+| `reports` | diagnostics serialization and plotting helpers |
+| `compatibility` | sampled QSVT compatibility and synthesis checks |
 | `matrices` | small Hermitian test matrices |
 | `hamiltonians` | reusable small physics Hamiltonians |
 | `pde` | finite-difference PDE operators |
@@ -130,9 +152,7 @@ Each module is intentionally small and focused:
 | `matrix_functions` | polynomial builders for physics matrix functions |
 | `diagnostics` | state, operator, and spectral diagnostics |
 | `spectral` | classical spectral matrix functions |
-| `design` | task-oriented bounded polynomial builders |
-| `templates` | ready-made bounded polynomial families |
-| `reports` | diagnostics serialization and plotting helpers |
+| `operators`, `diagonal`, `matrix` | focused QSVT construction and comparison helpers |
 | `qsvt` | PennyLane QSVT wrappers |
 | `__main__` | command line interface |
 

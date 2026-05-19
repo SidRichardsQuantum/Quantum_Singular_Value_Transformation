@@ -188,6 +188,21 @@
 
       <article class="project-card">
         <div>
+          <h3>Algorithm Notes</h3>
+          <p>Read concise workflow-level theory for linear systems, filtering, simulation, resolvents, spectral density, and Gibbs weighting.</p>
+        </div>
+        <div class="tags">
+          <span>Algorithms</span>
+          <span>Diagnostics</span>
+          <span>Theory</span>
+        </div>
+        <div class="card-links">
+          <a href="qsvt/algorithms.html">Open algorithm notes</a>
+        </div>
+      </article>
+
+      <article class="project-card">
+        <div>
           <h3>Polynomial Design</h3>
           <p>See the higher-level bounded polynomial builders for inverse, sign, projector, and filter workflows.</p>
         </div>
@@ -228,6 +243,21 @@
         </div>
         <div class="card-links">
           <a href="qsvt/physics.html">Open physics guide</a>
+        </div>
+      </article>
+
+      <article class="project-card">
+        <div>
+          <h3>Implementation Notes</h3>
+          <p>Review coefficient conventions, rescaling, boundedness checks, report serialization, and public API policy.</p>
+        </div>
+        <div class="tags">
+          <span>Implementation</span>
+          <span>API</span>
+          <span>Reports</span>
+        </div>
+        <div class="card-links">
+          <a href="qsvt/implementation.html">Open implementation notes</a>
         </div>
       </article>
 
@@ -345,6 +375,7 @@ Real-Example Results <qsvt/real_example_results>
 :caption: Guides
 
 Polynomial Design <qsvt/design>
+Algorithm Notes <qsvt/algorithms>
 Physics Workflows <qsvt/physics>
 Polynomial Templates <qsvt/templates>
 Diagnostics Reports <qsvt/reports>
@@ -358,6 +389,7 @@ QSVT Transform Reports <qsvt/qsvt_reports>
 :caption: Reference
 
 API Reference <qsvt/api_reference>
+Implementation Notes <qsvt/implementation>
 Notebooks <qsvt/notebooks>
 Changelog <qsvt/changelog>
 ```

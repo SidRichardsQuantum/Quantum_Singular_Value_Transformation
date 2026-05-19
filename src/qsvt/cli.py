@@ -21,6 +21,8 @@ and demonstration of core functionality:
         --poly "0,0,1"
     python -m qsvt apply-design --kind sign --values="-0.8,-0.3,0.3,0.8" \
         --degree 13
+    python -m qsvt design-sweep --kind sign --degrees "5,9,13" \
+        --gamma 0.2 --output sweep.json
 
 The CLI is not intended to replace notebooks; it provides simple smoke
 tests and reproducible command-line demonstrations.
@@ -72,6 +74,16 @@ def _parse_float_list(text: str) -> list[float]:
     Parse a comma-separated list of floats.
     """
     return [float(x.strip()) for x in text.split(",") if x.strip()]
+
+
+def _parse_int_list(text: str) -> list[int]:
+    """
+    Parse a comma-separated list of integers.
+    """
+    values = [int(x.strip()) for x in text.split(",") if x.strip()]
+    if not values:
+        raise ValueError("expected at least one integer.")
+    return values
 
 
 def _parse_poly(text: str) -> list[float]:
@@ -291,6 +303,65 @@ def cmd_design_workflow(args: argparse.Namespace) -> dict:
         attempt_synthesis=args.attempt_synthesis,
     )
     return result.as_report()
+
+
+def cmd_design_sweep(args: argparse.Namespace) -> dict:
+    """
+    Build a compact manifest for a degree/error/boundedness design sweep.
+    """
+    degrees = _parse_int_list(args.degrees)
+    rows = []
+    for degree in degrees:
+        result = design_workflow(
+            args.kind,
+            degree=degree,
+            gamma=args.gamma,
+            a=args.a,
+            alpha=args.alpha,
+            cutoff=args.cutoff,
+            lower=args.lower,
+            upper=args.upper,
+            sharpness=args.sharpness,
+            num_points=args.num_points,
+            bounded_num_points=args.bounded_num_points,
+            attempt_synthesis=args.attempt_synthesis,
+        )
+        diagnostics = result.diagnostics
+        compatibility = result.compatibility
+        rows.append(
+            {
+                "degree": int(degree),
+                "builder": result.builder,
+                "max_error": diagnostics.get("max_error"),
+                "rms_error": diagnostics.get("rms_error"),
+                "bounded": diagnostics.get("bounded"),
+                "bounded_margin": diagnostics.get("bounded_margin"),
+                "compatible": compatibility.get("compatible"),
+                "compatibility_reasons": compatibility.get("reasons", []),
+                "attempted_pennylane_synthesis": compatibility.get(
+                    "attempted_pennylane_synthesis",
+                ),
+            }
+        )
+
+    return {
+        "mode": "design-sweep",
+        "kind": args.kind,
+        "degrees": degrees,
+        "parameters": {
+            "gamma": args.gamma,
+            "a": args.a,
+            "alpha": args.alpha,
+            "cutoff": args.cutoff,
+            "lower": args.lower,
+            "upper": args.upper,
+            "sharpness": args.sharpness,
+            "num_points": args.num_points,
+            "bounded_num_points": args.bounded_num_points,
+            "attempt_synthesis": args.attempt_synthesis,
+        },
+        "rows": rows,
+    }
 
 
 def cmd_template_report(args: argparse.Namespace) -> dict:
@@ -643,6 +714,57 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_report_output_args(p_design_workflow)
     p_design_workflow.set_defaults(func=cmd_design_workflow)
+
+    p_design_sweep = sub.add_parser(
+        "design-sweep",
+        help="Build a compact degree/error/boundedness sweep manifest",
+    )
+    p_design_sweep.add_argument(
+        "--kind",
+        choices=[
+            "inverse",
+            "sign",
+            "projector",
+            "sqrt",
+            "power",
+            "filter",
+            "interval_projector",
+        ],
+        required=True,
+    )
+    p_design_sweep.add_argument(
+        "--degrees",
+        type=str,
+        required=True,
+        help='Comma-separated polynomial degrees, e.g. "5,9,13"',
+    )
+    p_design_sweep.add_argument("--gamma", type=float, default=0.25)
+    p_design_sweep.add_argument("--a", type=float, default=0.2)
+    p_design_sweep.add_argument("--alpha", type=float, default=0.5)
+    p_design_sweep.add_argument("--cutoff", type=float, default=0.45)
+    p_design_sweep.add_argument("--lower", type=float, default=-0.25)
+    p_design_sweep.add_argument("--upper", type=float, default=0.25)
+    p_design_sweep.add_argument("--sharpness", type=float, default=12.0)
+    p_design_sweep.add_argument(
+        "--num-points",
+        dest="num_points",
+        type=int,
+        default=2001,
+    )
+    p_design_sweep.add_argument(
+        "--bounded-num-points",
+        dest="bounded_num_points",
+        type=int,
+        default=4001,
+    )
+    p_design_sweep.add_argument(
+        "--no-synthesis",
+        dest="attempt_synthesis",
+        action="store_false",
+        help="Skip the PennyLane synthesis attempt.",
+    )
+    _add_report_output_args(p_design_sweep)
+    p_design_sweep.set_defaults(func=cmd_design_sweep)
 
     p_template_report = sub.add_parser(
         "template-report",
