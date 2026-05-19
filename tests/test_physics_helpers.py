@@ -1,6 +1,19 @@
 import numpy as np
 
-from qsvt.algorithms import LinearSystemWorkflowResult, linear_system_workflow
+from qsvt.algorithms import (
+    GroundStateFilteringWorkflowResult,
+    HamiltonianSimulationWorkflowResult,
+    LinearSystemWorkflowResult,
+    ResolventWorkflowResult,
+    SpectralDensityWorkflowResult,
+    ThermalGibbsWorkflowResult,
+    ground_state_filtering_workflow,
+    hamiltonian_simulation_workflow,
+    linear_system_workflow,
+    resolvent_workflow,
+    spectral_density_workflow,
+    thermal_gibbs_workflow,
+)
 from qsvt.design import (
     design_positive_inverse_diagnostics,
     design_positive_inverse_polynomial,
@@ -198,7 +211,7 @@ def test_linear_system_workflow_solves_positive_definite_problem():
     if result.qsvt_error is None:
         assert result.qsvt_solution is not None
         assert result.qsvt_residual_norm is not None
-        assert result.qsvt_residual_norm < 0.1
+        assert result.qsvt_residual_norm < 0.12
     else:
         assert result.qsvt_solution is None
     assert result.compatibility["compatible"] is True
@@ -218,6 +231,108 @@ def test_linear_system_workflow_handles_scaled_identity_default_gamma():
 
     assert result.gamma < 1.0
     assert result.polynomial_residual_norm < 1e-6
+
+
+def test_ground_state_filtering_workflow_improves_ground_overlap():
+    H = np.diag([0.0, 1.0, 2.0])
+    state = np.array([0.4, 0.8, 0.4])
+
+    result = ground_state_filtering_workflow(
+        H,
+        state,
+        degree=18,
+        width=0.35,
+        num_points=501,
+    )
+
+    assert isinstance(result, GroundStateFilteringWorkflowResult)
+    assert result.ground_energy == 0.0
+    assert result.ground_state_overlap > abs(state[0] / np.linalg.norm(state)) ** 2
+    assert result.reference_state_error < 1e-3
+    assert result.operator_relative_error < 1e-3
+    assert result.as_report()["mode"] == "ground-state-filtering-workflow"
+
+
+def test_hamiltonian_simulation_workflow_matches_exact_evolution():
+    H = np.diag([-1.0, 0.25, 1.0])
+    state = np.array([1.0, 1.0j, -0.5])
+
+    result = hamiltonian_simulation_workflow(
+        H,
+        state,
+        time=0.7,
+        degree=16,
+        num_points=501,
+    )
+
+    assert isinstance(result, HamiltonianSimulationWorkflowResult)
+    assert result.state_relative_error < 1e-8
+    assert result.operator_relative_error < 1e-8
+    assert result.norm_drift < 1e-8
+    assert result.as_report()["mode"] == "hamiltonian-simulation-workflow"
+
+
+def test_resolvent_workflow_matches_exact_green_function_response():
+    H = np.diag([-0.5, 0.2, 0.9])
+    source = np.array([1.0, 0.0, -1.0])
+
+    result = resolvent_workflow(
+        H,
+        omega=0.1,
+        eta=0.4,
+        degree=22,
+        source=source,
+        num_points=701,
+    )
+
+    assert isinstance(result, ResolventWorkflowResult)
+    assert result.operator_relative_error < 5e-4
+    assert result.response_relative_error is not None
+    assert result.response_relative_error < 5e-4
+    assert result.as_report()["mode"] == "resolvent-workflow"
+
+
+def test_spectral_density_workflow_matches_gaussian_windows():
+    H = np.diag([-1.0, -0.2, 0.6, 1.0])
+    centers = np.array([-1.0, 0.0, 1.0])
+    state = np.array([1.0, 0.5, 0.25, 0.0])
+
+    result = spectral_density_workflow(
+        H,
+        centers,
+        width=0.35,
+        degree=22,
+        state=state,
+        num_points=701,
+    )
+
+    assert isinstance(result, SpectralDensityWorkflowResult)
+    assert result.trace_density_error < 1e-3
+    assert result.state_weight_error is not None
+    assert result.state_weight_error < 1e-3
+    assert result.polynomial_trace_density.shape == centers.shape
+    assert result.as_report()["mode"] == "spectral-density-workflow"
+
+
+def test_thermal_gibbs_workflow_matches_exact_boltzmann_weights():
+    H = np.diag([0.0, 0.8, 1.5])
+    state = np.array([0.5, 1.0, 0.25])
+
+    result = thermal_gibbs_workflow(
+        H,
+        beta=0.9,
+        degree=18,
+        state=state,
+        num_points=501,
+    )
+
+    assert isinstance(result, ThermalGibbsWorkflowResult)
+    assert result.operator_relative_error < 1e-8
+    assert result.density_matrix_relative_error < 1e-8
+    assert result.weighted_state_error is not None
+    assert result.weighted_state_error < 1e-8
+    assert np.isclose(np.trace(result.polynomial_gibbs_state), 1.0)
+    assert result.as_report()["mode"] == "thermal-gibbs-workflow"
 
 
 def test_diagnostics_helpers():

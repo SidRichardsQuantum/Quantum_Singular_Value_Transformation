@@ -148,6 +148,39 @@ The workflow is intended for educational and simulator-scale experiments. It
 does not replace production state preparation, block-encoding construction, or
 fault-tolerant resource estimation.
 
+## Algorithm Workflows
+
+`qsvt.algorithms` also provides end-to-end workflows for common small physics
+tasks. These combine rescaling, polynomial design, spectral reference
+calculations, and diagnostics:
+
+- `ground_state_filtering_workflow(matrix, state, degree=...)`
+- `hamiltonian_simulation_workflow(matrix, state, time=..., degree=...)`
+- `resolvent_workflow(matrix, omega=..., eta=..., degree=..., source=None)`
+- `spectral_density_workflow(matrix, centers, width=..., degree=..., state=None)`
+- `thermal_gibbs_workflow(matrix, beta=..., degree=..., state=None)`
+
+```python
+import numpy as np
+from qsvt.algorithms import hamiltonian_simulation_workflow
+
+H = np.diag([-1.0, 0.0, 1.0])
+psi = np.array([1.0, 1.0j, 0.5])
+
+result = hamiltonian_simulation_workflow(
+    H,
+    psi,
+    time=0.75,
+    degree=18,
+)
+
+print(result.state_relative_error)
+print(result.norm_drift)
+```
+
+Each workflow result exposes `as_report()` for JSON-safe conversion through
+`qsvt.reports.report_to_jsonable`.
+
 ## Interval Projectors
 
 `qsvt.design.design_interval_projector_polynomial` builds a bounded smooth

@@ -20,7 +20,20 @@ classical validation of QSVT/QSP ideas.
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as _pkg_version
 
-from .algorithms import LinearSystemWorkflowResult, linear_system_workflow
+from .algorithms import (
+    GroundStateFilteringWorkflowResult,
+    HamiltonianSimulationWorkflowResult,
+    LinearSystemWorkflowResult,
+    ResolventWorkflowResult,
+    SpectralDensityWorkflowResult,
+    ThermalGibbsWorkflowResult,
+    ground_state_filtering_workflow,
+    hamiltonian_simulation_workflow,
+    linear_system_workflow,
+    resolvent_workflow,
+    spectral_density_workflow,
+    thermal_gibbs_workflow,
+)
 from .approximation import (
     approximation_quality_report,
     chebyshev_approximant,
@@ -171,7 +184,12 @@ except PackageNotFoundError:  # pragma: no cover
 
 __all__ = [
     "__version__",
+    "GroundStateFilteringWorkflowResult",
+    "HamiltonianSimulationWorkflowResult",
     "LinearSystemWorkflowResult",
+    "ResolventWorkflowResult",
+    "SpectralDensityWorkflowResult",
+    "ThermalGibbsWorkflowResult",
     "approximation_quality_report",
     "chebyshev_approximant",
     "chebyshev_eval",
@@ -198,7 +216,12 @@ __all__ = [
     "sqrt_approximation_diagnostics",
     "DesignWorkflowResult",
     "design_workflow",
+    "ground_state_filtering_workflow",
+    "hamiltonian_simulation_workflow",
     "linear_system_workflow",
+    "resolvent_workflow",
+    "spectral_density_workflow",
+    "thermal_gibbs_workflow",
     "hermitian_from_eigendecomposition",
     "identity",
     "involutory_diagonal",

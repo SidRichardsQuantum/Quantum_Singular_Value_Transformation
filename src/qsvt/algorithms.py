@@ -17,9 +17,25 @@ from .design import (
     design_positive_inverse_diagnostics,
     design_positive_inverse_polynomial,
 )
+from .diagnostics import expectation_value, ground_state_overlap, operator_error
 from .matrix import qsvt_matrix_transform
-from .rescaling import ScaledOperator, rescale_positive_semidefinite
-from .spectral import apply_polynomial_to_hermitian, eigh_hermitian
+from .matrix_functions import (
+    ScaledPolynomial,
+    design_gaussian_window_polynomial,
+    design_imaginary_time_polynomial,
+    design_real_time_evolution_polynomials,
+    design_resolvent_polynomials,
+)
+from .rescaling import (
+    ScaledOperator,
+    rescale_hermitian_to_unit_interval,
+    rescale_positive_semidefinite,
+)
+from .spectral import (
+    apply_function_to_hermitian,
+    apply_polynomial_to_hermitian,
+    eigh_hermitian,
+)
 
 
 @dataclass(frozen=True)
@@ -71,6 +87,268 @@ class LinearSystemWorkflowResult:
             "diagnostics": self.diagnostics,
             "compatibility": self.compatibility,
         }
+
+
+@dataclass(frozen=True)
+class GroundStateFilteringWorkflowResult:
+    """
+    Structured output from a Gaussian ground-state filtering workflow.
+    """
+
+    coeffs: np.ndarray
+    scaled_operator: ScaledOperator
+    input_state: np.ndarray
+    filtered_state: np.ndarray
+    unnormalized_filtered_state: np.ndarray
+    reference_filtered_state: np.ndarray
+    ground_energy: float
+    filtered_energy: float | complex
+    ground_state_overlap: float
+    reference_state_error: float
+    center: float
+    width: float
+    degree: int
+    polynomial_operator: np.ndarray
+    reference_operator: np.ndarray
+    operator_relative_error: float
+
+    def as_report(self) -> dict[str, Any]:
+        """
+        Return a report-style dictionary for JSON conversion or persistence.
+        """
+        return {
+            "mode": "ground-state-filtering-workflow",
+            "degree": self.degree,
+            "center": self.center,
+            "width": self.width,
+            "coeffs": self.coeffs,
+            "scaled_operator": _scaled_operator_report(self.scaled_operator),
+            "input_state": self.input_state,
+            "filtered_state": self.filtered_state,
+            "unnormalized_filtered_state": self.unnormalized_filtered_state,
+            "reference_filtered_state": self.reference_filtered_state,
+            "ground_energy": self.ground_energy,
+            "filtered_energy": self.filtered_energy,
+            "ground_state_overlap": self.ground_state_overlap,
+            "reference_state_error": self.reference_state_error,
+            "polynomial_operator": self.polynomial_operator,
+            "reference_operator": self.reference_operator,
+            "operator_relative_error": self.operator_relative_error,
+        }
+
+
+@dataclass(frozen=True)
+class HamiltonianSimulationWorkflowResult:
+    """
+    Structured output from a real-time Hamiltonian simulation workflow.
+    """
+
+    cos_coeffs: np.ndarray
+    sin_coeffs: np.ndarray
+    scaled_operator: ScaledOperator
+    input_state: np.ndarray
+    evolved_state: np.ndarray
+    reference_state: np.ndarray
+    polynomial_unitary: np.ndarray
+    reference_unitary: np.ndarray
+    time: float
+    degree: int
+    scaled_time: float
+    state_relative_error: float
+    operator_relative_error: float
+    norm_drift: float
+
+    def as_report(self) -> dict[str, Any]:
+        """
+        Return a report-style dictionary for JSON conversion or persistence.
+        """
+        return {
+            "mode": "hamiltonian-simulation-workflow",
+            "time": self.time,
+            "degree": self.degree,
+            "scaled_time": self.scaled_time,
+            "cos_coeffs": self.cos_coeffs,
+            "sin_coeffs": self.sin_coeffs,
+            "scaled_operator": _scaled_operator_report(self.scaled_operator),
+            "input_state": self.input_state,
+            "evolved_state": self.evolved_state,
+            "reference_state": self.reference_state,
+            "polynomial_unitary": self.polynomial_unitary,
+            "reference_unitary": self.reference_unitary,
+            "state_relative_error": self.state_relative_error,
+            "operator_relative_error": self.operator_relative_error,
+            "norm_drift": self.norm_drift,
+        }
+
+
+@dataclass(frozen=True)
+class ResolventWorkflowResult:
+    """
+    Structured output from a Green's-function / resolvent workflow.
+    """
+
+    real_coeffs: np.ndarray
+    imag_coeffs: np.ndarray
+    scaled_operator: ScaledOperator
+    source: np.ndarray | None
+    polynomial_operator: np.ndarray
+    reference_operator: np.ndarray
+    polynomial_response: np.ndarray | None
+    reference_response: np.ndarray | None
+    omega: float
+    eta: float
+    degree: int
+    operator_relative_error: float
+    response_relative_error: float | None
+
+    def as_report(self) -> dict[str, Any]:
+        """
+        Return a report-style dictionary for JSON conversion or persistence.
+        """
+        return {
+            "mode": "resolvent-workflow",
+            "omega": self.omega,
+            "eta": self.eta,
+            "degree": self.degree,
+            "real_coeffs": self.real_coeffs,
+            "imag_coeffs": self.imag_coeffs,
+            "scaled_operator": _scaled_operator_report(self.scaled_operator),
+            "source": self.source,
+            "polynomial_operator": self.polynomial_operator,
+            "reference_operator": self.reference_operator,
+            "polynomial_response": self.polynomial_response,
+            "reference_response": self.reference_response,
+            "operator_relative_error": self.operator_relative_error,
+            "response_relative_error": self.response_relative_error,
+        }
+
+
+@dataclass(frozen=True)
+class SpectralDensityWorkflowResult:
+    """
+    Structured output from a Gaussian spectral-density workflow.
+    """
+
+    centers: np.ndarray
+    width: float
+    degree: int
+    coeffs_by_center: list[np.ndarray]
+    scaled_operator: ScaledOperator
+    polynomial_trace_density: np.ndarray
+    reference_trace_density: np.ndarray
+    trace_density_error: float
+    state: np.ndarray | None = None
+    polynomial_state_weights: np.ndarray | None = None
+    reference_state_weights: np.ndarray | None = None
+    state_weight_error: float | None = None
+
+    def as_report(self) -> dict[str, Any]:
+        """
+        Return a report-style dictionary for JSON conversion or persistence.
+        """
+        return {
+            "mode": "spectral-density-workflow",
+            "centers": self.centers,
+            "width": self.width,
+            "degree": self.degree,
+            "coeffs_by_center": self.coeffs_by_center,
+            "scaled_operator": _scaled_operator_report(self.scaled_operator),
+            "polynomial_trace_density": self.polynomial_trace_density,
+            "reference_trace_density": self.reference_trace_density,
+            "trace_density_error": self.trace_density_error,
+            "state": self.state,
+            "polynomial_state_weights": self.polynomial_state_weights,
+            "reference_state_weights": self.reference_state_weights,
+            "state_weight_error": self.state_weight_error,
+        }
+
+
+@dataclass(frozen=True)
+class ThermalGibbsWorkflowResult:
+    """
+    Structured output from an imaginary-time / Gibbs weighting workflow.
+    """
+
+    coeffs: np.ndarray
+    prefactor: float
+    scaled_operator: ScaledOperator
+    polynomial_boltzmann_operator: np.ndarray
+    reference_boltzmann_operator: np.ndarray
+    polynomial_gibbs_state: np.ndarray
+    reference_gibbs_state: np.ndarray
+    beta: float
+    degree: int
+    polynomial_partition_function: float | complex
+    reference_partition_function: float | complex
+    operator_relative_error: float
+    density_matrix_relative_error: float
+    state: np.ndarray | None = None
+    polynomial_weighted_state: np.ndarray | None = None
+    reference_weighted_state: np.ndarray | None = None
+    weighted_state_error: float | None = None
+
+    def as_report(self) -> dict[str, Any]:
+        """
+        Return a report-style dictionary for JSON conversion or persistence.
+        """
+        return {
+            "mode": "thermal-gibbs-workflow",
+            "beta": self.beta,
+            "degree": self.degree,
+            "coeffs": self.coeffs,
+            "prefactor": self.prefactor,
+            "scaled_operator": _scaled_operator_report(self.scaled_operator),
+            "polynomial_boltzmann_operator": self.polynomial_boltzmann_operator,
+            "reference_boltzmann_operator": self.reference_boltzmann_operator,
+            "polynomial_gibbs_state": self.polynomial_gibbs_state,
+            "reference_gibbs_state": self.reference_gibbs_state,
+            "polynomial_partition_function": self.polynomial_partition_function,
+            "reference_partition_function": self.reference_partition_function,
+            "operator_relative_error": self.operator_relative_error,
+            "density_matrix_relative_error": self.density_matrix_relative_error,
+            "state": self.state,
+            "polynomial_weighted_state": self.polynomial_weighted_state,
+            "reference_weighted_state": self.reference_weighted_state,
+            "weighted_state_error": self.weighted_state_error,
+        }
+
+
+def _scaled_operator_report(scaled: ScaledOperator) -> dict[str, object]:
+    return {
+        "matrix": scaled.matrix,
+        "offset": scaled.offset,
+        "scale": scaled.scale,
+        "eigenvalue_bounds": scaled.eigenvalue_bounds,
+    }
+
+
+def _validate_state(
+    state: np.ndarray,
+    dimension: int,
+    name: str = "state",
+) -> np.ndarray:
+    vec = np.asarray(state, dtype=complex if np.iscomplexobj(state) else float)
+    if vec.ndim != 1 or vec.shape[0] != dimension:
+        raise ValueError(
+            f"{name} must be a vector whose length matches matrix dimension."
+        )
+    if np.linalg.norm(vec) == 0.0:
+        raise ValueError(f"{name} must be nonzero.")
+    return vec
+
+
+def _normalize_state(state: np.ndarray) -> np.ndarray:
+    norm = np.linalg.norm(state)
+    if norm == 0.0:
+        raise ValueError("cannot normalize a zero state.")
+    return state / norm
+
+
+def _state_error(reference: np.ndarray, approximate: np.ndarray) -> float:
+    phase = np.vdot(reference, approximate)
+    if abs(phase) > 0.0:
+        approximate = approximate * np.exp(-1j * np.angle(phase))
+    return _relative_error(reference, approximate)
 
 
 def _validate_linear_system_inputs(
@@ -190,4 +468,347 @@ def linear_system_workflow(
     )
 
 
-__all__ = ["LinearSystemWorkflowResult", "linear_system_workflow"]
+def ground_state_filtering_workflow(
+    matrix: np.ndarray,
+    state: np.ndarray,
+    *,
+    degree: int,
+    width: float = 0.25,
+    center: float = -1.0,
+    num_points: int = 2001,
+) -> GroundStateFilteringWorkflowResult:
+    """
+    Apply a Gaussian low-energy filter to a trial state.
+
+    The Hamiltonian is affinely mapped to ``[-1, 1]`` and filtered with a
+    Gaussian window centered near the low-energy edge by default. The
+    ``center`` and ``width`` parameters are expressed in the scaled spectral
+    coordinate.
+    """
+    evals, _ = eigh_hermitian(matrix)
+    scaled = rescale_hermitian_to_unit_interval(matrix)
+    psi = _validate_state(state, scaled.matrix.shape[0])
+    psi = _normalize_state(psi)
+
+    if width <= 0.0:
+        raise ValueError("width must be positive.")
+
+    coeffs = design_gaussian_window_polynomial(
+        center=center,
+        width=width,
+        degree=degree,
+        num_points=num_points,
+    )
+    polynomial_operator = apply_polynomial_to_hermitian(scaled.matrix, coeffs)
+    reference_operator = apply_function_to_hermitian(
+        scaled.matrix,
+        lambda x: np.exp(-0.5 * ((x - float(center)) / float(width)) ** 2),
+    )
+
+    unnormalized = polynomial_operator @ psi
+    filtered = _normalize_state(unnormalized)
+    reference_filtered = _normalize_state(reference_operator @ psi)
+
+    return GroundStateFilteringWorkflowResult(
+        coeffs=coeffs,
+        scaled_operator=scaled,
+        input_state=psi,
+        filtered_state=filtered,
+        unnormalized_filtered_state=unnormalized,
+        reference_filtered_state=reference_filtered,
+        ground_energy=float(evals[0]),
+        filtered_energy=expectation_value(np.asarray(matrix), filtered),
+        ground_state_overlap=ground_state_overlap(np.asarray(matrix), filtered),
+        reference_state_error=_state_error(reference_filtered, filtered),
+        center=float(center),
+        width=float(width),
+        degree=int(degree),
+        polynomial_operator=polynomial_operator,
+        reference_operator=reference_operator,
+        operator_relative_error=operator_error(reference_operator, polynomial_operator),
+    )
+
+
+def hamiltonian_simulation_workflow(
+    matrix: np.ndarray,
+    state: np.ndarray,
+    *,
+    time: float,
+    degree: int,
+    num_points: int = 1001,
+) -> HamiltonianSimulationWorkflowResult:
+    """
+    Approximate real-time evolution ``exp(-i H t)|psi>`` with polynomial pairs.
+    """
+    scaled = rescale_hermitian_to_unit_interval(matrix)
+    psi = _normalize_state(_validate_state(state, scaled.matrix.shape[0]))
+    polynomials = design_real_time_evolution_polynomials(
+        time=time,
+        scale=scaled.scale,
+        degree=degree,
+        num_points=num_points,
+    )
+
+    cos_op = apply_polynomial_to_hermitian(scaled.matrix, polynomials.cos_coeffs)
+    sin_op = apply_polynomial_to_hermitian(scaled.matrix, polynomials.sin_coeffs)
+    phase = np.exp(-1j * scaled.offset * float(time))
+    polynomial_unitary = phase * (cos_op - 1j * sin_op)
+    reference_unitary = apply_function_to_hermitian(
+        np.asarray(matrix),
+        lambda x: np.exp(-1j * float(time) * x),
+    )
+    evolved = polynomial_unitary @ psi
+    reference = reference_unitary @ psi
+
+    return HamiltonianSimulationWorkflowResult(
+        cos_coeffs=polynomials.cos_coeffs,
+        sin_coeffs=polynomials.sin_coeffs,
+        scaled_operator=scaled,
+        input_state=psi,
+        evolved_state=evolved,
+        reference_state=reference,
+        polynomial_unitary=polynomial_unitary,
+        reference_unitary=reference_unitary,
+        time=float(time),
+        degree=int(degree),
+        scaled_time=polynomials.scaled_time,
+        state_relative_error=_state_error(reference, evolved),
+        operator_relative_error=operator_error(reference_unitary, polynomial_unitary),
+        norm_drift=float(abs(np.linalg.norm(evolved) - 1.0)),
+    )
+
+
+def resolvent_workflow(
+    matrix: np.ndarray,
+    *,
+    omega: float,
+    eta: float,
+    degree: int,
+    source: np.ndarray | None = None,
+    num_points: int = 2001,
+) -> ResolventWorkflowResult:
+    """
+    Approximate the Green's-function resolvent ``(omega+i eta-H)^-1``.
+    """
+    scaled = rescale_hermitian_to_unit_interval(matrix)
+    real_coeffs, imag_coeffs = design_resolvent_polynomials(
+        omega=omega,
+        eta=eta,
+        scale=scaled.scale,
+        offset=scaled.offset,
+        degree=degree,
+        num_points=num_points,
+    )
+    polynomial_operator = apply_polynomial_to_hermitian(
+        scaled.matrix,
+        real_coeffs,
+    ) + 1j * apply_polynomial_to_hermitian(scaled.matrix, imag_coeffs)
+    reference_operator = apply_function_to_hermitian(
+        np.asarray(matrix),
+        lambda x: 1.0 / (float(omega) + 1j * float(eta) - x),
+    )
+
+    source_vec = None
+    polynomial_response = None
+    reference_response = None
+    response_error = None
+    if source is not None:
+        source_vec = _validate_state(source, scaled.matrix.shape[0], name="source")
+        polynomial_response = polynomial_operator @ source_vec
+        reference_response = reference_operator @ source_vec
+        response_error = _relative_error(reference_response, polynomial_response)
+
+    return ResolventWorkflowResult(
+        real_coeffs=real_coeffs,
+        imag_coeffs=imag_coeffs,
+        scaled_operator=scaled,
+        source=source_vec,
+        polynomial_operator=polynomial_operator,
+        reference_operator=reference_operator,
+        polynomial_response=polynomial_response,
+        reference_response=reference_response,
+        omega=float(omega),
+        eta=float(eta),
+        degree=int(degree),
+        operator_relative_error=operator_error(reference_operator, polynomial_operator),
+        response_relative_error=response_error,
+    )
+
+
+def spectral_density_workflow(
+    matrix: np.ndarray,
+    centers: np.ndarray,
+    *,
+    width: float,
+    degree: int,
+    state: np.ndarray | None = None,
+    num_points: int = 2001,
+) -> SpectralDensityWorkflowResult:
+    """
+    Estimate Gaussian-window trace density and optional state spectral weights.
+
+    The ``centers`` and ``width`` parameters are expressed in the original
+    spectral coordinate of ``matrix``.
+    """
+    scaled = rescale_hermitian_to_unit_interval(matrix)
+    center_values = np.asarray(centers, dtype=float)
+    if center_values.ndim != 1:
+        raise ValueError("centers must be a one-dimensional array.")
+    if width <= 0.0:
+        raise ValueError("width must be positive.")
+
+    state_vec = None
+    if state is not None:
+        state_vec = _normalize_state(_validate_state(state, scaled.matrix.shape[0]))
+
+    coeffs_by_center = []
+    polynomial_density = []
+    reference_density = []
+    polynomial_weights = []
+    reference_weights = []
+
+    dimension = scaled.matrix.shape[0]
+    for physical_center in center_values:
+        scaled_center = (float(physical_center) - scaled.offset) / scaled.scale
+        scaled_width = float(width) / scaled.scale
+        coeffs = design_gaussian_window_polynomial(
+            center=scaled_center,
+            width=scaled_width,
+            degree=degree,
+            num_points=num_points,
+        )
+        coeffs_by_center.append(coeffs)
+        polynomial_operator = apply_polynomial_to_hermitian(scaled.matrix, coeffs)
+        reference_operator = apply_function_to_hermitian(
+            np.asarray(matrix),
+            lambda x, c=float(physical_center): np.exp(
+                -0.5 * ((x - c) / float(width)) ** 2,
+            ),
+        )
+        polynomial_density.append(np.trace(polynomial_operator) / dimension)
+        reference_density.append(np.trace(reference_operator) / dimension)
+        if state_vec is not None:
+            polynomial_weights.append(
+                np.vdot(state_vec, polynomial_operator @ state_vec)
+            )
+            reference_weights.append(np.vdot(state_vec, reference_operator @ state_vec))
+
+    polynomial_density_arr = np.real_if_close(np.asarray(polynomial_density))
+    reference_density_arr = np.real_if_close(np.asarray(reference_density))
+    polynomial_weights_arr = (
+        np.real_if_close(np.asarray(polynomial_weights))
+        if state_vec is not None
+        else None
+    )
+    reference_weights_arr = (
+        np.real_if_close(np.asarray(reference_weights))
+        if state_vec is not None
+        else None
+    )
+
+    return SpectralDensityWorkflowResult(
+        centers=center_values,
+        width=float(width),
+        degree=int(degree),
+        coeffs_by_center=coeffs_by_center,
+        scaled_operator=scaled,
+        polynomial_trace_density=polynomial_density_arr,
+        reference_trace_density=reference_density_arr,
+        trace_density_error=_relative_error(
+            reference_density_arr,
+            polynomial_density_arr,
+        ),
+        state=state_vec,
+        polynomial_state_weights=polynomial_weights_arr,
+        reference_state_weights=reference_weights_arr,
+        state_weight_error=(
+            _relative_error(reference_weights_arr, polynomial_weights_arr)
+            if state_vec is not None
+            else None
+        ),
+    )
+
+
+def thermal_gibbs_workflow(
+    matrix: np.ndarray,
+    *,
+    beta: float,
+    degree: int,
+    state: np.ndarray | None = None,
+    num_points: int = 2001,
+) -> ThermalGibbsWorkflowResult:
+    """
+    Approximate ``exp(-beta H)`` and the normalized Gibbs density matrix.
+    """
+    if beta < 0.0:
+        raise ValueError("beta must be non-negative.")
+
+    scaled = rescale_hermitian_to_unit_interval(matrix)
+    design: ScaledPolynomial = design_imaginary_time_polynomial(
+        beta=beta,
+        scale=scaled.scale,
+        offset=scaled.offset,
+        degree=degree,
+        num_points=num_points,
+    )
+    polynomial_boltzmann = design.prefactor * apply_polynomial_to_hermitian(
+        scaled.matrix,
+        design.coeffs,
+    )
+    reference_boltzmann = apply_function_to_hermitian(
+        np.asarray(matrix),
+        lambda x: np.exp(-float(beta) * x),
+    )
+    polynomial_partition = np.trace(polynomial_boltzmann)
+    reference_partition = np.trace(reference_boltzmann)
+    polynomial_gibbs = polynomial_boltzmann / polynomial_partition
+    reference_gibbs = reference_boltzmann / reference_partition
+
+    state_vec = None
+    polynomial_weighted = None
+    reference_weighted = None
+    weighted_error = None
+    if state is not None:
+        state_vec = _normalize_state(_validate_state(state, scaled.matrix.shape[0]))
+        polynomial_weighted = polynomial_boltzmann @ state_vec
+        reference_weighted = reference_boltzmann @ state_vec
+        weighted_error = _relative_error(reference_weighted, polynomial_weighted)
+
+    return ThermalGibbsWorkflowResult(
+        coeffs=design.coeffs,
+        prefactor=design.prefactor,
+        scaled_operator=scaled,
+        polynomial_boltzmann_operator=polynomial_boltzmann,
+        reference_boltzmann_operator=reference_boltzmann,
+        polynomial_gibbs_state=polynomial_gibbs,
+        reference_gibbs_state=reference_gibbs,
+        beta=float(beta),
+        degree=int(degree),
+        polynomial_partition_function=np.real_if_close(polynomial_partition).item(),
+        reference_partition_function=np.real_if_close(reference_partition).item(),
+        operator_relative_error=operator_error(
+            reference_boltzmann,
+            polynomial_boltzmann,
+        ),
+        density_matrix_relative_error=operator_error(reference_gibbs, polynomial_gibbs),
+        state=state_vec,
+        polynomial_weighted_state=polynomial_weighted,
+        reference_weighted_state=reference_weighted,
+        weighted_state_error=weighted_error,
+    )
+
+
+__all__ = [
+    "GroundStateFilteringWorkflowResult",
+    "HamiltonianSimulationWorkflowResult",
+    "LinearSystemWorkflowResult",
+    "ResolventWorkflowResult",
+    "SpectralDensityWorkflowResult",
+    "ThermalGibbsWorkflowResult",
+    "ground_state_filtering_workflow",
+    "hamiltonian_simulation_workflow",
+    "linear_system_workflow",
+    "resolvent_workflow",
+    "spectral_density_workflow",
+    "thermal_gibbs_workflow",
+]

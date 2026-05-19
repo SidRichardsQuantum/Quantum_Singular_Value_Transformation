@@ -2,6 +2,29 @@
 
 ---
 
+## [0.1.16] – 19th May 2026
+
+### Added
+
+- added `ground_state_filtering_workflow` for Gaussian low-energy filtering,
+  filtered-state diagnostics, ground-state overlap, and exact spectral
+  reference comparisons
+- added `hamiltonian_simulation_workflow` for real-time polynomial evolution
+  with exact unitary/state references and norm-drift diagnostics
+- added `resolvent_workflow` for Green's-function / resolvent approximations,
+  optional source-vector responses, and reference error metrics
+- added `spectral_density_workflow` for Gaussian-window trace density and
+  optional state-resolved spectral weights
+- added `thermal_gibbs_workflow` for imaginary-time / Boltzmann weighting,
+  normalized Gibbs density matrices, partition functions, and optional
+  weighted-state comparisons
+
+### Changed
+
+- updated package metadata and README release marker for `0.1.16`
+
+---
+
 ## [0.1.15] – 19th May 2026
 
 ### Added

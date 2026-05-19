@@ -142,7 +142,7 @@ inline type annotations shipped with the public modules.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial and real-example
   notebook index
 
-Current release: `0.1.15`
+Current release: `0.1.16`
 
 ## Notebooks
 

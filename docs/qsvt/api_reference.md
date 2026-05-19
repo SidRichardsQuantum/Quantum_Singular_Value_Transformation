@@ -105,6 +105,18 @@ print(result.polynomial_solution)
 print(result.polynomial_residual_norm)
 ```
 
+The module also includes simulator-scale physics workflows that wrap existing
+matrix-function polynomial builders with exact spectral references:
+
+- `ground_state_filtering_workflow`
+- `hamiltonian_simulation_workflow`
+- `resolvent_workflow`
+- `spectral_density_workflow`
+- `thermal_gibbs_workflow`
+
+Each returns a frozen dataclass with numerical outputs, diagnostics, and an
+`as_report()` helper.
+
 ---
 
 ## `qsvt.polynomials`
