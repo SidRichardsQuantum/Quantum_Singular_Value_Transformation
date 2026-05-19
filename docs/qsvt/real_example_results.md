@@ -43,13 +43,13 @@ Source: [`notebooks/real_examples/01_ground_state_filtering.ipynb`](../../notebo
 :width: 520px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 [-1.7205, -1.    ,  1.    ,  1.7205]
 ```
 
-Output 2 (cell 8):
+Output 2 (cell 9):
 
 ```text
 (-1.3602325267042625,
@@ -57,13 +57,13 @@ Output 2 (cell 8):
  [-1.    , -0.7661, -0.1169,  0.1169])
 ```
 
-Output 3 (cell 10):
+Output 3 (cell 11):
 
 ```text
 (0.13103683490762716, 0.11947057773046423)
 ```
 
-Output 4 (cell 12):
+Output 4 (cell 13):
 
 ```text
 (0.3173024147306783, 0.9866761240157411)
@@ -83,14 +83,14 @@ Source: [`notebooks/real_examples/02_tight_binding_band_filter.ipynb`](../../not
 :width: 760px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 [-1.8794, -1.5321, -1.    , -0.3473,  0.3473,  1.    ,  1.5321,
         1.8794]
 ```
 
-Output 2 (cell 8):
+Output 2 (cell 9):
 
 ```text
 [-0.    ,  0.0083,  0.1822,  0.9885,  0.9885,  0.1822,  0.0083,
@@ -106,25 +106,25 @@ Source: [`notebooks/real_examples/03_imaginary_time_filtering.ipynb`](../../note
 :width: 760px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 [0.2   , 0.8193, 1.5306]
 ```
 
-Output 2 (cell 6):
+Output 2 (cell 7):
 
 ```text
 [-1.    ,  0.0691,  1.    ]
 ```
 
-Output 3 (cell 8):
+Output 3 (cell 9):
 
 ```text
 1.852552687200035e-11
 ```
 
-Output 4 (cell 10):
+Output 4 (cell 11):
 
 ```text
 (0.050328413887679994,
@@ -151,14 +151,14 @@ Source: [`notebooks/real_examples/04_heat_equation_pde.ipynb`](../../notebooks/r
 :width: 760px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 ([  9.8566,  39.271 ,  87.7794, 154.6166, 238.7288],
  2490.1433766430973)
 ```
 
-Output 2 (cell 10):
+Output 2 (cell 11):
 
 ```text
 ([-1.,  1.],
@@ -166,7 +166,7 @@ Output 2 (cell 10):
  0.9824145391823961)
 ```
 
-Output 3 (cell 12):
+Output 3 (cell 13):
 
 ```text
 1.2039058554241987e-15
@@ -191,43 +191,43 @@ Source: [`notebooks/real_examples/05_poisson_equation_pde.ipynb`](../../notebook
 :width: 760px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 (9.705050945562935, 186.29494905443704)
 ```
 
-Output 2 (cell 8):
+Output 2 (cell 9):
 
 ```text
 (0.05209508360168709, 19.1956693580892)
 ```
 
-Output 3 (cell 10):
+Output 3 (cell 11):
 
 ```text
 0.014150625457763643
 ```
 
-Output 4 (cell 13):
+Output 4 (cell 14):
 
 ```text
-(0.105572809000084, 9.47213595499959, (16, 16))
+(0.05209508360168687, 19.195669358089283, (36, 36))
 ```
 
-Output 5 (cell 15):
+Output 5 (cell 16):
 
 ```text
-0.0965518521082745
+0.034962641317254864
 ```
 
-Output 6 (cell 19):
+Output 6 (cell 20):
 
 ```text
 1D condition_number: 19.196
 1D relative_error: 1.415e-02
-2D condition_number: 9.472
-2D relative_error: 9.655e-02
+2D condition_number: 19.196
+2D relative_error: 3.496e-02
 validation: passed
 ```
 
@@ -240,7 +240,7 @@ Source: [`notebooks/real_examples/06_hamiltonian_simulation_schrodinger_dynamics
 :width: 760px
 ```
 
-Output 1 (cell 3):
+Output 1 (cell 4):
 
 ```text
 3.324978121461713e-13
@@ -260,13 +260,13 @@ Source: [`notebooks/real_examples/07_quantum_chemistry_h2_toy_solver.ipynb`](../
 :width: 520px
 ```
 
-Output 1 (cell 2):
+Output 1 (cell 3):
 
 ```text
 -1.85727503020238
 ```
 
-Output 2 (cell 5):
+Output 2 (cell 6):
 
 ```text
 (3.4911941432755493e-35,
@@ -283,7 +283,7 @@ Source: [`notebooks/real_examples/08_greens_function_response.ipynb`](../../note
 :width: 520px
 ```
 
-Output 1 (cell 2):
+Output 1 (cell 3):
 
 ```text
 0.001236443161688136
@@ -298,10 +298,10 @@ Source: [`notebooks/real_examples/09_spectral_density_estimation.ipynb`](../../n
 :width: 520px
 ```
 
-Output 1 (cell 2):
+Output 1 (cell 3):
 
 ```text
-0.004141596945729699
+0.0019122824182919095
 ```
 
 ### `10_gibbs_state_thermal_weights.ipynb`
@@ -313,7 +313,7 @@ Source: [`notebooks/real_examples/10_gibbs_state_thermal_weights.ipynb`](../../n
 :width: 520px
 ```
 
-Output 1 (cell 2):
+Output 1 (cell 3):
 
 ```text
 1.8102065129092896e-13
@@ -333,10 +333,10 @@ Source: [`notebooks/real_examples/11_transport_physics_landauer_chain.ipynb`](..
 :width: 520px
 ```
 
-Output 1 (cell 2):
+Output 1 (cell 3):
 
 ```text
-0.0014913927900937186
+0.00625639231073604
 ```
 
 ### `12_tensor_network_hybrid_filtering.ipynb`
@@ -348,13 +348,13 @@ Source: [`notebooks/real_examples/12_tensor_network_hybrid_filtering.ipynb`](../
 :width: 760px
 ```
 
-Output 1 (cell 2):
+Output 1 (cell 3):
 
 ```text
-(-2.1752784372286467,
- -2.3250610385817243,
- 0.579485364209434,
- 0.5978020543750353)
+(-1.6606649134095948,
+ -2.3777913739261485,
+ 0.651393401185215,
+ 0.8772155174329324)
 ```
 
 ### `13_heat_equation_2d_pde.ipynb`
@@ -381,7 +381,7 @@ Source: [`notebooks/real_examples/13_heat_equation_2d_pde.ipynb`](../../notebook
 :width: 520px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 ([19.6054, 48.2193, 48.2193, 76.8333, 93.3264],
@@ -389,7 +389,7 @@ Output 1 (cell 4):
  (100, 100))
 ```
 
-Output 2 (cell 10):
+Output 2 (cell 11):
 
 ```text
 ([-1.,  1.],
@@ -397,19 +397,19 @@ Output 2 (cell 10):
  0.9883056759592374)
 ```
 
-Output 3 (cell 12):
+Output 3 (cell 13):
 
 ```text
 4.054746215837559e-13
 ```
 
-Output 4 (cell 16):
+Output 4 (cell 17):
 
 ```text
 4.127809205556332e-13
 ```
 
-Output 5 (cell 18):
+Output 5 (cell 19):
 
 ```text
 relative_error: 4.055e-13
@@ -431,13 +431,13 @@ Source: [`notebooks/real_examples/14_advection_diffusion_pde.ipynb`](../../noteb
 :width: 520px
 ```
 
-Output 1 (cell 3):
+Output 1 (cell 4):
 
 ```text
 24.743080487279663
 ```
 
-Output 2 (cell 7):
+Output 2 (cell 8):
 
 ```text
 (0.057449326656195406,
@@ -445,7 +445,7 @@ Output 2 (cell 7):
  0.22813071877482616)
 ```
 
-Output 3 (cell 10):
+Output 3 (cell 11):
 
 ```text
 non_normality: 2.474e+01
@@ -468,19 +468,19 @@ Source: [`notebooks/real_examples/15_wave_equation_dynamics.ipynb`](../../notebo
 :width: 760px
 ```
 
-Output 1 (cell 3):
+Output 1 (cell 4):
 
 ```text
 ([-0.9828,  1.    ], 4.265725211247927)
 ```
 
-Output 2 (cell 7):
+Output 2 (cell 8):
 
 ```text
 2.942102758155022e-15
 ```
 
-Output 3 (cell 10):
+Output 3 (cell 11):
 
 ```text
 beta: 4.266
@@ -502,7 +502,7 @@ Source: [`notebooks/real_examples/16_helmholtz_equation_pde.ipynb`](../../notebo
 :width: 760px
 ```
 
-Output 1 (cell 3):
+Output 1 (cell 4):
 
 ```text
 ([-51.1675, -22.5535,  22.5535,  80.4994],
@@ -510,13 +510,13 @@ Output 1 (cell 3):
  0.05457901297346752)
 ```
 
-Output 2 (cell 7):
+Output 2 (cell 8):
 
 ```text
 (0.16873834910647584, 0.3658574904383274)
 ```
 
-Output 3 (cell 10):
+Output 3 (cell 11):
 
 ```text
 spectral_gap: 5.458e-02
@@ -539,7 +539,7 @@ Source: [`notebooks/real_examples/17_quantum_walk_search_toy.ipynb`](../../noteb
 :width: 760px
 ```
 
-Output 1 (cell 3):
+Output 1 (cell 4):
 
 ```text
 ([-1.2286, -0.5214,  0.125 ,  0.125 ,  0.125 ,  0.125 ,  0.125 ,
@@ -547,19 +547,19 @@ Output 1 (cell 3):
  [-1.,  1.])
 ```
 
-Output 2 (cell 7):
+Output 2 (cell 8):
 
 ```text
 (4.452830188679245, 0.9999891776297675)
 ```
 
-Output 3 (cell 9):
+Output 3 (cell 10):
 
 ```text
 (1.0120998885188465e-13, 0.9999891776298157)
 ```
 
-Output 4 (cell 12):
+Output 4 (cell 13):
 
 ```text
 best_time: 4.453
@@ -583,19 +583,19 @@ Source: [`notebooks/real_examples/18_ssh_chain_edge_state_filtering.ipynb`](../.
 :width: 760px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 [-0.5577, -0.0058,  0.0058,  0.5577]
 ```
 
-Output 2 (cell 8):
+Output 2 (cell 9):
 
 ```text
 (0.6880404379008599, 2.0327822807342835)
 ```
 
-Output 3 (cell 11):
+Output 3 (cell 12):
 
 ```text
 near_zero_eigenvalues: [-0.55766 -0.00584  0.00584  0.55766]
@@ -613,19 +613,19 @@ Source: [`notebooks/real_examples/19_anderson_localization.ipynb`](../../noteboo
 :width: 760px
 ```
 
-Output 1 (cell 3):
+Output 1 (cell 4):
 
 ```text
 (0.7834265015250826, 0.045454545454545796)
 ```
 
-Output 2 (cell 5):
+Output 2 (cell 6):
 
 ```text
 (6, 0.16542785929021306)
 ```
 
-Output 3 (cell 8):
+Output 3 (cell 9):
 
 ```text
 localized_energy: -3.1990
@@ -649,19 +649,19 @@ Source: [`notebooks/real_examples/20_schrodinger_bound_states.ipynb`](../../note
 :width: 760px
 ```
 
-Output 1 (cell 3):
+Output 1 (cell 4):
 
 ```text
 ([-6.7968, -4.5635, -2.6903, -1.2181, -0.2361,  0.1906], 5)
 ```
 
-Output 2 (cell 7):
+Output 2 (cell 8):
 
 ```text
 (0.9505375069652005, -6.586964339925885)
 ```
 
-Output 3 (cell 10):
+Output 3 (cell 11):
 
 ```text
 lowest_energies: [-6.7968 -4.5635 -2.6903 -1.2181 -0.2361  0.1906]
@@ -680,20 +680,20 @@ Source: [`notebooks/real_examples/21_quantum_harmonic_oscillator_grid.ipynb`](..
 :width: 760px
 ```
 
-Output 1 (cell 3):
+Output 1 (cell 4):
 
 ```text
 ([0.4991, 1.4953, 2.4878, 3.4765, 4.4614, 5.4424],
  0.02350013331927281)
 ```
 
-Output 2 (cell 4):
+Output 2 (cell 5):
 
 ```text
 0.9969945579767748
 ```
 
-Output 3 (cell 7):
+Output 3 (cell 8):
 
 ```text
 finite_difference_energies: [0.4991 1.4953 2.4878 3.4765 4.4614 5.4424]
@@ -712,7 +712,7 @@ Source: [`notebooks/real_examples/22_electrostatic_green_function_poisson.ipynb`
 :width: 760px
 ```
 
-Output 1 (cell 3):
+Output 1 (cell 4):
 
 ```text
 (0.0037023041787180174,
@@ -720,13 +720,13 @@ Output 1 (cell 3):
  0.0)
 ```
 
-Output 2 (cell 5):
+Output 2 (cell 6):
 
 ```text
 (0.2679780308568579, 29, 48.37415007870855)
 ```
 
-Output 3 (cell 8):
+Output 3 (cell 9):
 
 ```text
 condition_number: 48.374
@@ -751,19 +751,19 @@ Source: [`notebooks/real_examples/23_coupled_oscillator_normal_modes.ipynb`](../
 :width: 760px
 ```
 
-Output 1 (cell 3):
+Output 1 (cell 4):
 
 ```text
 [0.2072, 0.4426, 0.7012, 0.9629, 1.2121]
 ```
 
-Output 2 (cell 7):
+Output 2 (cell 8):
 
 ```text
 0.9147264843650682
 ```
 
-Output 3 (cell 10):
+Output 3 (cell 11):
 
 ```text
 frequencies: [0.2072 0.4426 0.7012 0.9629 1.2121]
@@ -786,25 +786,25 @@ Source: [`notebooks/real_examples/24_ising_phase_transition_filtering.ipynb`](..
 :width: 760px
 ```
 
-Output 1 (cell 3):
+Output 1 (cell 4):
 
 ```text
 (0.6000000000000001, 1.393735087532208)
 ```
 
-Output 2 (cell 7):
+Output 2 (cell 8):
 
 ```text
-([0.6633, 0.3367, 0.022 , 0.0906, 0.1137],
- 0.6378859822744462)
+([0.7761, 0.2239, 0.0087, 0.1109, 0.1143],
+ 0.5286773050862152)
 ```
 
-Output 3 (cell 9):
+Output 3 (cell 10):
 
 ```text
 minimum_doublet_gap_field: 0.600
 magnetization_drop: 0.653
-projector_error: 0.638
+projector_error: 0.529
 validation: passed
 ```
 
@@ -822,13 +822,13 @@ Source: [`notebooks/real_examples/25_diffusion_heat_treatment_slab.ipynb`](../..
 :width: 760px
 ```
 
-Output 1 (cell 3):
+Output 1 (cell 4):
 
 ```text
 2.8910082648989737e-15
 ```
 
-Output 2 (cell 7):
+Output 2 (cell 8):
 
 ```text
 relative_temperature_error: 0.0000
@@ -851,13 +851,13 @@ Source: [`notebooks/real_examples/26_graphene_nanoribbon_density_of_states.ipynb
 :width: 760px
 ```
 
-Output 1 (cell 3):
+Output 1 (cell 4):
 
 ```text
 0.6643744409979471
 ```
 
-Output 2 (cell 7):
+Output 2 (cell 8):
 
 ```text
 near_zero_window_weight: 5.032
@@ -874,7 +874,7 @@ Source: [`notebooks/real_examples/27_fermi_dirac_electronic_occupations.ipynb`](
 :width: 760px
 ```
 
-Output 1 (cell 3):
+Output 1 (cell 4):
 
 ```text
 (7.804084211610466e-05,
@@ -882,7 +882,7 @@ Output 1 (cell 3):
  9.385329756322626)
 ```
 
-Output 2 (cell 5):
+Output 2 (cell 6):
 
 ```text
 relative_density_matrix_error: 0.0001
@@ -910,7 +910,7 @@ Source: [`notebooks/real_examples/28_photonic_crystal_band_gap_filtering.ipynb`]
 :width: 760px
 ```
 
-Output 1 (cell 3):
+Output 1 (cell 4):
 
 ```text
 (500.45893808166556,
@@ -918,7 +918,7 @@ Output 1 (cell 3):
  0.8135833929662374)
 ```
 
-Output 2 (cell 8):
+Output 2 (cell 9):
 
 ```text
 selected_gap_index: 18
@@ -941,7 +941,7 @@ Source: [`notebooks/real_examples/29_topological_band_projector_chern_marker.ipy
 :width: 760px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 dimension: 50
@@ -949,17 +949,17 @@ spectral range: (-2.800243765865765, 2.8002437658657637)
 gap around zero: 0.13742301418061872
 ```
 
-Output 2 (cell 8):
+Output 2 (cell 9):
 
 ```text
 scaled gap: 0.04907537545686846
-projector relative error: 0.14856745583142436
+projector relative error: 0.10636398990180881
 ```
 
-Output 3 (cell 10):
+Output 3 (cell 11):
 
 ```text
-marker relative error: 0.6193314616489696
+marker relative error: 0.45526864295151465
 bulk exact marker: 0.9583268200049554
-bulk polynomial marker: 0.4549752848359254
+bulk polynomial marker: 0.6430191290198954
 ```
