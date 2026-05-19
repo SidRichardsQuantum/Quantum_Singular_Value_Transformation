@@ -14,131 +14,170 @@ python scripts/extract_notebook_plots.py
 ### `01_QSVT_Scalar_and_Diagonal_Matrix.ipynb`
 
 ```{image} ../../results/plots/notebooks/01_QSVT_Scalar_and_Diagonal_Matrix-plot-01.png
-:alt: QSVT scalar and diagonal matrix plot 1
+:alt: 01 QSVT Scalar and Diagonal Matrix plot 1
 :width: 320px
 ```
 
 ```{image} ../../results/plots/notebooks/01_QSVT_Scalar_and_Diagonal_Matrix-plot-02.png
-:alt: QSVT scalar and diagonal matrix plot 2
+:alt: 01 QSVT Scalar and Diagonal Matrix plot 2
 :width: 320px
 ```
 
 ### `02_QSVT_Singular_Value_Filter.ipynb`
 
 ```{image} ../../results/plots/notebooks/02_QSVT_Singular_Value_Filter-plot-01.png
-:alt: QSVT singular value filter plot 1
+:alt: 02 QSVT Singular Value Filter plot 1
 :width: 320px
 ```
 
 ```{image} ../../results/plots/notebooks/02_QSVT_Singular_Value_Filter-plot-02.png
-:alt: QSVT singular value filter plot 2
+:alt: 02 QSVT Singular Value Filter plot 2
 :width: 320px
 ```
 
 ### `03_QSP_Polynomial_Demo.ipynb`
 
 ```{image} ../../results/plots/notebooks/03_QSP_Polynomial_Demo-plot-01.png
-:alt: QSP polynomial demo plot 1
+:alt: 03 QSP Polynomial Demo plot 1
 :width: 320px
 ```
 
 ```{image} ../../results/plots/notebooks/03_QSP_Polynomial_Demo-plot-02.png
-:alt: QSP polynomial demo plot 2
+:alt: 03 QSP Polynomial Demo plot 2
 :width: 320px
 ```
 
 ### `04_QSVT_Linear_Solver_2x2.ipynb`
 
 ```{image} ../../results/plots/notebooks/04_QSVT_Linear_Solver_2x2-plot-01.png
-:alt: QSVT 2 by 2 linear solver plot 1
+:alt: 04 QSVT Linear Solver 2x2 plot 1
 :width: 320px
 ```
 
 ```{image} ../../results/plots/notebooks/04_QSVT_Linear_Solver_2x2-plot-02.png
-:alt: QSVT 2 by 2 linear solver plot 2
+:alt: 04 QSVT Linear Solver 2x2 plot 2
 :width: 320px
 ```
 
 ### `05_QSVT_Linear_Solver_4x4.ipynb`
 
 ```{image} ../../results/plots/notebooks/05_QSVT_Linear_Solver_4x4-plot-01.png
-:alt: QSVT 4 by 4 linear solver plot 1
+:alt: 05 QSVT Linear Solver 4x4 plot 1
 :width: 320px
 ```
 
 ```{image} ../../results/plots/notebooks/05_QSVT_Linear_Solver_4x4-plot-02.png
-:alt: QSVT 4 by 4 linear solver plot 2
+:alt: 05 QSVT Linear Solver 4x4 plot 2
 :width: 320px
 ```
 
 ### `06_QSVT_Linear_Solver_Approximate.ipynb`
 
 ```{image} ../../results/plots/notebooks/06_QSVT_Linear_Solver_Approximate-plot-01.png
-:alt: QSVT approximate linear solver plot 1
+:alt: 06 QSVT Linear Solver Approximate plot 1
 :width: 320px
 ```
 
 ```{image} ../../results/plots/notebooks/06_QSVT_Linear_Solver_Approximate-plot-02.png
-:alt: QSVT approximate linear solver plot 2
+:alt: 06 QSVT Linear Solver Approximate plot 2
 :width: 320px
 ```
 
 ### `07_QSVT_Polynomial_Design_and_Approximation.ipynb`
 
 ```{image} ../../results/plots/notebooks/07_QSVT_Polynomial_Design_and_Approximation-plot-01.png
-:alt: QSVT polynomial design and approximation plot 1
+:alt: 07 QSVT Polynomial Design and Approximation plot 1
 :width: 320px
 ```
 
 ```{image} ../../results/plots/notebooks/07_QSVT_Polynomial_Design_and_Approximation-plot-02.png
-:alt: QSVT polynomial design and approximation plot 2
+:alt: 07 QSVT Polynomial Design and Approximation plot 2
 :width: 320px
 ```
 
 ```{image} ../../results/plots/notebooks/07_QSVT_Polynomial_Design_and_Approximation-plot-03.png
-:alt: QSVT polynomial design and approximation plot 3
+:alt: 07 QSVT Polynomial Design and Approximation plot 3
 :width: 320px
 ```
 
 ### `08_QSVT_Matrix_Functions_Powers_and_Roots.ipynb`
 
-No embedded PNG outputs are currently committed for this notebook.
+```{image} ../../results/plots/notebooks/08_QSVT_Matrix_Functions_Powers_and_Roots-plot-01.png
+:alt: 08 QSVT Matrix Functions Powers and Roots plot 1
+:width: 320px
+```
+
+```{image} ../../results/plots/notebooks/08_QSVT_Matrix_Functions_Powers_and_Roots-plot-02.png
+:alt: 08 QSVT Matrix Functions Powers and Roots plot 2
+:width: 320px
+```
+
+```{image} ../../results/plots/notebooks/08_QSVT_Matrix_Functions_Powers_and_Roots-plot-03.png
+:alt: 08 QSVT Matrix Functions Powers and Roots plot 3
+:width: 320px
+```
 
 ### `09_QSVT_Sign_Function_and_Projectors.ipynb`
 
 ```{image} ../../results/plots/notebooks/09_QSVT_Sign_Function_and_Projectors-plot-01.png
-:alt: QSVT sign function and projectors plot 1
+:alt: 09 QSVT Sign Function and Projectors plot 1
 :width: 320px
 ```
 
 ```{image} ../../results/plots/notebooks/09_QSVT_Sign_Function_and_Projectors-plot-02.png
-:alt: QSVT sign function and projectors plot 2
+:alt: 09 QSVT Sign Function and Projectors plot 2
 :width: 320px
 ```
 
 ### `10_QSVT_Design_and_Templates.ipynb`
 
 ```{image} ../../results/plots/notebooks/10_QSVT_Design_and_Templates-plot-01.png
-:alt: QSVT design and templates plot 1
+:alt: 10 QSVT Design and Templates plot 1
 :width: 320px
 ```
 
 ```{image} ../../results/plots/notebooks/10_QSVT_Design_and_Templates-plot-02.png
-:alt: QSVT design and templates plot 2
+:alt: 10 QSVT Design and Templates plot 2
 :width: 320px
 ```
 
 ```{image} ../../results/plots/notebooks/10_QSVT_Design_and_Templates-plot-03.png
-:alt: QSVT design and templates plot 3
+:alt: 10 QSVT Design and Templates plot 3
 :width: 320px
 ```
 
 ```{image} ../../results/plots/notebooks/10_QSVT_Design_and_Templates-plot-04.png
-:alt: QSVT design and templates plot 4
+:alt: 10 QSVT Design and Templates plot 4
 :width: 320px
 ```
 
 ```{image} ../../results/plots/notebooks/10_QSVT_Design_and_Templates-plot-05.png
-:alt: QSVT design and templates plot 5
+:alt: 10 QSVT Design and Templates plot 5
+:width: 320px
+```
+
+### `11_End_to_End_Algorithm_Workflows.ipynb`
+
+```{image} ../../results/plots/notebooks/11_End_to_End_Algorithm_Workflows-plot-01.png
+:alt: 11 End to End Algorithm Workflows plot 1
+:width: 320px
+```
+
+### `12_Reports_CLI_and_Reproducible_Artifacts.ipynb`
+
+```{image} ../../results/plots/notebooks/12_Reports_CLI_and_Reproducible_Artifacts-plot-01.png
+:alt: 12 Reports CLI and Reproducible Artifacts plot 1
+:width: 320px
+```
+
+### `13_Degree_Error_and_Boundedness_Tradeoffs.ipynb`
+
+```{image} ../../results/plots/notebooks/13_Degree_Error_and_Boundedness_Tradeoffs-plot-01.png
+:alt: 13 Degree Error and Boundedness Tradeoffs plot 1
+:width: 320px
+```
+
+```{image} ../../results/plots/notebooks/13_Degree_Error_and_Boundedness_Tradeoffs-plot-02.png
+:alt: 13 Degree Error and Boundedness Tradeoffs plot 2
 :width: 320px
 ```

@@ -23,6 +23,9 @@ Rendered result pages:
 | `notebooks/tutorials/08_QSVT_Matrix_Functions_Powers_and_Roots.ipynb` | embedded plots | matrix powers and square-root-style transforms |
 | `notebooks/tutorials/09_QSVT_Sign_Function_and_Projectors.ipynb` | embedded plots | sign functions and spectral projectors |
 | `notebooks/tutorials/10_QSVT_Design_and_Templates.ipynb` | embedded plots | reusable design and template families |
+| `notebooks/tutorials/11_End_to_End_Algorithm_Workflows.ipynb` | embedded plot | high-level algorithm workflow diagnostics |
+| `notebooks/tutorials/12_Reports_CLI_and_Reproducible_Artifacts.ipynb` | embedded plot | report, CLI, and artifact workflows |
+| `notebooks/tutorials/13_Degree_Error_and_Boundedness_Tradeoffs.ipynb` | embedded plots | degree, error, and boundedness tradeoffs |
 
 ## Real-Example Notebook Results
 
@@ -38,7 +41,7 @@ the real-example plot ledger and representative gallery.
 | `notebooks/real_examples/02_tight_binding_band_filter.ipynb` | committed plot | band-pass and band-rejection filters |
 | `notebooks/real_examples/03_imaginary_time_filtering.ipynb` | committed plot | imaginary-time exponential filtering |
 | `notebooks/real_examples/04_heat_equation_pde.ipynb` | committed plots | heat-equation diffusion workflow |
-| `notebooks/real_examples/05_poisson_equation_pde.ipynb` | committed plot | Poisson-equation inverse workflow |
+| `notebooks/real_examples/05_poisson_equation_pde.ipynb` | committed plots | Poisson-equation inverse workflow |
 | `notebooks/real_examples/06_hamiltonian_simulation_schrodinger_dynamics.ipynb` | committed plot | real-time Hamiltonian dynamics |
 | `notebooks/real_examples/07_quantum_chemistry_h2_toy_solver.ipynb` | committed plot | toy H2 Hamiltonian solver |
 | `notebooks/real_examples/08_greens_function_response.ipynb` | committed plot | resolvent and Green's-function response |
@@ -58,10 +61,11 @@ the real-example plot ledger and representative gallery.
 | `notebooks/real_examples/22_electrostatic_green_function_poisson.ipynb` | committed plot | electrostatic Green's function |
 | `notebooks/real_examples/23_coupled_oscillator_normal_modes.ipynb` | committed plot | coupled-oscillator normal modes |
 | `notebooks/real_examples/24_ising_phase_transition_filtering.ipynb` | committed plot | Ising phase-transition filtering |
-| `notebooks/real_examples/25_diffusion_heat_treatment_slab.ipynb` | executable workflow | diffusion-limited heat treatment |
-| `notebooks/real_examples/26_graphene_nanoribbon_density_of_states.ipynb` | executable workflow | graphene nanoribbon density of states |
+| `notebooks/real_examples/25_diffusion_heat_treatment_slab.ipynb` | committed plot | diffusion-limited heat treatment |
+| `notebooks/real_examples/26_graphene_nanoribbon_density_of_states.ipynb` | committed plot | graphene nanoribbon density of states |
 | `notebooks/real_examples/27_fermi_dirac_electronic_occupations.ipynb` | committed plot | Fermi-Dirac electronic occupations |
 | `notebooks/real_examples/28_photonic_crystal_band_gap_filtering.ipynb` | committed plots | photonic-crystal band-gap filtering |
+| `notebooks/real_examples/29_topological_band_projector_chern_marker.ipynb` | committed plot | topological band projectors and Chern markers |
 
 ## Committed Release Artefacts
 
@@ -87,10 +91,11 @@ The complete machine-readable manifest is
 
 | artefact | notebook | result type | notes |
 | --- | --- | --- | --- |
-| `results/tables/real_examples_plot_manifest.csv` | all notebooks with committed PNG outputs | table | manifest for 30 extracted real-example plots |
+| `results/tables/real_examples_plot_manifest.csv` | all notebooks with committed PNG outputs | table | manifest for 34 extracted real-example plots |
 | `results/plots/real_examples/01_ground_state_filtering-plot-01.png` | `01_ground_state_filtering.ipynb` | plot | representative ground-state filtering output |
 | `results/plots/real_examples/13_heat_equation_2d_pde-plot-01.png` | `13_heat_equation_2d_pde.ipynb` | plot | representative 2D PDE output |
 | `results/plots/real_examples/28_photonic_crystal_band_gap_filtering-plot-01.png` | `28_photonic_crystal_band_gap_filtering.ipynb` | plot | representative photonic band-gap output |
+| `results/plots/real_examples/29_topological_band_projector_chern_marker-plot-01.png` | `29_topological_band_projector_chern_marker.ipynb` | plot | representative topological band-projector output |
 
 ## Regeneration Commands
 

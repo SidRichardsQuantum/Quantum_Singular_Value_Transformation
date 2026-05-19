@@ -2,6 +2,22 @@
 
 ---
 
+## [0.1.17] – 19th May 2026
+
+### Added
+
+- added three tutorial notebooks covering end-to-end algorithm workflows,
+  reproducible report/CLI artifacts, and degree/error/boundedness tradeoffs
+- added a topological band-projector real-example notebook using a small
+  Qi-Wu-Zhang lattice model and local Chern-marker diagnostics
+
+### Changed
+
+- updated notebook indexes and README notebook coverage for the expanded
+  tutorial and real-example catalog
+
+---
+
 ## [0.1.16] – 19th May 2026
 
 ### Added

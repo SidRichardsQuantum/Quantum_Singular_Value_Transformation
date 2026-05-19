@@ -20,6 +20,9 @@ Tutorial notebooks live in `notebooks/tutorials/`.
 | `tutorials/08_QSVT_Matrix_Functions_Powers_and_Roots.ipynb` | matrix functions, powers, and roots |
 | `tutorials/09_QSVT_Sign_Function_and_Projectors.ipynb` | sign functions and projectors |
 | `tutorials/10_QSVT_Design_and_Templates.ipynb` | design helpers and templates |
+| `tutorials/11_End_to_End_Algorithm_Workflows.ipynb` | high-level algorithm workflows |
+| `tutorials/12_Reports_CLI_and_Reproducible_Artifacts.ipynb` | reports, CLI output, and reproducible artifacts |
+| `tutorials/13_Degree_Error_and_Boundedness_Tradeoffs.ipynb` | degree, error, and boundedness tradeoffs |
 
 ## Real physics examples
 
@@ -55,6 +58,7 @@ Real physics examples live in `notebooks/real_examples/`.
 | `26_graphene_nanoribbon_density_of_states.ipynb` | graphene nanoribbon density of states |
 | `27_fermi_dirac_electronic_occupations.ipynb` | Fermi-Dirac electronic occupations |
 | `28_photonic_crystal_band_gap_filtering.ipynb` | photonic-crystal band-gap filtering |
+| `29_topological_band_projector_chern_marker.ipynb` | topological band projectors and Chern markers |
 
 See the repository notebook directory for executable files:
 [notebooks](https://github.com/SidRichardsQuantum/Quantum_Singular_Value_Transformation/tree/main/notebooks).

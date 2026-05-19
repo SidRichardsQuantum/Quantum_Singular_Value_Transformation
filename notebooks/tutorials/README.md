@@ -15,3 +15,6 @@ functional calculus.
 | Matrix powers and roots | `08_QSVT_Matrix_Functions_Powers_and_Roots.ipynb` |
 | Sign functions and projectors | `09_QSVT_Sign_Function_and_Projectors.ipynb` |
 | Design workflows and templates | `10_QSVT_Design_and_Templates.ipynb` |
+| End-to-end algorithm workflows | `11_End_to_End_Algorithm_Workflows.ipynb` |
+| Reports, CLI, and artifacts | `12_Reports_CLI_and_Reproducible_Artifacts.ipynb` |
+| Degree/error/boundedness tradeoffs | `13_Degree_Error_and_Boundedness_Tradeoffs.ipynb` |

@@ -30,6 +30,7 @@ an exact classical spectral reference.
 | Graphene nanoribbon DOS | `26_graphene_nanoribbon_density_of_states.ipynb` |
 | Fermi-Dirac occupations | `27_fermi_dirac_electronic_occupations.ipynb` |
 | Photonic crystal band gap | `28_photonic_crystal_band_gap_filtering.ipynb` |
+| Topological band projector | `29_topological_band_projector_chern_marker.ipynb` |
 | Transport physics | `11_transport_physics_landauer_chain.ipynb` |
 | Tensor-network hybrids | `12_tensor_network_hybrid_filtering.ipynb` |
 
@@ -51,5 +52,6 @@ Additional PDE and filtering examples:
 - `26_graphene_nanoribbon_density_of_states.ipynb`
 - `27_fermi_dirac_electronic_occupations.ipynb`
 - `28_photonic_crystal_band_gap_filtering.ipynb`
+- `29_topological_band_projector_chern_marker.ipynb`
 - `02_tight_binding_band_filter.ipynb`
 - `03_imaginary_time_filtering.ipynb`

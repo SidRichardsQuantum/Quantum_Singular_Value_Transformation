@@ -142,19 +142,21 @@ inline type annotations shipped with the public modules.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial and real-example
   notebook index
 
-Current release: `0.1.16`
+Current release: `0.1.17`
 
 ## Notebooks
 
 Tutorial notebooks live in `notebooks/tutorials/` and introduce QSVT as
 polynomial functional calculus, from scalar transforms through sign functions,
-projectors, matrix functions, and reusable design workflows.
+projectors, matrix functions, reusable design workflows, end-to-end algorithm
+workflows, reproducible reports, and degree/error tradeoff studies.
 
 Real physics examples live in `notebooks/real_examples/` and cover Hamiltonian
 simulation, ground-state filtering, quantum chemistry, Green's functions,
 spectral density estimation, Gibbs states, PDE systems, transport physics,
 spin-chain diagnostics, electronic occupations, photonic band gaps, graphene
-density of states, and tensor-network hybrid filtering.
+density of states, topological band projectors, and tensor-network hybrid
+filtering.
 
 See [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md) for the full notebook map.
 
