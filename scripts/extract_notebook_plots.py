@@ -140,6 +140,7 @@ def execute_notebooks(notebook_glob: str) -> None:
                 "--to",
                 "notebook",
                 "--execute",
+                "--ExecutePreprocessor.kernel_name=python3",
                 "--inplace",
                 str(notebook),
             ],
