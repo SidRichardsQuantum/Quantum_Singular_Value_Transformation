@@ -66,9 +66,32 @@ find results/plots/real_examples -maxdepth 1 -type f -name '*.png' | sort
 
 ## Gallery
 
-<a href="../../results/plots/real_examples/01_ground_state_filtering-plot-01.png"><img src="../../results/plots/real_examples/01_ground_state_filtering-plot-01.png" alt="Ground-state filtering plot" width="300"></a>
-<a href="../../results/plots/real_examples/04_heat_equation_pde-plot-01.png"><img src="../../results/plots/real_examples/04_heat_equation_pde-plot-01.png" alt="Heat equation PDE plot" width="300"></a>
-<a href="../../results/plots/real_examples/07_quantum_chemistry_h2_toy_solver-plot-01.png"><img src="../../results/plots/real_examples/07_quantum_chemistry_h2_toy_solver-plot-01.png" alt="Quantum chemistry H2 toy solver plot" width="300"></a>
-<a href="../../results/plots/real_examples/13_heat_equation_2d_pde-plot-01.png"><img src="../../results/plots/real_examples/13_heat_equation_2d_pde-plot-01.png" alt="2D heat equation PDE plot" width="300"></a>
-<a href="../../results/plots/real_examples/24_ising_phase_transition_filtering-plot-01.png"><img src="../../results/plots/real_examples/24_ising_phase_transition_filtering-plot-01.png" alt="Ising phase transition filtering plot" width="300"></a>
-<a href="../../results/plots/real_examples/28_photonic_crystal_band_gap_filtering-plot-01.png"><img src="../../results/plots/real_examples/28_photonic_crystal_band_gap_filtering-plot-01.png" alt="Photonic crystal band gap filtering plot" width="300"></a>
+```{image} ../../results/plots/real_examples/01_ground_state_filtering-plot-01.png
+:alt: Ground-state filtering plot
+:width: 300px
+```
+
+```{image} ../../results/plots/real_examples/04_heat_equation_pde-plot-01.png
+:alt: Heat equation PDE plot
+:width: 300px
+```
+
+```{image} ../../results/plots/real_examples/07_quantum_chemistry_h2_toy_solver-plot-01.png
+:alt: Quantum chemistry H2 toy solver plot
+:width: 300px
+```
+
+```{image} ../../results/plots/real_examples/13_heat_equation_2d_pde-plot-01.png
+:alt: 2D heat equation PDE plot
+:width: 300px
+```
+
+```{image} ../../results/plots/real_examples/24_ising_phase_transition_filtering-plot-01.png
+:alt: Ising phase transition filtering plot
+:width: 300px
+```
+
+```{image} ../../results/plots/real_examples/28_photonic_crystal_band_gap_filtering-plot-01.png
+:alt: Photonic crystal band gap filtering plot
+:width: 300px
+```

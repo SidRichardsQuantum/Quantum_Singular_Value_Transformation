@@ -1,5 +1,6 @@
 import numpy as np
 
+from qsvt.algorithms import LinearSystemWorkflowResult, linear_system_workflow
 from qsvt.design import (
     design_positive_inverse_diagnostics,
     design_positive_inverse_polynomial,
@@ -173,6 +174,48 @@ def test_positive_inverse_auto_is_no_worse_than_available_extensions():
     )
 
     assert auto_error <= best_explicit_error + 1e-12
+
+
+def test_linear_system_workflow_solves_positive_definite_problem():
+    A = np.diag([1.0, 2.0])
+    b = np.array([1.0, 1.0])
+
+    result = linear_system_workflow(
+        A,
+        b,
+        degree=20,
+        num_points=501,
+        bounded_num_points=1001,
+        attempt_synthesis=False,
+        apply_qsvt=True,
+    )
+
+    assert isinstance(result, LinearSystemWorkflowResult)
+    assert result.gamma == 0.5
+    assert np.allclose(result.classical_solution, [1.0, 0.5])
+    assert result.polynomial_residual_norm < 0.05
+    assert result.polynomial_relative_error < 0.05
+    assert result.qsvt_solution is not None
+    assert result.qsvt_error is None
+    assert result.qsvt_residual_norm is not None
+    assert result.qsvt_residual_norm < 0.1
+    assert result.compatibility["compatible"] is True
+    assert result.as_report()["mode"] == "linear-system-workflow"
+
+
+def test_linear_system_workflow_handles_scaled_identity_default_gamma():
+    result = linear_system_workflow(
+        2.0 * np.eye(2),
+        np.array([1.0, -1.0]),
+        degree=4,
+        num_points=101,
+        bounded_num_points=201,
+        attempt_synthesis=False,
+        apply_qsvt=False,
+    )
+
+    assert result.gamma < 1.0
+    assert result.polynomial_residual_norm < 1e-6
 
 
 def test_diagnostics_helpers():

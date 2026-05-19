@@ -107,6 +107,7 @@ The public package lives under `src/qsvt`.
 | `qsvt.polynomials` | Chebyshev utilities, parity checks, boundedness checks |
 | `qsvt.approximation` | polynomial fitting and approximation error helpers |
 | `qsvt.design` | task-oriented polynomial builders |
+| `qsvt.algorithms` | end-to-end simulator-scale algorithm workflows |
 | `qsvt.templates` | ready-made bounded polynomial families |
 | `qsvt.workflow` | combined coefficient, diagnostic, and compatibility workflows |
 | `qsvt.reports` | JSON-safe reports and plot helpers |
@@ -141,7 +142,7 @@ inline type annotations shipped with the public modules.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial and real-example
   notebook index
 
-Current release: `0.1.14`
+Current release: `0.1.15`
 
 ## Notebooks
 

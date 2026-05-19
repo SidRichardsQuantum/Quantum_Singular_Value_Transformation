@@ -461,6 +461,7 @@ quality data for each builder:
 - `design_sqrt_diagnostics`
 - `design_power_diagnostics`
 - `design_filter_diagnostics`
+- `design_interval_projector_diagnostics`
 
 Each report includes:
 
@@ -512,6 +513,7 @@ The `qsvt.design` module provides simple bounded polynomial builders for common 
 - square-root approximations
 - positive-power transforms
 - smooth spectral filters
+- band-pass / interval projectors
 - positive definite inverse-style transforms
 
 The emphasis is on clarity, boundedness, and immediate usability in the package’s existing QSVT simulation and matrix-function workflows.

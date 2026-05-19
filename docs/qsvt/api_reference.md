@@ -24,6 +24,7 @@ The package is organised into the following modules:
 
 - `qsvt.polynomials`
 - `qsvt.approximation`
+- `qsvt.algorithms`
 - `qsvt.matrices`
 - `qsvt.hamiltonians`
 - `qsvt.pde`
@@ -81,6 +82,27 @@ The same combined workflow report is available from the CLI:
 ```bash
 qsvt design-workflow --kind sign --gamma 0.25 --degree 13 \
   --output sign-workflow.json
+```
+
+### `qsvt.algorithms`
+
+Use `linear_system_workflow` for small positive-definite linear-system
+experiments that combine inverse-polynomial design, rescaling, solution
+estimates, residual diagnostics, and QSVT compatibility metadata:
+
+```python
+import numpy as np
+from qsvt.algorithms import linear_system_workflow
+
+result = linear_system_workflow(
+    np.diag([1.0, 2.0]),
+    np.array([1.0, 1.0]),
+    degree=20,
+    attempt_synthesis=False,
+)
+
+print(result.polynomial_solution)
+print(result.polynomial_residual_norm)
 ```
 
 ---

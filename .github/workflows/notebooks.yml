@@ -12,12 +12,15 @@ on:
   schedule:
     - cron: "0 8 * * 1"
 
+permissions:
+  contents: read
+
 jobs:
   execute:
     runs-on: ubuntu-latest
 
     env:
-      MPLCONFIGDIR: ${{ runner.temp }}/matplotlib
+      MPLCONFIGDIR: /tmp/matplotlib
 
     steps:
       - name: Check out repository

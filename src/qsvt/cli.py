@@ -35,6 +35,8 @@ from typing import Iterable
 from .design import (
     design_filter_diagnostics,
     design_filter_polynomial,
+    design_interval_projector_diagnostics,
+    design_interval_projector_polynomial,
     design_inverse_diagnostics,
     design_inverse_polynomial,
     design_power_diagnostics,
@@ -252,6 +254,14 @@ def cmd_design_report(args: argparse.Namespace) -> dict:
             num_points=args.num_points,
             bounded_num_points=args.bounded_num_points,
         ),
+        "interval_projector": lambda: design_interval_projector_diagnostics(
+            lower=args.lower,
+            upper=args.upper,
+            degree=args.degree,
+            sharpness=args.sharpness,
+            num_points=args.num_points,
+            bounded_num_points=args.bounded_num_points,
+        ),
     }
 
     report = builders[args.kind]()
@@ -273,6 +283,8 @@ def cmd_design_workflow(args: argparse.Namespace) -> dict:
         a=args.a,
         alpha=args.alpha,
         cutoff=args.cutoff,
+        lower=args.lower,
+        upper=args.upper,
         sharpness=args.sharpness,
         num_points=args.num_points,
         bounded_num_points=args.bounded_num_points,
@@ -398,6 +410,12 @@ def cmd_design_compatibility(args: argparse.Namespace) -> dict:
             degree=args.degree,
             sharpness=args.sharpness,
         ),
+        "interval_projector": lambda: design_interval_projector_polynomial(
+            lower=args.lower,
+            upper=args.upper,
+            degree=args.degree,
+            sharpness=args.sharpness,
+        ),
     }
 
     coeffs = builders[args.kind]()
@@ -444,6 +462,12 @@ def cmd_apply_design(args: argparse.Namespace) -> dict:
         ),
         "filter": lambda: design_filter_polynomial(
             cutoff=args.cutoff,
+            degree=args.degree,
+            sharpness=args.sharpness,
+        ),
+        "interval_projector": lambda: design_interval_projector_polynomial(
+            lower=args.lower,
+            upper=args.upper,
             degree=args.degree,
             sharpness=args.sharpness,
         ),
@@ -540,7 +564,15 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_design_report.add_argument(
         "--kind",
-        choices=["inverse", "sign", "projector", "sqrt", "power", "filter"],
+        choices=[
+            "inverse",
+            "sign",
+            "projector",
+            "sqrt",
+            "power",
+            "filter",
+            "interval_projector",
+        ],
         required=True,
     )
     p_design_report.add_argument("--degree", type=int, required=True)
@@ -548,6 +580,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_design_report.add_argument("--a", type=float, default=0.2)
     p_design_report.add_argument("--alpha", type=float, default=0.5)
     p_design_report.add_argument("--cutoff", type=float, default=0.45)
+    p_design_report.add_argument("--lower", type=float, default=-0.25)
+    p_design_report.add_argument("--upper", type=float, default=0.25)
     p_design_report.add_argument("--sharpness", type=float, default=12.0)
     p_design_report.add_argument(
         "--num-points",
@@ -570,7 +604,15 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_design_workflow.add_argument(
         "--kind",
-        choices=["inverse", "sign", "projector", "sqrt", "power", "filter"],
+        choices=[
+            "inverse",
+            "sign",
+            "projector",
+            "sqrt",
+            "power",
+            "filter",
+            "interval_projector",
+        ],
         required=True,
     )
     p_design_workflow.add_argument("--degree", type=int, required=True)
@@ -578,6 +620,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_design_workflow.add_argument("--a", type=float, default=0.2)
     p_design_workflow.add_argument("--alpha", type=float, default=0.5)
     p_design_workflow.add_argument("--cutoff", type=float, default=0.45)
+    p_design_workflow.add_argument("--lower", type=float, default=-0.25)
+    p_design_workflow.add_argument("--upper", type=float, default=0.25)
     p_design_workflow.add_argument("--sharpness", type=float, default=12.0)
     p_design_workflow.add_argument(
         "--num-points",
@@ -710,7 +754,15 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_design_compatibility.add_argument(
         "--kind",
-        choices=["inverse", "sign", "projector", "sqrt", "power", "filter"],
+        choices=[
+            "inverse",
+            "sign",
+            "projector",
+            "sqrt",
+            "power",
+            "filter",
+            "interval_projector",
+        ],
         required=True,
     )
     p_design_compatibility.add_argument("--degree", type=int, required=True)
@@ -718,6 +770,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_design_compatibility.add_argument("--a", type=float, default=0.2)
     p_design_compatibility.add_argument("--alpha", type=float, default=0.5)
     p_design_compatibility.add_argument("--cutoff", type=float, default=0.45)
+    p_design_compatibility.add_argument("--lower", type=float, default=-0.25)
+    p_design_compatibility.add_argument("--upper", type=float, default=0.25)
     p_design_compatibility.add_argument("--sharpness", type=float, default=12.0)
     p_design_compatibility.add_argument(
         "--bounded-num-points",
@@ -740,7 +794,15 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_apply_design.add_argument(
         "--kind",
-        choices=["inverse", "sign", "projector", "sqrt", "power", "filter"],
+        choices=[
+            "inverse",
+            "sign",
+            "projector",
+            "sqrt",
+            "power",
+            "filter",
+            "interval_projector",
+        ],
         required=True,
     )
     p_apply_design.add_argument(
@@ -754,6 +816,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_apply_design.add_argument("--a", type=float, default=0.2)
     p_apply_design.add_argument("--alpha", type=float, default=0.5)
     p_apply_design.add_argument("--cutoff", type=float, default=0.45)
+    p_apply_design.add_argument("--lower", type=float, default=-0.25)
+    p_apply_design.add_argument("--upper", type=float, default=0.25)
     p_apply_design.add_argument("--sharpness", type=float, default=12.0)
     p_apply_design.add_argument(
         "--wires",

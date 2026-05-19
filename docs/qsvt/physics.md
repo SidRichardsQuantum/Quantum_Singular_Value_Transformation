@@ -118,3 +118,51 @@ coeffs = design_positive_inverse_polynomial(gamma=0.1, degree=30)
 
 For harder linear systems, small `gamma` means large condition number and a
 higher degree is usually required.
+
+## Linear-System Workflow
+
+`qsvt.algorithms.linear_system_workflow` combines the positive-inverse design,
+positive-semidefinite rescaling, classical validation, optional PennyLane QSVT
+application, residual diagnostics, and compatibility metadata for small
+positive-definite systems.
+
+```python
+import numpy as np
+from qsvt.algorithms import linear_system_workflow
+
+A = np.diag([1.0, 2.0])
+b = np.array([1.0, 1.0])
+
+result = linear_system_workflow(
+    A,
+    b,
+    degree=20,
+    attempt_synthesis=False,
+)
+
+print(result.polynomial_solution)
+print(result.polynomial_residual_norm)
+```
+
+The workflow is intended for educational and simulator-scale experiments. It
+does not replace production state preparation, block-encoding construction, or
+fault-tolerant resource estimation.
+
+## Interval Projectors
+
+`qsvt.design.design_interval_projector_polynomial` builds a bounded smooth
+band-pass polynomial for a target interval inside `[-1, 1]`.
+
+```python
+from qsvt.design import design_interval_projector_polynomial
+
+coeffs = design_interval_projector_polynomial(
+    lower=-0.2,
+    upper=0.4,
+    degree=30,
+    sharpness=18.0,
+)
+```
+
+This is useful for spectral windows, density-of-states demos, band filtering,
+and projector-style workflows where both interval edges matter.

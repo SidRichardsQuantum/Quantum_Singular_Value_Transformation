@@ -2,6 +2,26 @@
 
 ---
 
+## [0.1.15] – 19th May 2026
+
+### Added
+
+- added `qsvt.algorithms.linear_system_workflow`, an end-to-end
+  positive-definite linear-system workflow with inverse-polynomial design,
+  spectral rescaling, classical/QSVT solution estimates, residual diagnostics,
+  and compatibility metadata
+- added `design_interval_projector_polynomial` and
+  `design_interval_projector_diagnostics` for band-pass spectral filtering and
+  smooth interval projectors on `[-1, 1]`
+- exposed interval-projector design through `design_workflow` and the CLI
+  design commands
+
+### Changed
+
+- updated package metadata and README release marker for `0.1.15`
+
+---
+
 ## [0.1.14] – 19th May 2026
 
 ### Added

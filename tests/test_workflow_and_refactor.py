@@ -63,3 +63,20 @@ def test_design_workflow_returns_coefficients_reports_and_compatibility():
     assert result.diagnostics["builder"] == "design_sign_polynomial"
     assert result.compatibility["attempted_pennylane_synthesis"] is False
     assert report["mode"] == "design-workflow"
+
+
+def test_design_workflow_supports_interval_projector():
+    result = design_workflow(
+        "interval_projector",
+        lower=-0.2,
+        upper=0.4,
+        degree=18,
+        num_points=301,
+        bounded_num_points=601,
+        attempt_synthesis=False,
+    )
+
+    assert result.builder == "design_interval_projector_polynomial"
+    assert result.diagnostics["lower"] == -0.2
+    assert result.diagnostics["upper"] == 0.4
+    assert result.compatibility["attempted_pennylane_synthesis"] is False

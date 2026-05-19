@@ -13,6 +13,7 @@ polynomial surrogates for common QSVT-style tasks:
 - square-root approximations on a positive interval,
 - positive power functions on a positive interval,
 - smooth threshold/filter polynomials.
+- smooth interval-projector / band-pass polynomials.
 
 Design goals
 ------------
@@ -138,6 +139,18 @@ def _design_filter_target(x: np.ndarray, cutoff: float, sharpness: float) -> np.
             sharpness * (np.abs(np.asarray(x, dtype=float)) - cutoff),
         )
     )
+
+
+def _design_interval_projector_target(
+    x: np.ndarray,
+    lower: float,
+    upper: float,
+    sharpness: float,
+) -> np.ndarray:
+    x = np.asarray(x, dtype=float)
+    left = 0.5 * (1.0 + np.tanh(sharpness * (x - lower)))
+    right = 0.5 * (1.0 + np.tanh(sharpness * (upper - x)))
+    return left * right
 
 
 def _validate_unit_interval_parameter(value: float, name: str) -> float:
@@ -553,6 +566,55 @@ def design_filter_polynomial(
     )
 
 
+def design_interval_projector_polynomial(
+    lower: float,
+    upper: float,
+    degree: int,
+    sharpness: float = 12.0,
+    num_points: int = _DEF_NUM_POINTS,
+) -> np.ndarray:
+    """
+    Construct a bounded band-pass / interval-projector polynomial on [-1, 1].
+
+    The target is a smooth approximation to the indicator of [lower, upper],
+    built from two tanh transitions. Values inside the interval are pushed
+    toward 1, while values outside are pushed toward 0.
+
+    Parameters
+    ----------
+    lower
+        Lower interval endpoint, with -1 < lower < upper.
+    upper
+        Upper interval endpoint, with lower < upper < 1.
+    degree
+        Polynomial degree.
+    sharpness
+        Positive steepness parameter for the two interval edges.
+    num_points
+        Number of fitting points.
+
+    Returns
+    -------
+    numpy.ndarray
+        Polynomial coefficients in ascending monomial degree order.
+    """
+    lower = float(lower)
+    upper = float(upper)
+    sharpness = float(sharpness)
+
+    if not (-1.0 < lower < upper < 1.0):
+        raise ValueError("lower and upper must satisfy -1 < lower < upper < 1.")
+    if sharpness <= 0.0:
+        raise ValueError("sharpness must be positive.")
+
+    return _fit_on_canonical_interval(
+        lambda x: _design_interval_projector_target(x, lower, upper, sharpness),
+        degree=degree,
+        parity=None,
+        num_points=num_points,
+    )
+
+
 def _design_quality_report(
     target,
     coeffs: np.ndarray,
@@ -824,7 +886,53 @@ def design_filter_diagnostics(
     return report
 
 
+def design_interval_projector_diagnostics(
+    lower: float,
+    upper: float,
+    degree: int,
+    sharpness: float = 12.0,
+    num_points: int = _DEF_NUM_POINTS,
+    bounded_num_points: int = _DEF_BOUND_GRID,
+) -> dict[str, object]:
+    """
+    Build a report for the interval-projector design polynomial.
+    """
+    lower = float(lower)
+    upper = float(upper)
+    sharpness = float(sharpness)
+
+    if not (-1.0 < lower < upper < 1.0):
+        raise ValueError("lower and upper must satisfy -1 < lower < upper < 1.")
+    if sharpness <= 0.0:
+        raise ValueError("sharpness must be positive.")
+
+    coeffs = design_interval_projector_polynomial(
+        lower=lower,
+        upper=upper,
+        degree=degree,
+        sharpness=sharpness,
+        num_points=num_points,
+    )
+    report = _design_quality_report(
+        lambda x: _design_interval_projector_target(x, lower, upper, sharpness),
+        coeffs,
+        fit_num_points=num_points,
+        bounded_num_points=bounded_num_points,
+    )
+    report.update(
+        {
+            "builder": "design_interval_projector_polynomial",
+            "lower": lower,
+            "upper": upper,
+            "sharpness": sharpness,
+            "degree": int(degree),
+        }
+    )
+    return report
+
+
 __all__ = [
+    "design_interval_projector_diagnostics",
     "design_inverse_diagnostics",
     "design_positive_inverse_diagnostics",
     "design_sign_diagnostics",
@@ -833,6 +941,7 @@ __all__ = [
     "design_power_diagnostics",
     "design_filter_diagnostics",
     "design_filter_polynomial",
+    "design_interval_projector_polynomial",
     "design_inverse_polynomial",
     "design_positive_inverse_polynomial",
     "design_power_polynomial",

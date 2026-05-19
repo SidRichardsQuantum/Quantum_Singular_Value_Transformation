@@ -7,6 +7,7 @@ import pytest
 from qsvt.__main__ import main
 from qsvt.design import (
     design_filter_polynomial,
+    design_interval_projector_polynomial,
     design_inverse_polynomial,
     design_power_polynomial,
     design_sign_polynomial,
@@ -52,6 +53,16 @@ def test_design_functions_reject_negative_degree(degree):
         (design_sqrt_polynomial, {"a": -0.1, "degree": 6}, "0 <= a < 1"),
         (design_power_polynomial, {"alpha": -0.5, "degree": 6}, "non-negative"),
         (design_filter_polynomial, {"cutoff": 1.0, "degree": 6}, "0 < cutoff < 1"),
+        (
+            design_interval_projector_polynomial,
+            {"lower": 0.4, "upper": -0.2, "degree": 6},
+            "-1 < lower < upper < 1",
+        ),
+        (
+            design_interval_projector_polynomial,
+            {"lower": -0.2, "upper": 0.4, "degree": 6, "sharpness": 0.0},
+            "sharpness must be positive",
+        ),
     ],
 )
 def test_design_builders_reject_invalid_parameters(builder, kwargs, message):

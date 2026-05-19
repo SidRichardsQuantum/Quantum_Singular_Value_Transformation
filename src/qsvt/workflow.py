@@ -17,6 +17,8 @@ from .compatibility import qsvt_compatibility_report
 from .design import (
     design_filter_diagnostics,
     design_filter_polynomial,
+    design_interval_projector_diagnostics,
+    design_interval_projector_polynomial,
     design_inverse_diagnostics,
     design_inverse_polynomial,
     design_power_diagnostics,
@@ -29,7 +31,15 @@ from .design import (
     design_sqrt_polynomial,
 )
 
-DesignKind = Literal["inverse", "sign", "projector", "sqrt", "power", "filter"]
+DesignKind = Literal[
+    "inverse",
+    "sign",
+    "projector",
+    "sqrt",
+    "power",
+    "filter",
+    "interval_projector",
+]
 
 
 @dataclass(frozen=True)
@@ -66,6 +76,8 @@ def design_workflow(
     a: float = 0.2,
     alpha: float = 0.5,
     cutoff: float = 0.45,
+    lower: float = -0.25,
+    upper: float = 0.25,
     sharpness: float = 12.0,
     num_points: int = 2001,
     bounded_num_points: int = 4001,
@@ -107,6 +119,13 @@ def design_workflow(
             sharpness=sharpness,
             num_points=num_points,
         ),
+        "interval_projector": lambda: design_interval_projector_polynomial(
+            lower=lower,
+            upper=upper,
+            degree=degree,
+            sharpness=sharpness,
+            num_points=num_points,
+        ),
     }
     diagnostic_builders = {
         "inverse": lambda: design_inverse_diagnostics(
@@ -142,6 +161,14 @@ def design_workflow(
         ),
         "filter": lambda: design_filter_diagnostics(
             cutoff=cutoff,
+            degree=degree,
+            sharpness=sharpness,
+            num_points=num_points,
+            bounded_num_points=bounded_num_points,
+        ),
+        "interval_projector": lambda: design_interval_projector_diagnostics(
+            lower=lower,
+            upper=upper,
             degree=degree,
             sharpness=sharpness,
             num_points=num_points,

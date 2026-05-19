@@ -20,6 +20,7 @@ classical validation of QSVT/QSP ideas.
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as _pkg_version
 
+from .algorithms import LinearSystemWorkflowResult, linear_system_workflow
 from .approximation import (
     approximation_quality_report,
     chebyshev_approximant,
@@ -35,6 +36,8 @@ from .approximation import (
 from .design import (
     design_filter_diagnostics,
     design_filter_polynomial,
+    design_interval_projector_diagnostics,
+    design_interval_projector_polynomial,
     design_inverse_diagnostics,
     design_inverse_polynomial,
     design_positive_inverse_diagnostics,
@@ -168,6 +171,7 @@ except PackageNotFoundError:  # pragma: no cover
 
 __all__ = [
     "__version__",
+    "LinearSystemWorkflowResult",
     "approximation_quality_report",
     "chebyshev_approximant",
     "chebyshev_eval",
@@ -194,6 +198,7 @@ __all__ = [
     "sqrt_approximation_diagnostics",
     "DesignWorkflowResult",
     "design_workflow",
+    "linear_system_workflow",
     "hermitian_from_eigendecomposition",
     "identity",
     "involutory_diagonal",
@@ -202,6 +207,8 @@ __all__ = [
     "pauli_z",
     "design_filter_polynomial",
     "design_filter_diagnostics",
+    "design_interval_projector_polynomial",
+    "design_interval_projector_diagnostics",
     "design_inverse_polynomial",
     "design_inverse_diagnostics",
     "design_positive_inverse_polynomial",

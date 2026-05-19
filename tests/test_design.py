@@ -5,6 +5,8 @@ import numpy as np
 from qsvt.design import (
     design_filter_diagnostics,
     design_filter_polynomial,
+    design_interval_projector_diagnostics,
+    design_interval_projector_polynomial,
     design_inverse_diagnostics,
     design_inverse_polynomial,
     design_power_diagnostics,
@@ -24,6 +26,11 @@ def test_design_functions_return_numpy_arrays():
         lambda: design_inverse_polynomial(gamma=0.25, degree=11),
         lambda: design_sign_polynomial(gamma=0.2, degree=13),
         lambda: design_projector_polynomial(gamma=0.2, degree=13),
+        lambda: design_interval_projector_polynomial(
+            lower=-0.2,
+            upper=0.4,
+            degree=18,
+        ),
         lambda: design_sqrt_polynomial(a=0.2, degree=12),
         lambda: design_power_polynomial(alpha=0.5, degree=12, a=0.2),
         lambda: design_filter_polynomial(cutoff=0.45, degree=10),
@@ -42,6 +49,7 @@ def test_design_polynomials_are_bounded_on_minus_one_one():
         design_inverse_polynomial(gamma=0.25, degree=11),
         design_sign_polynomial(gamma=0.2, degree=13),
         design_projector_polynomial(gamma=0.2, degree=13),
+        design_interval_projector_polynomial(lower=-0.2, upper=0.4, degree=18),
         design_sqrt_polynomial(a=0.2, degree=12),
         design_power_polynomial(alpha=0.5, degree=12, a=0.2),
         design_filter_polynomial(cutoff=0.45, degree=10),
@@ -105,6 +113,25 @@ def test_projector_sqrt_and_power_have_basic_shape_properties():
     assert np.max(np.abs(power_vals[pos_mask] - xs[pos_mask] ** 0.5)) < 0.1
 
 
+def test_interval_projector_selects_band_pass_region():
+    coeffs = design_interval_projector_polynomial(
+        lower=-0.2,
+        upper=0.4,
+        degree=30,
+        sharpness=18.0,
+    )
+
+    vals = np.polynomial.polynomial.polyval(
+        np.array([-0.8, -0.1, 0.2, 0.8]),
+        coeffs,
+    )
+
+    assert vals[1] > 0.75
+    assert vals[2] > 0.75
+    assert vals[0] < 0.25
+    assert vals[3] < 0.25
+
+
 def test_design_diagnostics_report_fit_and_boundedness():
     report = design_sqrt_diagnostics(a=0.2, degree=12)
     coeffs = design_sqrt_polynomial(a=0.2, degree=12)
@@ -148,3 +175,18 @@ def test_design_diagnostics_cover_sign_projector_and_power_wrappers():
     assert projector_report["max_error"] < 0.5
     assert power_report["fit_domain"] == (0.2, 1.0)
     assert power_report["bounded_margin"] >= -1e-8
+
+
+def test_interval_projector_diagnostics_report_fit_and_boundedness():
+    report = design_interval_projector_diagnostics(
+        lower=-0.2,
+        upper=0.4,
+        degree=30,
+        sharpness=18.0,
+    )
+
+    assert report["builder"] == "design_interval_projector_polynomial"
+    assert report["lower"] == -0.2
+    assert report["upper"] == 0.4
+    assert report["max_error"] < 0.35
+    assert report["bounded_margin"] >= -1e-8
