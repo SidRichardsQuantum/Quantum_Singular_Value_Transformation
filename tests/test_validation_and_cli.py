@@ -1,4 +1,5 @@
 import json
+from importlib import resources
 
 import numpy as np
 import pytest
@@ -19,6 +20,12 @@ from qsvt.templates import (
     soft_threshold_filter_polynomial,
     sqrt_approximation_polynomial,
 )
+
+
+def test_package_exposes_pep561_type_marker():
+    marker = resources.files("qsvt").joinpath("py.typed")
+
+    assert marker.is_file()
 
 
 @pytest.mark.parametrize("n", [-1, -3])

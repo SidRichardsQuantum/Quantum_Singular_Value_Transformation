@@ -2,6 +2,41 @@
 
 ---
 
+## [0.1.14] – 19th May 2026
+
+### Added
+
+- added committed real-example plot artefacts under
+  `results/plots/real_examples/`, with a machine-readable manifest at
+  `results/tables/real_examples_plot_manifest.csv`
+- added a dedicated notebook execution workflow,
+  `.github/workflows/notebooks.yml`, for scheduled/manual notebook validation
+  and notebook-sensitive pull requests
+- added `.github/workflows/release-check.yml` to build documentation with
+  warnings as errors, build distributions, and run `twine check` before
+  release
+- added the `qsvt` package `py.typed` marker and package-data configuration so
+  type checkers can consume the inline annotations
+
+### Changed
+
+- refreshed tutorial notebook plot artefacts using current notebook filenames
+  and updated the rendered tutorial result gallery accordingly
+- split regular CI test execution from notebook execution by marking notebook
+  tests with `pytest.mark.notebook`
+- refreshed the committed release summary table and documented that the
+  artefacts were refreshed for package version `0.1.14`
+- included committed `results/` artefacts in source distributions so docs links
+  resolve from packaged archives
+
+### Documentation
+
+- updated `RESULTS.md` and `docs/qsvt/real_example_results.md` with the
+  real-example plot ledger, representative gallery, and regeneration commands
+- documented the `py.typed` marker in the README package map
+
+---
+
 ## [0.1.13] – 16th May 2026
 
 ### Added

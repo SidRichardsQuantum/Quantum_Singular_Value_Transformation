@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qsvt-pennylane"
-version = "0.1.13"
+version = "0.1.14"
 description = "Educational utilities and examples for Quantum Singular Value Transformation (QSVT) using PennyLane."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -93,10 +93,17 @@ package-dir = { "" = "src" }
 where = ["src"]
 
 
+[tool.setuptools.package-data]
+qsvt = ["py.typed"]
+
+
 [tool.pytest.ini_options]
 addopts = "-ra"
 pythonpath = ["src"]
 testpaths = ["tests"]
+markers = [
+  "notebook: tests that execute tutorial or real-example notebooks",
+]
 
 
 [tool.black]

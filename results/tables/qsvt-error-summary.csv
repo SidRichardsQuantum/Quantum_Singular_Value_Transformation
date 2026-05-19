@@ -1,4 +1,4 @@
-artefact,workflow,command,max_error,rms_error,notes
-results/reports/sign-report.json,sign polynomial design,"qsvt design-report --kind sign --gamma 0.2 --degree 13 --output results/reports/sign-report.json --plot results/plots/sign-report.png",0.2091981425741754,0.11105097545055853,"bounded on [-1, 1]; plot saved to results/plots/sign-report.png"
-results/reports/qsvt-report.json,diagonal QSVT transform,"qsvt compare-report --values ""1.0,0.7,0.3,0.1"" --poly ""0,0,1"" --wires 3 --output results/reports/qsvt-report.json",9.999778782798785e-13,5.585577546102077e-13,"compares QSVT output with direct polynomial evaluation"
-results/reports/matrix-report.json,Hermitian matrix QSVT transform,"qsvt matrix-report --matrix ""0.31351701,-0.23499807;-0.23499807,0.68648299"" --poly ""0,0,1"" --output results/reports/matrix-report.json",5.264677582772492e-13,3.2060825311797223e-13,"real-part comparison against classical spectral polynomial"
+artefact,workflow,max_error,rms_error,notes
+results/reports/sign-report.json,sign polynomial design,2.091981425741754e-01,1.1105097545055853e-01,"degree-13 sign approximation with gamma=0.2; bounded on [-1, 1]"
+results/reports/qsvt-report.json,diagonal QSVT transform,9.999778782798785e-13,5.585577546102077e-13,compares QSVT output with direct evaluation of x^2
+results/reports/matrix-report.json,Hermitian matrix QSVT transform,5.264677582772492e-13,3.2060825311797223e-13,real-part comparison against the classical spectral polynomial

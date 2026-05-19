@@ -5,6 +5,7 @@ from pathlib import Path
 
 import matplotlib
 import matplotlib.pyplot as plt
+import pytest
 
 
 def _execute_notebooks(notebooks):
@@ -31,6 +32,7 @@ def _execute_notebooks(notebooks):
                 os.environ["MPLCONFIGDIR"] = old_mpl_config
 
 
+@pytest.mark.notebook
 def test_introductory_notebooks_execute():
     repo_root = Path(__file__).resolve().parents[1]
     notebook_dir = repo_root / "notebooks" / "tutorials"
@@ -39,6 +41,7 @@ def test_introductory_notebooks_execute():
     _execute_notebooks(notebooks)
 
 
+@pytest.mark.notebook
 def test_real_example_notebooks_execute():
     repo_root = Path(__file__).resolve().parents[1]
     notebook_dir = repo_root / "notebooks" / "real_examples"

@@ -119,6 +119,9 @@ The public package lives under `src/qsvt`.
 For detailed function-level documentation, use
 [docs/qsvt/api_reference.md](docs/qsvt/api_reference.md).
 
+The package includes a `py.typed` marker so type checkers can consume the
+inline type annotations shipped with the public modules.
+
 ## Documentation
 
 - [USAGE.md](USAGE.md): practical package and CLI workflows
@@ -138,7 +141,7 @@ For detailed function-level documentation, use
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial and real-example
   notebook index
 
-Current release: `0.1.13`
+Current release: `0.1.14`
 
 ## Notebooks
 

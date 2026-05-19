@@ -6,9 +6,11 @@ include THEORY.md
 include USAGE.md
 include requirements.txt
 include pyproject.toml
+include src/qsvt/py.typed
 
 graft docs
 graft notebooks
+graft results
 graft tests
 prune docs/_build
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Extract embedded PNG outputs from introductory notebooks.
+"""Extract embedded PNG outputs from notebooks.
 
-The introductory notebooks are the source of truth for these figures. This
-script refreshes ``results/plots/notebooks/`` with stable filenames so
-``RESULTS.md`` can link to committed plot artefacts.
+The notebooks are the source of truth for these figures. This script refreshes
+plot directories with stable filenames so ``RESULTS.md`` and the documentation
+can link to committed plot artefacts.
 """
 
 from __future__ import annotations
@@ -13,7 +13,7 @@ import base64
 import json
 from pathlib import Path
 
-DEFAULT_NOTEBOOK_GLOB = "notebooks/*.ipynb"
+DEFAULT_NOTEBOOK_GLOB = "notebooks/tutorials/*.ipynb"
 DEFAULT_OUTPUT_DIR = "results/plots/notebooks"
 
 
