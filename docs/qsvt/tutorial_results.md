@@ -12,6 +12,12 @@ This generated page displays the embedded plots and text results from every tuto
 - Embedded plot artefacts displayed: `29`
 - Plain-text notebook results displayed: `60`
 
+## Related Pages
+
+- [Results summary](results.md)
+- [Notebook index](notebooks.md)
+- [Real-example notebook outputs](real_example_results.md)
+
 ## Regeneration
 
 Execute notebooks, extract their embedded outputs, and refresh this page with:

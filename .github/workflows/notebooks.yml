@@ -6,7 +6,7 @@ on:
       - "notebooks/**"
       - "src/**"
       - "scripts/extract_notebook_plots.py"
-      - "docs/qsvt/result_gallery.md"
+      - "docs/qsvt/tutorial_results.md"
       - "docs/qsvt/real_example_results.md"
       - "results/tables/real_examples_plot_manifest.csv"
       - "tests/test_real_example_notebooks.py"
@@ -44,4 +44,4 @@ jobs:
       - name: Check generated notebook result pages
         run: |
           python scripts/extract_notebook_plots.py --preset all --write-docs
-          git diff --exit-code -- docs/qsvt/result_gallery.md docs/qsvt/real_example_results.md results/tables/real_examples_plot_manifest.csv
+          git diff --exit-code -- docs/qsvt/tutorial_results.md docs/qsvt/real_example_results.md results/tables/real_examples_plot_manifest.csv

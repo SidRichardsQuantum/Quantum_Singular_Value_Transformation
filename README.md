@@ -132,10 +132,10 @@ inline type annotations shipped with the public modules.
   interpretation
 - [RESULTS.md](RESULTS.md): result-producing notebooks and reproducible
   artefact conventions
-- [docs/qsvt/result_gallery.md](docs/qsvt/result_gallery.md): tutorial plot
-  gallery
+- [docs/qsvt/tutorial_results.md](docs/qsvt/tutorial_results.md): generated
+  tutorial notebook outputs
 - [docs/qsvt/real_example_results.md](docs/qsvt/real_example_results.md):
-  real-example plot and table gallery
+  generated real-example notebook outputs
 - [docs/qsvt/design.md](docs/qsvt/design.md): polynomial design helpers
 - [docs/qsvt/algorithms.md](docs/qsvt/algorithms.md): workflow-level
   algorithm notes, diagnostics, and limitations
@@ -148,7 +148,7 @@ inline type annotations shipped with the public modules.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial and real-example
   notebook index
 
-Current release: `0.1.18`
+Current release: `0.1.19`
 
 ## Notebooks
 

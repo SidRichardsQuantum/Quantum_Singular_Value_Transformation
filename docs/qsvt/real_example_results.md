@@ -13,6 +13,12 @@ This generated page displays the embedded plots and text results from every real
 - Plain-text notebook results displayed: `77`
 - Plot manifest: [`results/tables/real_examples_plot_manifest.csv`](../../results/tables/real_examples_plot_manifest.csv)
 
+## Related Pages
+
+- [Results summary](results.md)
+- [Notebook index](notebooks.md)
+- [Tutorial notebook outputs](tutorial_results.md)
+
 ## Regeneration
 
 Execute notebooks, extract their embedded outputs, and refresh this page with:

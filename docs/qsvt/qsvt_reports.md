@@ -136,6 +136,13 @@ When `--output` is used, the CLI writes the full JSON report to disk and
 prints a compact write summary to stdout. Add `--print-report` to also emit
 the full JSON payload on stdout.
 
+Related rendered result pages:
+
+- [Results summary](results.md)
+- [Diagnostics reports](reports.md)
+- [Tutorial notebook outputs](tutorial_results.md)
+- [Real-example notebook outputs](real_example_results.md)
+
 For a designed polynomial:
 
 ```bash

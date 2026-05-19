@@ -2,6 +2,35 @@
 
 ---
 
+## [0.1.19] – 19th May 2026
+
+### Added
+
+- added generated notebook result pages that display embedded plots and
+  plain-text outputs from every tutorial and real-example notebook
+- added CI checks that verify generated notebook result pages and manifests stay
+  reproducible from committed notebook outputs
+- added GitHub Pages generation that executes notebooks, refreshes notebook
+  result artefacts, and builds docs from the refreshed outputs
+
+### Changed
+
+- renamed the tutorial output page from `docs/qsvt/result_gallery.md` to
+  `docs/qsvt/tutorial_results.md` to reflect that it now contains generated
+  notebook outputs rather than a hand-curated gallery
+- improved documentation navigation with a cleaner sidebar grouping,
+  right-hand page tables of contents, result navigation tables, and cross-links
+  between notebook, report, and result pages
+- replaced the docs usage-guide include with a docs-native page so internal
+  links resolve correctly in rendered documentation
+- forced notebook execution through the active `python3` kernel during result
+  extraction so CI does not depend on notebook-local kernelspec names
+- updated GitHub Actions workflow dependencies to Node 24-compatible action
+  versions
+- updated package metadata and release markers for `0.1.19`
+
+---
+
 ## [0.1.18] – 19th May 2026
 
 ### Added

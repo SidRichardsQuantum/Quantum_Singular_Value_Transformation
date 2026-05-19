@@ -6,7 +6,7 @@ index for result-producing workflows and committed reproducibility artefacts.
 
 Rendered result pages:
 
-- Tutorial plot gallery: [docs/qsvt/result_gallery.md](docs/qsvt/result_gallery.md)
+- Tutorial notebook outputs: [docs/qsvt/tutorial_results.md](docs/qsvt/tutorial_results.md)
 - Real-example plots and tables: [docs/qsvt/real_example_results.md](docs/qsvt/real_example_results.md)
 
 ## Tutorial Notebook Results
@@ -180,5 +180,5 @@ generate each artefact.
 
 Large notebook-derived outputs belong in generated docs pages:
 
-- tutorial notebook outputs: `docs/qsvt/result_gallery.md`
+- tutorial notebook outputs: `docs/qsvt/tutorial_results.md`
 - real-example outputs: `docs/qsvt/real_example_results.md`

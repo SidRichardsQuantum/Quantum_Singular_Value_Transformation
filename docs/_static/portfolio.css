@@ -250,14 +250,31 @@ button:focus-visible {
   border-left: 1px solid var(--line);
 }
 
-.toc-drawer,
 .toc-overlay-icon,
 .toc-content-icon {
   display: none;
 }
 
-.main {
-  grid-template-columns: minmax(0, 1fr);
+.toc-drawer {
+  display: block;
+}
+
+.toc-drawer .toc-sticky {
+  padding-top: 2rem;
+}
+
+.toc-tree {
+  font-size: 0.9rem;
+}
+
+.toc-tree a {
+  border-radius: 8px;
+  padding: 0.25rem 0.5rem;
+}
+
+.toc-tree a:hover,
+.toc-tree .current > a {
+  background: var(--accent-soft);
 }
 
 .content {

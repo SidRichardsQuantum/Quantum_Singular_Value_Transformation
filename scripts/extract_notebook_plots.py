@@ -20,7 +20,7 @@ from pathlib import Path
 
 DEFAULT_NOTEBOOK_GLOB = "notebooks/tutorials/*.ipynb"
 DEFAULT_OUTPUT_DIR = "results/plots/notebooks"
-TUTORIAL_DOC = Path("docs/qsvt/result_gallery.md")
+TUTORIAL_DOC = Path("docs/qsvt/tutorial_results.md")
 REAL_EXAMPLES_DOC = Path("docs/qsvt/real_example_results.md")
 REAL_EXAMPLES_MANIFEST = Path("results/tables/real_examples_plot_manifest.csv")
 
@@ -207,6 +207,20 @@ def write_results_page(
         lines.append(
             f"- Plot manifest: [`{manifest_path.as_posix()}`]({manifest_link})"
         )
+
+    lines.extend(
+        [
+            "",
+            "## Related Pages",
+            "",
+            "- [Results summary](results.md)",
+            "- [Notebook index](notebooks.md)",
+        ]
+    )
+    if doc_path != TUTORIAL_DOC:
+        lines.append("- [Tutorial notebook outputs](tutorial_results.md)")
+    if doc_path != REAL_EXAMPLES_DOC:
+        lines.append("- [Real-example notebook outputs](real_example_results.md)")
 
     lines.extend(
         [

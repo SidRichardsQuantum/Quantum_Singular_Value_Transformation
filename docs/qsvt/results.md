@@ -8,6 +8,15 @@ The repository root [`RESULTS.md`](../../RESULTS.md) remains the compact
 source-of-truth ledger. This page is the portfolio-style summary for rendered
 documentation.
 
+## Result Navigation
+
+| page | purpose |
+| --- | --- |
+| [Tutorial notebook outputs](tutorial_results.md) | generated plots and text outputs from `notebooks/tutorials/` |
+| [Real-example notebook outputs](real_example_results.md) | generated plots and text outputs from `notebooks/real_examples/` |
+| [Diagnostics reports](reports.md) | design-report JSON fields, plotting helpers, and CLI report commands |
+| [QSVT transform reports](qsvt_reports.md) | QSVT-vs-classical comparison reports for diagonal and matrix inputs |
+
 ## Current Status
 
 <div class="metric-grid">
@@ -24,7 +33,7 @@ documentation.
     <span class="metric-label">diagonal QSVT max-error scale</span>
   </div>
   <div class="metric-card">
-    <span class="metric-value">0.1.18</span>
+    <span class="metric-value">0.1.19</span>
     <span class="metric-label">current release marker</span>
   </div>
 </div>
@@ -154,10 +163,10 @@ Degree/error tradeoff results for bounded QSVT-compatible polynomial design.
 Topological band-projector example using a small Qi-Wu-Zhang lattice model.
 ```
 
-More plots:
+Generated notebook output pages:
 
-- [Tutorial result gallery](result_gallery.md)
-- [Real-example results](real_example_results.md)
+- [Tutorial notebook outputs](tutorial_results.md)
+- [Real-example notebook outputs](real_example_results.md)
 
 ## Artefact Ledger
 

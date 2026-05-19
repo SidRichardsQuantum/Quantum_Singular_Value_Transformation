@@ -23,6 +23,20 @@ The repository also includes a sequence of notebooks that introduce QSVT concept
 
 ---
 
+## Quick navigation
+
+| goal | start here |
+| --- | --- |
+| Install the package and run a transform | [Usage guide](usage.md) |
+| Understand the mathematical setup | [Theory](theory.md) |
+| Explore executable examples | [Notebooks](notebooks.md) |
+| Inspect notebook-generated outputs | [Results](results.md) |
+| Compare tutorial outputs directly | [Tutorial notebook outputs](tutorial_results.md) |
+| Browse real-example outputs | [Real-example notebook outputs](real_example_results.md) |
+| Use package APIs | [API reference](api_reference.md) |
+
+---
+
 ## Documentation overview
 
 ### Theory
@@ -74,7 +88,7 @@ See: [Notebooks](notebooks.md)
 
 Notebook-derived outcomes and reproducible artefact conventions:
 
-- which notebooks currently include embedded plots
+- which notebooks currently include embedded plots and text results
 - which real physics workflows are clean execution sources
 - where future JSON reports, plots, and tables should live
 - command line examples for regenerating report artefacts
@@ -83,8 +97,8 @@ See: [Results](results.md)
 
 Rendered notebook artefacts are kept separately from the root result index.
 
-- Tutorial plots: [Result plot gallery](result_gallery.md)
-- Real-example plots and tables: [Real-example results](real_example_results.md)
+- Tutorial outputs: [Tutorial notebook outputs](tutorial_results.md)
+- Real-example outputs: [Real-example notebook outputs](real_example_results.md)
 
 ### Algorithm and implementation notes
 

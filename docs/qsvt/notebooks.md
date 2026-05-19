@@ -4,6 +4,19 @@ The repository includes notebook-first examples that introduce QSVT and QSP
 concepts step by step, followed by real physics workflows that reuse the package
 APIs.
 
+## Notebook outputs
+
+The rendered results pages are generated from the embedded outputs of these
+notebooks:
+
+| notebook set | generated output page | source directory |
+| --- | --- | --- |
+| tutorials | [Tutorial notebook outputs](tutorial_results.md) | `notebooks/tutorials/` |
+| real physics examples | [Real-example notebook outputs](real_example_results.md) | `notebooks/real_examples/` |
+
+For the compact result summary and regeneration commands, see
+[Results](results.md).
+
 ## Tutorial notebooks
 
 Tutorial notebooks live in `notebooks/tutorials/`.

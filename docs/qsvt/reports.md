@@ -53,6 +53,13 @@ and result tables. When `--output` or `--plot` is supplied, the CLI writes the
 full artifact to disk and switches stdout to a compact write summary; add
 `--print-report` if you also want the full JSON payload on stdout.
 
+Related rendered result pages:
+
+- [Results summary](results.md)
+- [Tutorial notebook outputs](tutorial_results.md)
+- [Real-example notebook outputs](real_example_results.md)
+- [QSVT transform reports](qsvt_reports.md)
+
 ## Report fields
 
 | field | meaning |

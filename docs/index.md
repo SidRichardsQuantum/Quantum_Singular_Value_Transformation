@@ -361,11 +361,9 @@
 :caption: Start Here
 
 Overview <qsvt/index>
-Theory <qsvt/theory>
 Usage Guide <qsvt/usage>
-Results <qsvt/results>
-Tutorial Plot Gallery <qsvt/result_gallery>
-Real-Example Results <qsvt/real_example_results>
+Theory <qsvt/theory>
+Notebooks <qsvt/notebooks>
 ```
 
 ```{toctree}
@@ -378,6 +376,19 @@ Polynomial Design <qsvt/design>
 Algorithm Notes <qsvt/algorithms>
 Physics Workflows <qsvt/physics>
 Polynomial Templates <qsvt/templates>
+Implementation Notes <qsvt/implementation>
+API Reference <qsvt/api_reference>
+```
+
+```{toctree}
+:hidden:
+:maxdepth: 1
+:titlesonly:
+:caption: Results
+
+Results Summary <qsvt/results>
+Tutorial Notebook Outputs <qsvt/tutorial_results>
+Real-Example Notebook Outputs <qsvt/real_example_results>
 Diagnostics Reports <qsvt/reports>
 QSVT Transform Reports <qsvt/qsvt_reports>
 ```
@@ -388,8 +399,5 @@ QSVT Transform Reports <qsvt/qsvt_reports>
 :titlesonly:
 :caption: Reference
 
-API Reference <qsvt/api_reference>
-Implementation Notes <qsvt/implementation>
-Notebooks <qsvt/notebooks>
 Changelog <qsvt/changelog>
 ```
