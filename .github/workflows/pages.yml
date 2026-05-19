@@ -19,6 +19,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      MPLCONFIGDIR: /tmp/matplotlib
       PYTHONUTF8: "1"
 
     steps:
@@ -33,10 +34,14 @@ jobs:
           cache-dependency-path: |
             pyproject.toml
 
-      - name: Install package + docs deps
+      - name: Install package + docs/notebook deps
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e ".[docs]"
+          python -m pip install -e ".[dev,docs]"
+
+      - name: Refresh notebook result artefacts
+        run: |
+          python scripts/extract_notebook_plots.py --preset all --execute --write-docs
 
       - name: Build docs
         run: |

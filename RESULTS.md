@@ -102,18 +102,17 @@ The complete machine-readable manifest is
 
 ## Regeneration Commands
 
-Extract embedded notebook plots:
+Execute notebooks, extract their embedded outputs, and regenerate the rendered
+result pages:
 
 ```bash
-python scripts/extract_notebook_plots.py
+python scripts/extract_notebook_plots.py --preset all --execute --write-docs
 ```
 
-Extract embedded real-example notebook plots:
+Refresh the pages from already-saved notebook outputs without re-executing:
 
 ```bash
-python scripts/extract_notebook_plots.py \
-  --notebook-glob "notebooks/real_examples/*.ipynb" \
-  --output-dir results/plots/real_examples
+python scripts/extract_notebook_plots.py --preset all --write-docs
 ```
 
 Generate the committed report examples:
@@ -179,7 +178,7 @@ outputs. Good additions include short benchmark tables, links to committed JSON
 reports, package versions, seeds, backend details, and the command used to
 generate each artefact.
 
-Large visual galleries belong in docs pages:
+Large notebook-derived outputs belong in generated docs pages:
 
-- tutorial notebook plots: `docs/qsvt/result_gallery.md`
-- real-example plots and tables: `docs/qsvt/real_example_results.md`
+- tutorial notebook outputs: `docs/qsvt/result_gallery.md`
+- real-example outputs: `docs/qsvt/real_example_results.md`

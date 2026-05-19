@@ -175,18 +175,17 @@ More plots:
 
 ## Regeneration
 
-Extract tutorial notebook plots:
+Execute notebooks, extract their embedded outputs, and regenerate the rendered
+result pages:
 
 ```bash
-python scripts/extract_notebook_plots.py
+python scripts/extract_notebook_plots.py --preset all --execute --write-docs
 ```
 
-Extract real-example notebook plots:
+Refresh the pages from already-saved notebook outputs without re-executing:
 
 ```bash
-python scripts/extract_notebook_plots.py \
-  --notebook-glob "notebooks/real_examples/*.ipynb" \
-  --output-dir results/plots/real_examples
+python scripts/extract_notebook_plots.py --preset all --write-docs
 ```
 
 Generate the committed report examples:
