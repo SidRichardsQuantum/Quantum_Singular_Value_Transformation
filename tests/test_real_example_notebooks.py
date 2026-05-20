@@ -48,3 +48,12 @@ def test_real_example_notebooks_execute():
     notebooks = sorted(notebook_dir.glob("*.ipynb"))
 
     _execute_notebooks(notebooks)
+
+
+@pytest.mark.notebook
+def test_benchmark_notebooks_execute():
+    repo_root = Path(__file__).resolve().parents[1]
+    notebook_dir = repo_root / "notebooks" / "benchmarks"
+    notebooks = sorted(notebook_dir.glob("*.ipynb"))
+
+    _execute_notebooks(notebooks)

@@ -18,6 +18,7 @@ This generated page displays embedded setup schematics, diagnostic plots, and te
 - [Results summary](results.md)
 - [Notebook index](notebooks.md)
 - [Tutorial notebook outputs](tutorial_results.md)
+- [Benchmark notebook outputs](benchmark_results.md)
 
 ## Regeneration
 

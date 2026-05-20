@@ -46,6 +46,19 @@ from .approximation import (
     scale_from_chebyshev_domain,
     scale_to_chebyshev_domain,
 )
+from .benchmarks import (
+    ClassicalBenchmarkResult,
+    benchmark_summary_table,
+    conjugate_gradient_benchmark,
+    conjugate_gradient_solve,
+    dense_eigendecomposition_benchmark,
+    dense_linear_solve_benchmark,
+    plot_benchmark_timings,
+    plot_qsvt_proxy_resources,
+    polynomial_matrix_function_benchmark,
+    spectral_matrix_function_benchmark,
+    write_benchmark_summary_csv,
+)
 from .design import (
     design_filter_diagnostics,
     design_filter_polynomial,
@@ -146,6 +159,11 @@ from .rescaling import (
     rescale_positive_semidefinite,
     spectral_bounds,
 )
+from .resources import (
+    ResourceEstimate,
+    estimate_qsvt_resources,
+    qsvt_resource_report,
+)
 from .spectral import (
     apply_function_to_hermitian,
     apply_polynomial_to_hermitian,
@@ -199,6 +217,8 @@ __all__ = [
     "ResolventWorkflowResult",
     "SpectralDensityWorkflowResult",
     "ThermalGibbsWorkflowResult",
+    "ResourceEstimate",
+    "ClassicalBenchmarkResult",
     "approximation_quality_report",
     "chebyshev_approximant",
     "chebyshev_eval",
@@ -231,6 +251,16 @@ __all__ = [
     "resolvent_workflow",
     "spectral_density_workflow",
     "thermal_gibbs_workflow",
+    "benchmark_summary_table",
+    "conjugate_gradient_benchmark",
+    "conjugate_gradient_solve",
+    "dense_eigendecomposition_benchmark",
+    "dense_linear_solve_benchmark",
+    "plot_benchmark_timings",
+    "plot_qsvt_proxy_resources",
+    "polynomial_matrix_function_benchmark",
+    "spectral_matrix_function_benchmark",
+    "write_benchmark_summary_csv",
     "hermitian_from_eigendecomposition",
     "identity",
     "involutory_diagonal",
@@ -307,6 +337,8 @@ __all__ = [
     "report_to_jsonable",
     "save_report",
     "save_report_plot",
+    "estimate_qsvt_resources",
+    "qsvt_resource_report",
     "apply_function_to_hermitian",
     "apply_polynomial_to_hermitian",
     "eigh_hermitian",

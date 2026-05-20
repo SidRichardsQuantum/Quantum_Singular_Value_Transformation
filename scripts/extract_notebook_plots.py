@@ -24,7 +24,9 @@ DEFAULT_NOTEBOOK_GLOB = "notebooks/tutorials/*.ipynb"
 DEFAULT_OUTPUT_DIR = "results/plots/notebooks"
 TUTORIAL_DOC = Path("docs/qsvt/tutorial_results.md")
 REAL_EXAMPLES_DOC = Path("docs/qsvt/real_example_results.md")
+BENCHMARK_DOC = Path("docs/qsvt/benchmark_results.md")
 REAL_EXAMPLES_MANIFEST = Path("results/tables/real_examples_plot_manifest.csv")
+BENCHMARK_MANIFEST = Path("results/tables/benchmark_plot_manifest.csv")
 
 
 @dataclass(frozen=True)
@@ -356,6 +358,8 @@ def write_results_page(
         lines.append("- [Tutorial notebook outputs](tutorial_results.md)")
     if doc_path != REAL_EXAMPLES_DOC:
         lines.append("- [Real-example notebook outputs](real_example_results.md)")
+    if doc_path != BENCHMARK_DOC:
+        lines.append("- [Benchmark notebook outputs](benchmark_results.md)")
 
     lines.extend(
         [
@@ -426,6 +430,11 @@ def _regeneration_command(notebook_dir: Path, doc_path: Path) -> str:
             "python scripts/extract_notebook_plots.py "
             "--preset real-examples --execute --write-docs"
         )
+    if notebook_dir == Path("notebooks/benchmarks"):
+        return (
+            "python scripts/extract_notebook_plots.py "
+            "--preset benchmarks --execute --write-docs"
+        )
     return (
         "python scripts/extract_notebook_plots.py "
         f'--notebook-glob "{notebook_dir.as_posix()}/*.ipynb" '
@@ -463,8 +472,27 @@ def _preset_args(preset: str) -> list[tuple[str, str, Path, str, str, Path | Non
                 REAL_EXAMPLES_MANIFEST,
             )
         ]
+    if preset == "benchmarks":
+        return [
+            (
+                "notebooks/benchmarks/*.ipynb",
+                "results/plots/benchmarks",
+                BENCHMARK_DOC,
+                "Benchmark Results",
+                (
+                    "This generated page displays embedded benchmark plots "
+                    "and text outputs from the classical-baseline benchmark "
+                    "notebooks."
+                ),
+                BENCHMARK_MANIFEST,
+            )
+        ]
     if preset == "all":
-        return _preset_args("tutorials") + _preset_args("real-examples")
+        return (
+            _preset_args("tutorials")
+            + _preset_args("real-examples")
+            + _preset_args("benchmarks")
+        )
     raise ValueError(f"unknown preset: {preset}")
 
 
@@ -474,7 +502,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--preset",
-        choices=["tutorials", "real-examples", "all"],
+        choices=["tutorials", "real-examples", "benchmarks", "all"],
         help="Use the repository's standard notebook/result-page locations.",
     )
     parser.add_argument(

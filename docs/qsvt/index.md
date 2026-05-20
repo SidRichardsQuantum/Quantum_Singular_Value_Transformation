@@ -18,6 +18,7 @@ The package provides small, explicit utilities for:
 - building small Hamiltonians and finite-difference PDE operators
 - designing physics matrix-function polynomials
 - rescaling Hermitian spectra for QSVT-compatible workflows
+- comparing classical baselines with QSVT-oriented resource proxies
 
 The repository also includes a sequence of notebooks that introduce QSVT concepts step-by-step.
 
@@ -31,8 +32,10 @@ The repository also includes a sequence of notebooks that introduce QSVT concept
 | Understand the mathematical setup | [Theory](theory.md) |
 | Explore executable examples | [Notebooks](notebooks.md) |
 | Inspect notebook-generated outputs | [Results](results.md) |
+| Compare classical baselines and QSVT proxies | [Classical benchmarks](benchmarks.md) |
 | Compare tutorial outputs directly | [Tutorial notebook outputs](tutorial_results.md) |
 | Browse real-example outputs | [Real-example notebook outputs](real_example_results.md) |
+| Inspect benchmark outputs | [Benchmark notebook outputs](benchmark_results.md) |
 | Use package APIs | [API reference](api_reference.md) |
 
 ---
@@ -76,6 +79,15 @@ Practical workflows and command line examples:
 
 See: [Usage guide](usage.md)
 
+### Classical benchmarks
+
+Classical benchmark reports cover dense eigensolvers, dense linear solves,
+conjugate gradients, spectral matrix functions, and polynomial matrix-function
+references. They can attach QSVT resource proxies for degree and signal-call
+comparison.
+
+See: [Classical benchmarks](benchmarks.md)
+
 ### Notebooks
 
 Notebook-first examples cover the core QSVT path and real physics workflows,
@@ -99,6 +111,7 @@ Rendered notebook artefacts are kept separately from the root result index.
 
 - Tutorial outputs: [Tutorial notebook outputs](tutorial_results.md)
 - Real-example outputs: [Real-example notebook outputs](real_example_results.md)
+- Benchmark outputs: [Benchmark notebook outputs](benchmark_results.md)
 
 ### Algorithm and implementation notes
 
@@ -131,6 +144,7 @@ qsvt
 ├── workflow.py
 ├── algorithms.py
 ├── reports.py
+├── benchmarks.py
 ├── compatibility.py
 ├── matrices.py
 ├── hamiltonians.py
@@ -158,6 +172,7 @@ Each module is intentionally small and focused:
 | `workflow` | combined coefficient, diagnostic, and compatibility workflows |
 | `algorithms` | end-to-end simulator-scale algorithm workflows |
 | `reports` | diagnostics serialization and plotting helpers |
+| `benchmarks` | classical baselines and QSVT-oriented benchmark summaries |
 | `compatibility` | sampled QSVT compatibility and synthesis checks |
 | `matrices` | small Hermitian test matrices |
 | `hamiltonians` | reusable small physics Hamiltonians |

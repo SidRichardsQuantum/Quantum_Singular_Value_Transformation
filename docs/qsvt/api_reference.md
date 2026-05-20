@@ -36,6 +36,8 @@ The package is organised into the following modules:
 - `qsvt.templates`
 - `qsvt.workflow`
 - `qsvt.reports`
+- `qsvt.resources`
+- `qsvt.benchmarks`
 - `qsvt.operators`
 - `qsvt.diagonal`
 - `qsvt.matrix`
@@ -77,6 +79,7 @@ from qsvt.workflow import design_workflow
 result = design_workflow("sign", gamma=0.25, degree=13)
 coeffs = result.coeffs
 payload = result.as_report()
+resource_payload = result.resource_report(matrix_dimension=4)
 ```
 
 The same combined workflow report is available from the CLI:
@@ -121,6 +124,81 @@ Each returns a frozen dataclass with numerical outputs, diagnostics, and an
 
 For workflow-level targets, rescaling conventions, diagnostics, and limitations,
 see [Algorithm notes](algorithms.md).
+
+---
+
+### `qsvt.resources`
+
+Use `qsvt_resource_report` to compare small QSVT-style workflows by polynomial
+degree, coefficient count, QSP phase-count proxy, signal-call proxy, optional
+matrix-register width, and compatibility metadata:
+
+```python
+from qsvt.resources import qsvt_resource_report
+
+report = qsvt_resource_report(
+    [0.0, 0.0, 1.0],
+    matrix_dimension=4,
+    attempt_synthesis=False,
+)
+```
+
+The same report is available from the CLI:
+
+```bash
+qsvt resource-report --poly "0,0,1" --matrix-dimension 4 --no-synthesis
+```
+
+These are proxy reports for simulator-scale comparison. They do not include
+block-encoding construction, state preparation, error correction, compilation,
+or hardware runtime costs.
+
+---
+
+### `qsvt.benchmarks`
+
+Use `qsvt.benchmarks` to build classical baseline reports that can be compared
+with QSVT resource proxies:
+
+```python
+import numpy as np
+from qsvt.benchmarks import (
+    conjugate_gradient_benchmark,
+    dense_linear_solve_benchmark,
+)
+
+matrix = np.array([[4.0, 1.0], [1.0, 3.0]])
+rhs = np.array([1.0, 2.0])
+coeffs = [0.0, 1.0]
+
+dense = dense_linear_solve_benchmark(matrix, rhs, qsvt_coeffs=coeffs)
+cg = conjugate_gradient_benchmark(matrix, rhs, qsvt_coeffs=coeffs)
+```
+
+Available baseline helpers include:
+
+- `dense_eigendecomposition_benchmark`
+- `dense_linear_solve_benchmark`
+- `conjugate_gradient_benchmark`
+- `polynomial_matrix_function_benchmark`
+- `spectral_matrix_function_benchmark`
+- `benchmark_summary_table`
+- `write_benchmark_summary_csv`
+- `plot_benchmark_timings`
+- `plot_qsvt_proxy_resources`
+
+The same baseline reports are available from the CLI:
+
+```bash
+qsvt benchmark cg-solve \
+  --matrix "4,1;1,3" \
+  --rhs "1,2" \
+  --qsvt-poly "0,1"
+```
+
+Benchmark reports are classical references and QSVT cost proxies. They are
+intended to support advantage-oriented comparisons, not to claim end-to-end
+quantum speedups.
 
 ---
 

@@ -375,6 +375,7 @@ Notebooks <qsvt/notebooks>
 Polynomial Design <qsvt/design>
 Algorithm Notes <qsvt/algorithms>
 Physics Workflows <qsvt/physics>
+Classical Benchmarks <qsvt/benchmarks>
 Polynomial Templates <qsvt/templates>
 Implementation Notes <qsvt/implementation>
 API Reference <qsvt/api_reference>
@@ -389,6 +390,7 @@ API Reference <qsvt/api_reference>
 Results Summary <qsvt/results>
 Tutorial Notebook Outputs <qsvt/tutorial_results>
 Real-Example Notebook Outputs <qsvt/real_example_results>
+Benchmark Notebook Outputs <qsvt/benchmark_results>
 Diagnostics Reports <qsvt/reports>
 QSVT Transform Reports <qsvt/qsvt_reports>
 ```

@@ -96,6 +96,8 @@ qsvt scalar --x 0.5 --poly "0,0,1"
 qsvt design-workflow --kind sign --gamma 0.2 --degree 13
 qsvt design-sweep --kind sign --degrees "5,9,13,17" --gamma 0.2 \
   --no-synthesis --output sign-degree-sweep.json
+qsvt resource-report --poly "0,0,1" --matrix-dimension 4 --no-synthesis
+qsvt benchmark cg-solve --matrix "4,1;1,3" --rhs "1,2" --qsvt-poly "0,1"
 ```
 
 See [USAGE.md](USAGE.md) for full Python and CLI workflows.
@@ -113,6 +115,8 @@ The public package lives under `src/qsvt`.
 | `qsvt.templates` | ready-made bounded polynomial families |
 | `qsvt.workflow` | combined coefficient, diagnostic, and compatibility workflows |
 | `qsvt.reports` | JSON-safe reports and plot helpers |
+| `qsvt.resources` | degree, phase-count, width, and compatibility proxy reports |
+| `qsvt.benchmarks` | classical baselines and QSVT-oriented benchmark summaries |
 | `qsvt.matrices` | small Hermitian test matrices |
 | `qsvt.spectral` | classical spectral matrix-function references |
 | `qsvt.qsvt` | PennyLane QSVT wrappers and comparisons |
@@ -136,6 +140,8 @@ inline type annotations shipped with the public modules.
   tutorial notebook outputs
 - [docs/qsvt/real_example_results.md](docs/qsvt/real_example_results.md):
   generated real-example notebook outputs
+- [docs/qsvt/benchmark_results.md](docs/qsvt/benchmark_results.md): generated
+  benchmark notebook outputs
 - [docs/qsvt/design.md](docs/qsvt/design.md): polynomial design helpers
 - [docs/qsvt/algorithms.md](docs/qsvt/algorithms.md): workflow-level
   algorithm notes, diagnostics, and limitations
@@ -145,10 +151,10 @@ inline type annotations shipped with the public modules.
   and matrix-function workflows
 - [docs/qsvt/implementation.md](docs/qsvt/implementation.md): implementation
   conventions, report serialization, and API status
-- [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial and real-example
-  notebook index
+- [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
+  real-example notebook index
 
-Current release: `0.1.20`
+Current release: `0.1.21`
 
 ## Notebooks
 
@@ -164,6 +170,10 @@ spin-chain diagnostics, electronic occupations, photonic band gaps, graphene
 density of states, topological band projectors, and tensor-network hybrid
 filtering. Each real-example notebook includes a near-top orientation block for
 the system, QSVT implementation strategy, and quantum relevance.
+
+Benchmark notebooks live in `notebooks/benchmarks/` and compare classical
+linear-system, spectral, and polynomial matrix-function baselines against
+QSVT-oriented resource proxies.
 
 See [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md) for the full notebook map.
 

@@ -17,6 +17,7 @@ This generated page displays the embedded plots and text outputs from every tuto
 - [Results summary](results.md)
 - [Notebook index](notebooks.md)
 - [Real-example notebook outputs](real_example_results.md)
+- [Benchmark notebook outputs](benchmark_results.md)
 
 ## Regeneration
 

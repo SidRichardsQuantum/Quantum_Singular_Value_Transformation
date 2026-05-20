@@ -1,0 +1,19 @@
+{
+  "mode": "classical-benchmark",
+  "algorithm": "dense-spectral-matrix-function",
+  "problem": "exponential-matrix-function",
+  "matrix_dimension": 10,
+  "repeats": 3,
+  "best_time_seconds": 0.00013644400041812332,
+  "mean_time_seconds": 0.00015626433347885418,
+  "metrics": {
+    "function": "exponential",
+    "min_eigenvalue": 0.02067219782410493,
+    "max_eigenvalue": 0.9999999999999998,
+    "output_frobenius_norm": 2.121440863180591
+  },
+  "qsvt_proxy": null,
+  "notes": [
+    "Dense spectral matrix functions are exact small-system references for QSVT polynomial approximation studies."
+  ]
+}

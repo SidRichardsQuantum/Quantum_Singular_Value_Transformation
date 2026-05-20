@@ -1,0 +1,89 @@
+{
+  "mode": "classical-benchmark",
+  "algorithm": "numpy.linalg.solve",
+  "problem": "dense-linear-system",
+  "matrix_dimension": 12,
+  "repeats": 3,
+  "best_time_seconds": 1.0949999705189839e-05,
+  "mean_time_seconds": 1.9065000136227656e-05,
+  "metrics": {
+    "residual_norm": 7.091807567026073e-15,
+    "relative_residual_norm": 2.781635782377763e-15,
+    "solution_norm": 0.25958018039669606,
+    "condition_number_2": 67.82742906960378
+  },
+  "qsvt_proxy": {
+    "mode": "resource-report",
+    "coeffs": [
+      0.5740771268896445,
+      -2.5894968944169845,
+      -1.5692594163347968,
+      13.970171231498076,
+      5.815038459350933,
+      -36.817911761175324,
+      -8.116145515828556,
+      42.041133485744254,
+      3.7809199020638133,
+      -17.119265505508988
+    ],
+    "resources": {
+      "degree": 9,
+      "coefficient_count": 10,
+      "qsp_phase_count": 10,
+      "signal_operator_calls": 9,
+      "inverse_signal_operator_calls": 9,
+      "matrix_dimension": 12,
+      "encoding_qubits": 4,
+      "total_qubits": 5,
+      "block_encoding": "dense-block-encoding",
+      "notes": [
+        "Proxy estimate based on polynomial degree; not a hardware resource model.",
+        "Signal-call counts assume one forward and one inverse query per QSVT step.",
+        "Encoding width includes unused basis states."
+      ]
+    },
+    "compatibility": {
+      "mode": "qsvt-compatibility-report",
+      "poly": [
+        0.5740771268896445,
+        -2.5894968944169845,
+        -1.5692594163347968,
+        13.970171231498076,
+        5.815038459350933,
+        -36.817911761175324,
+        -8.116145515828556,
+        42.041133485744254,
+        3.7809199020638133,
+        -17.119265505508988
+      ],
+      "polynomial_degree": 9,
+      "coefficients_finite": true,
+      "parity": "mixed",
+      "has_definite_parity": false,
+      "bounded_domain": [
+        -1.0,
+        1.0
+      ],
+      "bounded_num_points": 4001,
+      "bound": 1.0,
+      "max_abs_value": 1.0000000000000036,
+      "bounded_margin": -3.552713678800501e-15,
+      "is_bounded": true,
+      "attempted_pennylane_synthesis": false,
+      "pennylane_synthesis_succeeded": null,
+      "reasons": [
+        "mixed_parity"
+      ],
+      "compatible": false
+    },
+    "diagnostics": {},
+    "limitations": [
+      "No block-encoding construction cost is included.",
+      "No state-preparation, amplitude-amplification, error-correction, or hardware compilation cost is included.",
+      "Use the report for comparing small polynomial workflows, not for claiming end-to-end quantum runtime."
+    ]
+  },
+  "notes": [
+    "Dense direct solves are strong small-system baselines but scale cubically and do not exploit sparsity."
+  ]
+}

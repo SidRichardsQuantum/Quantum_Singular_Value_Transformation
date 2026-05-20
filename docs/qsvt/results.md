@@ -14,6 +14,7 @@ documentation.
 | --- | --- |
 | [Tutorial notebook outputs](tutorial_results.md) | generated plots and text outputs from `notebooks/tutorials/` |
 | [Real-example notebook outputs](real_example_results.md) | generated plots and text outputs from `notebooks/real_examples/` |
+| [Benchmark notebook outputs](benchmark_results.md) | generated plots and text outputs from `notebooks/benchmarks/` |
 | [Diagnostics reports](reports.md) | design-report JSON fields, plotting helpers, and CLI report commands |
 | [QSVT transform reports](qsvt_reports.md) | QSVT-vs-classical comparison reports for diagonal and matrix inputs |
 
@@ -21,7 +22,7 @@ documentation.
 
 <div class="metric-grid">
   <div class="metric-card">
-    <span class="metric-value">42</span>
+    <span class="metric-value">45</span>
     <span class="metric-label">validated notebooks</span>
   </div>
   <div class="metric-card">
@@ -33,7 +34,7 @@ documentation.
     <span class="metric-label">diagonal QSVT max-error scale</span>
   </div>
   <div class="metric-card">
-    <span class="metric-value">0.1.20</span>
+    <span class="metric-value">0.1.21</span>
     <span class="metric-label">current release marker</span>
   </div>
 </div>
@@ -42,9 +43,10 @@ documentation.
 | --- | --- | --- |
 | tutorial notebooks | all execute in notebook validation | `notebooks/tutorials/` |
 | real-example notebooks | all execute in notebook validation | `notebooks/real_examples/` |
+| benchmark notebooks | all execute in notebook validation | `notebooks/benchmarks/` |
 | fast unit/regression suite | algorithm workflows and CLI report paths covered | `tests/` |
 | package artefacts | source distribution and wheel build cleanly | `pyproject.toml` |
-| rendered plots | tutorial and real-example PNG artefacts committed, including setup schematics | `results/plots/` |
+| rendered plots | tutorial, real-example, and benchmark PNG artefacts committed, including setup schematics | `results/plots/` |
 
 ## Key Outcomes
 

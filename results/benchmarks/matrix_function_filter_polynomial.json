@@ -1,0 +1,88 @@
+{
+  "mode": "classical-benchmark",
+  "algorithm": "spectral-polynomial-evaluation",
+  "problem": "polynomial-matrix-function",
+  "matrix_dimension": 10,
+  "repeats": 3,
+  "best_time_seconds": 0.00018365300002187723,
+  "mean_time_seconds": 0.00018966366678796476,
+  "metrics": {
+    "polynomial_degree": 10,
+    "coefficient_count": 11,
+    "output_frobenius_norm": 2.2365577094907696
+  },
+  "qsvt_proxy": {
+    "mode": "resource-report",
+    "coeffs": [
+      -0.06413271277095307,
+      0.0,
+      4.172062779199768,
+      0.0,
+      5.694759340756452,
+      0.0,
+      -44.60255530803108,
+      0.0,
+      63.39575090754632,
+      0.0,
+      -27.756131440327486
+    ],
+    "resources": {
+      "degree": 10,
+      "coefficient_count": 11,
+      "qsp_phase_count": 11,
+      "signal_operator_calls": 10,
+      "inverse_signal_operator_calls": 10,
+      "matrix_dimension": 10,
+      "encoding_qubits": 4,
+      "total_qubits": 5,
+      "block_encoding": "dense-block-encoding",
+      "notes": [
+        "Proxy estimate based on polynomial degree; not a hardware resource model.",
+        "Signal-call counts assume one forward and one inverse query per QSVT step.",
+        "Encoding width includes unused basis states."
+      ]
+    },
+    "compatibility": {
+      "mode": "qsvt-compatibility-report",
+      "poly": [
+        -0.06413271277095307,
+        0.0,
+        4.172062779199768,
+        0.0,
+        5.694759340756452,
+        0.0,
+        -44.60255530803108,
+        0.0,
+        63.39575090754632,
+        0.0,
+        -27.756131440327486
+      ],
+      "polynomial_degree": 10,
+      "coefficients_finite": true,
+      "parity": "even",
+      "has_definite_parity": true,
+      "bounded_domain": [
+        -1.0,
+        1.0
+      ],
+      "bounded_num_points": 4001,
+      "bound": 1.0,
+      "max_abs_value": 0.9999999999999999,
+      "bounded_margin": 1.1102230246251565e-16,
+      "is_bounded": true,
+      "attempted_pennylane_synthesis": false,
+      "pennylane_synthesis_succeeded": null,
+      "reasons": [],
+      "compatible": true
+    },
+    "diagnostics": {},
+    "limitations": [
+      "No block-encoding construction cost is included.",
+      "No state-preparation, amplitude-amplification, error-correction, or hardware compilation cost is included.",
+      "Use the report for comparing small polynomial workflows, not for claiming end-to-end quantum runtime."
+    ]
+  },
+  "notes": [
+    "The classical reference diagonalizes the Hermitian input and evaluates the polynomial on its eigenvalues."
+  ]
+}

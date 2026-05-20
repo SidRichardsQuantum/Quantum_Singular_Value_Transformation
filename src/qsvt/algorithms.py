@@ -12,6 +12,7 @@ from typing import Any
 
 import numpy as np
 
+from ._algorithm_reports import scaled_operator_report
 from .compatibility import qsvt_compatibility_report
 from .design import (
     design_positive_inverse_diagnostics,
@@ -69,12 +70,7 @@ class LinearSystemWorkflowResult:
             "gamma": self.gamma,
             "degree": self.degree,
             "coeffs": self.coeffs,
-            "scaled_operator": {
-                "matrix": self.scaled_operator.matrix,
-                "offset": self.scaled_operator.offset,
-                "scale": self.scaled_operator.scale,
-                "eigenvalue_bounds": self.scaled_operator.eigenvalue_bounds,
-            },
+            "scaled_operator": scaled_operator_report(self.scaled_operator),
             "rhs": self.rhs,
             "classical_solution": self.classical_solution,
             "polynomial_solution": self.polynomial_solution,
@@ -122,7 +118,7 @@ class GroundStateFilteringWorkflowResult:
             "center": self.center,
             "width": self.width,
             "coeffs": self.coeffs,
-            "scaled_operator": _scaled_operator_report(self.scaled_operator),
+            "scaled_operator": scaled_operator_report(self.scaled_operator),
             "input_state": self.input_state,
             "filtered_state": self.filtered_state,
             "unnormalized_filtered_state": self.unnormalized_filtered_state,
@@ -169,7 +165,7 @@ class HamiltonianSimulationWorkflowResult:
             "scaled_time": self.scaled_time,
             "cos_coeffs": self.cos_coeffs,
             "sin_coeffs": self.sin_coeffs,
-            "scaled_operator": _scaled_operator_report(self.scaled_operator),
+            "scaled_operator": scaled_operator_report(self.scaled_operator),
             "input_state": self.input_state,
             "evolved_state": self.evolved_state,
             "reference_state": self.reference_state,
@@ -212,7 +208,7 @@ class ResolventWorkflowResult:
             "degree": self.degree,
             "real_coeffs": self.real_coeffs,
             "imag_coeffs": self.imag_coeffs,
-            "scaled_operator": _scaled_operator_report(self.scaled_operator),
+            "scaled_operator": scaled_operator_report(self.scaled_operator),
             "source": self.source,
             "polynomial_operator": self.polynomial_operator,
             "reference_operator": self.reference_operator,
@@ -252,7 +248,7 @@ class SpectralDensityWorkflowResult:
             "width": self.width,
             "degree": self.degree,
             "coeffs_by_center": self.coeffs_by_center,
-            "scaled_operator": _scaled_operator_report(self.scaled_operator),
+            "scaled_operator": scaled_operator_report(self.scaled_operator),
             "polynomial_trace_density": self.polynomial_trace_density,
             "reference_trace_density": self.reference_trace_density,
             "trace_density_error": self.trace_density_error,
@@ -297,7 +293,7 @@ class ThermalGibbsWorkflowResult:
             "degree": self.degree,
             "coeffs": self.coeffs,
             "prefactor": self.prefactor,
-            "scaled_operator": _scaled_operator_report(self.scaled_operator),
+            "scaled_operator": scaled_operator_report(self.scaled_operator),
             "polynomial_boltzmann_operator": self.polynomial_boltzmann_operator,
             "reference_boltzmann_operator": self.reference_boltzmann_operator,
             "polynomial_gibbs_state": self.polynomial_gibbs_state,
@@ -311,15 +307,6 @@ class ThermalGibbsWorkflowResult:
             "reference_weighted_state": self.reference_weighted_state,
             "weighted_state_error": self.weighted_state_error,
         }
-
-
-def _scaled_operator_report(scaled: ScaledOperator) -> dict[str, object]:
-    return {
-        "matrix": scaled.matrix,
-        "offset": scaled.offset,
-        "scale": scaled.scale,
-        "eigenvalue_bounds": scaled.eigenvalue_bounds,
-    }
 
 
 def _validate_state(

@@ -303,6 +303,34 @@ sampled maximum error, RMS error, boundedness margin, and compatibility-check
 metadata. Use it when comparing approximation quality across candidate degrees
 without opening a notebook.
 
+Resource proxy report:
+
+```bash
+qsvt resource-report \
+  --poly "0,0,1" \
+  --matrix-dimension 4 \
+  --no-synthesis
+```
+
+The resource report combines polynomial degree, coefficient count, QSP
+phase-count proxy, signal-call proxy, optional encoding width, and compatibility
+metadata. It is for comparing small workflows; it is not a hardware runtime or
+fault-tolerant resource estimate.
+
+Classical benchmark report:
+
+```bash
+qsvt benchmark cg-solve \
+  --matrix "4,1;1,3" \
+  --rhs "1,2" \
+  --tolerance 1e-10 \
+  --qsvt-poly "0,1"
+```
+
+Benchmark subcommands include `eigh`, `dense-solve`, `cg-solve`,
+`polynomial`, and `spectral-function`. They report classical baseline timings,
+residuals or matrix-function metadata, and optional QSVT resource proxies.
+
 Non-diagonal Hermitian matrix report:
 
 ```bash

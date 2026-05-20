@@ -92,6 +92,27 @@ Report-oriented APIs follow this pattern:
 The CLI mirrors this behavior: report commands print full JSON by default, and
 write compact stdout summaries when `--output` or `--plot` is used.
 
+## Resource Proxy Reports
+
+`qsvt.resources.qsvt_resource_report` combines polynomial degree, coefficient
+count, QSP phase-count proxy, signal-call proxy, optional matrix-register
+width, QSVT compatibility metadata, and optional diagnostics into one
+JSON-friendly report.
+
+Design workflow results expose the same summary through
+`DesignWorkflowResult.resource_report(...)`, which carries the workflow's
+diagnostics into the resource report.
+
+The CLI exposes the same path:
+
+```bash
+qsvt resource-report --poly "0,0,1" --matrix-dimension 4 --no-synthesis
+```
+
+These reports are intentionally comparative and simulator-scale. They do not
+include block-encoding construction, state preparation, amplitude
+amplification, error correction, hardware compilation, or runtime estimates.
+
 ## Notebooks And Artefacts
 
 Notebooks remain executable examples. Committed plots and JSON files are release

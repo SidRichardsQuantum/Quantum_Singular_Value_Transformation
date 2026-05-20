@@ -8,6 +8,7 @@ Rendered result pages:
 
 - Tutorial notebook outputs: [docs/qsvt/tutorial_results.md](docs/qsvt/tutorial_results.md)
 - Real-example plots and tables: [docs/qsvt/real_example_results.md](docs/qsvt/real_example_results.md)
+- Benchmark notebook outputs: [docs/qsvt/benchmark_results.md](docs/qsvt/benchmark_results.md)
 
 ## Tutorial Notebook Results
 
@@ -83,7 +84,29 @@ from the package CLI.
 | `results/tables/design_sweep_summary.csv` | design sweep summary table | n/a | n/a | tabular summary of committed design-sweep JSON reports |
 | `results/tables/qsvt-error-summary.csv` | release summary table | n/a | n/a | compact index over the generated JSON reports |
 
-These snapshots were refreshed for package version `0.1.20`.
+These snapshots were refreshed for package version `0.1.21`.
+
+## Benchmark Artefacts
+
+Benchmark notebooks live in `notebooks/benchmarks/` and compare classical
+baselines with QSVT-oriented resource proxies. The generated output page is
+[docs/qsvt/benchmark_results.md](docs/qsvt/benchmark_results.md).
+
+| artefact | contents |
+| --- | --- |
+| `results/benchmarks/linear_system_dense_solve.json` | dense linear solve (DLS) baseline with QSVT proxy metadata |
+| `results/benchmarks/linear_system_cg_solve.json` | conjugate gradient solve (CGS) baseline with QSVT proxy metadata |
+| `results/benchmarks/matrix_function_exponential_spectral.json` | dense spectral matrix function (DSMF) baseline |
+| `results/benchmarks/matrix_function_thermal_polynomial.json` | polynomial matrix evaluation (PME) thermal baseline |
+| `results/benchmarks/matrix_function_filter_polynomial.json` | PME filter baseline |
+| `results/benchmarks/scaling_sweep_reports.json` | combined DLS/CGS scaling-sweep reports |
+| `results/tables/linear_system_benchmark_summary.csv` | compact linear-system benchmark table |
+| `results/tables/matrix_function_benchmark_summary.csv` | compact matrix-function benchmark table |
+| `results/tables/benchmark_scaling_summary.csv` | compact scaling-sweep benchmark table |
+| `results/tables/benchmark_plot_manifest.csv` | manifest for extracted benchmark notebook plots |
+| `results/plots/benchmarks/` | extracted benchmark timing and QSVT-proxy PNG plots |
+
+Benchmark artefacts were refreshed for package version `0.1.21`.
 
 ## Real-Example Artefacts
 

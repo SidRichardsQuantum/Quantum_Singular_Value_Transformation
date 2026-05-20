@@ -30,6 +30,7 @@ from .design import (
     design_sqrt_diagnostics,
     design_sqrt_polynomial,
 )
+from .resources import qsvt_resource_report
 
 DesignKind = Literal[
     "inverse",
@@ -66,6 +67,33 @@ class DesignWorkflowResult:
             "diagnostics": self.diagnostics,
             "compatibility": self.compatibility,
         }
+
+    def resource_report(
+        self,
+        *,
+        matrix_dimension: int | None = None,
+        encoding_qubits: int | None = None,
+        block_encoding: str = "dense-block-encoding",
+    ) -> dict[str, object]:
+        """
+        Return a resource proxy report carrying this workflow's diagnostics.
+        """
+        report = qsvt_resource_report(
+            self.coeffs,
+            matrix_dimension=matrix_dimension,
+            encoding_qubits=encoding_qubits,
+            block_encoding=block_encoding,
+            attempt_synthesis=False,
+            diagnostics=self.diagnostics,
+        )
+        report.update(
+            {
+                "kind": self.kind,
+                "builder": self.builder,
+                "compatibility": self.compatibility,
+            }
+        )
+        return report
 
 
 def design_workflow(

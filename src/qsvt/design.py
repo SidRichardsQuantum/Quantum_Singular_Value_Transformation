@@ -33,39 +33,44 @@ from __future__ import annotations
 
 import numpy as np
 
-from ._polyfit import (
-    enforce_boundedness,
-    fit_bounded_monomial,
+from ._design_targets import (
+    DEF_BOUND_GRID as _DEF_BOUND_GRID,
 )
+from ._design_targets import (
+    DEF_NUM_POINTS as _DEF_NUM_POINTS,
+)
+from ._design_targets import (
+    design_filter_target as _design_filter_target,
+)
+from ._design_targets import (
+    design_interval_projector_target as _design_interval_projector_target,
+)
+from ._design_targets import (
+    design_inverse_target as _design_inverse_target,
+)
+from ._design_targets import (
+    design_positive_inverse_target as _design_positive_inverse_target,
+)
+from ._design_targets import (
+    design_power_target as _design_power_target,
+)
+from ._design_targets import (
+    design_projector_target as _design_projector_target,
+)
+from ._design_targets import (
+    design_sign_target as _design_sign_target,
+)
+from ._design_targets import (
+    design_sqrt_target as _design_sqrt_target,
+)
+from ._design_targets import (
+    fit_on_canonical_interval as _fit_on_canonical_interval,
+)
+from ._design_targets import (
+    validate_unit_interval_parameter as _validate_unit_interval_parameter,
+)
+from ._polyfit import enforce_boundedness
 from .approximation import approximation_quality_report
-
-_DEF_NUM_POINTS = 2001
-_DEF_BOUND_GRID = 4001
-
-
-def _design_inverse_target(x: np.ndarray, gamma: float) -> np.ndarray:
-    x = np.asarray(x, dtype=float)
-    out = np.sign(x)
-    mask = np.abs(x) >= gamma
-    out[mask] = gamma / x[mask]
-    out[x == 0.0] = 0.0
-    return out
-
-
-def _design_positive_inverse_target(
-    x: np.ndarray,
-    gamma: float,
-    extension: str,
-) -> np.ndarray:
-    x = np.asarray(x, dtype=float)
-    if extension == "even":
-        return gamma / np.maximum(np.abs(x), gamma)
-    if extension == "flat":
-        out = np.ones_like(x, dtype=float)
-        mask = x >= gamma
-        out[mask] = gamma / x[mask]
-        return out
-    raise ValueError("extension must be 'auto', 'even', or 'flat'.")
 
 
 def _positive_inverse_candidate(
@@ -108,156 +113,6 @@ def _select_positive_inverse_candidate(
     }
     selected = min(errors, key=errors.get)
     return candidates[selected], selected
-
-
-def _design_sign_target(x: np.ndarray, gamma: float) -> np.ndarray:
-    sharpness = _tanh_sharpness_from_margin(gamma, target_value=0.98)
-    return np.tanh(sharpness * np.asarray(x, dtype=float))
-
-
-def _design_projector_target(x: np.ndarray, gamma: float) -> np.ndarray:
-    return 0.5 * (1.0 + _design_sign_target(x, gamma))
-
-
-def _design_sqrt_target(x: np.ndarray) -> np.ndarray:
-    x = np.asarray(x, dtype=float)
-    out = np.zeros_like(x, dtype=float)
-    mask = x >= 0.0
-    out[mask] = np.sqrt(np.clip(x[mask], 0.0, 1.0))
-    return out
-
-
-def _design_power_target(x: np.ndarray, alpha: float) -> np.ndarray:
-    x = np.asarray(x, dtype=float)
-    return np.clip(x, 0.0, 1.0) ** alpha
-
-
-def _design_filter_target(x: np.ndarray, cutoff: float, sharpness: float) -> np.ndarray:
-    return 0.5 * (
-        1.0
-        + np.tanh(
-            sharpness * (np.abs(np.asarray(x, dtype=float)) - cutoff),
-        )
-    )
-
-
-def _design_interval_projector_target(
-    x: np.ndarray,
-    lower: float,
-    upper: float,
-    sharpness: float,
-) -> np.ndarray:
-    x = np.asarray(x, dtype=float)
-    left = 0.5 * (1.0 + np.tanh(sharpness * (x - lower)))
-    right = 0.5 * (1.0 + np.tanh(sharpness * (upper - x)))
-    return left * right
-
-
-def _validate_unit_interval_parameter(value: float, name: str) -> float:
-    """
-    Validate a parameter constrained to the open unit interval.
-
-    Parameters
-    ----------
-    value
-        Parameter value.
-    name
-        Parameter name for error messages.
-
-    Returns
-    -------
-    float
-        Validated value.
-
-    Raises
-    ------
-    ValueError
-        If value is not strictly between 0 and 1.
-    """
-    value = float(value)
-    if not (0.0 < value < 1.0):
-        raise ValueError(f"{name} must satisfy 0 < {name} < 1.")
-    return value
-
-
-def _tanh_sharpness_from_margin(gamma: float, target_value: float = 0.98) -> float:
-    """
-    Choose a tanh sharpness so that tanh(sharpness * gamma) ~= target_value.
-
-    Parameters
-    ----------
-    gamma
-        Positive transition-width parameter.
-    target_value
-        Desired magnitude at x = gamma.
-
-    Returns
-    -------
-    float
-        Sharpness parameter for tanh.
-    """
-    gamma = _validate_unit_interval_parameter(gamma, "gamma")
-    target_value = float(target_value)
-
-    if not (0.0 < target_value < 1.0):
-        raise ValueError("target_value must lie strictly between 0 and 1.")
-
-    return float(np.arctanh(target_value) / gamma)
-
-
-def _fit_on_canonical_interval(
-    func,
-    *,
-    degree: int,
-    parity: str | None = None,
-    num_points: int = _DEF_NUM_POINTS,
-) -> np.ndarray:
-    """
-    Fit a target on [-1, 1], optionally enforce parity, convert to monomials,
-    and numerically enforce boundedness.
-
-    Parameters
-    ----------
-    func
-        Target scalar function defined on [-1, 1].
-    degree
-        Polynomial degree.
-    parity
-        Optional parity constraint: "even", "odd", or None.
-    num_points
-        Number of fitting points.
-
-    Returns
-    -------
-    numpy.ndarray
-        Monomial coefficients in ascending degree order.
-    """
-    return fit_bounded_monomial(
-        func,
-        degree=degree,
-        parity=parity,
-        num_points=num_points,
-        bound_num_points=_DEF_BOUND_GRID,
-    )
-
-
-def _fit_on_interval(
-    func,
-    domain: tuple[float, float],
-    *,
-    degree: int,
-    num_points: int = _DEF_NUM_POINTS,
-) -> np.ndarray:
-    """
-    Fit a target on a general interval, convert to monomials, and bound it.
-    """
-    return fit_bounded_monomial(
-        func,
-        degree=degree,
-        domain=domain,
-        num_points=num_points,
-        bound_num_points=_DEF_BOUND_GRID,
-    )
 
 
 def design_inverse_polynomial(

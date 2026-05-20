@@ -1,8 +1,8 @@
 # Notebooks
 
 The repository includes notebook-first examples that introduce QSVT and QSP
-concepts step by step, followed by real physics workflows that reuse the package
-APIs.
+concepts step by step, followed by real physics workflows and classical
+benchmark notebooks that reuse the package APIs.
 
 ## Notebook outputs
 
@@ -13,6 +13,11 @@ notebooks:
 | --- | --- | --- |
 | tutorials | [Tutorial notebook outputs](tutorial_results.md) | `notebooks/tutorials/` |
 | real physics examples | [Real-example notebook outputs](real_example_results.md) | `notebooks/real_examples/` |
+| benchmarks | [Benchmark notebook outputs](benchmark_results.md) | `notebooks/benchmarks/` |
+
+Benchmark notebooks are package-client workflows that write JSON/CSV artifacts
+under `results/benchmarks/` and `results/tables/`; their plots are extracted
+to `results/plots/benchmarks/`.
 
 For the compact result summary and regeneration commands, see
 [Results](results.md).
@@ -36,6 +41,16 @@ Tutorial notebooks live in `notebooks/tutorials/`.
 | `tutorials/11_End_to_End_Algorithm_Workflows.ipynb` | high-level algorithm workflows |
 | `tutorials/12_Reports_CLI_and_Reproducible_Artifacts.ipynb` | reports, CLI output, and reproducible artifacts |
 | `tutorials/13_Degree_Error_and_Boundedness_Tradeoffs.ipynb` | degree, error, and boundedness tradeoffs |
+
+## Benchmark notebooks
+
+Benchmark notebooks live in `notebooks/benchmarks/`.
+
+| notebook | focus |
+|---|---|
+| `benchmarks/01_linear_system_classical_vs_qsvt_proxy.ipynb` | dense and CG linear-system baselines with QSVT inverse-polynomial resource proxies |
+| `benchmarks/02_matrix_functions_spectral_baselines.ipynb` | dense spectral and polynomial matrix-function baselines for thermal/filter workflows |
+| `benchmarks/03_scaling_sweeps.ipynb` | dimension, conditioning, and inverse-degree sweeps for compact benchmark tables |
 
 ## Real physics examples
 

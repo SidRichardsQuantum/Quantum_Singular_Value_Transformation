@@ -31,9 +31,24 @@ tests and reproducible command-line demonstrations.
 from __future__ import annotations
 
 import argparse
-import json
 from typing import Iterable
 
+from ._cli_utils import (
+    add_report_output_args,
+    emit_cli_result,
+    parse_complex_list,
+    parse_float_list,
+    parse_int_list,
+    parse_matrix,
+    parse_poly,
+)
+from .benchmarks import (
+    conjugate_gradient_benchmark,
+    dense_eigendecomposition_benchmark,
+    dense_linear_solve_benchmark,
+    polynomial_matrix_function_benchmark,
+    spectral_matrix_function_benchmark,
+)
 from .design import (
     design_filter_diagnostics,
     design_filter_polynomial,
@@ -58,7 +73,7 @@ from .qsvt import (
     qsvt_scalar_output,
     qsvt_transform_report,
 )
-from .reports import report_to_jsonable, save_report, save_report_plot
+from .resources import qsvt_resource_report
 from .templates import (
     exponential_approximation_diagnostics,
     inverse_like_diagnostics,
@@ -69,90 +84,11 @@ from .templates import (
 from .workflow import design_workflow
 
 
-def _parse_float_list(text: str) -> list[float]:
-    """
-    Parse a comma-separated list of floats.
-    """
-    return [float(x.strip()) for x in text.split(",") if x.strip()]
-
-
-def _parse_int_list(text: str) -> list[int]:
-    """
-    Parse a comma-separated list of integers.
-    """
-    values = [int(x.strip()) for x in text.split(",") if x.strip()]
-    if not values:
-        raise ValueError("expected at least one integer.")
-    return values
-
-
-def _parse_poly(text: str) -> list[float]:
-    """
-    Parse polynomial coefficients.
-
-    Example
-    -------
-    "0,0,1"
-    """
-    return _parse_float_list(text)
-
-
-def _parse_matrix(text: str) -> list[list[complex]]:
-    """
-    Parse a semicolon-separated matrix.
-
-    Example
-    -------
-    "0.5,0.1;0.1,0.3"
-    """
-    rows = [
-        [complex(x.strip()) for x in row.split(",") if x.strip()]
-        for row in text.split(";")
-        if row.strip()
-    ]
-    if not rows:
-        raise ValueError("matrix must contain at least one row.")
-
-    width = len(rows[0])
-    if width == 0 or any(len(row) != width for row in rows):
-        raise ValueError("matrix rows must all have the same nonzero length.")
-
-    return rows
-
-
-def _add_report_output_args(
-    parser: argparse.ArgumentParser,
-    *,
-    include_plot: bool = False,
-) -> None:
-    """
-    Add common output arguments for report-oriented CLI commands.
-    """
-    parser.add_argument(
-        "--output",
-        type=str,
-        help="Optional path for writing the report JSON.",
-    )
-    if include_plot:
-        parser.add_argument(
-            "--plot",
-            type=str,
-            help="Optional path for writing a target-vs-polynomial plot.",
-        )
-    parser.add_argument(
-        "--print-report",
-        action="store_true",
-        help=(
-            "Print the full report JSON to stdout even when --output or --plot is used."
-        ),
-    )
-
-
 def cmd_scalar(args: argparse.Namespace) -> dict:
     """
     Evaluate scalar QSVT output.
     """
-    poly = _parse_poly(args.poly)
+    poly = parse_poly(args.poly)
 
     result = qsvt_scalar_output(
         args.x,
@@ -176,8 +112,8 @@ def cmd_diag(args: argparse.Namespace) -> dict:
     """
     Apply QSVT to a diagonal matrix.
     """
-    values = _parse_float_list(args.values)
-    poly = _parse_poly(args.poly)
+    values = parse_float_list(args.values)
+    poly = parse_poly(args.poly)
 
     comparison = compare_qsvt_vs_classical_diagonal(
         values,
@@ -211,7 +147,7 @@ def cmd_poly(args: argparse.Namespace) -> dict:
     """
     Evaluate polynomial directly.
     """
-    poly = _parse_poly(args.poly)
+    poly = parse_poly(args.poly)
 
     value = eval_polynomial(poly, args.x)
 
@@ -309,7 +245,7 @@ def cmd_design_sweep(args: argparse.Namespace) -> dict:
     """
     Build a compact manifest for a degree/error/boundedness design sweep.
     """
-    degrees = _parse_int_list(args.degrees)
+    degrees = parse_int_list(args.degrees)
     rows = []
     for degree in degrees:
         result = design_workflow(
@@ -413,8 +349,8 @@ def cmd_compare_report(args: argparse.Namespace) -> dict:
     """
     Build a QSVT-vs-classical transform report for explicit coefficients.
     """
-    values = _parse_float_list(args.values)
-    poly = _parse_poly(args.poly)
+    values = parse_float_list(args.values)
+    poly = parse_poly(args.poly)
 
     return qsvt_transform_report(
         values,
@@ -427,8 +363,8 @@ def cmd_matrix_report(args: argparse.Namespace) -> dict:
     """
     Build a QSVT-vs-classical transform report for a full Hermitian matrix.
     """
-    matrix = _parse_matrix(args.matrix)
-    poly = _parse_poly(args.poly)
+    matrix = parse_matrix(args.matrix)
+    poly = parse_poly(args.poly)
 
     return qsvt_matrix_transform_report(
         matrix,
@@ -441,10 +377,25 @@ def cmd_compatibility_report(args: argparse.Namespace) -> dict:
     """
     Build a QSVT compatibility report for explicit coefficients.
     """
-    poly = _parse_poly(args.poly)
+    poly = parse_poly(args.poly)
 
     return qsvt_compatibility_report(
         poly,
+        bounded_num_points=args.bounded_num_points,
+        attempt_synthesis=args.attempt_synthesis,
+    )
+
+
+def cmd_resource_report(args: argparse.Namespace) -> dict:
+    """
+    Build a QSVT resource proxy report for explicit coefficients.
+    """
+    poly = parse_poly(args.poly)
+    return qsvt_resource_report(
+        poly,
+        matrix_dimension=args.matrix_dimension,
+        encoding_qubits=args.encoding_qubits,
+        block_encoding=args.block_encoding,
         bounded_num_points=args.bounded_num_points,
         attempt_synthesis=args.attempt_synthesis,
     )
@@ -544,7 +495,7 @@ def cmd_apply_design(args: argparse.Namespace) -> dict:
         ),
     }
 
-    values = _parse_float_list(args.values)
+    values = parse_float_list(args.values)
     coeffs = builders[args.kind]()
     compatibility = qsvt_compatibility_report(coeffs)
     report = qsvt_transform_report(
@@ -562,6 +513,69 @@ def cmd_apply_design(args: argparse.Namespace) -> dict:
         }
     )
     return report
+
+
+def cmd_benchmark_eigh(args: argparse.Namespace) -> dict:
+    """
+    Benchmark dense Hermitian eigendecomposition.
+    """
+    return dense_eigendecomposition_benchmark(
+        parse_matrix(args.matrix),
+        repeats=args.repeats,
+    )
+
+
+def cmd_benchmark_dense_solve(args: argparse.Namespace) -> dict:
+    """
+    Benchmark a dense direct linear solve.
+    """
+    qsvt_coeffs = parse_poly(args.qsvt_poly) if args.qsvt_poly else None
+    return dense_linear_solve_benchmark(
+        parse_matrix(args.matrix),
+        parse_complex_list(args.rhs),
+        repeats=args.repeats,
+        qsvt_coeffs=qsvt_coeffs,
+    )
+
+
+def cmd_benchmark_cg_solve(args: argparse.Namespace) -> dict:
+    """
+    Benchmark conjugate gradients for a positive-definite system.
+    """
+    qsvt_coeffs = parse_poly(args.qsvt_poly) if args.qsvt_poly else None
+    return conjugate_gradient_benchmark(
+        parse_matrix(args.matrix),
+        parse_complex_list(args.rhs),
+        tolerance=args.tolerance,
+        max_iterations=args.max_iterations,
+        repeats=args.repeats,
+        qsvt_coeffs=qsvt_coeffs,
+    )
+
+
+def cmd_benchmark_polynomial(args: argparse.Namespace) -> dict:
+    """
+    Benchmark classical polynomial matrix-function evaluation.
+    """
+    return polynomial_matrix_function_benchmark(
+        parse_matrix(args.matrix),
+        parse_poly(args.poly),
+        repeats=args.repeats,
+        include_qsvt_proxy=not args.no_qsvt_proxy,
+    )
+
+
+def cmd_benchmark_spectral_function(args: argparse.Namespace) -> dict:
+    """
+    Benchmark a dense spectral matrix function.
+    """
+    return spectral_matrix_function_benchmark(
+        parse_matrix(args.matrix),
+        args.function,
+        repeats=args.repeats,
+        beta=args.beta,
+        shift=args.shift,
+    )
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -666,7 +680,7 @@ def build_parser() -> argparse.ArgumentParser:
         type=int,
         default=4001,
     )
-    _add_report_output_args(p_design_report, include_plot=True)
+    add_report_output_args(p_design_report, include_plot=True)
     p_design_report.set_defaults(func=cmd_design_report)
 
     p_design_workflow = sub.add_parser(
@@ -712,7 +726,7 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_false",
         help="Skip the PennyLane synthesis attempt.",
     )
-    _add_report_output_args(p_design_workflow)
+    add_report_output_args(p_design_workflow)
     p_design_workflow.set_defaults(func=cmd_design_workflow)
 
     p_design_sweep = sub.add_parser(
@@ -763,7 +777,7 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_false",
         help="Skip the PennyLane synthesis attempt.",
     )
-    _add_report_output_args(p_design_sweep)
+    add_report_output_args(p_design_sweep)
     p_design_sweep.set_defaults(func=cmd_design_sweep)
 
     p_template_report = sub.add_parser(
@@ -792,7 +806,7 @@ def build_parser() -> argparse.ArgumentParser:
         type=int,
         default=4001,
     )
-    _add_report_output_args(p_template_report, include_plot=True)
+    add_report_output_args(p_template_report, include_plot=True)
     p_template_report.set_defaults(func=cmd_template_report)
 
     p_compare_report = sub.add_parser(
@@ -817,7 +831,7 @@ def build_parser() -> argparse.ArgumentParser:
         default=3,
         help="Number of qubits for block encoding",
     )
-    _add_report_output_args(p_compare_report)
+    add_report_output_args(p_compare_report)
     p_compare_report.set_defaults(func=cmd_compare_report)
 
     p_matrix_report = sub.add_parser(
@@ -842,7 +856,7 @@ def build_parser() -> argparse.ArgumentParser:
         default=2,
         help="Number of qubits for block encoding",
     )
-    _add_report_output_args(p_matrix_report)
+    add_report_output_args(p_matrix_report)
     p_matrix_report.set_defaults(func=cmd_matrix_report)
 
     p_compatibility = sub.add_parser(
@@ -867,8 +881,54 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_false",
         help="Skip the PennyLane synthesis attempt.",
     )
-    _add_report_output_args(p_compatibility)
+    add_report_output_args(p_compatibility)
     p_compatibility.set_defaults(func=cmd_compatibility_report)
+
+    p_resource = sub.add_parser(
+        "resource-report",
+        help="Build a QSVT resource proxy report for explicit coefficients",
+    )
+    p_resource.add_argument(
+        "--poly",
+        type=str,
+        required=True,
+        help='Polynomial coefficients, e.g. "0,0,1"',
+    )
+    p_resource.add_argument(
+        "--matrix-dimension",
+        dest="matrix_dimension",
+        type=int,
+        default=None,
+        help="Optional encoded matrix dimension.",
+    )
+    p_resource.add_argument(
+        "--encoding-qubits",
+        dest="encoding_qubits",
+        type=int,
+        default=None,
+        help="Optional number of matrix-register encoding qubits.",
+    )
+    p_resource.add_argument(
+        "--block-encoding",
+        dest="block_encoding",
+        type=str,
+        default="dense-block-encoding",
+        help="Descriptive block-encoding label for the report.",
+    )
+    p_resource.add_argument(
+        "--bounded-num-points",
+        dest="bounded_num_points",
+        type=int,
+        default=4001,
+    )
+    p_resource.add_argument(
+        "--no-synthesis",
+        dest="attempt_synthesis",
+        action="store_false",
+        help="Skip the PennyLane synthesis attempt.",
+    )
+    add_report_output_args(p_resource)
+    p_resource.set_defaults(func=cmd_resource_report)
 
     p_design_compatibility = sub.add_parser(
         "design-compatibility",
@@ -907,7 +967,7 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_false",
         help="Skip the PennyLane synthesis attempt.",
     )
-    _add_report_output_args(p_design_compatibility)
+    add_report_output_args(p_design_compatibility)
     p_design_compatibility.set_defaults(func=cmd_design_compatibility)
 
     p_apply_design = sub.add_parser(
@@ -947,8 +1007,106 @@ def build_parser() -> argparse.ArgumentParser:
         default=3,
         help="Number of qubits for block encoding",
     )
-    _add_report_output_args(p_apply_design)
+    add_report_output_args(p_apply_design)
     p_apply_design.set_defaults(func=cmd_apply_design)
+
+    p_benchmark = sub.add_parser(
+        "benchmark",
+        help="Classical benchmark baselines for QSVT-oriented workflows",
+    )
+    benchmark_sub = p_benchmark.add_subparsers(
+        dest="benchmark_command",
+        required=True,
+    )
+
+    p_bench_eigh = benchmark_sub.add_parser(
+        "eigh",
+        help="Benchmark dense Hermitian eigendecomposition",
+    )
+    p_bench_eigh.add_argument(
+        "--matrix",
+        type=str,
+        required=True,
+        help='Rows separated by semicolons, e.g. "2,0;0,3"',
+    )
+    p_bench_eigh.add_argument("--repeats", type=int, default=3)
+    add_report_output_args(p_bench_eigh)
+    p_bench_eigh.set_defaults(func=cmd_benchmark_eigh)
+
+    p_bench_dense_solve = benchmark_sub.add_parser(
+        "dense-solve",
+        help="Benchmark a dense direct linear solve",
+    )
+    p_bench_dense_solve.add_argument("--matrix", type=str, required=True)
+    p_bench_dense_solve.add_argument(
+        "--rhs",
+        type=str,
+        required=True,
+        help='Right-hand side vector, e.g. "1,0"',
+    )
+    p_bench_dense_solve.add_argument("--repeats", type=int, default=3)
+    p_bench_dense_solve.add_argument(
+        "--qsvt-poly",
+        type=str,
+        help="Optional polynomial coefficients for an attached QSVT resource proxy.",
+    )
+    add_report_output_args(p_bench_dense_solve)
+    p_bench_dense_solve.set_defaults(func=cmd_benchmark_dense_solve)
+
+    p_bench_cg = benchmark_sub.add_parser(
+        "cg-solve",
+        help="Benchmark conjugate gradients for a positive-definite system",
+    )
+    p_bench_cg.add_argument("--matrix", type=str, required=True)
+    p_bench_cg.add_argument("--rhs", type=str, required=True)
+    p_bench_cg.add_argument("--tolerance", type=float, default=1e-10)
+    p_bench_cg.add_argument("--max-iterations", type=int, default=None)
+    p_bench_cg.add_argument("--repeats", type=int, default=3)
+    p_bench_cg.add_argument(
+        "--qsvt-poly",
+        type=str,
+        help="Optional polynomial coefficients for an attached QSVT resource proxy.",
+    )
+    add_report_output_args(p_bench_cg)
+    p_bench_cg.set_defaults(func=cmd_benchmark_cg_solve)
+
+    p_bench_polynomial = benchmark_sub.add_parser(
+        "polynomial",
+        help="Benchmark classical polynomial matrix-function evaluation",
+    )
+    p_bench_polynomial.add_argument("--matrix", type=str, required=True)
+    p_bench_polynomial.add_argument("--poly", type=str, required=True)
+    p_bench_polynomial.add_argument("--repeats", type=int, default=3)
+    p_bench_polynomial.add_argument(
+        "--no-qsvt-proxy",
+        action="store_true",
+        help="Do not attach a QSVT resource proxy to the benchmark report.",
+    )
+    add_report_output_args(p_bench_polynomial)
+    p_bench_polynomial.set_defaults(func=cmd_benchmark_polynomial)
+
+    p_bench_spectral = benchmark_sub.add_parser(
+        "spectral-function",
+        help="Benchmark dense spectral matrix-function evaluation",
+    )
+    p_bench_spectral.add_argument("--matrix", type=str, required=True)
+    p_bench_spectral.add_argument(
+        "--function",
+        choices=[
+            "inverse",
+            "sqrt",
+            "sign",
+            "exponential",
+            "imaginary_time",
+            "positive_projector",
+        ],
+        required=True,
+    )
+    p_bench_spectral.add_argument("--beta", type=float, default=1.0)
+    p_bench_spectral.add_argument("--shift", type=float, default=0.0)
+    p_bench_spectral.add_argument("--repeats", type=int, default=3)
+    add_report_output_args(p_bench_spectral)
+    p_bench_spectral.set_defaults(func=cmd_benchmark_spectral_function)
 
     return parser
 
@@ -958,31 +1116,7 @@ def main(argv: Iterable[str] | None = None) -> None:
     args = parser.parse_args(argv)
 
     result = args.func(args)
-    output_path = getattr(args, "output", None)
-    plot_path = getattr(args, "plot", None)
-
-    if output_path:
-        save_report(result, output_path)
-    if plot_path:
-        save_report_plot(result, plot_path)
-
-    should_print_report = getattr(args, "print_report", False) or (
-        output_path is None and plot_path is None
-    )
-    if should_print_report:
-        payload = report_to_jsonable(result)
-    else:
-        payload = {
-            "mode": result.get("mode", args.command),
-            "report_written": output_path is not None,
-            "plot_written": plot_path is not None,
-        }
-        if output_path is not None:
-            payload["output"] = output_path
-        if plot_path is not None:
-            payload["plot"] = plot_path
-
-    print(json.dumps(payload, indent=2))
+    emit_cli_result(args, result)
 
 
 if __name__ == "__main__":

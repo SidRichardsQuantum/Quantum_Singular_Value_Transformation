@@ -2,6 +2,39 @@
 
 ---
 
+## [0.1.21] – 20th May 2026
+
+### Added
+
+- added classical benchmark baselines for dense eigendecomposition, dense
+  linear solves, conjugate gradient solves, polynomial matrix evaluation, and
+  dense spectral matrix functions
+- added `qsvt benchmark` CLI subcommands for producing classical benchmark
+  JSON reports from small matrix inputs
+- added public benchmark plotting helpers for classical timings and QSVT
+  resource proxies, with compact stable legend labels
+- added benchmark notebooks under `notebooks/benchmarks/` covering
+  linear-system baselines, matrix-function baselines, and scaling sweeps
+- added committed benchmark JSON, CSV, plot, and plot-manifest artefacts under
+  `results/benchmarks/`, `results/tables/`, and `results/plots/benchmarks/`
+- added a generated benchmark notebook output page at
+  `docs/qsvt/benchmark_results.md`
+- added benchmark artifact integrity tests and notebook execution coverage for
+  benchmark notebooks
+
+### Changed
+
+- extended notebook result extraction and the GitHub Pages workflow preset so
+  tutorial, real-example, and benchmark notebook outputs are refreshed together
+- improved benchmark notebook output readability with indented JSON summaries,
+  clearer plots, stable abbreviations, and markdown notes explaining when QSVT
+  could offer quantum-advantage-relevant scaling
+- updated benchmark, notebook, result, API, README, and usage documentation for
+  the new classical benchmarking workflow
+- updated package metadata and release markers for `0.1.21`
+
+---
+
 ## [0.1.20] – 19th May 2026
 
 ### Added

@@ -217,6 +217,25 @@ def test_cli_design_workflow_emits_json(capsys):
     assert len(payload["coeffs"]) == 6
 
 
+def test_cli_resource_report_emits_json(capsys):
+    main(
+        [
+            "resource-report",
+            "--poly",
+            "0,0,1",
+            "--matrix-dimension",
+            "3",
+            "--no-synthesis",
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["mode"] == "resource-report"
+    assert payload["resources"]["degree"] == 2
+    assert payload["resources"]["encoding_qubits"] == 2
+    assert payload["compatibility"]["attempted_pennylane_synthesis"] is False
+
+
 def test_cli_template_report_emits_json(capsys):
     main(["template-report", "--kind", "inverse", "--degree", "7", "--mu", "0.3"])
     payload = json.loads(capsys.readouterr().out)
@@ -601,3 +620,94 @@ def test_cli_apply_design_emits_json(capsys):
     assert "synthesis_failed" in payload["compatibility"]["reasons"]
     assert payload["qsvt_succeeded"] is False
     assert payload["qsvt_error_type"]
+
+
+def test_cli_benchmark_dense_solve_emits_json(capsys):
+    main(
+        [
+            "benchmark",
+            "dense-solve",
+            "--matrix",
+            "4,1;1,3",
+            "--rhs",
+            "1,2",
+            "--repeats",
+            "1",
+            "--qsvt-poly",
+            "0,1",
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["mode"] == "classical-benchmark"
+    assert payload["algorithm"] == "numpy.linalg.solve"
+    assert payload["metrics"]["relative_residual_norm"] < 1e-12
+    assert payload["qsvt_proxy"]["resources"]["degree"] == 1
+
+
+def test_cli_benchmark_cg_solve_writes_output(tmp_path, capsys):
+    output_path = tmp_path / "cg-benchmark.json"
+
+    main(
+        [
+            "benchmark",
+            "cg-solve",
+            "--matrix",
+            "4,1;1,3",
+            "--rhs",
+            "1,2",
+            "--tolerance",
+            "1e-12",
+            "--repeats",
+            "1",
+            "--output",
+            str(output_path),
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+    written = json.loads(output_path.read_text(encoding="utf-8"))
+
+    assert payload["mode"] == "classical-benchmark"
+    assert payload["report_written"] is True
+    assert written["problem"] == "positive-definite-linear-system"
+    assert written["metrics"]["converged"] is True
+
+
+def test_cli_benchmark_polynomial_emits_qsvt_proxy(capsys):
+    main(
+        [
+            "benchmark",
+            "polynomial",
+            "--matrix",
+            "0.5,0;0,-0.25",
+            "--poly",
+            "0,0,1",
+            "--repeats",
+            "1",
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["problem"] == "polynomial-matrix-function"
+    assert payload["metrics"]["polynomial_degree"] == 2
+    assert payload["qsvt_proxy"]["resources"]["signal_operator_calls"] == 2
+
+
+def test_cli_benchmark_spectral_function_emits_json(capsys):
+    main(
+        [
+            "benchmark",
+            "spectral-function",
+            "--matrix",
+            "1,0;0,4",
+            "--function",
+            "sqrt",
+            "--repeats",
+            "1",
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["problem"] == "sqrt-matrix-function"
+    assert payload["metrics"]["function"] == "sqrt"
+    assert payload["metrics"]["output_frobenius_norm"] > 0.0

@@ -1,0 +1,7 @@
+artefact,notebook,title,plot_index,cell_index,width_px,height_px,result_type,notes
+results/plots/benchmarks/01_linear_system_classical_vs_qsvt_proxy-plot-01.png,notebooks/benchmarks/01_linear_system_classical_vs_qsvt_proxy.ipynb,Linear-System Classical Baselines vs QSVT Resource Proxies,1,8,689,370,plot,embedded notebook PNG output
+results/plots/benchmarks/01_linear_system_classical_vs_qsvt_proxy-plot-02.png,notebooks/benchmarks/01_linear_system_classical_vs_qsvt_proxy.ipynb,Linear-System Classical Baselines vs QSVT Resource Proxies,2,8,689,370,plot,embedded notebook PNG output
+results/plots/benchmarks/02_matrix_functions_spectral_baselines-plot-01.png,notebooks/benchmarks/02_matrix_functions_spectral_baselines.ipynb,Matrix-Function Spectral Baselines,1,5,687,370,plot,embedded notebook PNG output
+results/plots/benchmarks/02_matrix_functions_spectral_baselines-plot-02.png,notebooks/benchmarks/02_matrix_functions_spectral_baselines.ipynb,Matrix-Function Spectral Baselines,2,5,688,370,plot,embedded notebook PNG output
+results/plots/benchmarks/03_scaling_sweeps-plot-01.png,notebooks/benchmarks/03_scaling_sweeps.ipynb,Scaling Sweeps For Classical Baselines And QSVT Proxies,1,5,689,370,plot,embedded notebook PNG output
+results/plots/benchmarks/03_scaling_sweeps-plot-02.png,notebooks/benchmarks/03_scaling_sweeps.ipynb,Scaling Sweeps For Classical Baselines And QSVT Proxies,2,5,689,370,plot,embedded notebook PNG output
