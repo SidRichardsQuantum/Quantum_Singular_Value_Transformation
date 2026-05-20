@@ -18,6 +18,42 @@ from qsvt.benchmarks import (
 )
 
 
+def _benchmark_report(
+    *,
+    algorithm="numpy.linalg.solve",
+    problem="dense-linear-system",
+    polynomial_degree=None,
+    signal_operator_calls=1,
+    output_frobenius_norm=None,
+):
+    metrics = {
+        "relative_residual_norm": 1e-14,
+        "condition_number_2": 1.5,
+    }
+    if polynomial_degree is not None:
+        metrics["polynomial_degree"] = polynomial_degree
+    if output_frobenius_norm is not None:
+        metrics["output_frobenius_norm"] = output_frobenius_norm
+
+    return {
+        "mode": "classical-benchmark",
+        "algorithm": algorithm,
+        "problem": problem,
+        "matrix_dimension": 2,
+        "repeats": 1,
+        "best_time_seconds": 0.001,
+        "mean_time_seconds": 0.0012,
+        "metrics": metrics,
+        "qsvt_proxy": {
+            "resources": {
+                "degree": signal_operator_calls,
+                "signal_operator_calls": signal_operator_calls,
+            },
+        },
+        "notes": [],
+    }
+
+
 def test_dense_eigendecomposition_benchmark_reports_reconstruction_error():
     matrix = np.array([[2.0, 0.25], [0.25, 3.0]])
 
@@ -115,14 +151,7 @@ def test_spectral_matrix_function_benchmark_supports_exponential():
 
 
 def test_benchmark_summary_table_extracts_common_fields():
-    reports = [
-        dense_linear_solve_benchmark(
-            [[2.0, 0.0], [0.0, 3.0]],
-            [1.0, 1.0],
-            repeats=1,
-            qsvt_coeffs=[0.0, 1.0],
-        )
-    ]
+    reports = [_benchmark_report()]
 
     rows = benchmark_summary_table(reports)
 
@@ -143,14 +172,7 @@ def test_benchmark_summary_table_extracts_common_fields():
 
 
 def test_write_benchmark_summary_csv_writes_compact_rows(tmp_path):
-    reports = [
-        dense_linear_solve_benchmark(
-            [[2.0, 0.0], [0.0, 3.0]],
-            [1.0, 1.0],
-            repeats=1,
-            qsvt_coeffs=[0.0, 1.0],
-        )
-    ]
+    reports = [_benchmark_report()]
     path = tmp_path / "summary.csv"
 
     written = write_benchmark_summary_csv(reports, path)
@@ -171,14 +193,7 @@ def test_benchmark_plot_helpers_return_matplotlib_axes(tmp_path):
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
-    reports = [
-        dense_linear_solve_benchmark(
-            [[2.0, 0.0], [0.0, 3.0]],
-            [1.0, 1.0],
-            repeats=1,
-            qsvt_coeffs=[0.0, 1.0],
-        )
-    ]
+    reports = [_benchmark_report()]
 
     timing_fig, timing_ax = plot_benchmark_timings(reports)
     proxy_fig, proxy_ax = plot_qsvt_proxy_resources(reports)
@@ -202,15 +217,18 @@ def test_benchmark_plot_colors_remain_stable_across_filtered_proxy_plot():
     import matplotlib.pyplot as plt
 
     reports = [
-        spectral_matrix_function_benchmark(
-            [[0.0, 0.0], [0.0, 1.0]],
-            "exponential",
-            repeats=1,
+        _benchmark_report(
+            algorithm="dense-spectral-matrix-function",
+            problem="exponential-matrix-function",
+            signal_operator_calls=None,
+            output_frobenius_norm=1.4,
         ),
-        polynomial_matrix_function_benchmark(
-            [[0.5, 0.0], [0.0, -0.25]],
-            [0.0, 0.0, 1.0],
-            repeats=1,
+        _benchmark_report(
+            algorithm="spectral-polynomial-evaluation",
+            problem="polynomial-matrix-function",
+            polynomial_degree=2,
+            signal_operator_calls=2,
+            output_frobenius_norm=0.25,
         ),
     ]
 

@@ -8,9 +8,9 @@ This generated page displays the embedded plots and text outputs from every tuto
 ## Current Status
 
 - Source notebooks: `notebooks/tutorials/`
-- Notebooks displayed: `13`
-- Embedded plot artefacts displayed: `29`
-- Plain-text notebook results displayed: `60`
+- Notebooks displayed: `14`
+- Embedded plot artefacts displayed: `31`
+- Plain-text notebook results displayed: `62`
 
 ## Related Pages
 
@@ -55,8 +55,8 @@ Output 2 (cell 11):
 
 ```text
 a0 = 0.6
-QSVT output   = 0.3599999999996402
-Exact f(a0)   = 0.36
+QSVT output = 0.3599999999996402
+Exact f(a0) = 0.36
 Absolute error = 3.598e-13
 ```
 
@@ -85,8 +85,7 @@ Source: [`notebooks/tutorials/02_QSVT_Singular_Value_Filter.ipynb`](../../notebo
 Output 1 (cell 4):
 
 ```text
-Matrix A:
-[[1.  0.  0.  0. ]
+A = [[1.  0.  0.  0. ]
  [0.  0.7 0.  0. ]
  [0.  0.  0.3 0. ]
  [0.  0.  0.  0.1]]
@@ -102,18 +101,21 @@ Bounded on [-1,1]: True
 Output 3 (cell 8):
 
 ```text
-Original singular values:
-[1.  0.7 0.3 0.1]
-
-Transformed singular values:
-[1.   0.49 0.09 0.01]
+Original singular values: [1.  0.7 0.3 0.1]
+Transformed singular values: [1.   0.49 0.09 0.01]
 ```
 
 Output 4 (cell 13):
 
 ```text
-Comparison helper output:
-{'input': [1. , 0.7, 0.3, 0.1], 'qsvt': [1.  , 0.49, 0.09, 0.01], 'classical': [1.  , 0.49, 0.09, 0.01], 'abs_error': [9.99977878e-13, 4.89719376e-13, 8.98309205e-14, 9.83067794e-15]}
+Comparison helper output
+------------------------
+Input σ | QSVT output | Classical output | abs. error
+------- | ----------- | ---------------- | ----------
+1 | 1 | 1 | 1.00e-12
+0.7 | 0.49 | 0.49 | 4.90e-13
+0.3 | 0.09 | 0.09 | 8.98e-14
+0.1 | 0.01 | 0.01 | 9.83e-15
 ```
 
 Output 5 (cell 15):
@@ -163,17 +165,14 @@ Source: [`notebooks/tutorials/04_QSVT_Linear_Solver_2x2.ipynb`](../../notebooks/
 Output 1 (cell 4):
 
 ```text
-A =
-[[0. 1.]
+A = [[0. 1.]
  [1. 0.]]
 
 b = [1. 2.]
 
-Classical solution:
-[2. 1.]
+Classical solution: [2. 1.]
 
-Normalized classical solution:
-[0.89442719 0.4472136 ]
+Normalized classical solution: [0.89442719 0.4472136 ]
 
 Eigenvalues of A: [-1.  1.]
 ```
@@ -182,7 +181,7 @@ Output 2 (cell 6):
 
 ```text
 Polynomial coefficients: [0. 1.]
-Parity: odd
+Parity [polynomial parity]: odd
 ```
 
 Output 3 (cell 9):
@@ -200,11 +199,9 @@ Direct A:
 Output 4 (cell 12):
 
 ```text
-QSVT solution (normalized):
-[0.89442719+1.26489707e-06j 0.4472136 +6.32448537e-07j]
+QSVT solution (normalized): [0.89442719+1.26489707e-06j 0.4472136 +6.32448537e-07j]
 
-Classical solution (normalized):
-[0.89442719 0.4472136 ]
+Classical solution (normalized): [0.89442719 0.4472136 ]
 ```
 
 Output 5 (cell 17):
@@ -232,15 +229,17 @@ Source: [`notebooks/tutorials/05_QSVT_Linear_Solver_4x4.ipynb`](../../notebooks/
 Output 1 (cell 4):
 
 ```text
-A =
-[[ 1.  0.  0.  0.]
+A = [[ 1.  0.  0.  0.]
  [ 0. -1.  0.  0.]
  [ 0.  0.  1.  0.]
  [ 0.  0.  0. -1.]]
 
 Eigenvalues: [-1. -1.  1.  1.]
+
 b = [1. 2. 3. 4.]
+
 Classical x = [ 1. -2.  3. -4.]
+
 Classical (normalized) = [ 0.18257419 -0.36514837  0.54772256 -0.73029674]
 ```
 
@@ -248,7 +247,7 @@ Output 2 (cell 6):
 
 ```text
 Polynomial coefficients: [0. 1.]
-Parity: odd
+Parity [polynomial parity]: odd
 ```
 
 Output 3 (cell 9):
@@ -300,8 +299,7 @@ Source: [`notebooks/tutorials/06_QSVT_Linear_Solver_Approximate.ipynb`](../../no
 Output 1 (cell 4):
 
 ```text
-A =
-[[-0.5  0. ]
+A = [[-0.5  0. ]
  [ 0.   0.5]]
 Eigenvalues of A: [-0.5  0.5]
 b = [0.70710678 0.70710678]
@@ -313,8 +311,8 @@ Output 2 (cell 8):
 
 ```text
 Polynomial coefficients: [ 0. -3.  0.  4.]
-Polynomial degree: 3
-Polynomial parity: odd
+Polynomial degree [polynomial degree]: 3
+Polynomial parity [polynomial parity]: odd
 Bounded on [-1,1]: True
 
 T3(-0.5) = 1.0
@@ -375,7 +373,7 @@ Source: [`notebooks/tutorials/07_QSVT_Polynomial_Design_and_Approximation.ipynb`
 Output 1 (cell 13):
 
 ```text
-best_degree: 13
+best_degree [polynomial degree]: 13
 best_inverse_error: 1.775e-01
 max_bounded_value: 1.000000
 validation: passed
@@ -403,8 +401,7 @@ Source: [`notebooks/tutorials/08_QSVT_Matrix_Functions_Powers_and_Roots.ipynb`](
 Output 1 (cell 4):
 
 ```text
-A =
-[[ 0.391293 -0.279612]
+A = [[ 0.391293 -0.279612]
  [-0.279612  0.608707]]
 
 Eigenvalues = [0.2 0.8]
@@ -421,7 +418,7 @@ A^2 via spectral map:
 Output 3 (cell 9):
 
 ```text
-bounded on [a,1]: True
+Bounded on [a,1] [boolean]: True
 ```
 
 Output 4 (cell 12):
@@ -469,38 +466,37 @@ Source: [`notebooks/tutorials/09_QSVT_Sign_Function_and_Projectors.ipynb`](../..
 Output 1 (cell 5):
 
 ```text
-parity: odd
-bounded: True
+Parity [polynomial parity]: odd
+Bounded [boolean]: True
 ```
 
 Output 2 (cell 7):
 
 ```text
-degree  1 → [0.316228 0.948683]
-degree  3 → [1. 0.]
-degree  5 → [0.316228 0.948683]
-degree  7 → [0.316228 0.948683]
-degree  9 → [1. 0.]
+Degree  1 → [0.316228 0.948683]
+Degree  3 → [1. 0.]
+Degree  5 → [0.316228 0.948683]
+Degree  7 → [0.316228 0.948683]
+Degree  9 → [1. 0.]
 ```
 
 Output 3 (cell 9):
 
 ```text
-A =
-[[-0.084984 -0.492725]
- [-0.492725  0.084984]]
+A = [[-0.08498357 -0.49272486]
+ [-0.49272486  0.08498357]]
 
-eigenvalues = [-0.5  0.5]
+Eigenvalues = [-0.5  0.5]
 ```
 
 Output 4 (cell 12):
 
 ```text
-positive projector:
+Positive projector:
 [[ 0.415016 -0.492725]
  [-0.492725  0.584984]]
 
-negative projector:
+Negative projector:
 [[0.584984 0.492725]
  [0.492725 0.415016]]
 ```
@@ -509,7 +505,7 @@ Output 5 (cell 15):
 
 ```text
 projector_completeness_error: 0.000e+00
-positive_projector_trace: 1.000000
+positive_projector_trace [states]: 1.000000
 validation: passed
 ```
 
@@ -545,104 +541,103 @@ Source: [`notebooks/tutorials/10_QSVT_Design_and_Templates.ipynb`](../../noteboo
 Output 1 (cell 8):
 
 ```text
-sign template
-  degree:   13
-  parity:   odd
-  bounded:  True
-  coeffs[:6]: [  0.         6.129262   0.       -50.716      0.       251.527514]
+Sign template
+  Degree [polynomial degree]:   13
+  Parity [polynomial parity]:   odd
+  Bounded [boolean]:  True
+  Coeffs[:6]: [  0.         6.129262   0.       -50.716      0.       251.527514]
 
-sign design
-  degree:   13
-  parity:   odd
-  bounded:  True
-  coeffs[:6]: [  0.         6.457019   0.       -57.235917   0.       292.840318]
+Sign design
+  Degree [polynomial degree]:   13
+  Parity [polynomial parity]:   odd
+  Bounded [boolean]:  True
+  Coeffs[:6]: [  0.         6.457019   0.       -57.235917   0.       292.840318]
 ```
 
 Output 2 (cell 10):
 
 ```text
-sign approximation errors on |x| >= gamma
-  template max error: 0.0934552831696136
-  design   max error: 0.1154179522161527
-  template rms error: 0.06614683867917648
-  design   rms error: 0.08075997225292844
+Sign approximation errors on |x| >= gamma [dimensionless x]
+  Template max error: 0.0934552831696136
+  Design   max error: 0.1154179522161527
+  Template RMS error: 0.06614683867917648
+  Design   RMS error: 0.08075997225292844
 ```
 
 Output 3 (cell 12):
 
 ```text
-inverse-like template
-  degree:   13
-  parity:   odd
-  bounded:  True
-  coeffs[:6]: [  0.         6.728973   0.       -58.268765   0.       273.617565]
+Inverse-like template
+  Degree [polynomial degree]:   13
+  Parity [polynomial parity]:   odd
+  Bounded [boolean]:  True
+  Coeffs[:6]: [  0.         6.728973   0.       -58.268765   0.       273.617565]
 
-inverse-like design
-  degree:   13
-  parity:   odd
-  bounded:  True
-  coeffs[:6]: [   0.          8.358813    0.       -104.680547    0.        576.087771]
+Inverse-like design
+  Degree [polynomial degree]:   13
+  Parity [polynomial parity]:   odd
+  Bounded [boolean]:  True
+  Coeffs[:6]: [   0.          8.358813    0.       -104.680547    0.        576.087771]
 ```
 
 Output 4 (cell 14):
 
 ```text
-inverse-like approximation errors against gamma/x on |x| >= gamma
-  template max error: 0.2880707591425103
-  design   max error: 0.16259666800719208
-  template rms error: 0.23148195494558868
-  design   rms error: 0.08536905981807905
+Inverse-like approximation errors against gamma/x on |x| >= gamma [dimensionless x]
+  Template max error: 0.2880707591425103
+  Design   max error: 0.16259666800719208
+  Template rms error: 0.23148195494558868
+  Design   rms error: 0.08536905981807905
 ```
 
 Output 5 (cell 16):
 
 ```text
-filter template
-  degree:   12
-  parity:   even
-  bounded:  True
-  coeffs[:6]: [ 0.048935  0.       -5.137833  0.       73.671274  0.      ]
+Filter template
+  Degree [polynomial degree]:   12
+  Parity [polynomial parity]:   even
+  Bounded [boolean]:  True
+  Coeffs[:6]: [ 0.048935  0.       -5.137833  0.       73.671274  0.      ]
 
-filter design
-  degree:   12
-  parity:   even
-  bounded:  True
-  coeffs[:6]: [ 0.048935  0.       -5.137833  0.       73.671274  0.      ]
+Filter design
+  Degree [polynomial degree]:   12
+  Parity [polynomial parity]:   even
+  Bounded [boolean]:  True
+  Coeffs[:6]: [ 0.048935  0.       -5.137833  0.       73.671274  0.      ]
 ```
 
 Output 6 (cell 18):
 
 ```text
-filter approximation errors on [-1, 1]
-  template max error: 0.09099962265482087
-  design   max error: 0.09099962265482087
-  template rms error: 0.04297312621293089
-  design   rms error: 0.04297312621293089
+Filter approximation errors on [-1, 1] [dimensionless x]
+  Template max error: 0.09099962265482087
+  Design   max error: 0.09099962265482087
+  Template rms error: 0.04297312621293089
+  Design   rms error: 0.04297312621293089
 ```
 
 Output 7 (cell 20):
 
 ```text
-projector design
-  degree:   13
-  parity:   mixed
-  bounded:  True
-  coeffs[:6]: [  0.5        3.228509   0.       -28.617959   0.       146.420159]
+Projector design
+  Degree [polynomial degree]:   13
+  Parity [polynomial parity]:   mixed
+  Bounded [boolean]:  True
+  Coeffs[:6]: [  0.5        3.228509   0.       -28.617959   0.       146.420159]
 ```
 
 Output 8 (cell 22):
 
 ```text
-projector approximation errors on |x| >= gamma
-  max error: 0.05770897610807635
-  rms error: 0.04037998612646422
+Projector approximation errors on |x| >= gamma [dimensionless x]
+  Max error: 0.05770897610807635
+  RMS error: 0.04037998612646422
 ```
 
 Output 9 (cell 24):
 
 ```text
-A =
-[[-0.9   0.    0.    0.    0.    0.    0.    0.  ]
+A = [[-0.9   0.    0.    0.    0.    0.    0.    0.  ]
  [ 0.   -0.55  0.    0.    0.    0.    0.    0.  ]
  [ 0.    0.   -0.3   0.    0.    0.    0.    0.  ]
  [ 0.    0.    0.   -0.1   0.    0.    0.    0.  ]
@@ -655,177 +650,175 @@ A =
 Output 10 (cell 25):
 
 ```text
-diag entries:
+Diag entries:
 [-0.9  -0.55 -0.3  -0.1   0.1   0.3   0.55  0.9 ]
 
-design sign on diag:
+Design sign on diag:
 [-0.9488   -0.9341   -0.951784 -0.591317  0.591317  0.951784  0.9341
   0.9488  ]
 
-design inverse-like on diag:
+Design inverse-like on diag:
 [-0.293721 -0.41768  -0.774708 -0.736804  0.736804  0.774708  0.41768
   0.293721]
 
-design filter on diag:
+Design filter on diag:
 [0.979311 0.841569 0.023234 0.004676 0.004676 0.023234 0.841569 0.979311]
 
-design projector on diag:
+Design projector on diag:
 [0.0256   0.03295  0.024108 0.204342 0.795658 0.975892 0.96705  0.9744  ]
 ```
 
 Output 11 (cell 27):
 
 ```text
-diag(sign_design(A)) via spectral helper:
+Diag(sign_design(A)) via spectral helper:
 [-0.9488   -0.9341   -0.951784 -0.591317  0.591317  0.951784  0.9341
   0.9488  ]
 
-diag(filter_design(A)) via spectral helper:
+Diag(filter_design(A)) via spectral helper:
 [0.979311 0.841569 0.023234 0.004676 0.004676 0.023234 0.841569 0.979311]
 
-diag(projector_design(A)) via spectral helper:
+Diag(projector_design(A)) via spectral helper:
 [0.0256   0.03295  0.024108 0.204342 0.795658 0.975892 0.96705  0.9744  ]
 ```
 
 Output 12 (cell 31):
 
 ```text
-=== Notebook validation diagnostics: polynomial design and templates ===
-
-sign template
-  degree: 13
-  parity: odd
-  bounded: True
+Sign template
+  Degree [polynomial degree]: 13
+  Parity [polynomial parity]: odd
+  bounded [boolean]: True
   max_abs_on_grid: 0.9999999999999876
 
-sign design
-  degree: 13
-  parity: odd
-  bounded: True
+Sign design
+  Degree [polynomial degree]: 13
+  Parity [polynomial parity]: odd
+  bounded [boolean]: True
   max_abs_on_grid: 0.9999999999999538
 
-inverse template
-  degree: 13
-  parity: odd
-  bounded: True
+Inverse template
+  Degree [polynomial degree]: 13
+  Parity [polynomial parity]: odd
+  bounded [boolean]: True
   max_abs_on_grid: 1.0
 
-inverse design
-  degree: 13
-  parity: odd
-  bounded: True
+Inverse design
+  Degree [polynomial degree]: 13
+  Parity [polynomial parity]: odd
+  bounded [boolean]: True
   max_abs_on_grid: 1.0
 
-filter template
-  degree: 12
-  parity: even
-  bounded: True
+Filter template
+  Degree [polynomial degree]: 12
+  Parity [polynomial parity]: even
+  bounded [boolean]: True
   max_abs_on_grid: 0.9999996169147369
 
-filter design
-  degree: 12
-  parity: even
-  bounded: True
+Filter design
+  Degree [polynomial degree]: 12
+  Parity [polynomial parity]: even
+  bounded [boolean]: True
   max_abs_on_grid: 0.9999996169147369
 
-projector design
-  degree: 13
-  parity: mixed
-  bounded: True
+Projector design
+  Degree [polynomial degree]: 13
+  Parity [polynomial parity]: mixed
+  bounded [boolean]: True
   max_abs_on_grid: 0.9999999999999769
 
 --- safe-region scalar checks ---
-sign template max err on |x| >= gamma: 0.0934552831696136
-sign design   max err on |x| >= gamma: 0.1154179522161527
-inverse template max err vs gamma/x on |x| >= gamma: 0.2880707591425103
-inverse design   max err vs gamma/x on |x| >= gamma: 0.16259666800719208
-filter template max err on [-1,1]: 0.09099962265482087
-filter design   max err on [-1,1]: 0.09099962265482087
-projector design max err on |x| >= gamma: 0.05770897610807635
+Sign template max err on |x| >= gamma [dimensionless x]: 0.0934552831696136
+Sign design   max err on |x| >= gamma [dimensionless x]: 0.1154179522161527
+Inverse template max err vs gamma/x on |x| >= gamma [dimensionless x]: 0.2880707591425103
+Inverse design   max err vs gamma/x on |x| >= gamma [dimensionless x]: 0.16259666800719208
+Filter template max err on [-1,1]: 0.09099962265482087
+Filter design   max err on [-1,1]: 0.09099962265482087
+Projector design max err on |x| >= gamma [dimensionless x]: 0.05770897610807635
 
 --- projector checkpoints ---
-x=-0.80 ->  0.048090
-x=-0.50 ->  0.047393
-x=-0.25 ->  0.019036
-x=+0.25 ->  0.980964
-x=+0.50 ->  0.952607
-x=+0.80 ->  0.951910
+x=-0.80 -> value  0.048090
+x=-0.50 -> value  0.047393
+x=-0.25 -> value  0.019036
+x=+0.25 -> value  0.980964
+x=+0.50 -> value  0.952607
+x=+0.80 -> value  0.951910
 
---- diagonal outputs ---
-diag entries:
+--- Diagonal outputs ---
+Diag entries:
 [-0.9  -0.55 -0.3  -0.1   0.1   0.3   0.55  0.9 ]
-design sign:
+Design sign:
 [-0.9488   -0.9341   -0.951784 -0.591317  0.591317  0.951784  0.9341
   0.9488  ]
-design inverse-like:
+Design inverse-like:
 [-0.293721 -0.41768  -0.774708 -0.736804  0.736804  0.774708  0.41768
   0.293721]
-design filter:
+Design filter:
 [0.979311 0.841569 0.023234 0.004676 0.004676 0.023234 0.841569 0.979311]
-design projector:
+Design projector:
 [0.0256   0.03295  0.024108 0.204342 0.795658 0.975892 0.96705  0.9744  ]
 
---- spectral consistency checks ---
-sign diag consistency: True
-filter diag consistency: True
-projector diag consistency: True
+--- Spectral consistency checks ---
+Sign diag consistency [boolean]: True
+Filter diag consistency [boolean]: True
+Projector diag consistency [boolean]: True
 ```
 
 Output 13 (cell 33):
 
 ```text
-sign_design_max_error: 1.154e-01
-inverse_design_max_error: 1.626e-01
-projector_design_max_error: 5.771e-02
+Sign_design_max_error: 1.154e-01
+Inverse_design_max_error: 1.626e-01
+Projector_design_max_error: 5.771e-02
 validation: passed
 ```
 
-### `11_End_to_End_Algorithm_Workflows.ipynb`
+### `11_QSVT_Algorithm_Workflows.ipynb`
 
-Source: [`notebooks/tutorials/11_End_to_End_Algorithm_Workflows.ipynb`](../../notebooks/tutorials/11_End_to_End_Algorithm_Workflows.ipynb)
+Source: [`notebooks/tutorials/11_QSVT_Algorithm_Workflows.ipynb`](../../notebooks/tutorials/11_QSVT_Algorithm_Workflows.ipynb)
 
-```{image} ../../results/plots/notebooks/11_End_to_End_Algorithm_Workflows-plot-01.png
-:alt: End-to-End Algorithm Workflows plot 1
+```{image} ../../results/plots/notebooks/11_QSVT_Algorithm_Workflows-plot-01.png
+:alt: QSVT Algorithm Workflows plot 1
 :width: 520px
 ```
 
 Output 1 (cell 4):
 
 ```text
-eigenvalues: [-1.1405 -0.258   0.7399  1.6086]
+Eigenvalues: [-1.1405 -0.258   0.7399  1.6086]
 ```
 
 Output 2 (cell 6):
 
 ```text
-polynomial residual: 0.06293241692724773
-relative error: 0.04364138768069171
+Polynomial residual: 0.06293241692724773
+Relative error: 0.04364138768069171
 ```
 
 Output 3 (cell 8):
 
 ```text
-ground_state_overlap: 9.855e-01
-ground_filter_state_error: 1.252e-03
-hamiltonian_state_error: 3.953e-08
-resolvent_response_error: 1.695e-01
-spectral_density_error: 4.670e-02
-thermal_density_error: 6.412e-08
+Ground state overlap [probability]: 9.855e-01
+Ground filter state error: 1.252e-03
+Hamiltonian state error: 3.953e-08
+Resolvent response error: 1.695e-01
+Spectral density error: 4.670e-02
+Thermal density error: 6.412e-08
 ```
 
 Output 4 (cell 12):
 
 ```text
 thermal-gibbs-workflow
-report keys: ['beta', 'coeffs', 'degree', 'density_matrix_relative_error', 'mode', 'operator_relative_error', 'polynomial_boltzmann_operator', 'polynomial_gibbs_state'] ...
+report keys [count/list]: ['beta', 'coeffs', 'degree', 'density_matrix_relative_error', 'mode', 'operator_relative_error', 'polynomial_boltzmann_operator', 'polynomial_gibbs_state'] ...
 ```
 
-### `12_Reports_CLI_and_Reproducible_Artifacts.ipynb`
+### `12_QSVT_Reports_CLI_and_Artifacts.ipynb`
 
-Source: [`notebooks/tutorials/12_Reports_CLI_and_Reproducible_Artifacts.ipynb`](../../notebooks/tutorials/12_Reports_CLI_and_Reproducible_Artifacts.ipynb)
+Source: [`notebooks/tutorials/12_QSVT_Reports_CLI_and_Artifacts.ipynb`](../../notebooks/tutorials/12_QSVT_Reports_CLI_and_Artifacts.ipynb)
 
-```{image} ../../results/plots/notebooks/12_Reports_CLI_and_Reproducible_Artifacts-plot-01.png
-:alt: Reports, CLI, and Reproducible Artifacts plot 1
+```{image} ../../results/plots/notebooks/12_QSVT_Reports_CLI_and_Artifacts-plot-01.png
+:alt: QSVT Reports, CLI, and Artifacts plot 1
 :width: 760px
 ```
 
@@ -833,73 +826,109 @@ Output 1 (cell 4):
 
 ```text
 design-workflow sign design_sign_polynomial
-degree: 9
-max error: 0.24846221549762104
-bounded margin: -8.881784197001252e-15
+Degree [polynomial degree]: 9
+Max error: 0.24846221549762104
+Bounded margin: -8.881784197001252e-15
 ```
 
 Output 2 (cell 6):
 
 ```text
-json exists: True
-plot exists: True
-loaded mode: design-workflow
-loaded coeff count: 10
+JSON exists [boolean]: True
+Plot exists [boolean]: True
+Loaded mode [string]: design-workflow
+Loaded coeff count [count]: 10
 ```
 
 Output 3 (cell 8):
 
 ```text
-{
-  "mode": "design-workflow",
-  "report_written": true,
-  "plot_written": false,
-  "output": "/tmp/tmpk4uw6nlx/cli-sign-workflow.json"
-}
-design-workflow sign 10
+CLI design-workflow summary
+---------------------------
+Mode [string]           : design-workflow
+Report written [path] : True
+Plot written [path]   : False
+Output path [path]    : cli-sign-workflow.json
+Report kind [string]    : sign
+Coefficients [count]   : 10
 ```
 
 Output 4 (cell 10):
 
 ```text
-sign               max_error=2.485e-01 margin=-8.882e-15 parity=odd
-filter             max_error=2.284e-01 margin=-1.998e-15 parity=even
-interval_projector max_error=1.968e-01 margin=0.000e+00 parity=mixed
+Sign               max_error=2.485e-01, margin=-8.882e-15, parity [polynomial parity]=odd
+Filter             max_error=2.284e-01, margin=-1.998e-15, parity [polynomial parity]=even
+Interval Projector max_error=1.968e-01, margin=0.000e+00, parity [polynomial parity]=mixed
 ```
 
-### `13_Degree_Error_and_Boundedness_Tradeoffs.ipynb`
+### `13_QSVT_Design_Tradeoffs.ipynb`
 
-Source: [`notebooks/tutorials/13_Degree_Error_and_Boundedness_Tradeoffs.ipynb`](../../notebooks/tutorials/13_Degree_Error_and_Boundedness_Tradeoffs.ipynb)
+Source: [`notebooks/tutorials/13_QSVT_Design_Tradeoffs.ipynb`](../../notebooks/tutorials/13_QSVT_Design_Tradeoffs.ipynb)
 
-```{image} ../../results/plots/notebooks/13_Degree_Error_and_Boundedness_Tradeoffs-plot-01.png
-:alt: Degree, Error, and Boundedness Tradeoffs plot 1
+```{image} ../../results/plots/notebooks/13_QSVT_Design_Tradeoffs-plot-01.png
+:alt: QSVT Design Tradeoffs: Degree, Error, and Boundedness plot 1
 :width: 760px
 ```
 
-```{image} ../../results/plots/notebooks/13_Degree_Error_and_Boundedness_Tradeoffs-plot-02.png
-:alt: Degree, Error, and Boundedness Tradeoffs plot 2
+```{image} ../../results/plots/notebooks/13_QSVT_Design_Tradeoffs-plot-02.png
+:alt: QSVT Design Tradeoffs: Degree, Error, and Boundedness plot 2
 :width: 520px
 ```
 
 Output 1 (cell 4):
 
 ```text
-{'name': 'sign', 'degree': 3, 'max_error': 0.5479390083498441, 'bounded_margin': 0.0, 'parity': 'odd', 'is_bounded': True}
-{'name': 'inverse', 'degree': 3, 'max_error': 0.9891744832830782, 'bounded_margin': 0.19626525973398778, 'parity': 'odd', 'is_bounded': True}
-{'name': 'sqrt', 'degree': 3, 'max_error': 0.06978117084971214, 'bounded_margin': 0.0, 'parity': 'mixed', 'is_bounded': True}
-{'name': 'filter', 'degree': 3, 'max_error': 0.5406810051779463, 'bounded_margin': 0.0, 'parity': 'even', 'is_bounded': True}
-{'name': 'interval', 'degree': 3, 'max_error': 0.43277073526115417, 'bounded_margin': 0.3587275209688906, 'parity': 'mixed', 'is_bounded': True}
+Representative degree-3 designs
+-------------------------------
+Family   : sign | inverse | sqrt | filter | interval
+Degree : 3 | 3 | 3 | 3 | 3
+Max error : 0.5479 | 0.9892 | 0.06978 | 0.5407 | 0.4328
+Bounded margin : 0 | 0.1963 | 0 | 0 | 0.3587
+Parity : odd | odd | mixed | even | mixed
+Bounded : True | True | True | True | True
 ```
 
 Output 2 (cell 6):
 
 ```text
-<matplotlib.legend.Legend at 0x756403cb7b60>
+<matplotlib.legend.Legend at 0x7cd6c2707e00>
 ```
 
 Output 3 (cell 8):
 
 ```text
-max error: 0.1632978061045941
-bounded margin: 1.1102230246251565e-16
+Max error: 0.1632978061045941
+Bounded margin: 1.1102230246251565e-16
+```
+
+### `14_QSVT_Resource_Proxy_Limits.ipynb`
+
+Source: [`notebooks/tutorials/14_QSVT_Resource_Proxy_Limits.ipynb`](../../notebooks/tutorials/14_QSVT_Resource_Proxy_Limits.ipynb)
+
+```{image} ../../results/plots/notebooks/14_QSVT_Resource_Proxy_Limits-plot-01.png
+:alt: QSVT Resource Proxy Limits plot 1
+:width: 520px
+```
+
+```{image} ../../results/plots/notebooks/14_QSVT_Resource_Proxy_Limits-plot-02.png
+:alt: QSVT Resource Proxy Limits plot 2
+:width: 760px
+```
+
+Output 1 (cell 4):
+
+```text
+Degree [polynomial degree]= 5 , Signal_calls [operator calls]= 5 , Encoding_qubits [qubits]= 4
+Degree [polynomial degree]= 9 , Signal_calls [operator calls]= 9 , Encoding_qubits [qubits]= 4
+Degree [polynomial degree]= 13 , Signal_calls [operator calls]= 13 , Encoding_qubits [qubits]= 4
+Degree [polynomial degree]= 17 , Signal_calls [operator calls]= 17 , Encoding_qubits [qubits]= 4
+```
+
+Output 2 (cell 7):
+
+```text
+Exact rank [states]: 2
+Rank proxy [states]: 1.955
+Leakage: 0.017
+State weight error: 0.008
 ```

@@ -154,6 +154,34 @@ Limitations:
 : This is a small dense trace calculation. It does not implement stochastic
   trace estimation or large-scale density-of-states sampling.
 
+## Spectral Thresholding
+
+`spectral_thresholding_workflow(matrix, lower=..., upper=..., degree=...)`
+
+Purpose:
+: Approximate a hard spectral interval projector with a smooth bounded
+  polynomial.
+
+Target function:
+: A smooth band-pass indicator for eigenvalues in `[lower, upper]`, expressed
+  in the scaled spectral coordinate and implemented with
+  `design_interval_projector_polynomial`.
+
+Rescaling:
+: `rescale_hermitian_to_unit_interval` maps the physical interval into
+  `[-1, 1]` before polynomial design.
+
+Diagnostics:
+: The result includes the polynomial projector, exact hard spectral projector,
+  exact rank, trace-based polynomial rank proxy, leakage outside the selected
+  interval, operator error, design diagnostics, and optional state-retained
+  weight comparison.
+
+Interpretation:
+: This workflow is useful for low-rank projection, band selection, and
+  thresholding studies. Sharp interval edges require higher degree, and the
+  reported leakage should be considered alongside any retained-rank proxy.
+
 ## Thermal Gibbs Weighting
 
 `thermal_gibbs_workflow(matrix, beta=..., degree=..., state=None)`

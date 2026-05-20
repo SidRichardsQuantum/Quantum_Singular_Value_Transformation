@@ -24,9 +24,10 @@ Rendered result pages:
 | `notebooks/tutorials/08_QSVT_Matrix_Functions_Powers_and_Roots.ipynb` | embedded plots | matrix powers and square-root-style transforms |
 | `notebooks/tutorials/09_QSVT_Sign_Function_and_Projectors.ipynb` | embedded plots | sign functions and spectral projectors |
 | `notebooks/tutorials/10_QSVT_Design_and_Templates.ipynb` | embedded plots | reusable design and template families |
-| `notebooks/tutorials/11_End_to_End_Algorithm_Workflows.ipynb` | embedded plot | high-level algorithm workflow diagnostics |
-| `notebooks/tutorials/12_Reports_CLI_and_Reproducible_Artifacts.ipynb` | embedded plot | report, CLI, and artifact workflows |
-| `notebooks/tutorials/13_Degree_Error_and_Boundedness_Tradeoffs.ipynb` | embedded plots | degree, error, and boundedness tradeoffs |
+| `notebooks/tutorials/11_QSVT_Algorithm_Workflows.ipynb` | embedded plot | QSVT algorithm workflow diagnostics |
+| `notebooks/tutorials/12_QSVT_Reports_CLI_and_Artifacts.ipynb` | embedded plot | QSVT report, CLI, and artifact workflows |
+| `notebooks/tutorials/13_QSVT_Design_Tradeoffs.ipynb` | embedded plots | QSVT design degree/error/boundedness tradeoffs |
+| `notebooks/tutorials/14_QSVT_Resource_Proxy_Limits.ipynb` | executable source | block-encoding assumptions and resource-proxy limits |
 
 ## Real-Example Notebook Results
 
@@ -84,7 +85,7 @@ from the package CLI.
 | `results/tables/design_sweep_summary.csv` | design sweep summary table | n/a | n/a | tabular summary of committed design-sweep JSON reports |
 | `results/tables/qsvt-error-summary.csv` | release summary table | n/a | n/a | compact index over the generated JSON reports |
 
-These snapshots were refreshed for package version `0.1.21`.
+These snapshots were refreshed for package version `0.1.22`.
 
 ## Benchmark Artefacts
 
@@ -106,7 +107,12 @@ baselines with QSVT-oriented resource proxies. The generated output page is
 | `results/tables/benchmark_plot_manifest.csv` | manifest for extracted benchmark notebook plots |
 | `results/plots/benchmarks/` | extracted benchmark timing and QSVT-proxy PNG plots |
 
-Benchmark artefacts were refreshed for package version `0.1.21`.
+The benchmark notebook set also includes
+`notebooks/benchmarks/04_classical_baseline_assumptions.ipynb`, which is an
+executable assumption-check notebook rather than a committed timing-artifact
+generator.
+
+Benchmark artefacts were refreshed for package version `0.1.22`.
 
 ## Real-Example Artefacts
 

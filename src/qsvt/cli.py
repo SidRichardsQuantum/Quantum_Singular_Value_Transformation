@@ -21,6 +21,8 @@ and demonstration of core functionality:
         --poly "0,0,1"
     python -m qsvt apply-design --kind sign --values="-0.8,-0.3,0.3,0.8" \
         --degree 13
+    python -m qsvt threshold-workflow --matrix="-1,0,0;0,0,0;0,0,1" \
+        --lower -0.25 --upper 0.25 --degree 24
     python -m qsvt design-sweep --kind sign --degrees "5,9,13" \
         --gamma 0.2 --output sweep.json
 
@@ -42,6 +44,7 @@ from ._cli_utils import (
     parse_matrix,
     parse_poly,
 )
+from .algorithms import spectral_thresholding_workflow
 from .benchmarks import (
     conjugate_gradient_benchmark,
     dense_eigendecomposition_benchmark,
@@ -513,6 +516,24 @@ def cmd_apply_design(args: argparse.Namespace) -> dict:
         }
     )
     return report
+
+
+def cmd_threshold_workflow(args: argparse.Namespace) -> dict:
+    """
+    Build a spectral interval-projector workflow report.
+    """
+    state = parse_complex_list(args.state) if args.state else None
+    result = spectral_thresholding_workflow(
+        parse_matrix(args.matrix),
+        lower=args.lower,
+        upper=args.upper,
+        degree=args.degree,
+        sharpness=args.sharpness,
+        state=state,
+        num_points=args.num_points,
+        bounded_num_points=args.bounded_num_points,
+    )
+    return result.as_report()
 
 
 def cmd_benchmark_eigh(args: argparse.Namespace) -> dict:
@@ -1009,6 +1030,51 @@ def build_parser() -> argparse.ArgumentParser:
     )
     add_report_output_args(p_apply_design)
     p_apply_design.set_defaults(func=cmd_apply_design)
+
+    p_threshold = sub.add_parser(
+        "threshold-workflow",
+        help="Build a spectral thresholding / interval-projector workflow report",
+    )
+    p_threshold.add_argument(
+        "--matrix",
+        type=str,
+        required=True,
+        help='Rows separated by semicolons, e.g. "-1,0,0;0,0,0;0,0,1"',
+    )
+    p_threshold.add_argument(
+        "--lower",
+        type=float,
+        required=True,
+        help="Lower physical eigenvalue threshold for the selected interval.",
+    )
+    p_threshold.add_argument(
+        "--upper",
+        type=float,
+        required=True,
+        help="Upper physical eigenvalue threshold for the selected interval.",
+    )
+    p_threshold.add_argument("--degree", type=int, required=True)
+    p_threshold.add_argument("--sharpness", type=float, default=12.0)
+    p_threshold.add_argument(
+        "--state",
+        type=str,
+        default=None,
+        help='Optional state vector, e.g. "1,0,0".',
+    )
+    p_threshold.add_argument(
+        "--num-points",
+        dest="num_points",
+        type=int,
+        default=2001,
+    )
+    p_threshold.add_argument(
+        "--bounded-num-points",
+        dest="bounded_num_points",
+        type=int,
+        default=4001,
+    )
+    add_report_output_args(p_threshold)
+    p_threshold.set_defaults(func=cmd_threshold_workflow)
 
     p_benchmark = sub.add_parser(
         "benchmark",

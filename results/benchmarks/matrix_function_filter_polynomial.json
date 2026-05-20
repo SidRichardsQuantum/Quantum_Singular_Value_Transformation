@@ -4,8 +4,8 @@
   "problem": "polynomial-matrix-function",
   "matrix_dimension": 10,
   "repeats": 3,
-  "best_time_seconds": 0.00018365300002187723,
-  "mean_time_seconds": 0.00018966366678796476,
+  "best_time_seconds": 0.00013337899872567505,
+  "mean_time_seconds": 0.0001612176662699009,
   "metrics": {
     "polynomial_degree": 10,
     "coefficient_count": 11,

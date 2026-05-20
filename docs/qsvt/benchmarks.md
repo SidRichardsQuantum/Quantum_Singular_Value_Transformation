@@ -70,6 +70,7 @@ Benchmark notebooks live in `notebooks/benchmarks/`:
 | `01_linear_system_classical_vs_qsvt_proxy.ipynb` | dense and CG Poisson-system baselines |
 | `02_matrix_functions_spectral_baselines.ipynb` | spectral and polynomial matrix-function baselines |
 | `03_scaling_sweeps.ipynb` | dimension and inverse-degree benchmark sweeps |
+| `04_classical_baseline_assumptions.ipynb` | timed baseline assumptions versus QSVT proxy fields |
 
 The generated notebook outputs are published on the
 [Benchmark notebook outputs](benchmark_results.md) page.
@@ -101,3 +102,7 @@ hardware compilation, or data-loading costs.
 
 Use these reports to compare regimes and identify where a quantum implementation
 would need favorable block encoding, state preparation, and scaling assumptions.
+
+For per-baseline assumptions, see [Classical baseline details](classical_baselines.md).
+For the proxy quantities attached to QSVT comparisons, see
+[QSVT resource model](qsvt_resource_model.md).

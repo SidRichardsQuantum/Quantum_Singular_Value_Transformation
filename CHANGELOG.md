@@ -2,6 +2,39 @@
 
 ---
 
+## [0.1.22] – 20th May 2026
+
+### Added
+
+- added a spectral thresholding workflow for smooth interval-projector
+  studies with exact hard-projector reference diagnostics
+- added `qsvt threshold-workflow` CLI support with JSON/report output coverage
+- added classical baseline and QSVT resource-model documentation pages
+- added benchmark and tutorial notebooks covering baseline assumptions and
+  block-encoding/resource-proxy limits
+
+### Changed
+
+- refreshed benchmark timing artefacts for the `0.1.22` release snapshot
+- improved classical-baseline notebook outputs with readable tables and
+  benchmark-plot styling consistent with the other benchmark notebooks
+- standardized notebook print and plot labels so normalized examples use
+  conservative units such as model energy units, dimensionless values, states,
+  probabilities, and operator-call counts instead of implying calibrated SI
+  units
+- standardized random notebook examples on an explicit `SEED = 0` convention
+  and added a guard against inline notebook RNG seeds
+- refreshed saved outputs for all tutorial, real-example, and benchmark
+  notebooks after the unit-label cleanup
+- expanded API documentation, notebook result pages, and release validation
+  guardrails for the new workflow and artefacts
+- trimmed fast test-suite runtime by reusing lightweight report fixtures,
+  avoiding repeated benchmark construction in formatting tests, and skipping
+  unnecessary notebook JSON parsing during RNG guard checks
+- updated package metadata and release markers for `0.1.22`
+
+---
+
 ## [0.1.21] – 20th May 2026
 
 ### Added

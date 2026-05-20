@@ -142,6 +142,10 @@ inline type annotations shipped with the public modules.
   generated real-example notebook outputs
 - [docs/qsvt/benchmark_results.md](docs/qsvt/benchmark_results.md): generated
   benchmark notebook outputs
+- [docs/qsvt/classical_baselines.md](docs/qsvt/classical_baselines.md):
+  classical benchmark assumptions and baseline details
+- [docs/qsvt/qsvt_resource_model.md](docs/qsvt/qsvt_resource_model.md):
+  QSVT proxy-resource interpretation and omitted costs
 - [docs/qsvt/design.md](docs/qsvt/design.md): polynomial design helpers
 - [docs/qsvt/algorithms.md](docs/qsvt/algorithms.md): workflow-level
   algorithm notes, diagnostics, and limitations
@@ -154,14 +158,15 @@ inline type annotations shipped with the public modules.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.1.21`
+Current release: `0.1.22`
 
 ## Notebooks
 
 Tutorial notebooks live in `notebooks/tutorials/` and introduce QSVT as
 polynomial functional calculus, from scalar transforms through sign functions,
 projectors, matrix functions, reusable design workflows, end-to-end algorithm
-workflows, reproducible reports, and degree/error tradeoff studies.
+workflows, reproducible reports, degree/error tradeoff studies, and
+resource-proxy limitations.
 
 Real physics examples live in `notebooks/real_examples/` and cover Hamiltonian
 simulation, ground-state filtering, quantum chemistry, Green's functions,
@@ -173,7 +178,7 @@ the system, QSVT implementation strategy, and quantum relevance.
 
 Benchmark notebooks live in `notebooks/benchmarks/` and compare classical
 linear-system, spectral, and polynomial matrix-function baselines against
-QSVT-oriented resource proxies.
+QSVT-oriented resource proxies and their underlying assumptions.
 
 See [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md) for the full notebook map.
 

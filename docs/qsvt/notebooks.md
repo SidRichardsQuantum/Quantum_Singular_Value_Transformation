@@ -38,9 +38,10 @@ Tutorial notebooks live in `notebooks/tutorials/`.
 | `tutorials/08_QSVT_Matrix_Functions_Powers_and_Roots.ipynb` | matrix functions, powers, and roots |
 | `tutorials/09_QSVT_Sign_Function_and_Projectors.ipynb` | sign functions and projectors |
 | `tutorials/10_QSVT_Design_and_Templates.ipynb` | design helpers and templates |
-| `tutorials/11_End_to_End_Algorithm_Workflows.ipynb` | high-level algorithm workflows |
-| `tutorials/12_Reports_CLI_and_Reproducible_Artifacts.ipynb` | reports, CLI output, and reproducible artifacts |
-| `tutorials/13_Degree_Error_and_Boundedness_Tradeoffs.ipynb` | degree, error, and boundedness tradeoffs |
+| `tutorials/11_QSVT_Algorithm_Workflows.ipynb` | QSVT algorithm workflow diagnostics |
+| `tutorials/12_QSVT_Reports_CLI_and_Artifacts.ipynb` | QSVT reports, CLI output, and reproducible artifacts |
+| `tutorials/13_QSVT_Design_Tradeoffs.ipynb` | QSVT design degree/error/boundedness tradeoffs |
+| `tutorials/14_QSVT_Resource_Proxy_Limits.ipynb` | block-encoding assumptions and QSVT resource-proxy limits |
 
 ## Benchmark notebooks
 
@@ -51,6 +52,7 @@ Benchmark notebooks live in `notebooks/benchmarks/`.
 | `benchmarks/01_linear_system_classical_vs_qsvt_proxy.ipynb` | dense and CG linear-system baselines with QSVT inverse-polynomial resource proxies |
 | `benchmarks/02_matrix_functions_spectral_baselines.ipynb` | dense spectral and polynomial matrix-function baselines for thermal/filter workflows |
 | `benchmarks/03_scaling_sweeps.ipynb` | dimension, conditioning, and inverse-degree sweeps for compact benchmark tables |
+| `benchmarks/04_classical_baseline_assumptions.ipynb` | what classical benchmark helpers time versus what QSVT proxy fields estimate |
 
 ## Real physics examples
 

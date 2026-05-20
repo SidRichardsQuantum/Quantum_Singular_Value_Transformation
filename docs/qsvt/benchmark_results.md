@@ -8,9 +8,9 @@ This generated page displays embedded benchmark plots and text outputs from the 
 ## Current Status
 
 - Source notebooks: `notebooks/benchmarks/`
-- Notebooks displayed: `3`
-- Embedded plot artefacts displayed: `6`
-- Plain-text notebook results displayed: `4`
+- Notebooks displayed: `4`
+- Embedded plot artefacts displayed: `8`
+- Plain-text notebook results displayed: `6`
 - Plot manifest: [`results/tables/benchmark_plot_manifest.csv`](../../results/tables/benchmark_plot_manifest.csv)
 
 ## Related Pages
@@ -47,23 +47,23 @@ Source: [`notebooks/benchmarks/01_linear_system_classical_vs_qsvt_proxy.ipynb`](
 Output 1 (cell 5):
 
 ```text
-{
-  "dimension": 12,
-  "condition_number": 67.82742906960378,
-  "gamma": 0.014743298009626938,
-  "inverse_degree": 9
-}
+Poisson system
+--------------
+Dimension : 12
+Condition number : 67.83
+Scaled spectral gap gamma : 0.01474
+Inverse polynomial degree : 9
 ```
 
 Output 2 (cell 8):
 
 ```text
-{
-  "dense_relative_residual": 2.781635782377763e-15,
-  "cg_relative_residual": 7.682021639202151e-15,
-  "cg_iterations": 1,
-  "qsvt_signal_calls": 9
-}
+Benchmark readout
+-----------------
+Dense relative residual : 2.78e-15
+CGS relative residual : 7.68e-15
+CGS iterations : 1
+QSVT signal calls : 9
 ```
 
 ### `02_matrix_functions_spectral_baselines.ipynb`
@@ -83,12 +83,12 @@ Source: [`notebooks/benchmarks/02_matrix_functions_spectral_baselines.ipynb`](..
 Output 1 (cell 5):
 
 ```text
-{
-  "spectral_problem": "exponential-matrix-function",
-  "thermal_degree": 10,
-  "filter_degree": 10,
-  "filter_qsvt_signal_calls": 10
-}
+Matrix-function benchmark readout
+---------------------------------
+Spectral baseline problem   : exponential-matrix-function
+Thermal polynomial degree : 10
+Filter polynomial degree : 10
+Filter QSVT signal calls : 10
 ```
 
 ### `03_scaling_sweeps.ipynb`
@@ -108,13 +108,49 @@ Source: [`notebooks/benchmarks/03_scaling_sweeps.ipynb`](../../notebooks/benchma
 Output 1 (cell 5):
 
 ```text
-{
-  "report_count": 6,
-  "dimensions": [
-    6,
-    10,
-    14
-  ],
-  "max_qsvt_signal_calls": 9
-}
+Scaling sweep readout
+---------------------
+Reports : 6
+Matrix dimensions : 6, 10, 14
+Max QSVT signal calls : 9
+```
+
+### `04_classical_baseline_assumptions.ipynb`
+
+Source: [`notebooks/benchmarks/04_classical_baseline_assumptions.ipynb`](../../notebooks/benchmarks/04_classical_baseline_assumptions.ipynb)
+
+```{image} ../../results/plots/benchmarks/04_classical_baseline_assumptions-plot-01.png
+:alt: Classical Baseline Assumptions plot 1
+:width: 520px
+```
+
+```{image} ../../results/plots/benchmarks/04_classical_baseline_assumptions-plot-02.png
+:alt: Classical Baseline Assumptions plot 2
+:width: 520px
+```
+
+Output 1 (cell 6):
+
+```text
+Linear-system baseline readout
+==============================
+Case  Classical algorithm                       Condition  Relative residual  QSVT degree [polynomial degree]  Signal calls [operator calls]
+----  ----------------------------------------  ---------  ---------------------------------  -------------------------------  -----------------------------
+DLS   numpy.linalg.solve                        4          8.86e-17                           9                                9                            
+CGS   qsvt.benchmarks.conjugate_gradient_solve  4          1.77e-16                           9                                9                            
+
+DLS times a dense direct solve. CGS reports iterative-solver diagnostics, but this educational benchmark still uses dense NumPy matrix-vector products.
+```
+
+Output 2 (cell 8):
+
+```text
+Matrix-function baseline readout
+================================
+Case  Classical algorithm             QSVT degree [polynomial degree]  Signal calls [operator calls]  Best time (s)
+----  ------------------------------  -------------------------------  -----------------------------  -------------
+DSMF  dense-spectral-matrix-function  n/a                              n/a                            1.35e-04     
+PME   spectral-polynomial-evaluation  2                                2                              1.27e-04     
+
+DSMF is the exact dense spectral reference. PME applies the supplied polynomial classically and is the closest fixed-polynomial comparison to a QSVT sequence.
 ```

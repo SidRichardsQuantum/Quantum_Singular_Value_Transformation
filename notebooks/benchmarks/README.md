@@ -14,3 +14,4 @@ evaluation (PME).
 | Linear systems and PDE baselines | `01_linear_system_classical_vs_qsvt_proxy.ipynb` |
 | Spectral and polynomial matrix functions | `02_matrix_functions_spectral_baselines.ipynb` |
 | Dimension, conditioning, and degree sweeps | `03_scaling_sweeps.ipynb` |
+| Classical baseline assumptions | `04_classical_baseline_assumptions.ipynb` |

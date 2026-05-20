@@ -33,6 +33,8 @@ The repository also includes a sequence of notebooks that introduce QSVT concept
 | Explore executable examples | [Notebooks](notebooks.md) |
 | Inspect notebook-generated outputs | [Results](results.md) |
 | Compare classical baselines and QSVT proxies | [Classical benchmarks](benchmarks.md) |
+| Understand baseline assumptions | [Classical baseline details](classical_baselines.md) |
+| Interpret QSVT resource proxies | [QSVT resource model](qsvt_resource_model.md) |
 | Compare tutorial outputs directly | [Tutorial notebook outputs](tutorial_results.md) |
 | Browse real-example outputs | [Real-example notebook outputs](real_example_results.md) |
 | Inspect benchmark outputs | [Benchmark notebook outputs](benchmark_results.md) |
@@ -87,6 +89,10 @@ references. They can attach QSVT resource proxies for degree and signal-call
 comparison.
 
 See: [Classical benchmarks](benchmarks.md)
+
+For the assumptions behind each classical timing path, see
+[Classical baseline details](classical_baselines.md). For the proxy quantities
+attached to QSVT-style comparisons, see [QSVT resource model](qsvt_resource_model.md).
 
 ### Notebooks
 

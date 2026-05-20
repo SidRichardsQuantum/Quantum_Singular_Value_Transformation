@@ -376,6 +376,8 @@ Polynomial Design <qsvt/design>
 Algorithm Notes <qsvt/algorithms>
 Physics Workflows <qsvt/physics>
 Classical Benchmarks <qsvt/benchmarks>
+Classical Baseline Details <qsvt/classical_baselines>
+QSVT Resource Model <qsvt/qsvt_resource_model>
 Polynomial Templates <qsvt/templates>
 Implementation Notes <qsvt/implementation>
 API Reference <qsvt/api_reference>

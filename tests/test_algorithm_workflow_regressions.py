@@ -6,6 +6,7 @@ from qsvt.algorithms import (
     linear_system_workflow,
     resolvent_workflow,
     spectral_density_workflow,
+    spectral_thresholding_workflow,
     thermal_gibbs_workflow,
 )
 from qsvt.reports import report_to_jsonable
@@ -105,6 +106,31 @@ def test_spectral_density_workflow_regression():
     assert result.trace_density_error < 1e-4
     assert result.state_weight_error is not None
     assert result.state_weight_error < 2e-4
+
+
+def test_spectral_thresholding_workflow_regression():
+    matrix = np.diag([-0.8, -0.15, 0.2, 0.75])
+    state = np.array([0.1, 0.8, 0.5, 0.2])
+
+    result = spectral_thresholding_workflow(
+        matrix,
+        lower=-0.3,
+        upper=0.3,
+        degree=36,
+        sharpness=20.0,
+        state=state,
+        num_points=401,
+        bounded_num_points=801,
+    )
+    report = report_to_jsonable(result.as_report())
+
+    assert report["mode"] == "spectral-thresholding-workflow"
+    assert result.exact_rank == 2
+    assert abs(result.polynomial_rank_proxy - result.exact_rank) < 0.15
+    assert result.operator_relative_error < 0.12
+    assert result.leakage_outside_interval < 0.08
+    assert result.state_weight_error is not None
+    assert result.state_weight_error < 0.08
 
 
 def test_thermal_gibbs_workflow_regression():

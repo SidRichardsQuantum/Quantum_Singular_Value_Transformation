@@ -180,7 +180,21 @@ def test_cli_cheb_command_emits_json(capsys):
 
 
 def test_cli_design_report_emits_json(capsys):
-    main(["design-report", "--kind", "sign", "--gamma", "0.2", "--degree", "13"])
+    main(
+        [
+            "design-report",
+            "--kind",
+            "sign",
+            "--gamma",
+            "0.2",
+            "--degree",
+            "5",
+            "--num-points",
+            "51",
+            "--bounded-num-points",
+            "101",
+        ]
+    )
     payload = json.loads(capsys.readouterr().out)
 
     assert payload["mode"] == "design-report"
@@ -620,6 +634,67 @@ def test_cli_apply_design_emits_json(capsys):
     assert "synthesis_failed" in payload["compatibility"]["reasons"]
     assert payload["qsvt_succeeded"] is False
     assert payload["qsvt_error_type"]
+
+
+def test_cli_threshold_workflow_emits_json(capsys):
+    main(
+        [
+            "threshold-workflow",
+            "--matrix=-0.8,0,0,0;0,-0.15,0,0;0,0,0.2,0;0,0,0,0.75",
+            "--lower",
+            "-0.3",
+            "--upper",
+            "0.3",
+            "--degree",
+            "24",
+            "--sharpness",
+            "16",
+            "--state",
+            "0.1,0.8,0.5,0.2",
+            "--num-points",
+            "301",
+            "--bounded-num-points",
+            "601",
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["mode"] == "spectral-thresholding-workflow"
+    assert payload["exact_rank"] == 2
+    assert abs(payload["polynomial_rank_proxy"] - 2.0) < 0.3
+    assert payload["state_weight_error"] < 0.2
+    assert payload["diagnostics"]["builder"] == "design_interval_projector_polynomial"
+
+
+def test_cli_threshold_workflow_writes_output(tmp_path, capsys):
+    output_path = tmp_path / "threshold-workflow.json"
+
+    main(
+        [
+            "threshold-workflow",
+            "--matrix=-1,0,0;0,0,0;0,0,1",
+            "--lower",
+            "-0.25",
+            "--upper",
+            "0.25",
+            "--degree",
+            "24",
+            "--num-points",
+            "301",
+            "--bounded-num-points",
+            "601",
+            "--output",
+            str(output_path),
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+    written = json.loads(output_path.read_text(encoding="utf-8"))
+
+    assert payload["mode"] == "spectral-thresholding-workflow"
+    assert payload["report_written"] is True
+    assert written["exact_rank"] == 1
+    assert written["lower"] == -0.25
+    assert written["upper"] == 0.25
 
 
 def test_cli_benchmark_dense_solve_emits_json(capsys):

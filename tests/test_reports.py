@@ -2,8 +2,8 @@ import json
 
 import matplotlib
 import numpy as np
+import pytest
 
-from qsvt.design import design_sign_diagnostics
 from qsvt.reports import (
     load_report,
     plot_approximation_report,
@@ -13,6 +13,26 @@ from qsvt.reports import (
 )
 
 matplotlib.use("Agg")
+
+
+@pytest.fixture
+def approximation_report():
+    xs = np.linspace(-1.0, 1.0, 11)
+    target_values = xs**2
+    polynomial_values = target_values + 0.01 * xs
+    errors = polynomial_values - target_values
+    return {
+        "builder": "test_polynomial",
+        "kind": "test",
+        "degree": 2,
+        "fit_domain": (-1.0, 1.0),
+        "xs": xs,
+        "target_values": target_values,
+        "polynomial_values": polynomial_values,
+        "errors": errors,
+        "max_error": float(np.max(np.abs(errors))),
+        "bounded_margin": 0.0,
+    }
 
 
 def test_report_to_jsonable_converts_numpy_values():
@@ -55,34 +75,21 @@ def test_report_to_jsonable_converts_complex_values():
     json.dumps(payload)
 
 
-def test_save_and_load_report_round_trip(tmp_path):
-    report = design_sign_diagnostics(
-        gamma=0.2,
-        degree=7,
-        num_points=51,
-        bounded_num_points=101,
-    )
+def test_save_and_load_report_round_trip(tmp_path, approximation_report):
     path = tmp_path / "report.json"
 
-    written = save_report(report, path)
+    written = save_report(approximation_report, path)
     loaded = load_report(path)
 
     assert written == path
-    assert loaded["builder"] == "design_sign_polynomial"
+    assert loaded["builder"] == "test_polynomial"
     assert loaded["fit_domain"] == [-1.0, 1.0]
-    assert len(loaded["xs"]) == 51
+    assert len(loaded["xs"]) == 11
     assert loaded["max_error"] >= 0.0
 
 
-def test_plot_approximation_report_returns_figure_and_axes():
-    report = design_sign_diagnostics(
-        gamma=0.2,
-        degree=7,
-        num_points=51,
-        bounded_num_points=101,
-    )
-
-    fig, axes = plot_approximation_report(report)
+def test_plot_approximation_report_returns_figure_and_axes(approximation_report):
+    fig, axes = plot_approximation_report(approximation_report)
 
     assert fig is not None
     assert len(axes) == 2
@@ -90,16 +97,10 @@ def test_plot_approximation_report_returns_figure_and_axes():
     assert axes[1].get_ylabel() == "error"
 
 
-def test_save_report_plot_writes_image(tmp_path):
-    report = design_sign_diagnostics(
-        gamma=0.2,
-        degree=7,
-        num_points=51,
-        bounded_num_points=101,
-    )
+def test_save_report_plot_writes_image(tmp_path, approximation_report):
     path = tmp_path / "report.png"
 
-    written = save_report_plot(report, path)
+    written = save_report_plot(approximation_report, path)
 
     assert written == path
     assert path.exists()

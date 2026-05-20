@@ -15,6 +15,8 @@ import numpy as np
 from ._algorithm_reports import scaled_operator_report
 from .compatibility import qsvt_compatibility_report
 from .design import (
+    design_interval_projector_diagnostics,
+    design_interval_projector_polynomial,
     design_positive_inverse_diagnostics,
     design_positive_inverse_polynomial,
 )
@@ -255,6 +257,60 @@ class SpectralDensityWorkflowResult:
             "state": self.state,
             "polynomial_state_weights": self.polynomial_state_weights,
             "reference_state_weights": self.reference_state_weights,
+            "state_weight_error": self.state_weight_error,
+        }
+
+
+@dataclass(frozen=True)
+class SpectralThresholdingWorkflowResult:
+    """
+    Structured output from a spectral interval-projector workflow.
+    """
+
+    coeffs: np.ndarray
+    scaled_operator: ScaledOperator
+    polynomial_projector: np.ndarray
+    reference_projector: np.ndarray
+    lower: float
+    upper: float
+    scaled_lower: float
+    scaled_upper: float
+    sharpness: float
+    degree: int
+    exact_rank: int
+    polynomial_rank_proxy: float | complex
+    operator_relative_error: float
+    leakage_outside_interval: float
+    diagnostics: dict[str, object]
+    state: np.ndarray | None = None
+    polynomial_state_weight: float | complex | None = None
+    reference_state_weight: float | complex | None = None
+    state_weight_error: float | None = None
+
+    def as_report(self) -> dict[str, Any]:
+        """
+        Return a report-style dictionary for JSON conversion or persistence.
+        """
+        return {
+            "mode": "spectral-thresholding-workflow",
+            "degree": self.degree,
+            "lower": self.lower,
+            "upper": self.upper,
+            "scaled_lower": self.scaled_lower,
+            "scaled_upper": self.scaled_upper,
+            "sharpness": self.sharpness,
+            "coeffs": self.coeffs,
+            "scaled_operator": scaled_operator_report(self.scaled_operator),
+            "polynomial_projector": self.polynomial_projector,
+            "reference_projector": self.reference_projector,
+            "exact_rank": self.exact_rank,
+            "polynomial_rank_proxy": self.polynomial_rank_proxy,
+            "operator_relative_error": self.operator_relative_error,
+            "leakage_outside_interval": self.leakage_outside_interval,
+            "diagnostics": self.diagnostics,
+            "state": self.state,
+            "polynomial_state_weight": self.polynomial_state_weight,
+            "reference_state_weight": self.reference_state_weight,
             "state_weight_error": self.state_weight_error,
         }
 
@@ -716,6 +772,111 @@ def spectral_density_workflow(
     )
 
 
+def spectral_thresholding_workflow(
+    matrix: np.ndarray,
+    *,
+    lower: float,
+    upper: float,
+    degree: int,
+    sharpness: float = 12.0,
+    state: np.ndarray | None = None,
+    num_points: int = 2001,
+    bounded_num_points: int = 4001,
+) -> SpectralThresholdingWorkflowResult:
+    """
+    Approximate a spectral interval projector with a QSVT-style polynomial.
+
+    The physical interval ``[lower, upper]`` is mapped into the scaled
+    ``[-1, 1]`` coordinate before designing a smooth interval-projector
+    polynomial. The exact reference is the hard spectral projector onto
+    eigenvalues of ``matrix`` that lie inside the physical interval.
+    """
+    lower = float(lower)
+    upper = float(upper)
+    if not lower < upper:
+        raise ValueError("lower must be less than upper.")
+
+    evals, _ = eigh_hermitian(matrix)
+    if lower <= float(evals[0]) or upper >= float(evals[-1]):
+        raise ValueError(
+            "lower and upper must lie strictly inside the matrix spectral range."
+        )
+
+    scaled = rescale_hermitian_to_unit_interval(matrix)
+    scaled_lower = (lower - scaled.offset) / scaled.scale
+    scaled_upper = (upper - scaled.offset) / scaled.scale
+    if not (-1.0 < scaled_lower < scaled_upper < 1.0):
+        raise ValueError("scaled interval must lie strictly inside [-1, 1].")
+
+    coeffs = design_interval_projector_polynomial(
+        lower=scaled_lower,
+        upper=scaled_upper,
+        degree=degree,
+        sharpness=sharpness,
+        num_points=num_points,
+    )
+    diagnostics = design_interval_projector_diagnostics(
+        lower=scaled_lower,
+        upper=scaled_upper,
+        degree=degree,
+        sharpness=sharpness,
+        num_points=num_points,
+        bounded_num_points=bounded_num_points,
+    )
+    polynomial_projector = apply_polynomial_to_hermitian(scaled.matrix, coeffs)
+    reference_projector = apply_function_to_hermitian(
+        np.asarray(matrix),
+        lambda x: np.where((lower <= x) & (x <= upper), 1.0, 0.0),
+    )
+
+    inside_mask = (evals >= lower) & (evals <= upper)
+    exact_rank = int(np.count_nonzero(inside_mask))
+    outside_projector = apply_function_to_hermitian(
+        np.asarray(matrix),
+        lambda x: np.where((x < lower) | (x > upper), 1.0, 0.0),
+    )
+    leakage = float(np.linalg.norm(outside_projector @ polynomial_projector))
+
+    state_vec = None
+    polynomial_weight = None
+    reference_weight = None
+    state_weight_error = None
+    if state is not None:
+        state_vec = _normalize_state(_validate_state(state, scaled.matrix.shape[0]))
+        polynomial_weight = np.real_if_close(
+            np.vdot(state_vec, polynomial_projector @ state_vec)
+        ).item()
+        reference_weight = np.real_if_close(
+            np.vdot(state_vec, reference_projector @ state_vec)
+        ).item()
+        state_weight_error = float(abs(polynomial_weight - reference_weight))
+
+    return SpectralThresholdingWorkflowResult(
+        coeffs=coeffs,
+        scaled_operator=scaled,
+        polynomial_projector=polynomial_projector,
+        reference_projector=reference_projector,
+        lower=lower,
+        upper=upper,
+        scaled_lower=float(scaled_lower),
+        scaled_upper=float(scaled_upper),
+        sharpness=float(sharpness),
+        degree=int(degree),
+        exact_rank=exact_rank,
+        polynomial_rank_proxy=np.real_if_close(np.trace(polynomial_projector)).item(),
+        operator_relative_error=operator_error(
+            reference_projector,
+            polynomial_projector,
+        ),
+        leakage_outside_interval=leakage,
+        diagnostics=diagnostics,
+        state=state_vec,
+        polynomial_state_weight=polynomial_weight,
+        reference_state_weight=reference_weight,
+        state_weight_error=state_weight_error,
+    )
+
+
 def thermal_gibbs_workflow(
     matrix: np.ndarray,
     *,
@@ -791,11 +952,13 @@ __all__ = [
     "LinearSystemWorkflowResult",
     "ResolventWorkflowResult",
     "SpectralDensityWorkflowResult",
+    "SpectralThresholdingWorkflowResult",
     "ThermalGibbsWorkflowResult",
     "ground_state_filtering_workflow",
     "hamiltonian_simulation_workflow",
     "linear_system_workflow",
     "resolvent_workflow",
     "spectral_density_workflow",
+    "spectral_thresholding_workflow",
     "thermal_gibbs_workflow",
 ]

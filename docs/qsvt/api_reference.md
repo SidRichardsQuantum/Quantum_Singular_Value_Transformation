@@ -117,10 +117,46 @@ matrix-function polynomial builders with exact spectral references:
 - `hamiltonian_simulation_workflow`
 - `resolvent_workflow`
 - `spectral_density_workflow`
+- `spectral_thresholding_workflow`
 - `thermal_gibbs_workflow`
 
 Each returns a frozen dataclass with numerical outputs, diagnostics, and an
 `as_report()` helper.
+
+Use `spectral_thresholding_workflow` when you want a smooth QSVT-style
+interval projector and an exact hard-projector reference:
+
+```python
+import numpy as np
+from qsvt.algorithms import spectral_thresholding_workflow
+
+matrix = np.diag([-0.8, -0.15, 0.2, 0.75])
+state = np.array([0.1, 0.8, 0.5, 0.2])
+
+result = spectral_thresholding_workflow(
+    matrix,
+    lower=-0.3,
+    upper=0.3,
+    degree=32,
+    sharpness=18.0,
+    state=state,
+)
+
+print(result.exact_rank)
+print(result.polynomial_rank_proxy)
+print(result.leakage_outside_interval)
+```
+
+The same workflow is available from the CLI:
+
+```bash
+qsvt threshold-workflow \
+  --matrix="-0.8,0,0,0;0,-0.15,0,0;0,0,0.2,0;0,0,0,0.75" \
+  --lower -0.3 \
+  --upper 0.3 \
+  --degree 32 \
+  --state "0.1,0.8,0.5,0.2"
+```
 
 For workflow-level targets, rescaling conventions, diagnostics, and limitations,
 see [Algorithm notes](algorithms.md).
@@ -152,6 +188,9 @@ qsvt resource-report --poly "0,0,1" --matrix-dimension 4 --no-synthesis
 These are proxy reports for simulator-scale comparison. They do not include
 block-encoding construction, state preparation, error correction, compilation,
 or hardware runtime costs.
+
+For interpretation limits and omitted costs, see
+[QSVT resource model](qsvt_resource_model.md).
 
 ---
 
@@ -199,6 +238,9 @@ qsvt benchmark cg-solve \
 Benchmark reports are classical references and QSVT cost proxies. They are
 intended to support advantage-oriented comparisons, not to claim end-to-end
 quantum speedups.
+
+For per-baseline assumptions and cost-model context, see
+[Classical baseline details](classical_baselines.md).
 
 ---
 
