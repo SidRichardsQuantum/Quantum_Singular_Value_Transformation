@@ -4,8 +4,8 @@
   "problem": "dense-linear-system",
   "matrix_dimension": 12,
   "repeats": 3,
-  "best_time_seconds": 1.2943999536219053e-05,
-  "mean_time_seconds": 1.9486333258100785e-05,
+  "best_time_seconds": 1.0719999409047887e-05,
+  "mean_time_seconds": 1.8090665738175932e-05,
   "metrics": {
     "residual_norm": 7.091807567026073e-15,
     "relative_residual_norm": 2.781635782377763e-15,
