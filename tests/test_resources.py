@@ -16,6 +16,11 @@ def test_estimate_qsvt_resources_infers_width_from_dimension():
     assert report["inverse_signal_operator_calls"] == 2
     assert report["encoding_qubits"] == 2
     assert report["total_qubits"] == 3
+    assert report["estimate_kind"] == "proxy"
+    assert report["requires_block_encoding"] is True
+    assert report["requires_state_preparation"] is True
+    assert report["fault_tolerant_estimate"] is False
+    assert "block_encoding_construction" in report["omitted_costs"]
     assert "unused basis states" in " ".join(report["notes"])
 
 
@@ -30,6 +35,12 @@ def test_qsvt_resource_report_combines_resources_and_compatibility():
     assert report["resources"]["degree"] == 2
     assert report["resources"]["encoding_qubits"] == 1
     assert report["compatibility"]["attempted_pennylane_synthesis"] is False
+    assert report["estimate_kind"] == "proxy"
+    assert report["resources"]["estimate_kind"] == "proxy"
+    assert report["requires_block_encoding"] is True
+    assert report["requires_state_preparation"] is True
+    assert report["fault_tolerant_estimate"] is False
+    assert "state_preparation" in report["omitted_costs"]
     assert report["limitations"]
 
 

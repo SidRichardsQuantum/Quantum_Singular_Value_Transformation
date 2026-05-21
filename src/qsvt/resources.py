@@ -33,12 +33,24 @@ class ResourceEstimate:
     total_qubits: int | None = None
     block_encoding: str = "unspecified"
     notes: tuple[str, ...] = ()
+    estimate_kind: str = "proxy"
+    omitted_costs: tuple[str, ...] = (
+        "block_encoding_construction",
+        "state_preparation",
+        "amplitude_amplification",
+        "error_correction",
+        "hardware_compilation",
+    )
+    requires_block_encoding: bool = True
+    requires_state_preparation: bool = True
+    fault_tolerant_estimate: bool = False
 
     def as_report(self) -> dict[str, object]:
         """
         Return a JSON-friendly report dictionary.
         """
         return {
+            "estimate_kind": self.estimate_kind,
             "degree": self.degree,
             "coefficient_count": self.coefficient_count,
             "qsp_phase_count": self.qsp_phase_count,
@@ -49,6 +61,10 @@ class ResourceEstimate:
             "total_qubits": self.total_qubits,
             "block_encoding": self.block_encoding,
             "notes": list(self.notes),
+            "omitted_costs": list(self.omitted_costs),
+            "requires_block_encoding": self.requires_block_encoding,
+            "requires_state_preparation": self.requires_state_preparation,
+            "fault_tolerant_estimate": self.fault_tolerant_estimate,
         }
 
 
@@ -147,10 +163,15 @@ def qsvt_resource_report(
 
     return {
         "mode": "resource-report",
+        "estimate_kind": estimate.estimate_kind,
         "coeffs": coeff_arr,
         "resources": estimate.as_report(),
         "compatibility": compatibility,
         "diagnostics": diagnostics or {},
+        "requires_block_encoding": estimate.requires_block_encoding,
+        "requires_state_preparation": estimate.requires_state_preparation,
+        "fault_tolerant_estimate": estimate.fault_tolerant_estimate,
+        "omitted_costs": list(estimate.omitted_costs),
         "limitations": [
             "No block-encoding construction cost is included.",
             "No state-preparation, amplitude-amplification, error-correction, "

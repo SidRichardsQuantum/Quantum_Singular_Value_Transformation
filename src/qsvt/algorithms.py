@@ -7,6 +7,7 @@ application, and classical diagnostics into small executable workflows.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
@@ -419,6 +420,28 @@ def _relative_error(reference: np.ndarray, approximate: np.ndarray) -> float:
     return float(diff / denom)
 
 
+def _state_weight_error(
+    state: np.ndarray | None,
+    reference: np.ndarray | None,
+    approximate: np.ndarray | None,
+) -> float | None:
+    if state is None:
+        return None
+    if reference is None or approximate is None:
+        raise ValueError("state-weight arrays are required when state is provided.")
+    return _relative_error(reference, approximate)
+
+
+def _gaussian_window_function(
+    center: float,
+    width: float,
+) -> Callable[[np.ndarray], np.ndarray]:
+    def gaussian_window(x: np.ndarray) -> np.ndarray:
+        return np.exp(-0.5 * ((x - center) / width) ** 2)
+
+    return gaussian_window
+
+
 def linear_system_workflow(
     matrix: np.ndarray,
     rhs: np.ndarray,
@@ -724,9 +747,7 @@ def spectral_density_workflow(
         polynomial_operator = apply_polynomial_to_hermitian(scaled.matrix, coeffs)
         reference_operator = apply_function_to_hermitian(
             np.asarray(matrix),
-            lambda x, c=float(physical_center): np.exp(
-                -0.5 * ((x - c) / float(width)) ** 2,
-            ),
+            _gaussian_window_function(float(physical_center), float(width)),
         )
         polynomial_density.append(np.trace(polynomial_operator) / dimension)
         reference_density.append(np.trace(reference_operator) / dimension)
@@ -764,10 +785,10 @@ def spectral_density_workflow(
         state=state_vec,
         polynomial_state_weights=polynomial_weights_arr,
         reference_state_weights=reference_weights_arr,
-        state_weight_error=(
-            _relative_error(reference_weights_arr, polynomial_weights_arr)
-            if state_vec is not None
-            else None
+        state_weight_error=_state_weight_error(
+            state_vec,
+            reference_weights_arr,
+            polynomial_weights_arr,
         ),
     )
 

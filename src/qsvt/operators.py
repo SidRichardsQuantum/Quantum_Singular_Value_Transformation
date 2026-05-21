@@ -33,7 +33,8 @@ def _as_numeric_operator(operator: float | complex | np.ndarray):
         If a matrix input is not square.
     """
     if np.isscalar(operator):
-        return complex(operator) if np.iscomplexobj(operator) else float(operator)
+        scalar = np.asarray(operator).item()
+        return complex(scalar) if np.iscomplexobj(operator) else float(scalar)
 
     arr = np.asarray(operator)
     if arr.ndim != 2 or arr.shape[0] != arr.shape[1]:

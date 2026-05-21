@@ -2,6 +2,30 @@
 
 ---
 
+## [0.1.23] – 21st May 2026
+
+### Added
+
+- added `qsvt examples` CLI discovery output for workflow families,
+  benchmark commands, and compact copy-pasteable examples
+- added `scripts/release_check.py` for local release preflight validation
+- added mypy type-checking configuration, optional type dependencies, and CI
+  type-check coverage for `src/qsvt`
+- added focused regression coverage for spectral, matrix-construction, and
+  approximation utility modules
+
+### Changed
+
+- enriched QSVT resource proxy reports with explicit proxy metadata, omitted
+  costs, block-encoding/state-preparation flags, and non-fault-tolerant
+  estimate markers
+- tightened NumPy and optional-value annotations across core modules so the
+  package passes `mypy src/qsvt`
+- raised fast-suite coverage for core utility modules and the package overall
+- updated package metadata and release markers for `0.1.23`
+
+---
+
 ## [0.1.22] – 20th May 2026
 
 ### Added

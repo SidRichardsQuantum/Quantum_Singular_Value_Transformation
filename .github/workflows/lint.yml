@@ -22,11 +22,14 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install package and lint dependencies
-        run: python -m pip install -e ".[lint]"
+      - name: Install package and lint/type dependencies
+        run: python -m pip install -e ".[lint,type]"
 
       - name: Run Ruff
         run: ruff check .
 
       - name: Check formatting
         run: ruff format --check src tests
+
+      - name: Run mypy
+        run: mypy src/qsvt

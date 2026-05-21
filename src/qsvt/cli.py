@@ -35,6 +35,8 @@ from __future__ import annotations
 import argparse
 from typing import Iterable
 
+import numpy as np
+
 from ._cli_utils import (
     add_report_output_args,
     emit_cli_result,
@@ -85,6 +87,26 @@ from .templates import (
     sqrt_approximation_diagnostics,
 )
 from .workflow import design_workflow
+
+DESIGN_KINDS = [
+    "inverse",
+    "sign",
+    "projector",
+    "sqrt",
+    "power",
+    "filter",
+    "interval_projector",
+]
+
+TEMPLATE_KINDS = ["inverse", "sign", "filter", "sqrt", "exponential"]
+
+BENCHMARK_COMMANDS = [
+    "eigh",
+    "dense-solve",
+    "cg-solve",
+    "polynomial",
+    "spectral-function",
+]
 
 
 def cmd_scalar(args: argparse.Namespace) -> dict:
@@ -370,7 +392,7 @@ def cmd_matrix_report(args: argparse.Namespace) -> dict:
     poly = parse_poly(args.poly)
 
     return qsvt_matrix_transform_report(
-        matrix,
+        np.asarray(matrix),
         poly,
         encoding_wires=list(range(args.wires)),
     )
@@ -522,9 +544,9 @@ def cmd_threshold_workflow(args: argparse.Namespace) -> dict:
     """
     Build a spectral interval-projector workflow report.
     """
-    state = parse_complex_list(args.state) if args.state else None
+    state = np.asarray(parse_complex_list(args.state)) if args.state else None
     result = spectral_thresholding_workflow(
-        parse_matrix(args.matrix),
+        np.asarray(parse_matrix(args.matrix)),
         lower=args.lower,
         upper=args.upper,
         degree=args.degree,
@@ -599,6 +621,34 @@ def cmd_benchmark_spectral_function(args: argparse.Namespace) -> dict:
     )
 
 
+def cmd_examples(args: argparse.Namespace) -> dict:
+    """
+    Return compact CLI discovery metadata and copy-pasteable examples.
+    """
+    return {
+        "mode": "examples",
+        "design_kinds": DESIGN_KINDS,
+        "template_kinds": TEMPLATE_KINDS,
+        "benchmark_commands": BENCHMARK_COMMANDS,
+        "workflow_commands": [
+            "design-workflow",
+            "design-sweep",
+            "threshold-workflow",
+            "resource-report",
+        ],
+        "examples": [
+            'qsvt scalar --x 0.5 --poly "0,0,1"',
+            "qsvt design-workflow --kind sign --gamma 0.2 --degree 13 --no-synthesis",
+            'qsvt design-sweep --kind sign --degrees "5,9,13" --gamma 0.2 '
+            "--no-synthesis --output sign-degree-sweep.json",
+            'qsvt resource-report --poly "0,0,1" --matrix-dimension 4 --no-synthesis',
+            'qsvt benchmark cg-solve --matrix "4,1;1,3" --rhs "1,2" --qsvt-poly "0,1"',
+            'qsvt threshold-workflow --matrix "-1,0,0;0,0,0;0,0,1" '
+            "--lower -0.25 --upper 0.25 --degree 24",
+        ],
+    }
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="qsvt",
@@ -606,6 +656,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     sub = parser.add_subparsers(dest="command", required=True)
+
+    p_examples = sub.add_parser(
+        "examples",
+        help="List available workflow families and compact CLI examples",
+    )
+    p_examples.set_defaults(func=cmd_examples)
 
     p_scalar = sub.add_parser(
         "scalar",
@@ -670,15 +726,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_design_report.add_argument(
         "--kind",
-        choices=[
-            "inverse",
-            "sign",
-            "projector",
-            "sqrt",
-            "power",
-            "filter",
-            "interval_projector",
-        ],
+        choices=DESIGN_KINDS,
         required=True,
     )
     p_design_report.add_argument("--degree", type=int, required=True)
@@ -710,15 +758,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_design_workflow.add_argument(
         "--kind",
-        choices=[
-            "inverse",
-            "sign",
-            "projector",
-            "sqrt",
-            "power",
-            "filter",
-            "interval_projector",
-        ],
+        choices=DESIGN_KINDS,
         required=True,
     )
     p_design_workflow.add_argument("--degree", type=int, required=True)
@@ -756,15 +796,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_design_sweep.add_argument(
         "--kind",
-        choices=[
-            "inverse",
-            "sign",
-            "projector",
-            "sqrt",
-            "power",
-            "filter",
-            "interval_projector",
-        ],
+        choices=DESIGN_KINDS,
         required=True,
     )
     p_design_sweep.add_argument(
@@ -807,7 +839,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_template_report.add_argument(
         "--kind",
-        choices=["inverse", "sign", "filter", "sqrt", "exponential"],
+        choices=TEMPLATE_KINDS,
         required=True,
     )
     p_template_report.add_argument("--degree", type=int, required=True)
@@ -957,15 +989,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_design_compatibility.add_argument(
         "--kind",
-        choices=[
-            "inverse",
-            "sign",
-            "projector",
-            "sqrt",
-            "power",
-            "filter",
-            "interval_projector",
-        ],
+        choices=DESIGN_KINDS,
         required=True,
     )
     p_design_compatibility.add_argument("--degree", type=int, required=True)
@@ -997,15 +1021,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_apply_design.add_argument(
         "--kind",
-        choices=[
-            "inverse",
-            "sign",
-            "projector",
-            "sqrt",
-            "power",
-            "filter",
-            "interval_projector",
-        ],
+        choices=DESIGN_KINDS,
         required=True,
     )
     p_apply_design.add_argument(

@@ -35,7 +35,7 @@ Real physics examples live in `notebooks/real_examples/`. The notebooks remain
 the executable source of truth, and selected embedded PNG outputs are committed
 under `results/plots/real_examples/` for stable documentation rendering.
 [docs/qsvt/real_example_results.md](docs/qsvt/real_example_results.md) renders
-the real-example plot ledger and representative gallery.
+the real-example plot ledger.
 
 | notebook | current output status | result focus |
 | --- | --- | --- |
@@ -85,7 +85,7 @@ from the package CLI.
 | `results/tables/design_sweep_summary.csv` | design sweep summary table | n/a | n/a | tabular summary of committed design-sweep JSON reports |
 | `results/tables/qsvt-error-summary.csv` | release summary table | n/a | n/a | compact index over the generated JSON reports |
 
-These snapshots were refreshed for package version `0.1.22`.
+These snapshots were refreshed for package version `0.1.23`.
 
 ## Benchmark Artefacts
 
@@ -112,7 +112,7 @@ The benchmark notebook set also includes
 executable assumption-check notebook rather than a committed timing-artifact
 generator.
 
-Benchmark artefacts were refreshed for package version `0.1.22`.
+Benchmark artefacts were refreshed for package version `0.1.23`.
 
 ## Real-Example Artefacts
 

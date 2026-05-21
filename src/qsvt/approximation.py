@@ -223,7 +223,7 @@ def chebyshev_fit_function(
     domain = _validate_domain(domain)
 
     xs = np.linspace(domain[0], domain[1], num_points)
-    ts = scale_to_chebyshev_domain(xs, domain)
+    ts = np.asarray(scale_to_chebyshev_domain(xs, domain), dtype=float)
 
     ys = np.asarray(func(xs), dtype=float)
     coeffs = np.polynomial.chebyshev.chebfit(ts, ys, degree)

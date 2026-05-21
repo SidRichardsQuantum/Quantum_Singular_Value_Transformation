@@ -111,7 +111,7 @@ def _select_positive_inverse_candidate(
         name: _positive_inverse_design_error(coeffs, gamma, num_points)
         for name, coeffs in candidates.items()
     }
-    selected = min(errors, key=errors.get)
+    selected = min(errors, key=lambda name: errors[name])
     return candidates[selected], selected
 
 

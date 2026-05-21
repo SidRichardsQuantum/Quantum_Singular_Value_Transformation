@@ -4,8 +4,8 @@
   "problem": "polynomial-matrix-function",
   "matrix_dimension": 10,
   "repeats": 3,
-  "best_time_seconds": 0.00015894699936325196,
-  "mean_time_seconds": 0.00019130066660485076,
+  "best_time_seconds": 0.00018091700030709035,
+  "mean_time_seconds": 0.0001892930001001029,
   "metrics": {
     "polynomial_degree": 10,
     "coefficient_count": 11,
@@ -13,6 +13,7 @@
   },
   "qsvt_proxy": {
     "mode": "resource-report",
+    "estimate_kind": "proxy",
     "coeffs": [
       0.3678794411711741,
       -0.36787944124556154,
@@ -27,6 +28,7 @@
       1.036058209494733e-07
     ],
     "resources": {
+      "estimate_kind": "proxy",
       "degree": 10,
       "coefficient_count": 11,
       "qsp_phase_count": 11,
@@ -40,7 +42,17 @@
         "Proxy estimate based on polynomial degree; not a hardware resource model.",
         "Signal-call counts assume one forward and one inverse query per QSVT step.",
         "Encoding width includes unused basis states."
-      ]
+      ],
+      "omitted_costs": [
+        "block_encoding_construction",
+        "state_preparation",
+        "amplitude_amplification",
+        "error_correction",
+        "hardware_compilation"
+      ],
+      "requires_block_encoding": true,
+      "requires_state_preparation": true,
+      "fault_tolerant_estimate": false
     },
     "compatibility": {
       "mode": "qsvt-compatibility-report",
@@ -78,6 +90,16 @@
       "compatible": false
     },
     "diagnostics": {},
+    "requires_block_encoding": true,
+    "requires_state_preparation": true,
+    "fault_tolerant_estimate": false,
+    "omitted_costs": [
+      "block_encoding_construction",
+      "state_preparation",
+      "amplitude_amplification",
+      "error_correction",
+      "hardware_compilation"
+    ],
     "limitations": [
       "No block-encoding construction cost is included.",
       "No state-preparation, amplitude-amplification, error-correction, or hardware compilation cost is included.",

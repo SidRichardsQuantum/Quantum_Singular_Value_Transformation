@@ -317,6 +317,9 @@ phase-count proxy, signal-call proxy, optional encoding width, and compatibility
 metadata. It is for comparing small workflows; it is not a hardware runtime or
 fault-tolerant resource estimate.
 
+Use `qsvt examples` to list workflow families, benchmark subcommands, and
+compact command-line examples.
+
 Classical benchmark report:
 
 ```bash
@@ -346,6 +349,10 @@ to also emit the full JSON payload on stdout.
 
 Compatibility reports distinguish bounded polynomial approximation from
 PennyLane QSVT synthesis compatibility.
+
+For release validation from a local checkout, run
+`python scripts/release_check.py` to execute lint, formatting, type, fast test,
+documentation, build, and distribution metadata checks.
 
 ## Where To Go Next
 

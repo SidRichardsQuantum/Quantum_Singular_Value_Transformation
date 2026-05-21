@@ -98,6 +98,7 @@ qsvt design-sweep --kind sign --degrees "5,9,13,17" --gamma 0.2 \
   --no-synthesis --output sign-degree-sweep.json
 qsvt resource-report --poly "0,0,1" --matrix-dimension 4 --no-synthesis
 qsvt benchmark cg-solve --matrix "4,1;1,3" --rhs "1,2" --qsvt-poly "0,1"
+qsvt examples
 ```
 
 See [USAGE.md](USAGE.md) for full Python and CLI workflows.
@@ -158,7 +159,7 @@ inline type annotations shipped with the public modules.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.1.22`
+Current release: `0.1.23`
 
 ## Notebooks
 

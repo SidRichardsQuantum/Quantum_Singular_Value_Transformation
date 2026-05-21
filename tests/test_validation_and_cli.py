@@ -167,6 +167,17 @@ def test_cli_poly_command_emits_json(capsys):
     assert payload["value"] == 0.25
 
 
+def test_cli_examples_command_emits_discovery_payload(capsys):
+    main(["examples"])
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["mode"] == "examples"
+    assert "sign" in payload["design_kinds"]
+    assert "exponential" in payload["template_kinds"]
+    assert "cg-solve" in payload["benchmark_commands"]
+    assert any("resource-report" in example for example in payload["examples"])
+
+
 def test_cli_cheb_command_emits_json(capsys):
     main(["cheb", "--degree", "3", "--x", "0.5"])
     payload = json.loads(capsys.readouterr().out)

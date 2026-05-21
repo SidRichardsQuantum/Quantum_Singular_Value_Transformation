@@ -4,8 +4,8 @@
   "problem": "exponential-matrix-function",
   "matrix_dimension": 10,
   "repeats": 3,
-  "best_time_seconds": 9.144100113189779e-05,
-  "mean_time_seconds": 0.00010577766746185564,
+  "best_time_seconds": 0.000136343999656674,
+  "mean_time_seconds": 0.00014914833309376263,
   "metrics": {
     "function": "exponential",
     "min_eigenvalue": 0.02067219782410493,

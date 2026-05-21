@@ -77,8 +77,8 @@ def qsvt_compatibility_report(
     if coeffs_finite:
         xs = np.linspace(lower, upper, int(bounded_num_points))
         values = np.asarray(eval_polynomial(coeffs, xs), dtype=float)
-        max_abs_value: float | None = float(np.max(np.abs(values)))
-        bounded_margin: float | None = float(bound - max_abs_value)
+        max_abs_value = float(np.max(np.abs(values)))
+        bounded_margin = float(bound - max_abs_value)
         is_bounded = bool(max_abs_value <= float(bound) + 1e-12)
     else:
         max_abs_value = None
