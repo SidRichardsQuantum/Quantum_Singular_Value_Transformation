@@ -39,9 +39,10 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e ".[dev,docs]"
 
-      - name: Refresh notebook result artefacts
+      - name: Verify committed notebook result artefacts
         run: |
-          python scripts/extract_notebook_plots.py --preset all --execute --write-docs
+          python scripts/extract_notebook_plots.py --preset all --write-docs
+          git diff --exit-code -- docs/qsvt/tutorial_results.md docs/qsvt/real_example_results.md docs/qsvt/benchmark_results.md results/tables/real_examples_plot_manifest.csv results/tables/benchmark_plot_manifest.csv
 
       - name: Build docs
         run: |

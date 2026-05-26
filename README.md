@@ -159,7 +159,7 @@ inline type annotations shipped with the public modules.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.1.23`
+Current release: `0.1.24`
 
 ## Notebooks
 
@@ -182,6 +182,23 @@ linear-system, spectral, and polynomial matrix-function baselines against
 QSVT-oriented resource proxies and their underlying assumptions.
 
 See [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md) for the full notebook map.
+
+## Notebook Result Workflow
+
+Committed notebook outputs and generated result artefacts are the source of
+truth for the published documentation. GitHub Pages builds from committed
+`docs/qsvt/*_results.md`, `results/plots/`, and `results/tables/` files; it
+does not execute notebooks during deployment.
+
+Before committing notebook or result changes, run:
+
+```bash
+scripts/update_notebook_results.sh
+```
+
+Commit the updated notebooks, extracted plots, manifests, and generated result
+pages together. CI checks that the committed result pages and manifests can be
+regenerated from the committed notebook outputs without re-executing notebooks.
 
 ## Scope
 

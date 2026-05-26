@@ -2,6 +2,29 @@
 
 ---
 
+## [0.1.24] – 26th May 2026
+
+### Added
+
+- added `scripts/update_notebook_results.sh` as the local pre-commit helper for
+  executing notebooks, extracting embedded outputs, and regenerating committed
+  notebook result pages
+- documented the committed notebook artefact workflow in the README and results
+  ledger so GitHub Pages publishes committed outputs rather than executing
+  notebooks during deployment
+
+### Changed
+
+- renamed the notebook CI workflow to `Notebook result check` and removed the
+  scheduled notebook execution trigger
+- changed the GitHub Pages workflow to verify committed notebook result pages
+  and plot manifests without re-executing notebooks before building docs
+- refreshed real-example result page and plot-manifest cell indices so the new
+  committed-artifact verification gate is clean for the release
+- updated package metadata and release markers for `0.1.24`
+
+---
+
 ## [0.1.23] – 21st May 2026
 
 ### Added

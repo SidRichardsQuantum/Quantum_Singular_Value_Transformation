@@ -4,8 +4,8 @@
   "problem": "positive-definite-linear-system",
   "matrix_dimension": 12,
   "repeats": 3,
-  "best_time_seconds": 0.0001065480000761454,
-  "mean_time_seconds": 0.00020150233331150957,
+  "best_time_seconds": 0.0001001969999379071,
+  "mean_time_seconds": 0.00011800033325926051,
   "metrics": {
     "iterations": 1,
     "converged": true,

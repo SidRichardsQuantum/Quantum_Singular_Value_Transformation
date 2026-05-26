@@ -85,7 +85,7 @@ from the package CLI.
 | `results/tables/design_sweep_summary.csv` | design sweep summary table | n/a | n/a | tabular summary of committed design-sweep JSON reports |
 | `results/tables/qsvt-error-summary.csv` | release summary table | n/a | n/a | compact index over the generated JSON reports |
 
-These snapshots were refreshed for package version `0.1.23`.
+These snapshots were refreshed for package version `0.1.24`.
 
 ## Benchmark Artefacts
 
@@ -112,7 +112,7 @@ The benchmark notebook set also includes
 executable assumption-check notebook rather than a committed timing-artifact
 generator.
 
-Benchmark artefacts were refreshed for package version `0.1.23`.
+Benchmark artefacts were refreshed for package version `0.1.24`.
 
 ## Real-Example Artefacts
 
@@ -131,8 +131,21 @@ The complete machine-readable manifest is
 
 ## Regeneration Commands
 
-Execute notebooks, extract their embedded outputs, and regenerate the rendered
-result pages:
+Committed notebook outputs and generated artefacts are the source of truth for
+the published result pages. GitHub Pages builds from committed files and does
+not execute notebooks during deployment.
+
+Before committing notebook or result changes, run the local helper:
+
+```bash
+scripts/update_notebook_results.sh
+```
+
+Then commit the updated notebooks, extracted plots, manifests, and generated
+result pages together.
+
+The helper executes notebooks, extracts their embedded outputs, and regenerates
+the rendered result pages. The underlying command is:
 
 ```bash
 python scripts/extract_notebook_plots.py --preset all --execute --write-docs

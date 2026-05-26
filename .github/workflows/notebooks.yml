@@ -1,4 +1,4 @@
-name: Notebooks
+name: Notebook result check
 
 on:
   pull_request:
@@ -6,6 +6,7 @@ on:
       - "notebooks/**"
       - "src/**"
       - "scripts/extract_notebook_plots.py"
+      - "scripts/update_notebook_results.sh"
       - "docs/qsvt/tutorial_results.md"
       - "docs/qsvt/real_example_results.md"
       - "docs/qsvt/benchmark_results.md"
@@ -15,8 +16,6 @@ on:
       - "pyproject.toml"
       - ".github/workflows/notebooks.yml"
   workflow_dispatch:
-  schedule:
-    - cron: "0 8 * * 1"
 
 permissions:
   contents: read

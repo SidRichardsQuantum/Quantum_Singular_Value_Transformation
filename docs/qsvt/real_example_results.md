@@ -44,13 +44,13 @@ Source: [`notebooks/real_examples/01_ground_state_filtering.ipynb`](../../notebo
 :width: 520px
 ```
 
-Output 1 (cell 5):
+Output 1 (cell 6):
 
 ```text
 Energies [model energy units]: [-1.7205 -1.      1.      1.7205]
 ```
 
-Output 2 (cell 9):
+Output 2 (cell 10):
 
 ```text
 Cutoff [model energy units]: -1.3602325267042625 
@@ -58,14 +58,14 @@ Scale: 3.0806975801127883
 Scaled Energies [model energy units]: [-1.     -0.7661 -0.1169  0.1169]
 ```
 
-Output 3 (cell 11):
+Output 3 (cell 12):
 
 ```text
 Projector Error: 0.13103683490762716
 Idempotence Error: 0.11947057773046423
 ```
 
-Output 4 (cell 13):
+Output 4 (cell 14):
 
 ```text
 Initial Ground Overlap [probability]: 0.21077170866211486
@@ -86,13 +86,13 @@ Source: [`notebooks/real_examples/02_tight_binding_band_filter.ipynb`](../../not
 :width: 760px
 ```
 
-Output 1 (cell 5):
+Output 1 (cell 6):
 
 ```text
 Energies [hopping units]: [-1.8794 -1.5321 -1.     -0.3473  0.3473  1.      1.5321  1.8794]
 ```
 
-Output 2 (cell 9):
+Output 2 (cell 10):
 
 ```text
 Band Weights [probability]: [-0.      0.0083  0.1822  0.9885  0.9885  0.1822  0.0083 -0.    ]
@@ -107,25 +107,25 @@ Source: [`notebooks/real_examples/03_imaginary_time_filtering.ipynb`](../../note
 :width: 760px
 ```
 
-Output 1 (cell 5):
+Output 1 (cell 6):
 
 ```text
 Energies [model energy units]: [0.2    0.8193 1.5306]
 ```
 
-Output 2 (cell 7):
+Output 2 (cell 8):
 
 ```text
 Scaled Energies [scaled model energy units]: [-1.      0.0691  1.    ]
 ```
 
-Output 3 (cell 9):
+Output 3 (cell 10):
 
 ```text
 Operator Error: 1.852552687200035e-11
 ```
 
-Output 4 (cell 11):
+Output 4 (cell 12):
 
 ```text
 Initial Ground Weight [probability]: 0.018745945993631295
@@ -152,14 +152,14 @@ Source: [`notebooks/real_examples/04_heat_equation_pde.ipynb`](../../notebooks/r
 :width: 760px
 ```
 
-Output 1 (cell 5):
+Output 1 (cell 6):
 
 ```text
 First 5 Eigenvalues [inverse grid-length units]: [  9.8566  39.271   87.7794 154.6166 238.7288]
 Last Eigenvalue [inverse grid-length units]: 2490.1433766430973
 ```
 
-Output 2 (cell 11):
+Output 2 (cell 12):
 
 ```text
 First Eigenvalue [model spectral units]: -0.9999999999999999
@@ -168,7 +168,7 @@ Beta: 2.232258077957575
 Prefactor: 0.9824145391823961
 ```
 
-Output 3 (cell 13):
+Output 3 (cell 14):
 
 ```text
 Relative Error: 1.2039058554241987e-15
@@ -193,27 +193,27 @@ Source: [`notebooks/real_examples/05_poisson_equation_pde.ipynb`](../../notebook
 :width: 760px
 ```
 
-Output 1 (cell 5):
+Output 1 (cell 6):
 
 ```text
 First Eigenvalue [inverse grid-length units]: 9.705050945562935
 Last Eigenvalue [inverse grid-length units]: 186.29494905443704
 ```
 
-Output 2 (cell 9):
+Output 2 (cell 10):
 
 ```text
 Gamma: 0.05209508360168709
 Condition Number: 19.1956693580892
 ```
 
-Output 3 (cell 11):
+Output 3 (cell 12):
 
 ```text
 Relative Error: 0.014150625457763643
 ```
 
-Output 4 (cell 14):
+Output 4 (cell 15):
 
 ```text
 Gamma: 0.05209508360168687
@@ -221,13 +221,13 @@ Condition Number: 19.195669358089283
 Matrix Shape [rows, cols]: (36, 36)
 ```
 
-Output 5 (cell 16):
+Output 5 (cell 17):
 
 ```text
 Relative Error: 0.034962641317254864
 ```
 
-Output 6 (cell 20):
+Output 6 (cell 21):
 
 ```text
 1D condition_number: 19.196
@@ -246,7 +246,7 @@ Source: [`notebooks/real_examples/06_hamiltonian_simulation_schrodinger_dynamics
 :width: 760px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 State Error: 3.324978121461713e-13
@@ -266,13 +266,13 @@ Source: [`notebooks/real_examples/07_quantum_chemistry_h2_toy_solver.ipynb`](../
 :width: 520px
 ```
 
-Output 1 (cell 3):
+Output 1 (cell 4):
 
 ```text
 Ground Energy [hartree]: -1.85727503020238
 ```
 
-Output 2 (cell 6):
+Output 2 (cell 7):
 
 ```text
 Initial Overlap [probability]: 3.4911941432755493e-35
@@ -289,7 +289,7 @@ Source: [`notebooks/real_examples/08_greens_function_response.ipynb`](../../note
 :width: 520px
 ```
 
-Output 1 (cell 3):
+Output 1 (cell 4):
 
 ```text
 Response Error: 0.001236443161688136
@@ -304,7 +304,7 @@ Source: [`notebooks/real_examples/09_spectral_density_estimation.ipynb`](../../n
 :width: 520px
 ```
 
-Output 1 (cell 3):
+Output 1 (cell 4):
 
 ```text
 Curve Error: 0.0019122824182919095
@@ -319,7 +319,7 @@ Source: [`notebooks/real_examples/10_gibbs_state_thermal_weights.ipynb`](../../n
 :width: 520px
 ```
 
-Output 1 (cell 3):
+Output 1 (cell 4):
 
 ```text
 Rho Error: 1.8102065129092896e-13
@@ -339,7 +339,7 @@ Source: [`notebooks/real_examples/11_transport_physics_landauer_chain.ipynb`](..
 :width: 520px
 ```
 
-Output 1 (cell 3):
+Output 1 (cell 4):
 
 ```text
 Curve Error: 0.00625639231073604
@@ -354,7 +354,7 @@ Source: [`notebooks/real_examples/12_tensor_network_hybrid_filtering.ipynb`](../
 :width: 760px
 ```
 
-Output 1 (cell 3):
+Output 1 (cell 4):
 
 ```text
 Initial Energy [model energy units]: -1.6606649134095948
@@ -387,7 +387,7 @@ Source: [`notebooks/real_examples/13_heat_equation_2d_pde.ipynb`](../../notebook
 :width: 520px
 ```
 
-Output 1 (cell 5):
+Output 1 (cell 6):
 
 ```text
 First 5 Eigenvalues [inverse grid-length units]: [19.6054 48.2193 48.2193 76.8333 93.3264]
@@ -395,7 +395,7 @@ Last Eigenvalue [inverse grid-length units]: 948.3945992294168
 Matrix Shape [rows, cols]: (100, 100)
 ```
 
-Output 2 (cell 11):
+Output 2 (cell 12):
 
 ```text
 First Eigenvalue [model spectral units]: -1.0000000000000009
@@ -404,19 +404,19 @@ Beta: 0.27863675953765005
 Prefactor: 0.9883056759592374
 ```
 
-Output 3 (cell 13):
+Output 3 (cell 14):
 
 ```text
 Relative Error: 4.054746215837559e-13
 ```
 
-Output 4 (cell 17):
+Output 4 (cell 18):
 
 ```text
 Maximum Approximation Error: 4.127809205556332e-13
 ```
 
-Output 5 (cell 19):
+Output 5 (cell 20):
 
 ```text
 relative_error: 4.055e-13
@@ -438,13 +438,13 @@ Source: [`notebooks/real_examples/14_advection_diffusion_pde.ipynb`](../../noteb
 :width: 520px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 Non-normality [operator-norm units]: 24.743080487279663
 ```
 
-Output 2 (cell 8):
+Output 2 (cell 9):
 
 ```text
 Gamma: 0.057449326656195406
@@ -452,7 +452,7 @@ Gamma: 0.057449326656195406
 Relative Error: 0.22813071877482616
 ```
 
-Output 3 (cell 11):
+Output 3 (cell 12):
 
 ```text
 non_normality [operator-norm units]: 2.474e+01
@@ -475,7 +475,7 @@ Source: [`notebooks/real_examples/15_wave_equation_dynamics.ipynb`](../../notebo
 :width: 760px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 First Eigenvalue [model spectral units]: -0.9828268973302636
@@ -483,13 +483,13 @@ Last Eigenvalue [model spectral units]: 0.9999999999999998
 Beta: 4.265725211247927
 ```
 
-Output 2 (cell 8):
+Output 2 (cell 9):
 
 ```text
 Relative Error: 2.942102758155022e-15
 ```
 
-Output 3 (cell 11):
+Output 3 (cell 12):
 
 ```text
 beta: 4.266
@@ -511,7 +511,7 @@ Source: [`notebooks/real_examples/16_helmholtz_equation_pde.ipynb`](../../notebo
 :width: 760px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 First 4 Eigenvalues [inverse grid-length units]: [-51.1675 -22.5535  22.5535  80.4994]
@@ -519,14 +519,14 @@ Last Eigenvalue [inverse grid-length units]: 413.22712589466073
 Gap [model energy units]: 0.05457901297346752
 ```
 
-Output 2 (cell 8):
+Output 2 (cell 9):
 
 ```text
 Relative Error: 0.16873834910647584
 Maximum Fit Error: 0.3658574904383274
 ```
 
-Output 3 (cell 11):
+Output 3 (cell 12):
 
 ```text
 spectral_gap [model energy units]: 5.458e-02
@@ -549,28 +549,28 @@ Source: [`notebooks/real_examples/17_quantum_walk_search_toy.ipynb`](../../noteb
 :width: 760px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 Eigenvalues [oracle energy units]: [-1.2286 -0.5214  0.125   0.125   0.125   0.125   0.125   0.125 ]
 Eigenvalues of A: [-1.  1.]
 ```
 
-Output 2 (cell 8):
+Output 2 (cell 9):
 
 ```text
 Best Time [inverse energy units]: 4.452830188679245
 Best Probability [probability]: 0.9999891776297675
 ```
 
-Output 3 (cell 10):
+Output 3 (cell 11):
 
 ```text
 State Error: 1.0120998885188465e-13
 Polynomial Probability [probability]: 0.9999891776298157
 ```
 
-Output 4 (cell 13):
+Output 4 (cell 14):
 
 ```text
 best_time [inverse energy units]: 4.453
@@ -594,20 +594,20 @@ Source: [`notebooks/real_examples/18_ssh_chain_edge_state_filtering.ipynb`](../.
 :width: 760px
 ```
 
-Output 1 (cell 5):
+Output 1 (cell 6):
 
 ```text
 Near-Zero Eigenvalues [hopping units]: [-0.5577 -0.0058  0.0058  0.5577]
 ```
 
-Output 2 (cell 9):
+Output 2 (cell 10):
 
 ```text
 Edge Weight Fraction [probability]: 0.6880404379008599
 Trace of Soft Edge Projector [states]: 2.0327822807342835
 ```
 
-Output 3 (cell 12):
+Output 3 (cell 13):
 
 ```text
 near_zero_eigenvalues [hopping units]: [-0.55766 -0.00584  0.00584  0.55766]
@@ -625,21 +625,21 @@ Source: [`notebooks/real_examples/19_anderson_localization.ipynb`](../../noteboo
 :width: 760px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 Localized IPR: 0.6321472059662562
 Maximum Clean IPR: 0.045454545454545796
 ```
 
-Output 2 (cell 6):
+Output 2 (cell 7):
 
 ```text
 Peak Site [site index]: 14
 Filtered Weight at Peak Site [probability]: 0.10072442254521352
 ```
 
-Output 3 (cell 9):
+Output 3 (cell 10):
 
 ```text
 localized_energy [hopping units]: 1.6901
@@ -663,21 +663,21 @@ Source: [`notebooks/real_examples/20_schrodinger_bound_states.ipynb`](../../note
 :width: 760px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 Eigenvalues [model energy units]: [-6.7968 -4.5635 -2.6903 -1.2181 -0.2361  0.1906]
 Number of Bound States [states]: 5
 ```
 
-Output 2 (cell 8):
+Output 2 (cell 9):
 
 ```text
 Ground State Overlap [probability]: 0.9505375069652005
 Filtered Energy [model energy units]: -6.586964339925885
 ```
 
-Output 3 (cell 11):
+Output 3 (cell 12):
 
 ```text
 lowest_energies [model energy units]: [-6.7968 -4.5635 -2.6903 -1.2181 -0.2361  0.1906]
@@ -696,20 +696,20 @@ Source: [`notebooks/real_examples/21_quantum_harmonic_oscillator_grid.ipynb`](..
 :width: 760px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 Eigenvalues [model energy units]: [0.4991 1.4953 2.4878 3.4765 4.4614 5.4424]
 Spectrum Error [model energy units]: 0.02350013331927281
 ```
 
-Output 2 (cell 5):
+Output 2 (cell 6):
 
 ```text
 Ground State Overlap [probability]: 0.9969945579767748
 ```
 
-Output 3 (cell 8):
+Output 3 (cell 9):
 
 ```text
 finite_difference_energies [model energy units]: [0.4991 1.4953 2.4878 3.4765 4.4614 5.4424]
@@ -728,7 +728,7 @@ Source: [`notebooks/real_examples/22_electrostatic_green_function_poisson.ipynb`
 :width: 760px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 Potential at Positive Charge [potential units]: 0.0037023041787180174
@@ -736,7 +736,7 @@ Potential at Negative Charge [potential units]: -0.0037023041787180165
 Sum of Charges [charge units]: 0.0
 ```
 
-Output 2 (cell 6):
+Output 2 (cell 7):
 
 ```text
 Relative Error: 0.2679780308568579
@@ -744,7 +744,7 @@ Selected Degree [polynomial degree]: 29
 Condition Number: 48.37415007870855
 ```
 
-Output 3 (cell 9):
+Output 3 (cell 10):
 
 ```text
 condition_number: 48.374
@@ -769,19 +769,19 @@ Source: [`notebooks/real_examples/23_coupled_oscillator_normal_modes.ipynb`](../
 :width: 760px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 Frequencies [angular frequency units]: [0.2072 0.4426 0.7012 0.9629 1.2121]
 ```
 
-Output 2 (cell 8):
+Output 2 (cell 9):
 
 ```text
 Slow Mode Overlap [probability]: 0.9147264843650682
 ```
 
-Output 3 (cell 11):
+Output 3 (cell 12):
 
 ```text
 frequencies [angular frequency units]: [0.2072 0.4426 0.7012 0.9629 1.2121]
@@ -804,7 +804,7 @@ Source: [`notebooks/real_examples/24_ising_phase_transition_filtering.ipynb`](..
 :width: 760px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 Ising sweep diagnostics
@@ -815,14 +815,14 @@ Maximum magnetization field [coupling ratio h/J] : 0.2
 Maximum magnetization [magnetization squared]       : 0.9818
 ```
 
-Output 2 (cell 8):
+Output 2 (cell 9):
 
 ```text
 Projector eigenweights [probability]: [0.7761 0.2239 0.0087 0.1109 0.1143]
 Projector error: 0.5286773050862152
 ```
 
-Output 3 (cell 10):
+Output 3 (cell 11):
 
 ```text
 minimum_doublet_gap_field [coupling ratio h/J]: 0.600
@@ -845,13 +845,13 @@ Source: [`notebooks/real_examples/25_diffusion_heat_treatment_slab.ipynb`](../..
 :width: 760px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 Relative Error: 2.8910082648989737e-15
 ```
 
-Output 2 (cell 8):
+Output 2 (cell 9):
 
 ```text
 relative_temperature_error: 0.0000
@@ -874,13 +874,13 @@ Source: [`notebooks/real_examples/26_graphene_nanoribbon_density_of_states.ipynb
 :width: 760px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 Edge Fraction [probability]: 0.6643744409979471
 ```
 
-Output 2 (cell 8):
+Output 2 (cell 9):
 
 ```text
 near_zero_window_weight: 5.032
@@ -897,7 +897,7 @@ Source: [`notebooks/real_examples/27_fermi_dirac_electronic_occupations.ipynb`](
 :width: 760px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 Occupation Error: 7.804084211610466e-05
@@ -905,7 +905,7 @@ Exact Particle Number [electrons]: 9.385723227081577
 Polynomial Particle Number [electrons]: 9.385329756322626
 ```
 
-Output 2 (cell 6):
+Output 2 (cell 7):
 
 ```text
 relative_density_matrix_error: 0.0001
@@ -933,7 +933,7 @@ Source: [`notebooks/real_examples/28_photonic_crystal_band_gap_filtering.ipynb`]
 :width: 760px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 Gap Size [model frequency units]: 500.45893808166556
@@ -941,7 +941,7 @@ Target Energy [model frequency units]: 2718.4282533951346
 Maximum Mode Weight: 0.8135833929662374
 ```
 
-Output 2 (cell 9):
+Output 2 (cell 10):
 
 ```text
 selected_gap_index [index]: 18
@@ -964,7 +964,7 @@ Source: [`notebooks/real_examples/29_topological_band_projector_chern_marker.ipy
 :width: 760px
 ```
 
-Output 1 (cell 5):
+Output 1 (cell 6):
 
 ```text
 Dimension [states]: 50
@@ -972,14 +972,14 @@ Spectral range [model energy units]: (-2.800243765865765, 2.8002437658657637)
 Gap around zero [model energy units]: 0.13742301418061872
 ```
 
-Output 2 (cell 9):
+Output 2 (cell 10):
 
 ```text
 Scaled gap: 0.04907537545686846
 Projector relative error: 0.10636398990180881
 ```
 
-Output 3 (cell 11):
+Output 3 (cell 12):
 
 ```text
 Marker relative error: 0.45526864295151465
