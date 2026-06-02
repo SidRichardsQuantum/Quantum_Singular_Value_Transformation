@@ -72,7 +72,9 @@ class LinearSystemWorkflowResult:
         qsvt_check = (
             "failed"
             if self.qsvt_error is not None
-            else "succeeded" if self.qsvt_solution is not None else "not_attempted"
+            else "succeeded"
+            if self.qsvt_solution is not None
+            else "not_attempted"
         )
         return {
             "mode": "linear-system-workflow",

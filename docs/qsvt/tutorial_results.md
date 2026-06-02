@@ -8,9 +8,9 @@ This generated page displays the embedded plots and text outputs from every tuto
 ## Current Status
 
 - Source notebooks: `notebooks/tutorials/`
-- Notebooks displayed: `14`
-- Embedded plot artefacts displayed: `31`
-- Plain-text notebook results displayed: `63`
+- Notebooks displayed: `17`
+- Embedded plot artefacts displayed: `35`
+- Plain-text notebook results displayed: `73`
 
 ## Related Pages
 
@@ -937,4 +937,131 @@ Exact rank [states]: 2
 Rank proxy [states]: 1.955
 Leakage: 0.017
 State weight error: 0.008
+```
+
+### `15_Block_Encoded_QSVT_Workflow.ipynb`
+
+Source: [`notebooks/tutorials/15_Block_Encoded_QSVT_Workflow.ipynb`](../../notebooks/tutorials/15_Block_Encoded_QSVT_Workflow.ipynb)
+
+```{image} ../../results/plots/notebooks/15_Block_Encoded_QSVT_Workflow-plot-01.png
+:alt: Block-Encoded QSVT Workflow plot 1
+:width: 760px
+```
+
+```{image} ../../results/plots/notebooks/15_Block_Encoded_QSVT_Workflow-plot-02.png
+:alt: Block-Encoded QSVT Workflow plot 2
+:width: 760px
+```
+
+Output 1 (cell 4):
+
+```text
+alpha: 2.166226041207235
+logical_dimension: 3
+unitary_dimension: 6
+block_error: 0.0
+unitarity_error: 1.275387486109542e-15
+reconstruction_error: 0.0
+```
+
+Output 2 (cell 7):
+
+```text
+workflow: block-encoded-qsvt-workflow
+pennylane_qsvt_check: succeeded
+operator_relative_error: 1.000085679496161e-12
+state_relative_error: 1.0000638768158241e-12
+```
+
+Output 3 (cell 10):
+
+```text
+validation: passed
+```
+
+### `16_Sparse_Oracle_Assumptions.ipynb`
+
+Source: [`notebooks/tutorials/16_Sparse_Oracle_Assumptions.ipynb`](../../notebooks/tutorials/16_Sparse_Oracle_Assumptions.ipynb)
+
+```{image} ../../results/plots/notebooks/16_Sparse_Oracle_Assumptions-plot-01.png
+:alt: Sparse Operators and Oracle Assumptions plot 1
+:width: 760px
+```
+
+Output 1 (cell 4):
+
+```text
+model                          implemented_here  visible_cost                           omitted_cost                             
+-----------------------------  ----------------  -------------------------------------  -----------------------------------------
+dense finite matrix            yes               matrix dimension and dense validation  scalable data loading                    
+explicit dense block encoding  finite only       unitary dimension and block error      asymptotic oracle construction           
+sparse-access block encoding   no                degree and signal-call proxy only      row oracle, value oracle, normalization  
+end-to-end quantum workflow    no                not estimated                          state preparation, readout, amplification
+```
+
+Output 2 (cell 6):
+
+```text
+dimension= 8 degree= 4 signal_calls= 4 encoding_qubits= 3
+dimension= 16 degree= 9 signal_calls= 9 encoding_qubits= 4
+dimension= 32 degree= 13 signal_calls= 13 encoding_qubits= 5
+dimension= 64 degree= 16 signal_calls= 16 encoding_qubits= 6
+```
+
+Output 3 (cell 9):
+
+```text
+implementation_kind: polynomial-resource-proxy
+truth_status: proxy_only
+requires_block_encoding: True
+requires_state_preparation: True
+omitted_costs:
+ - block_encoding_construction
+ - state_preparation
+ - amplitude_amplification
+ - error_correction
+ - hardware_compilation
+```
+
+Output 4 (cell 11):
+
+```text
+validation: passed
+```
+
+### `17_QSVT_Compatibility_Failure_Cases.ipynb`
+
+Source: [`notebooks/tutorials/17_QSVT_Compatibility_Failure_Cases.ipynb`](../../notebooks/tutorials/17_QSVT_Compatibility_Failure_Cases.ipynb)
+
+```{image} ../../results/plots/notebooks/17_QSVT_Compatibility_Failure_Cases-plot-01.png
+:alt: QSVT Compatibility Failure Cases plot 1
+:width: 760px
+```
+
+Output 1 (cell 4):
+
+```text
+candidate                         degree  parity  bounded  compatible  reasons
+----------------------------------------------------------------------------------------
+compatible_even_x_squared       2       even    True     True        none
+compatible_odd_half_x           1       odd     True     True        none
+mixed_parity_one_plus_x         1       mixed   False    False       mixed_parity, out_of_bounds
+out_of_bounds_two_x             1       odd     False    False       out_of_bounds
+bounded_mixed_offset_slope      1       mixed   True     False       mixed_parity
+```
+
+Output 2 (cell 7):
+
+```text
+compatible_even_x_squared: max_abs=1.000, parity=even, compatible=True, reasons=[]
+compatible_odd_half_x: max_abs=0.500, parity=odd, compatible=True, reasons=[]
+mixed_parity_one_plus_x: max_abs=2.000, parity=mixed, compatible=False, reasons=['mixed_parity', 'out_of_bounds']
+out_of_bounds_two_x: max_abs=2.000, parity=odd, compatible=False, reasons=['out_of_bounds']
+bounded_mixed_offset_slope: max_abs=0.500, parity=mixed, compatible=False, reasons=['mixed_parity']
+```
+
+Output 3 (cell 9):
+
+```text
+validation: passed
 ```

@@ -44,7 +44,7 @@ Source: [`notebooks/benchmarks/01_linear_system_classical_vs_qsvt_proxy.ipynb`](
 :width: 520px
 ```
 
-Output 1 (cell 5):
+Output 1 (cell 7):
 
 ```text
 Poisson system
@@ -55,7 +55,7 @@ Scaled spectral gap gamma : 0.01474
 Inverse polynomial degree : 9
 ```
 
-Output 2 (cell 8):
+Output 2 (cell 11):
 
 ```text
 Benchmark readout
@@ -80,7 +80,7 @@ Source: [`notebooks/benchmarks/02_matrix_functions_spectral_baselines.ipynb`](..
 :width: 520px
 ```
 
-Output 1 (cell 5):
+Output 1 (cell 8):
 
 ```text
 Matrix-function benchmark readout
@@ -105,7 +105,7 @@ Source: [`notebooks/benchmarks/03_scaling_sweeps.ipynb`](../../notebooks/benchma
 :width: 520px
 ```
 
-Output 1 (cell 5):
+Output 1 (cell 8):
 
 ```text
 Scaling sweep readout
@@ -129,7 +129,7 @@ Source: [`notebooks/benchmarks/04_classical_baseline_assumptions.ipynb`](../../n
 :width: 520px
 ```
 
-Output 1 (cell 6):
+Output 1 (cell 8):
 
 ```text
 Linear-system baseline readout
@@ -142,7 +142,7 @@ CGS   qsvt.benchmarks.conjugate_gradient_solve  4          1.77e-16           9 
 DLS times a dense direct solve. CGS reports iterative-solver diagnostics, but this educational benchmark still uses dense NumPy matrix-vector products.
 ```
 
-Output 2 (cell 8):
+Output 2 (cell 10):
 
 ```text
 Matrix-function baseline readout

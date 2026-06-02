@@ -8,7 +8,7 @@ This generated page displays embedded setup schematics, diagnostic plots, and te
 ## Current Status
 
 - Source notebooks: `notebooks/real_examples/`
-- Notebooks displayed: `29`
+- Notebooks displayed: `30`
 - Embedded plot artefacts displayed: `53`
 - Plain-text notebook results displayed: `77`
 - Plot manifest: [`results/tables/real_examples_plot_manifest.csv`](../../results/tables/real_examples_plot_manifest.csv)
@@ -986,3 +986,9 @@ Marker relative error: 0.45526864295151465
 Bulk exact marker [Chern marker]: 0.9583268200049554
 Bulk polynomial marker [Chern marker]: 0.6430191290198954
 ```
+
+### `30_block_encoded_laplacian_smoothing.ipynb`
+
+Source: [`notebooks/real_examples/30_block_encoded_laplacian_smoothing.ipynb`](../../notebooks/real_examples/30_block_encoded_laplacian_smoothing.ipynb)
+
+No embedded plot or text outputs were found.
