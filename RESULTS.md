@@ -27,7 +27,10 @@ Rendered result pages:
 | `notebooks/tutorials/11_QSVT_Algorithm_Workflows.ipynb` | embedded plot | QSVT algorithm workflow diagnostics |
 | `notebooks/tutorials/12_QSVT_Reports_CLI_and_Artifacts.ipynb` | embedded plot | QSVT report, CLI, and artifact workflows |
 | `notebooks/tutorials/13_QSVT_Design_Tradeoffs.ipynb` | embedded plots | QSVT design degree/error/boundedness tradeoffs |
-| `notebooks/tutorials/14_QSVT_Resource_Proxy_Limits.ipynb` | executable source | block-encoding assumptions and resource-proxy limits |
+| `notebooks/tutorials/14_QSVT_Resource_Proxy_Limits.ipynb` | embedded plots | block-encoding assumptions and resource-proxy limits |
+| `notebooks/tutorials/15_Block_Encoded_QSVT_Workflow.ipynb` | embedded plots | finite dense block-encoded QSVT workflow |
+| `notebooks/tutorials/16_Sparse_Oracle_Assumptions.ipynb` | embedded plot | sparse-oracle and access-model assumptions |
+| `notebooks/tutorials/17_QSVT_Compatibility_Failure_Cases.ipynb` | embedded plot | boundedness, parity, and synthesis failure cases |
 
 ## Real-Example Notebook Results
 
@@ -68,6 +71,7 @@ the real-example plot ledger.
 | `notebooks/real_examples/27_fermi_dirac_electronic_occupations.ipynb` | committed plot | Fermi-Dirac electronic occupations |
 | `notebooks/real_examples/28_photonic_crystal_band_gap_filtering.ipynb` | committed plots | photonic-crystal schematic and band-gap filtering |
 | `notebooks/real_examples/29_topological_band_projector_chern_marker.ipynb` | committed plots | QWZ lattice schematic and Chern-marker diagnostics |
+| `notebooks/real_examples/30_block_encoded_laplacian_smoothing.ipynb` | committed plots | block-encoded Laplacian smoothing |
 
 ## Committed Release Artefacts
 
@@ -85,7 +89,7 @@ from the package CLI.
 | `results/tables/design_sweep_summary.csv` | design sweep summary table | n/a | n/a | tabular summary of committed design-sweep JSON reports |
 | `results/tables/qsvt-error-summary.csv` | release summary table | n/a | n/a | compact index over the generated JSON reports |
 
-These snapshots were refreshed for package version `0.1.26`.
+These snapshots were refreshed for package version `0.1.27`.
 
 ## Benchmark Artefacts
 
@@ -112,7 +116,7 @@ The benchmark notebook set also includes
 executable assumption-check notebook rather than a committed timing-artifact
 generator.
 
-Benchmark artefacts were refreshed for package version `0.1.26`.
+Benchmark artefacts were refreshed for package version `0.1.27`.
 
 ## Real-Example Artefacts
 

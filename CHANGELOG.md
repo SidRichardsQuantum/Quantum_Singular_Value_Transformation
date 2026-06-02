@@ -2,6 +2,22 @@
 
 ---
 
+## [0.1.27] – 2nd June 2026
+
+### Changed
+
+- made the local pre-commit formatting path compatible with running
+  `black .`, `ruff check . --fix`, and `pytest -q` before release commits
+- configured Black to skip notebooks and generated artefact directories so
+  release formatting does not rewrite executed notebook outputs, generated
+  documentation builds, distributions, or result snapshots
+- replaced a nested conditional expression in the linear-system workflow
+  report path with explicit control flow so Black and Ruff agree on the
+  formatted source
+- updated package metadata and release markers for `0.1.27`
+
+---
+
 ## [0.1.26] – 2nd June 2026
 
 ### Added

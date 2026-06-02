@@ -69,13 +69,12 @@ class LinearSystemWorkflowResult:
         """
         Return a report-style dictionary for JSON conversion or persistence.
         """
-        qsvt_check = (
-            "failed"
-            if self.qsvt_error is not None
-            else "succeeded"
-            if self.qsvt_solution is not None
-            else "not_attempted"
-        )
+        if self.qsvt_error is not None:
+            qsvt_check = "failed"
+        elif self.qsvt_solution is not None:
+            qsvt_check = "succeeded"
+        else:
+            qsvt_check = "not_attempted"
         return {
             "mode": "linear-system-workflow",
             "truth_contract": algorithm_truth_contract(
