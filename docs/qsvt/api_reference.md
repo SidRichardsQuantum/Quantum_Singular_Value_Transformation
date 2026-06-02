@@ -25,6 +25,7 @@ The package is organised into the following modules:
 - `qsvt.polynomials`
 - `qsvt.approximation`
 - `qsvt.algorithms`
+- `qsvt.block_encoding`
 - `qsvt.matrices`
 - `qsvt.hamiltonians`
 - `qsvt.pde`
@@ -113,6 +114,7 @@ print(result.polynomial_residual_norm)
 The module also includes simulator-scale physics workflows that wrap existing
 matrix-function polynomial builders with exact spectral references:
 
+- `block_encoded_qsvt_workflow`
 - `ground_state_filtering_workflow`
 - `hamiltonian_simulation_workflow`
 - `resolvent_workflow`
@@ -160,6 +162,27 @@ qsvt threshold-workflow \
 
 For workflow-level targets, rescaling conventions, diagnostics, and limitations,
 see [Algorithm notes](algorithms.md).
+
+---
+
+### `qsvt.block_encoding`
+
+Use `block_encode_matrix` when you need an explicit dense finite block encoding
+whose top-left block is `A / alpha`:
+
+```python
+import numpy as np
+from qsvt.block_encoding import block_encode_matrix, verify_block_encoding
+
+encoding = block_encode_matrix(np.array([[2.0, 0.5], [0.5, 1.0]]))
+verification = verify_block_encoding(encoding)
+
+print(verification["block_encoding_verified"])
+print(verification["unitary_verified"])
+```
+
+The higher-level `block_encoded_qsvt_workflow` combines this encoding check
+with a small PennyLane QSVT transform for positive Hermitian signal operators.
 
 ---
 

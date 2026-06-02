@@ -45,6 +45,11 @@ For many realistic workflows, these omitted costs dominate the polynomial
 degree. The reports are therefore best read as polynomial-resource summaries,
 not full algorithmic complexity estimates.
 
+For a finite dense construction that verifies an actual top-left block for one
+small matrix, see [Block encodings](block_encoding.md). That page covers what
+the package can validate directly and what still requires a scalable oracle or
+problem-specific circuit.
+
 ## How To Use The Proxy
 
 Use the proxy when comparing candidate polynomial designs:
@@ -92,4 +97,6 @@ Dense spectral matrix functions remain the exact small-system reference.
 - [Classical baseline details](classical_baselines.md)
 - [Classical benchmarks](benchmarks.md)
 - [Algorithm notes](algorithms.md)
+- [Block encodings](block_encoding.md)
+- [QSVT compatibility](compatibility.md)
 - [Implementation notes](implementation.md)

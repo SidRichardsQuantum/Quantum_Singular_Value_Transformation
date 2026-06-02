@@ -31,6 +31,7 @@ an exact classical spectral reference.
 | Fermi-Dirac occupations | `27_fermi_dirac_electronic_occupations.ipynb` |
 | Photonic crystal band gap | `28_photonic_crystal_band_gap_filtering.ipynb` |
 | Topological band projector | `29_topological_band_projector_chern_marker.ipynb` |
+| Block-encoded Laplacian smoothing | `30_block_encoded_laplacian_smoothing.ipynb` |
 | Transport physics | `11_transport_physics_landauer_chain.ipynb` |
 | Tensor-network hybrids | `12_tensor_network_hybrid_filtering.ipynb` |
 
@@ -53,5 +54,6 @@ Additional PDE and filtering examples:
 - `27_fermi_dirac_electronic_occupations.ipynb`
 - `28_photonic_crystal_band_gap_filtering.ipynb`
 - `29_topological_band_projector_chern_marker.ipynb`
+- `30_block_encoded_laplacian_smoothing.ipynb`
 - `02_tight_binding_band_filter.ipynb`
 - `03_imaginary_time_filtering.ipynb`

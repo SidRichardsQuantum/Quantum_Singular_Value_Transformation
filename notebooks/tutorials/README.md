@@ -19,3 +19,6 @@ functional calculus.
 | QSVT reports, CLI, and artifacts | `12_QSVT_Reports_CLI_and_Artifacts.ipynb` |
 | QSVT design tradeoffs | `13_QSVT_Design_Tradeoffs.ipynb` |
 | QSVT resource-proxy limits | `14_QSVT_Resource_Proxy_Limits.ipynb` |
+| Block-encoded QSVT workflow | `15_Block_Encoded_QSVT_Workflow.ipynb` |
+| Sparse operators and oracle assumptions | `16_Sparse_Oracle_Assumptions.ipynb` |
+| QSVT compatibility failure cases | `17_QSVT_Compatibility_Failure_Cases.ipynb` |

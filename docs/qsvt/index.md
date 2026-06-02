@@ -18,6 +18,7 @@ The package provides small, explicit utilities for:
 - building small Hamiltonians and finite-difference PDE operators
 - designing physics matrix-function polynomials
 - rescaling Hermitian spectra for QSVT-compatible workflows
+- constructing and verifying finite dense block encodings
 - comparing classical baselines with QSVT-oriented resource proxies
 
 The repository also includes a sequence of notebooks that introduce QSVT concepts step-by-step.
@@ -30,6 +31,8 @@ The repository also includes a sequence of notebooks that introduce QSVT concept
 | --- | --- |
 | Install the package and run a transform | [Usage guide](usage.md) |
 | Understand the mathematical setup | [Theory](theory.md) |
+| Understand finite block encodings | [Block encodings](block_encoding.md) |
+| Interpret QSVT compatibility failures | [QSVT compatibility](compatibility.md) |
 | Explore executable examples | [Notebooks](notebooks.md) |
 | Inspect notebook-generated outputs | [Results](results.md) |
 | Compare classical baselines and QSVT proxies | [Classical benchmarks](benchmarks.md) |
@@ -55,6 +58,11 @@ Mathematical background and conceptual overview:
 - projectors and sign functions
 
 See: [Theory](theory.md)
+
+General QSVT/QSP background belongs in [Theory](theory.md), which is rendered
+from the repository root `THEORY.md`. Focused implementation theory belongs in
+dedicated pages: [Block encodings](block_encoding.md), [QSVT compatibility](compatibility.md),
+[QSVT resource model](qsvt_resource_model.md), and [Algorithm notes](algorithms.md).
 
 ---
 
@@ -128,6 +136,10 @@ Workflow-level theory and implementation conventions:
 - [Implementation notes](implementation.md): coefficient conventions,
   rescaling choices, boundedness/compatibility checks, report serialization,
   and public API status
+- [Block encodings](block_encoding.md): finite dense unitary block encodings,
+  normalization, verification, and omitted scalable-oracle costs
+- [QSVT compatibility](compatibility.md): boundedness, parity, synthesis checks,
+  common failure modes, and direct-QSVT interpretation
 
 ### Changelog
 
@@ -149,6 +161,7 @@ qsvt
 ├── templates.py
 ├── workflow.py
 ├── algorithms.py
+├── block_encoding.py
 ├── reports.py
 ├── benchmarks.py
 ├── compatibility.py
@@ -177,6 +190,7 @@ Each module is intentionally small and focused:
 | `templates` | ready-made bounded polynomial families |
 | `workflow` | combined coefficient, diagnostic, and compatibility workflows |
 | `algorithms` | end-to-end simulator-scale algorithm workflows |
+| `block_encoding` | finite dense block-encoding construction and verification |
 | `reports` | diagnostics serialization and plotting helpers |
 | `benchmarks` | classical baselines and QSVT-oriented benchmark summaries |
 | `compatibility` | sampled QSVT compatibility and synthesis checks |

@@ -115,6 +115,7 @@ The public package lives under `src/qsvt`.
 | `qsvt.approximation` | polynomial fitting and approximation error helpers |
 | `qsvt.design` | task-oriented polynomial builders |
 | `qsvt.algorithms` | end-to-end simulator-scale algorithm workflows |
+| `qsvt.block_encoding` | finite dense block-encoding construction and verification |
 | `qsvt.templates` | ready-made bounded polynomial families |
 | `qsvt.workflow` | combined coefficient, diagnostic, and compatibility workflows |
 | `qsvt.reports` | JSON-safe reports and plot helpers |
@@ -152,6 +153,10 @@ inline type annotations shipped with the public modules.
 - [docs/qsvt/design.md](docs/qsvt/design.md): polynomial design helpers
 - [docs/qsvt/algorithms.md](docs/qsvt/algorithms.md): workflow-level
   algorithm notes, diagnostics, and limitations
+- [docs/qsvt/block_encoding.md](docs/qsvt/block_encoding.md): finite dense
+  block encodings, normalization, verification, and omitted oracle costs
+- [docs/qsvt/compatibility.md](docs/qsvt/compatibility.md): QSVT boundedness,
+  parity, synthesis checks, and common failure modes
 - [docs/qsvt/templates.md](docs/qsvt/templates.md): template polynomial
   families
 - [docs/qsvt/physics.md](docs/qsvt/physics.md): Hamiltonian, PDE, rescaling,
@@ -161,7 +166,7 @@ inline type annotations shipped with the public modules.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.1.25`
+Current release: `0.1.26`
 
 ## Notebooks
 

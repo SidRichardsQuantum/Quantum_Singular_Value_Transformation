@@ -10,6 +10,14 @@ The emphasis is on:
 - how **projectors arise from sign-function approximations**, and
 - how **linear-system–style transformations** follow from inverse-like polynomials.
 
+General QSVT/QSP background belongs in this file. Implementation-specific
+notes are kept in focused documentation pages:
+
+- `docs/qsvt/block_encoding.md` for finite dense block encodings,
+- `docs/qsvt/compatibility.md` for boundedness, parity, and synthesis checks,
+- `docs/qsvt/qsvt_resource_model.md` for proxy-resource interpretation,
+- `docs/qsvt/algorithms.md` for workflow targets, diagnostics, and limits.
+
 ---
 
 ## Table of Contents
@@ -21,6 +29,7 @@ The emphasis is on:
 - [Quantum Singular Value Transformation (QSVT)](#3-quantum-singular-value-transformation-qsvt)
 
   - [Admissibility constraints](#admissibility-constraints)
+  - [Hermitian eigenvalue transforms](#hermitian-eigenvalue-transforms)
 
 - [Scalar case and Quantum Signal Processing (QSP)](#4-scalar-case-and-quantum-signal-processing-qsp)
 
@@ -39,6 +48,8 @@ The emphasis is on:
 - [Sign function and spectral projectors](#9-sign-function-and-spectral-projectors)
 
 - [Linear systems via inverse-like polynomials](#10-linear-systems-via-inverse-like-polynomials)
+
+- [Access models, success probability, and readout](#11-access-models-success-probability-and-readout)
 
 - [Summary](#summary)
 
@@ -70,11 +81,26 @@ for some normalization constant $\alpha \ge 1$, where the top-left block acts on
 
 Operationally, this means that when the ancilla qubits are prepared in $|0\rangle$, the action of $U$ on the logical register reproduces the action of $A$ (up to normalization).
 
+The value of $\alpha$ is part of the algorithm. If the original matrix has
+large norm, QSVT acts on the normalized signal $A/\alpha$, and any physical
+matrix-function interpretation must translate between $A$ and $A/\alpha$.
+Choosing $\alpha$ too large compresses the spectrum and can make polynomial
+features harder to resolve; choosing it too small invalidates the block
+encoding.
+
+For a finite matrix with $\|A/\alpha\|_2 \le 1$, one can always write down a
+dense unitary dilation. For large structured matrices, the central algorithmic
+question is different: can a block encoding be implemented using efficient
+oracles, sparse access, Hamiltonian simulation, or problem-specific circuits?
+The QSVT theorem assumes such an encoding has been supplied.
+
 ### In this repository
 
 - PennyLane’s `block_encoding="embedding"` is used.
 - This automatically constructs a valid block encoding for small, explicitly specified matrices.
 - The notebooks frequently **extract the top-left block** of the resulting unitary to verify that it matches the expected transformed operator.
+- The package also includes an explicit finite dense block-encoding helper for
+  small matrices.
 
 This is a simulator-friendly convenience; the theoretical statements of QSVT apply to *any* valid block encoding.
 
@@ -88,7 +114,22 @@ To apply QSVT:
 - the spectrum must lie in $[-1,1]$ (or $[0,1]$ depending on parity),
 - or be rescaled so that this holds.
 
-All examples in this repository are chosen so that eigenvalues already lie in $[-1,1]$, avoiding additional normalization steps.
+Many examples in this repository explicitly rescale spectra. Rescaling is not
+cosmetic: it changes the variable in which the polynomial is designed. If
+
+$$
+\widetilde A = \frac{A - \beta I}{s},
+$$
+
+then a polynomial $P(\widetilde A)$ corresponds to the physical function
+
+$$
+f(A) = P\!\left(\frac{A-\beta I}{s}\right).
+$$
+
+This is why reports track offsets, scales, and spectral bounds. A polynomial
+degree that is adequate after one normalization may be inadequate after another
+normalization.
 
 ---
 
@@ -110,6 +151,23 @@ to each singular value $\sigma_i$ of $A$.
 
 In other words, QSVT implements **matrix functions via polynomial transformations**.
 
+More precisely, QSVT transforms the singular values of a block-encoded matrix
+while preserving the corresponding singular-vector structure. For a singular
+value decomposition
+
+$$
+A = \sum_i \sigma_i |u_i\rangle\langle v_i|,
+$$
+
+the transformed block has the form
+
+$$
+P(A)_{\mathrm{QSVT}} \sim
+\sum_i P(\sigma_i) |u_i\rangle\langle v_i|,
+$$
+
+up to the precise parity and signal-convention details of the construction.
+
 ---
 
 ### Admissibility constraints
@@ -127,7 +185,38 @@ The polynomial $f(x)$ must satisfy:
 
 These constraints ensure that the transformed operator remains compatible with a unitary embedding.
 
-All polynomials used in this repository satisfy these conditions.
+Not every polynomial used for dense spectral intuition is directly compatible
+with a QSVT synthesis path. The repository distinguishes:
+
+- dense spectral polynomial application,
+- QSVT-style polynomial cores,
+- direct PennyLane QSVT verification,
+- and end-to-end quantum algorithms.
+
+Compatibility reports make this distinction explicit through boundedness,
+parity, and optional synthesis checks.
+
+### Hermitian eigenvalue transforms
+
+Many physics examples use Hermitian matrices, where users naturally think in
+terms of eigenvalues rather than singular values. A Hermitian matrix has the
+spectral decomposition
+
+$$
+H = \sum_i \lambda_i |\psi_i\rangle\langle\psi_i|.
+$$
+
+After rescaling so that $\lambda_i \in [-1,1]$, polynomial functional calculus
+uses
+
+$$
+P(H) =
+\sum_i P(\lambda_i)|\psi_i\rangle\langle\psi_i|.
+$$
+
+Odd polynomials can preserve sign information, while even polynomials depend
+only on magnitude. This distinction is why sign functions, projectors, and
+positive-spectrum inverse approximations are treated carefully in the notebooks.
 
 ---
 
@@ -139,6 +228,12 @@ In QSP:
 - a single “signal” unitary encodes $x$ in its eigenphases,
 - fixed phase rotations are interleaved with this signal unitary,
 - the resulting circuit implements a polynomial function of $x$.
+
+The fixed rotations are often called **QSP phases**. Finding phases for a
+target polynomial is a synthesis problem: it is separate from fitting or
+designing the polynomial itself. A polynomial may look reasonable as a sampled
+approximation but still fail a particular synthesis implementation because of
+parity, boundedness, numerical conditioning, or backend limitations.
 
 Thus:
 
@@ -401,6 +496,55 @@ These examples isolate the polynomial mechanism without introducing full algorit
 
 ---
 
+## 11. Access models, success probability, and readout
+
+QSVT is often described as applying a matrix function, but a complete algorithm
+also needs to specify how the input and output are accessed.
+
+### Input state preparation
+
+For a vector problem, one usually wants to start from a quantum state
+
+$$
+|b\rangle = \frac{b}{\|b\|}.
+$$
+
+Preparing this state may be easy for structured data, or it may dominate the
+cost for unstructured classical data. The polynomial transform alone does not
+solve data loading.
+
+### Success probability
+
+The desired transformed vector often appears in a particular ancilla branch.
+For example, after applying a block-encoded transform, the useful component may
+be proportional to
+
+$$
+P(A)|b\rangle
+$$
+
+conditioned on measuring the ancilla in a success state. The norm of this
+component determines the success probability. Amplitude amplification or
+estimation can improve or estimate success probabilities, but those costs are
+additional to the polynomial degree.
+
+### Readout
+
+If the final goal is a scalar expectation value, a norm, an overlap, or a
+sample, readout may be efficient. If the goal is the full classical vector
+$P(A)b$, tomography or repeated sampling may be expensive. This is why the
+notebooks report transformed states and residuals for validation, while the
+truth contracts avoid claiming full quantum output costs.
+
+### Classical baselines
+
+Classical dense solvers, iterative solvers, and spectral decompositions remain
+important references. A QSVT polynomial with low degree is promising only after
+the block encoding, state preparation, success probability, precision, and
+readout model are also favorable.
+
+---
+
 ## Summary
 
 QSVT provides a unifying framework in which:
@@ -412,6 +556,8 @@ QSVT provides a unifying framework in which:
 - matrix functions are implemented via functional calculus,
 - projectors arise from sign-function approximations,
 - and linear-system–like behaviour follows naturally.
+- a complete quantum algorithm still needs an access model, success-probability
+  analysis, and readout strategy.
 
 The notebooks in this repository are concrete realizations of these ideas in their simplest possible forms.
 

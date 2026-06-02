@@ -21,6 +21,7 @@ from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as _pkg_version
 
 from .algorithms import (
+    BlockEncodedQSVTWorkflowResult,
     GroundStateFilteringWorkflowResult,
     HamiltonianSimulationWorkflowResult,
     LinearSystemWorkflowResult,
@@ -28,6 +29,7 @@ from .algorithms import (
     SpectralDensityWorkflowResult,
     SpectralThresholdingWorkflowResult,
     ThermalGibbsWorkflowResult,
+    block_encoded_qsvt_workflow,
     ground_state_filtering_workflow,
     hamiltonian_simulation_workflow,
     linear_system_workflow,
@@ -61,6 +63,13 @@ from .benchmarks import (
     polynomial_matrix_function_benchmark,
     spectral_matrix_function_benchmark,
     write_benchmark_summary_csv,
+)
+from .block_encoding import (
+    BlockEncoding,
+    block_encode_matrix,
+    block_encoding_report,
+    extract_block_encoded_operator,
+    verify_block_encoding,
 )
 from .design import (
     design_filter_diagnostics,
@@ -215,6 +224,7 @@ __all__ = [
     "__api_status__",
     "__public_api_policy__",
     "GroundStateFilteringWorkflowResult",
+    "BlockEncodedQSVTWorkflowResult",
     "HamiltonianSimulationWorkflowResult",
     "LinearSystemWorkflowResult",
     "ResolventWorkflowResult",
@@ -248,7 +258,9 @@ __all__ = [
     "sqrt_approximation_polynomial",
     "sqrt_approximation_diagnostics",
     "DesignWorkflowResult",
+    "BlockEncoding",
     "design_workflow",
+    "block_encoded_qsvt_workflow",
     "ground_state_filtering_workflow",
     "hamiltonian_simulation_workflow",
     "linear_system_workflow",
@@ -267,6 +279,10 @@ __all__ = [
     "polynomial_matrix_function_benchmark",
     "spectral_matrix_function_benchmark",
     "write_benchmark_summary_csv",
+    "block_encode_matrix",
+    "block_encoding_report",
+    "extract_block_encoded_operator",
+    "verify_block_encoding",
     "hermitian_from_eigendecomposition",
     "identity",
     "involutory_diagonal",

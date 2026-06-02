@@ -2,6 +2,39 @@
 
 ---
 
+## [0.1.26] – 2nd June 2026
+
+### Added
+
+- added `qsvt.block_encoding` with explicit finite dense block-encoding
+  construction, top-left block extraction, reconstruction checks, unitarity
+  verification, and JSON-style report helpers
+- added `block_encoded_qsvt_workflow` for verified finite block-encoded QSVT
+  polynomial transforms on positive Hermitian signal operators, including
+  dense spectral references and optional state-vector diagnostics
+- added a block-encoded Laplacian smoothing real-example notebook using the
+  new package workflow as a near-pure client
+- added tutorial notebooks for finite block-encoded QSVT workflows, sparse
+  operator/oracle assumptions, and QSVT compatibility failure cases
+- added focused documentation pages for block encodings and QSVT
+  compatibility, plus broader theory notes on normalization, Hermitian
+  eigenvalue transforms, QSP phase synthesis, access models, success
+  probability, and readout
+
+### Changed
+
+- improved benchmark notebooks with explicit scope/variable-definition blocks
+  and clearer plots separating classical timings, validation quantities, and
+  QSVT proxy metadata
+- improved selected real-example plots for Anderson localization, harmonic
+  oscillator filtering, and Fermi-Dirac occupations with richer diagnostic
+  panels
+- expanded documentation and notebook indices for the new block-encoding,
+  sparse-assumption, compatibility, and real-example materials
+- updated package metadata and release markers for `0.1.26`
+
+---
+
 ## [0.1.25] – 2nd June 2026
 
 ### Added

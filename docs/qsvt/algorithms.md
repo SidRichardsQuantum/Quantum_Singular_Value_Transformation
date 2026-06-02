@@ -26,6 +26,14 @@ allow the same polynomial transform to be implemented as a quantum signal
 processing sequence, provided the polynomial satisfies the necessary
 boundedness and parity constraints.
 
+`block_encoded_qsvt_workflow` is the package's finite block-encoded exception
+to the usual dense-polynomial-only pattern. It constructs an explicit dense
+unitary block encoding, verifies the top-left block and unitarity numerically,
+then applies the PennyLane QSVT matrix transform to the normalized positive
+Hermitian signal operator. It is still a finite simulator workflow: scalable
+oracle construction, state loading, readout, amplitude amplification, and
+hardware costs remain outside the implementation.
+
 ## Truth Contract
 
 Every `as_report()` payload from this module includes a `truth_contract` field.
@@ -78,6 +86,37 @@ Limitations:
 : This is a dense simulator workflow. It does not include quantum state
   preparation, block-encoding construction, amplitude amplification, condition
   number resource estimates, or fault-tolerant costs.
+
+## Block-Encoded QSVT
+
+`block_encoded_qsvt_workflow(matrix, coeffs, state=None, alpha=None)`
+
+Purpose:
+: Validate a finite block-encoded QSVT polynomial transform for a positive
+  Hermitian matrix.
+
+Target function:
+: The coefficients define a bounded polynomial `P(x)` in the normalized signal
+  coordinate. The workflow compares the QSVT logical block with the spectral
+  reference `P(matrix / alpha)`.
+
+Block encoding:
+: `qsvt.block_encoding.block_encode_matrix` constructs an explicit dense
+  unitary dilation whose top-left block is `matrix / alpha`. If `alpha` is not
+  supplied, the workflow chooses a conservative normalization so the signal
+  spectrum stays away from the QSVT boundary.
+
+Diagnostics:
+: The result includes the dense unitary block encoding, verification metadata,
+  QSVT operator, exact spectral reference, operator relative error, and optional
+  state-vector output/error fields.
+
+Limitations:
+: This is a true finite block encoding and a true finite QSVT verification, but
+  it is not a scalable oracle construction or an end-to-end quantum algorithm.
+  The direct PennyLane comparison is scoped to positive-semidefinite Hermitian
+  signal operators where this package's matrix-QSVT wrapper agrees with
+  ordinary spectral polynomial functional calculus.
 
 ## Ground-State Filtering
 

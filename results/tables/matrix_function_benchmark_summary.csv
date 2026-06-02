@@ -1,4 +1,4 @@
 algorithm,problem,matrix_dimension,best_time_seconds,mean_time_seconds,relative_residual_norm,relative_error,condition_number_2,polynomial_degree,qsvt_signal_operator_calls
-dense-spectral-matrix-function,exponential-matrix-function,10,9.203200170304626e-05,0.00010384733347261015,,,,,
-spectral-polynomial-evaluation,polynomial-matrix-function,10,0.0001593570013938006,0.00016414933270425536,,,,10,10
-spectral-polynomial-evaluation,polynomial-matrix-function,10,0.00012512299872469157,0.00013269066645686203,,,,10,10
+dense-spectral-matrix-function,exponential-matrix-function,10,0.0001003479992505163,0.00012110933190948951,,,,,
+spectral-polynomial-evaluation,polynomial-matrix-function,10,0.0001447609975002706,0.00015199733267460638,,,,10,10
+spectral-polynomial-evaluation,polynomial-matrix-function,10,0.00012814900037483312,0.0001437679990582789,,,,10,10

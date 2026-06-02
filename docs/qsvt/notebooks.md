@@ -42,6 +42,9 @@ Tutorial notebooks live in `notebooks/tutorials/`.
 | `tutorials/12_QSVT_Reports_CLI_and_Artifacts.ipynb` | QSVT reports, CLI output, and reproducible artifacts |
 | `tutorials/13_QSVT_Design_Tradeoffs.ipynb` | QSVT design degree/error/boundedness tradeoffs |
 | `tutorials/14_QSVT_Resource_Proxy_Limits.ipynb` | block-encoding assumptions and QSVT resource-proxy limits |
+| `tutorials/15_Block_Encoded_QSVT_Workflow.ipynb` | finite block-encoded QSVT workflow |
+| `tutorials/16_Sparse_Oracle_Assumptions.ipynb` | sparse operators, oracle assumptions, and omitted costs |
+| `tutorials/17_QSVT_Compatibility_Failure_Cases.ipynb` | boundedness, parity, and QSVT compatibility failures |
 
 ## Benchmark notebooks
 
@@ -92,6 +95,7 @@ or quantum-relevance context for the toy-scale example.
 | `27_fermi_dirac_electronic_occupations.ipynb` | Fermi-Dirac electronic occupations |
 | `28_photonic_crystal_band_gap_filtering.ipynb` | photonic-crystal band-gap filtering |
 | `29_topological_band_projector_chern_marker.ipynb` | topological band projectors and Chern markers |
+| `30_block_encoded_laplacian_smoothing.ipynb` | block-encoded QSVT Laplacian smoothing |
 
 See the repository notebook directory for executable files:
 [notebooks](https://github.com/SidRichardsQuantum/Quantum_Singular_Value_Transformation/tree/main/notebooks).
