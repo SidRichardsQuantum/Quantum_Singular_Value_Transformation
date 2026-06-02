@@ -1174,7 +1174,7 @@ def block_encoded_qsvt_workflow(
             real_output=real_output,
         )
         operator_relative = operator_error(reference_operator, qsvt_operator)
-        if state_vec is not None:
+        if state_vec is not None and reference_state is not None:
             qsvt_state = qsvt_operator @ state_vec
             state_error = _relative_error(reference_state, qsvt_state)
     except Exception as exc:  # pragma: no cover - backend-dependent path

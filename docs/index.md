@@ -374,6 +374,8 @@ Notebooks <qsvt/notebooks>
 
 Polynomial Design <qsvt/design>
 Algorithm Notes <qsvt/algorithms>
+Block Encodings <qsvt/block_encoding>
+QSVT Compatibility <qsvt/compatibility>
 Physics Workflows <qsvt/physics>
 Classical Benchmarks <qsvt/benchmarks>
 Classical Baseline Details <qsvt/classical_baselines>

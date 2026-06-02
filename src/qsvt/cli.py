@@ -1195,7 +1195,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: Iterable[str] | None = None) -> None:
     parser = build_parser()
-    args = parser.parse_args(argv)
+    args = parser.parse_args(None if argv is None else list(argv))
 
     result = args.func(args)
     emit_cli_result(args, result)

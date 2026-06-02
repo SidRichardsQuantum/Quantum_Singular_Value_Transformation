@@ -19,7 +19,7 @@
       "problem": "dense-linear-system",
       "matrix_dimension": 6,
       "repeats": 2,
-      "best_time_seconds": 1.1871998140122741e-05,
+      "best_time_seconds": 1.168200105894357e-05,
       "mean_time_seconds": 1.79484995896928e-05,
       "benchmark_environment": {
         "timing_kind": "python_wall_clock_microbenchmark",
@@ -160,8 +160,8 @@
       "problem": "positive-definite-linear-system",
       "matrix_dimension": 6,
       "repeats": 2,
-      "best_time_seconds": 9.788199895410798e-05,
-      "mean_time_seconds": 0.00011738349894585554,
+      "best_time_seconds": 0.00010019700130214915,
+      "mean_time_seconds": 0.00010491600005479995,
       "benchmark_environment": {
         "timing_kind": "python_wall_clock_microbenchmark",
         "timer": "time.perf_counter",
@@ -304,8 +304,8 @@
       "problem": "dense-linear-system",
       "matrix_dimension": 10,
       "repeats": 2,
-      "best_time_seconds": 1.267300103791058e-05,
-      "mean_time_seconds": 1.708150011836551e-05,
+      "best_time_seconds": 1.3195000065024942e-05,
+      "mean_time_seconds": 1.8144000932807103e-05,
       "benchmark_environment": {
         "timing_kind": "python_wall_clock_microbenchmark",
         "timer": "time.perf_counter",
@@ -453,8 +453,8 @@
       "problem": "positive-definite-linear-system",
       "matrix_dimension": 10,
       "repeats": 2,
-      "best_time_seconds": 9.590799891157076e-05,
-      "mean_time_seconds": 9.988099918700755e-05,
+      "best_time_seconds": 9.941499956767075e-05,
+      "mean_time_seconds": 0.00010229549843643326,
       "benchmark_environment": {
         "timing_kind": "python_wall_clock_microbenchmark",
         "timer": "time.perf_counter",
@@ -605,8 +605,8 @@
       "problem": "dense-linear-system",
       "matrix_dimension": 14,
       "repeats": 2,
-      "best_time_seconds": 1.4556997484760359e-05,
-      "mean_time_seconds": 1.89949987543514e-05,
+      "best_time_seconds": 1.4846998965367675e-05,
+      "mean_time_seconds": 1.952599996002391e-05,
       "benchmark_environment": {
         "timing_kind": "python_wall_clock_microbenchmark",
         "timer": "time.perf_counter",
@@ -754,8 +754,8 @@
       "problem": "positive-definite-linear-system",
       "matrix_dimension": 14,
       "repeats": 2,
-      "best_time_seconds": 0.00010484500307939015,
-      "mean_time_seconds": 0.00011723850184353068,
+      "best_time_seconds": 0.00011206899944227189,
+      "mean_time_seconds": 0.00012461749975045677,
       "benchmark_environment": {
         "timing_kind": "python_wall_clock_microbenchmark",
         "timer": "time.perf_counter",
