@@ -32,6 +32,8 @@ def test_qsvt_resource_report_combines_resources_and_compatibility():
     )
 
     assert report["mode"] == "resource-report"
+    assert report["truth_contract"]["truth_status"] == "proxy_only"
+    assert report["truth_contract"]["is_end_to_end_quantum_resource_estimate"] is False
     assert report["resources"]["degree"] == 2
     assert report["resources"]["encoding_qubits"] == 1
     assert report["compatibility"]["attempted_pennylane_synthesis"] is False

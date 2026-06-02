@@ -50,6 +50,7 @@ from .approximation import (
 )
 from .benchmarks import (
     ClassicalBenchmarkResult,
+    benchmark_environment_report,
     benchmark_summary_table,
     conjugate_gradient_benchmark,
     conjugate_gradient_solve,
@@ -256,6 +257,7 @@ __all__ = [
     "spectral_thresholding_workflow",
     "thermal_gibbs_workflow",
     "benchmark_summary_table",
+    "benchmark_environment_report",
     "conjugate_gradient_benchmark",
     "conjugate_gradient_solve",
     "dense_eigendecomposition_benchmark",

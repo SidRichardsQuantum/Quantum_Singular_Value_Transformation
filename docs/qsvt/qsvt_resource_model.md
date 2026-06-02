@@ -20,6 +20,13 @@ These quantities are useful because degree usually dominates the number of
 signal uses in an idealized QSVT sequence. They are not enough to determine
 runtime by themselves.
 
+Every resource report includes a `truth_contract` field with
+`implementation_kind = "polynomial-resource-proxy"` and
+`is_end_to_end_quantum_resource_estimate = false`. The report is truthful only
+as a polynomial-level proxy: it can compare degrees, phase-count proxies,
+signal-call proxies, widths, and sampled compatibility checks. It cannot by
+itself justify a runtime, hardware, or quantum-advantage claim.
+
 ## Omitted Costs
 
 The proxy model does not include:

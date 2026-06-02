@@ -1,11 +1,34 @@
 {
   "mode": "classical-benchmark",
+  "truth_contract": {
+    "implementation_kind": "classical-baseline-with-optional-qsvt-proxy",
+    "truth_status": "classical_timing_reference",
+    "is_quantum_runtime_benchmark": false,
+    "implemented_components": [
+      "classical_dense_or_iterative_numpy_computation",
+      "wall_clock_timing_for_the_classical_path",
+      "residual_or_matrix_function_diagnostics",
+      "optional_polynomial_resource_proxy"
+    ],
+    "validation_scope": "The timing fields measure only the classical baseline path in this Python/NumPy environment. Attached QSVT fields are polynomial proxies and are not quantum runtimes."
+  },
   "algorithm": "dense-spectral-matrix-function",
   "problem": "exponential-matrix-function",
   "matrix_dimension": 10,
   "repeats": 3,
-  "best_time_seconds": 9.15010000426264e-05,
-  "mean_time_seconds": 0.00010198733343713684,
+  "best_time_seconds": 9.203200170304626e-05,
+  "mean_time_seconds": 0.00010384733347261015,
+  "benchmark_environment": {
+    "timing_kind": "python_wall_clock_microbenchmark",
+    "timer": "time.perf_counter",
+    "python_version": "3.13.12",
+    "numpy_version": "2.4.5",
+    "platform_system": "Linux",
+    "platform_release": "6.8.0-1052-azure",
+    "platform_machine": "x86_64",
+    "processor": "x86_64",
+    "stability_note": "Timing fields are environment-dependent snapshots. Use metrics and QSVT proxy fields for stable schema checks; regenerate timings deliberately for benchmark studies."
+  },
   "metrics": {
     "function": "exponential",
     "min_eigenvalue": 0.02067219782410493,

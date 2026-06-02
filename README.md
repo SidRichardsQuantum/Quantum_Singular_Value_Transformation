@@ -22,11 +22,13 @@ This repository combines:
 
 - a notebook-first introduction to QSVT and QSP
 - a reusable Python package for polynomial design, spectral transforms, and
-  small PennyLane QSVT checks
+  small PennyLane QSVT checks where the backend can synthesize the transform
 - reproducible examples for scalar, matrix, PDE, and small physics workflows
 
-The focus is spectral intuition: how bounded polynomials transform singular
-values or eigenvalues through block encodings.
+The focus is spectral intuition and reproducible validation: how bounded
+polynomials transform singular values or eigenvalues, what approximation error
+they incur on concrete finite instances, and which extra quantum assumptions
+would be needed to turn the polynomial core into a complete algorithm.
 
 ## Links
 
@@ -159,7 +161,7 @@ inline type annotations shipped with the public modules.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.1.24`
+Current release: `0.1.25`
 
 ## Notebooks
 
@@ -199,6 +201,35 @@ scripts/update_notebook_results.sh
 Commit the updated notebooks, extracted plots, manifests, and generated result
 pages together. CI checks that the committed result pages and manifests can be
 regenerated from the committed notebook outputs without re-executing notebooks.
+
+## Truth Contract
+
+The package is designed to be useful for education, research prototyping, and
+small real physics/math case studies, but its claims are deliberately scoped.
+
+Implemented and tested:
+
+- dense spectral polynomial references for finite matrices,
+- bounded polynomial design and sampled diagnostics,
+- simulator-scale workflows for linear systems, filters, matrix functions,
+  resolvents, Gibbs weights, spectral density, and projectors,
+- PennyLane QSVT block checks for supported small compatible polynomials,
+- classical benchmark baselines plus QSVT-oriented proxy metadata.
+
+Reported as assumptions or proxies:
+
+- block-encoding availability and query cost,
+- input-state preparation and data loading,
+- measurement/readout and amplitude amplification,
+- fault-tolerant synthesis, error correction, and hardware compilation,
+- end-to-end runtime or quantum advantage claims.
+
+Every high-level algorithm, direct QSVT comparison, resource, and benchmark
+report includes a `truth_contract` field. The field states the implemented
+dense-polynomial or small-backend check, the conditional QSVT interpretation,
+and the omitted quantum components. Resource reports are proxy summaries, not
+hardware estimates; benchmark reports time only the classical baseline path and
+include `benchmark_environment` metadata for interpreting timing snapshots.
 
 ## Scope
 

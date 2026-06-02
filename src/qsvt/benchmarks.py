@@ -12,6 +12,8 @@ suites.
 from __future__ import annotations
 
 import csv
+import platform
+import sys
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
@@ -20,6 +22,7 @@ from typing import Any
 
 import numpy as np
 
+from ._algorithm_reports import benchmark_truth_contract
 from .polynomials import polynomial_degree
 from .resources import qsvt_resource_report
 from .spectral import apply_function_to_hermitian, apply_polynomial_to_hermitian
@@ -47,12 +50,14 @@ class ClassicalBenchmarkResult:
         """
         return {
             "mode": "classical-benchmark",
+            "truth_contract": benchmark_truth_contract(),
             "algorithm": self.algorithm,
             "problem": self.problem,
             "matrix_dimension": self.matrix_dimension,
             "repeats": self.repeats,
             "best_time_seconds": self.best_time_seconds,
             "mean_time_seconds": self.mean_time_seconds,
+            "benchmark_environment": benchmark_environment_report(),
             "metrics": self.metrics,
             "qsvt_proxy": self.qsvt_proxy,
             "notes": list(self.notes),
@@ -354,6 +359,27 @@ def benchmark_summary_table(reports: list[dict[str, Any]]) -> list[dict[str, Any
             }
         )
     return rows
+
+
+def benchmark_environment_report() -> dict[str, object]:
+    """
+    Return version and platform metadata for interpreting timing snapshots.
+    """
+    return {
+        "timing_kind": "python_wall_clock_microbenchmark",
+        "timer": "time.perf_counter",
+        "python_version": sys.version.split()[0],
+        "numpy_version": np.__version__,
+        "platform_system": platform.system(),
+        "platform_release": platform.release(),
+        "platform_machine": platform.machine(),
+        "processor": platform.processor(),
+        "stability_note": (
+            "Timing fields are environment-dependent snapshots. Use metrics "
+            "and QSVT proxy fields for stable schema checks; regenerate timings "
+            "deliberately for benchmark studies."
+        ),
+    }
 
 
 def write_benchmark_summary_csv(

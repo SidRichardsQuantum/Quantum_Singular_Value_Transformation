@@ -2,6 +2,31 @@
 
 ---
 
+## [0.1.25] – 2nd June 2026
+
+### Added
+
+- added machine-readable `truth_contract` metadata to high-level algorithm,
+  direct QSVT verification, resource proxy, and classical benchmark reports so
+  serialized results carry their implementation scope and omitted quantum
+  assumptions
+- added benchmark environment metadata for classical timing snapshots,
+  including Python, NumPy, platform, timer, and timing-stability context
+- documented the report truth contract across the README, usage guide,
+  algorithm, implementation, resource-model, benchmark, and QSVT report pages
+- added a real-problem workflow example showing how to preserve numerical
+  diagnostics and claim-boundary metadata in a saved report
+
+### Changed
+
+- refreshed benchmark, tutorial, and notebook result artefacts after the report
+  schema updates and benchmark timing regeneration
+- tightened tests around report truth contracts, benchmark artefact schema, and
+  QSVT verification report metadata
+- updated package metadata and release markers for `0.1.25`
+
+---
+
 ## [0.1.24] – 26th May 2026
 
 ### Added

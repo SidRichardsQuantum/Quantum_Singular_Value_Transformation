@@ -1,11 +1,34 @@
 {
   "mode": "classical-benchmark",
+  "truth_contract": {
+    "implementation_kind": "classical-baseline-with-optional-qsvt-proxy",
+    "truth_status": "classical_timing_reference",
+    "is_quantum_runtime_benchmark": false,
+    "implemented_components": [
+      "classical_dense_or_iterative_numpy_computation",
+      "wall_clock_timing_for_the_classical_path",
+      "residual_or_matrix_function_diagnostics",
+      "optional_polynomial_resource_proxy"
+    ],
+    "validation_scope": "The timing fields measure only the classical baseline path in this Python/NumPy environment. Attached QSVT fields are polynomial proxies and are not quantum runtimes."
+  },
   "algorithm": "spectral-polynomial-evaluation",
   "problem": "polynomial-matrix-function",
   "matrix_dimension": 10,
   "repeats": 3,
-  "best_time_seconds": 0.00012611600004674983,
-  "mean_time_seconds": 0.00012936499994490683,
+  "best_time_seconds": 0.00012512299872469157,
+  "mean_time_seconds": 0.00013269066645686203,
+  "benchmark_environment": {
+    "timing_kind": "python_wall_clock_microbenchmark",
+    "timer": "time.perf_counter",
+    "python_version": "3.13.12",
+    "numpy_version": "2.4.5",
+    "platform_system": "Linux",
+    "platform_release": "6.8.0-1052-azure",
+    "platform_machine": "x86_64",
+    "processor": "x86_64",
+    "stability_note": "Timing fields are environment-dependent snapshots. Use metrics and QSVT proxy fields for stable schema checks; regenerate timings deliberately for benchmark studies."
+  },
   "metrics": {
     "polynomial_degree": 10,
     "coefficient_count": 11,
@@ -14,6 +37,21 @@
   "qsvt_proxy": {
     "mode": "resource-report",
     "estimate_kind": "proxy",
+    "truth_contract": {
+      "implementation_kind": "polynomial-resource-proxy",
+      "truth_status": "proxy_only",
+      "is_end_to_end_quantum_resource_estimate": false,
+      "reported_components": [
+        "polynomial_degree",
+        "coefficient_count",
+        "qsp_phase_count_proxy",
+        "signal_operator_call_proxy",
+        "matrix_register_width_when_dimension_is_supplied",
+        "sampled_compatibility_checks"
+      ],
+      "conditional_qsvt_statement": "The proxy is relevant only after a valid block encoding, state-preparation model, and readout strategy have been specified.",
+      "validation_scope": "The report compares polynomial-level quantities and sampled compatibility checks; it does not estimate wall-clock runtime."
+    },
     "coeffs": [
       -0.06413271277095307,
       0.0,

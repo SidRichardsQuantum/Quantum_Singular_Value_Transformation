@@ -11,6 +11,7 @@ from collections.abc import Iterable
 
 import numpy as np
 
+from ._algorithm_reports import qsvt_verification_truth_contract
 from .operators import (
     _as_numeric_operator,
     _default_wire_order_from_operator,
@@ -187,6 +188,11 @@ def qsvt_matrix_transform_report(
 
     report: dict[str, object] = {
         "mode": "qsvt-matrix-transform-report",
+        "truth_contract": qsvt_verification_truth_contract(
+            "qsvt-matrix-transform-report",
+            target="Hermitian matrix polynomial transform",
+            qsvt_check="failed" if allow_qsvt_failure else "succeeded",
+        ),
         "input": A,
         "eigenvalues": eigenvalues,
         "poly": coeffs,
@@ -213,6 +219,11 @@ def qsvt_matrix_transform_report(
             raise
         report.update(
             {
+                "truth_contract": qsvt_verification_truth_contract(
+                    "qsvt-matrix-transform-report",
+                    target="Hermitian matrix polynomial transform",
+                    qsvt_check="failed",
+                ),
                 "qsvt_succeeded": False,
                 "qsvt": None,
                 "qsvt_imag": None,
@@ -232,6 +243,11 @@ def qsvt_matrix_transform_report(
     abs_error = np.abs(qsvt_reference - classical)
     report.update(
         {
+            "truth_contract": qsvt_verification_truth_contract(
+                "qsvt-matrix-transform-report",
+                target="Hermitian matrix polynomial transform",
+                qsvt_check="succeeded",
+            ),
             "qsvt_succeeded": True,
             "qsvt": qsvt_reference,
             "qsvt_imag": qsvt_imag,

@@ -10,7 +10,7 @@ This generated page displays the embedded plots and text outputs from every tuto
 - Source notebooks: `notebooks/tutorials/`
 - Notebooks displayed: `14`
 - Embedded plot artefacts displayed: `31`
-- Plain-text notebook results displayed: `62`
+- Plain-text notebook results displayed: `63`
 
 ## Related Pages
 
@@ -347,6 +347,12 @@ Output 5 (cell 19):
 
 ```text
 block_max_error: 1.414e-06
+```
+
+Output 6 (cell 19):
+
+```text
+
 solution_direction_overlap: 1.000000000000
 validation: passed
 ```
@@ -891,7 +897,7 @@ Bounded : True | True | True | True | True
 Output 2 (cell 6):
 
 ```text
-<matplotlib.legend.Legend at 0x7cd6c2707e00>
+<matplotlib.legend.Legend at 0x7996de598c20>
 ```
 
 Output 3 (cell 8):

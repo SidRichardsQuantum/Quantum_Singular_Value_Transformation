@@ -5,6 +5,7 @@ import pytest
 
 import qsvt
 from qsvt.benchmarks import (
+    benchmark_environment_report,
     benchmark_summary_table,
     conjugate_gradient_benchmark,
     conjugate_gradient_solve,
@@ -60,6 +61,12 @@ def test_dense_eigendecomposition_benchmark_reports_reconstruction_error():
     report = dense_eigendecomposition_benchmark(matrix, repeats=1)
 
     assert report["mode"] == "classical-benchmark"
+    assert report["truth_contract"]["truth_status"] == "classical_timing_reference"
+    assert report["truth_contract"]["is_quantum_runtime_benchmark"] is False
+    assert report["benchmark_environment"]["timing_kind"] == (
+        "python_wall_clock_microbenchmark"
+    )
+    assert report["benchmark_environment"]["numpy_version"]
     assert report["algorithm"] == "numpy.linalg.eigh"
     assert report["matrix_dimension"] == 2
     assert report["repeats"] == 1
@@ -256,6 +263,7 @@ def test_benchmarks_reject_invalid_inputs():
 
 def test_top_level_exports_benchmark_helpers():
     assert qsvt.ClassicalBenchmarkResult is not None
+    assert qsvt.benchmark_environment_report is benchmark_environment_report
     assert qsvt.dense_linear_solve_benchmark is dense_linear_solve_benchmark
     assert qsvt.conjugate_gradient_solve is conjugate_gradient_solve
     assert qsvt.plot_benchmark_timings is plot_benchmark_timings

@@ -164,6 +164,27 @@ def qsvt_resource_report(
     return {
         "mode": "resource-report",
         "estimate_kind": estimate.estimate_kind,
+        "truth_contract": {
+            "implementation_kind": "polynomial-resource-proxy",
+            "truth_status": "proxy_only",
+            "is_end_to_end_quantum_resource_estimate": False,
+            "reported_components": [
+                "polynomial_degree",
+                "coefficient_count",
+                "qsp_phase_count_proxy",
+                "signal_operator_call_proxy",
+                "matrix_register_width_when_dimension_is_supplied",
+                "sampled_compatibility_checks",
+            ],
+            "conditional_qsvt_statement": (
+                "The proxy is relevant only after a valid block encoding, "
+                "state-preparation model, and readout strategy have been specified."
+            ),
+            "validation_scope": (
+                "The report compares polynomial-level quantities and sampled "
+                "compatibility checks; it does not estimate wall-clock runtime."
+            ),
+        },
         "coeffs": coeff_arr,
         "resources": estimate.as_report(),
         "compatibility": compatibility,

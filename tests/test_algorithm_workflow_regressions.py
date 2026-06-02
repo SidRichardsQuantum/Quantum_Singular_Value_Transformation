@@ -41,6 +41,9 @@ def test_linear_system_workflow_regression():
     report = report_to_jsonable(result.as_report())
 
     assert report["mode"] == "linear-system-workflow"
+    assert report["truth_contract"]["truth_status"] == "validated_polynomial_core"
+    assert report["truth_contract"]["is_end_to_end_quantum_algorithm"] is False
+    assert report["truth_contract"]["pennylane_qsvt_check"] == "not_attempted"
     assert np.isclose(result.gamma, 0.5657414540893352)
     assert result.polynomial_residual_norm < 0.06
     assert result.polynomial_relative_error < 0.06
@@ -59,6 +62,13 @@ def test_ground_state_filtering_workflow_regression():
     report = report_to_jsonable(result.as_report())
 
     assert report["mode"] == "ground-state-filtering-workflow"
+    assert report["truth_contract"]["implementation_kind"] == (
+        "dense-spectral-polynomial-workflow"
+    )
+    assert (
+        "block_encoding_construction"
+        in report["truth_contract"]["assumed_quantum_components"]
+    )
     assert result.reference_state_error < 1e-5
     assert result.operator_relative_error < 1e-3
     assert result.ground_state_overlap > 0.999999
@@ -125,6 +135,9 @@ def test_spectral_thresholding_workflow_regression():
     report = report_to_jsonable(result.as_report())
 
     assert report["mode"] == "spectral-thresholding-workflow"
+    assert report["truth_contract"]["target"] == (
+        "smooth spectral interval-projector approximation"
+    )
     assert result.exact_rank == 2
     assert abs(result.polynomial_rank_proxy - result.exact_rank) < 0.15
     assert result.operator_relative_error < 0.12

@@ -20,9 +20,13 @@ The public API is in `qsvt.benchmarks`:
 
 Each benchmark report includes:
 
+- a `truth_contract` marking the report as a classical baseline, not a quantum
+  runtime benchmark,
 - classical baseline algorithm and problem type
 - matrix dimension
 - best and mean wall-clock time across repeated runs
+- `benchmark_environment` metadata including Python, NumPy, platform, timer,
+  and a stability note for timing snapshots
 - residual, condition-number, or matrix-function metadata where applicable
 - optional QSVT resource proxy metadata for polynomial workflows
 

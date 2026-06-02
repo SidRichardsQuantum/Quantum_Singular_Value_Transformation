@@ -254,6 +254,76 @@ sin_Ht = apply_polynomial_to_hermitian(scaled.matrix, polys.sin_coeffs)
 See [docs/qsvt/physics.md](docs/qsvt/physics.md) for the detailed physics API
 map.
 
+## Real Problem Workflow Example
+
+For a small concrete physics or mathematics model, start with the dense
+operator you want to study and use a workflow report as the reproducible
+record. This example filters a tight-binding Hamiltonian toward its low-energy
+subspace and keeps both the numerical diagnostics and the claim boundary.
+
+```python
+import numpy as np
+
+from qsvt.algorithms import ground_state_filtering_workflow
+from qsvt.hamiltonians import tight_binding_chain
+from qsvt.reports import report_to_jsonable, save_report
+
+H = tight_binding_chain(8)
+trial_state = np.ones(H.shape[0])
+
+result = ground_state_filtering_workflow(
+    H,
+    trial_state,
+    degree=18,
+    width=0.3,
+    num_points=801,
+)
+
+report = report_to_jsonable(result.as_report())
+
+print(report["ground_energy"])
+print(report["ground_state_overlap"])
+print(report["operator_relative_error"])
+print(report["truth_contract"]["truth_status"])
+print(report["truth_contract"]["is_end_to_end_quantum_algorithm"])
+
+save_report(report, "tight-binding-filter-report.json")
+```
+
+Read the fields as follows:
+
+- `operator_relative_error` and `reference_state_error` quantify the dense
+  polynomial approximation for this finite instance.
+- `ground_state_overlap` is the physics diagnostic for whether the filter
+  emphasized the low-energy eigenspace.
+- `truth_contract` states that the report validates the spectral-polynomial
+  core and does not include block-encoding construction, state preparation,
+  readout, amplitude amplification, or hardware costs.
+
+For research benchmarking, pair this workflow with a resource proxy:
+
+```python
+from qsvt.resources import qsvt_resource_report
+
+proxy = qsvt_resource_report(
+    result.coeffs,
+    matrix_dimension=H.shape[0],
+    attempt_synthesis=False,
+    diagnostics={
+        "operator_relative_error": result.operator_relative_error,
+        "ground_state_overlap": result.ground_state_overlap,
+    },
+)
+
+print(proxy["resources"]["degree"])
+print(proxy["resources"]["signal_operator_calls"])
+print(proxy["truth_contract"]["truth_status"])
+```
+
+The proxy helps compare polynomial degree and signal-call requirements across
+models or tolerances. It should be cited as a polynomial-resource proxy, not as
+a full quantum runtime estimate.
+
 ## CLI Usage
 
 Scalar transform:

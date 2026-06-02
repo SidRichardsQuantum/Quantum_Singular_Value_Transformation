@@ -13,7 +13,7 @@ from typing import Any
 
 import numpy as np
 
-from ._algorithm_reports import scaled_operator_report
+from ._algorithm_reports import algorithm_truth_contract, scaled_operator_report
 from .compatibility import qsvt_compatibility_report
 from .design import (
     design_interval_projector_diagnostics,
@@ -68,8 +68,18 @@ class LinearSystemWorkflowResult:
         """
         Return a report-style dictionary for JSON conversion or persistence.
         """
+        qsvt_check = (
+            "failed"
+            if self.qsvt_error is not None
+            else "succeeded" if self.qsvt_solution is not None else "not_attempted"
+        )
         return {
             "mode": "linear-system-workflow",
+            "truth_contract": algorithm_truth_contract(
+                "linear-system-workflow",
+                target="positive-definite linear-system inverse action",
+                qsvt_check=qsvt_check,
+            ),
             "gamma": self.gamma,
             "degree": self.degree,
             "coeffs": self.coeffs,
@@ -117,6 +127,10 @@ class GroundStateFilteringWorkflowResult:
         """
         return {
             "mode": "ground-state-filtering-workflow",
+            "truth_contract": algorithm_truth_contract(
+                "ground-state-filtering-workflow",
+                target="low-energy Gaussian spectral filtering",
+            ),
             "degree": self.degree,
             "center": self.center,
             "width": self.width,
@@ -163,6 +177,10 @@ class HamiltonianSimulationWorkflowResult:
         """
         return {
             "mode": "hamiltonian-simulation-workflow",
+            "truth_contract": algorithm_truth_contract(
+                "hamiltonian-simulation-workflow",
+                target="real-time Hamiltonian matrix exponential action",
+            ),
             "time": self.time,
             "degree": self.degree,
             "scaled_time": self.scaled_time,
@@ -206,6 +224,10 @@ class ResolventWorkflowResult:
         """
         return {
             "mode": "resolvent-workflow",
+            "truth_contract": algorithm_truth_contract(
+                "resolvent-workflow",
+                target="Green's-function resolvent matrix function",
+            ),
             "omega": self.omega,
             "eta": self.eta,
             "degree": self.degree,
@@ -247,6 +269,10 @@ class SpectralDensityWorkflowResult:
         """
         return {
             "mode": "spectral-density-workflow",
+            "truth_contract": algorithm_truth_contract(
+                "spectral-density-workflow",
+                target="Gaussian-window spectral-density estimate",
+            ),
             "centers": self.centers,
             "width": self.width,
             "degree": self.degree,
@@ -294,6 +320,10 @@ class SpectralThresholdingWorkflowResult:
         """
         return {
             "mode": "spectral-thresholding-workflow",
+            "truth_contract": algorithm_truth_contract(
+                "spectral-thresholding-workflow",
+                target="smooth spectral interval-projector approximation",
+            ),
             "degree": self.degree,
             "lower": self.lower,
             "upper": self.upper,
@@ -346,6 +376,10 @@ class ThermalGibbsWorkflowResult:
         """
         return {
             "mode": "thermal-gibbs-workflow",
+            "truth_contract": algorithm_truth_contract(
+                "thermal-gibbs-workflow",
+                target="imaginary-time Boltzmann weighting and Gibbs normalization",
+            ),
             "beta": self.beta,
             "degree": self.degree,
             "coeffs": self.coeffs,

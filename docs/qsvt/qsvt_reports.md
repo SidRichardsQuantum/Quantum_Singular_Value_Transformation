@@ -11,6 +11,13 @@ Use these reports after choosing or designing a polynomial to answer:
 - how large is the sampled discrepancy?
 - which wires and block-encoding metadata were used?
 
+Each transform report includes a `truth_contract` field with
+`implementation_kind = "pennylane-small-qsvt-verification"`. That contract
+means the report validates a finite simulator instance against direct
+classical polynomial evaluation. It does not claim scalable block-encoding
+construction, state loading, readout, fault-tolerant synthesis, hardware
+compilation, or end-to-end quantum runtime.
+
 ## Compatibility reports
 
 Before running a transform, you can check whether coefficients look compatible
@@ -58,6 +65,7 @@ The report contains:
 | field | meaning |
 | --- | --- |
 | `input` | diagonal input values |
+| `truth_contract` | machine-readable implementation and claim boundary |
 | `poly` | polynomial coefficients in ascending degree order |
 | `qsvt` | diagonal values extracted from the QSVT transform |
 | `classical` | direct classical polynomial transform |

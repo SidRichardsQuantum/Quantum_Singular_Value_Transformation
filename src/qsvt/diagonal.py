@@ -11,6 +11,7 @@ from collections.abc import Iterable
 
 import numpy as np
 
+from ._algorithm_reports import qsvt_verification_truth_contract
 from .operators import (
     _default_wire_order_from_operator,
     _validate_wire_inputs,
@@ -310,6 +311,11 @@ def qsvt_transform_report(
 
     report: dict[str, object] = {
         "mode": "qsvt-transform-report",
+        "truth_contract": qsvt_verification_truth_contract(
+            "qsvt-transform-report",
+            target="diagonal polynomial transform",
+            qsvt_check="failed" if allow_qsvt_failure else "succeeded",
+        ),
         "input": diag_vals,
         "poly": coeffs,
         "classical": classical_vals,
@@ -336,6 +342,11 @@ def qsvt_transform_report(
             raise
         report.update(
             {
+                "truth_contract": qsvt_verification_truth_contract(
+                    "qsvt-transform-report",
+                    target="diagonal polynomial transform",
+                    qsvt_check="failed",
+                ),
                 "qsvt_succeeded": False,
                 "qsvt": None,
                 "abs_error": None,
@@ -350,6 +361,11 @@ def qsvt_transform_report(
     abs_error = np.abs(qsvt_vals - classical_vals)
     report.update(
         {
+            "truth_contract": qsvt_verification_truth_contract(
+                "qsvt-transform-report",
+                target="diagonal polynomial transform",
+                qsvt_check="succeeded",
+            ),
             "qsvt_succeeded": True,
             "qsvt": qsvt_vals,
             "abs_error": abs_error,

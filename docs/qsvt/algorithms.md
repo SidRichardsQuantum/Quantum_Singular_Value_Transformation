@@ -26,6 +26,31 @@ allow the same polynomial transform to be implemented as a quantum signal
 processing sequence, provided the polynomial satisfies the necessary
 boundedness and parity constraints.
 
+## Truth Contract
+
+Every `as_report()` payload from this module includes a `truth_contract` field.
+That field is part of the public reporting surface and should be read before
+using a workflow result in a benchmark, paper draft, or comparison table.
+
+The contract states that the workflow is a dense spectral-polynomial
+implementation, not an end-to-end quantum algorithm. It records:
+
+- the concrete target being approximated,
+- the implemented pieces: validation, spectral rescaling, polynomial
+  construction/application, dense classical reference, and numerical
+  diagnostics,
+- whether a PennyLane QSVT block check was attempted for that run,
+- the conditional QSVT statement: a compatible polynomial is the transform core
+  once a valid block encoding and state-preparation model are supplied,
+- omitted quantum layers such as block-encoding cost, state preparation,
+  success-probability management, readout, amplitude amplification,
+  fault-tolerant synthesis, and hardware compilation.
+
+This makes the workflows useful for real physics/math studies: users can plug
+in concrete finite models, measure approximation error and degree requirements,
+and compare classical baselines, while keeping the missing quantum data-access
+and hardware assumptions explicit.
+
 ## Linear Systems
 
 `linear_system_workflow(matrix, rhs, degree=...)`

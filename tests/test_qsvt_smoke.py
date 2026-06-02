@@ -75,6 +75,10 @@ def test_qsvt_transform_report_matches_classical_polynomial():
     )
 
     assert report["mode"] == "qsvt-transform-report"
+    assert report["truth_contract"]["implementation_kind"] == (
+        "pennylane-small-qsvt-verification"
+    )
+    assert report["truth_contract"]["pennylane_qsvt_check"] == "succeeded"
     assert report["qsvt_succeeded"] is True
     assert report["polynomial_degree"] == 2
     assert report["matrix_dimension"] == 4
@@ -88,6 +92,9 @@ def test_qsvt_matrix_transform_report_matches_classical_polynomial():
     report = qsvt_matrix_transform_report(matrix, [0, 0, 1])
 
     assert report["mode"] == "qsvt-matrix-transform-report"
+    assert report["truth_contract"]["truth_status"] == (
+        "verified_against_classical_polynomial"
+    )
     assert report["qsvt_succeeded"] is True
     assert report["polynomial_degree"] == 2
     assert report["matrix_dimension"] == 2
