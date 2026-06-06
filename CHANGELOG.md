@@ -2,6 +2,31 @@
 
 ---
 
+## [0.2.2] – 6th June 2026
+
+### Added
+
+- added tutorial 19, a finite simulator-scale HHL linear-system solver
+  notebook with exact and inexact phase-estimation sweeps, success
+  probabilities, residual diagnostics, and comparison against the existing
+  QSVT-style inverse workflow
+- committed the rendered tutorial 19 plot artefacts and refreshed the generated
+  tutorial results ledger to include 19 tutorial notebooks
+
+### Fixed
+
+- updated circuit probability execution and resource-summary extraction to use
+  `qml.set_shots` for finite-shot PennyLane QNodes while constructing devices
+  without deprecated shot arguments
+
+### Changed
+
+- refreshed benchmark timing artefacts and summary tables for the current
+  release environment
+- updated README and results documentation release markers for `0.2.2`
+
+---
+
 ## [0.2.1] – 6th June 2026
 
 ### Fixed

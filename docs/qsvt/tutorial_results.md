@@ -8,9 +8,9 @@ This generated page displays the embedded plots and text outputs from every tuto
 ## Current Status
 
 - Source notebooks: `notebooks/tutorials/`
-- Notebooks displayed: `18`
-- Embedded plot artefacts displayed: `36`
-- Plain-text notebook results displayed: `76`
+- Notebooks displayed: `19`
+- Embedded plot artefacts displayed: `38`
+- Plain-text notebook results displayed: `81`
 
 ## Related Pages
 
@@ -819,7 +819,7 @@ Output 4 (cell 12):
 
 ```text
 thermal-gibbs-workflow
-report keys [count/list]: ['beta', 'coeffs', 'degree', 'density_matrix_relative_error', 'mode', 'operator_relative_error', 'polynomial_boltzmann_operator', 'polynomial_gibbs_state'] ...
+report keys [count/list]: ['beta', 'coeffs', 'degree', 'density_matrix_relative_error', 'implementation_kind', 'mode', 'operator_relative_error', 'polynomial_boltzmann_operator'] ...
 ```
 
 ### `12_QSVT_Reports_CLI_and_Artifacts.ipynb`
@@ -900,7 +900,7 @@ Bounded : True | True | True | True | True
 Output 2 (cell 6):
 
 ```text
-<matplotlib.legend.Legend at 0x7996de598c20>
+<matplotlib.legend.Legend at 0x745223280ec0>
 ```
 
 Output 3 (cell 8):
@@ -1119,4 +1119,106 @@ degree  relative_solution_error  residual_norm
 6       0.0578489                0.0549513
 8       0.0571796                0.0575533
 10      0.0438395                0.0489511
+```
+
+### `19_HHL_Linear_System_Solver.ipynb`
+
+Source: [`notebooks/tutorials/19_HHL_Linear_System_Solver.ipynb`](../../notebooks/tutorials/19_HHL_Linear_System_Solver.ipynb)
+
+```{image} ../../results/plots/notebooks/19_HHL_Linear_System_Solver-plot-01.png
+:alt: HHL Linear-System Solver plot 1
+:width: 520px
+```
+
+```{image} ../../results/plots/notebooks/19_HHL_Linear_System_Solver-plot-02.png
+:alt: HHL Linear-System Solver plot 2
+:width: 760px
+```
+
+Output 1 (cell 8):
+
+```text
+A =
+[[ 1.25     -0.433013]
+ [-0.433013  1.75    ]]
+
+normalized |b> = [0.894427 0.447214]
+eigenvalues = [1. 2.]
+phase indices = [1 2]
+estimated eigenvalues = [1. 2.]
+rotation amplitudes C / lambda = [1.  0.5]
+success probability = 0.9973076211353317
+HHL state = [0.880635 0.473796]
+dense solution state = [0.880635 0.473796]
+state error = 1.5700924586837752e-16
+fidelity = 0.9999999999999998
+```
+
+Output 2 (cell 10):
+
+```text
+m  grid_size  phase_indices  success_probability  state_error  fidelity
+-  ---------  -------------  -------------------  -----------  --------
+1  2          (1, 1)         0.25                 0.0299475    0.999103
+2  4          (1, 2)         0.997308             1.570e-16    1
+3  8          (2, 4)         0.997308             1.570e-16    1
+4  16         (4, 8)         0.997308             1.570e-16    1
+5  32         (8, 16)        0.997308             1.570e-16    1
+```
+
+Output 3 (cell 13):
+
+```text
+A_sweep eigenvalues = [1.       1.414214]
+normalized |b_sweep> = [0.707107+0.j 0.707107+0.j]
+
+m  phase_indices  estimated_eigenvalues  state_error  best_scaled_residual_norm  success_probability
+-  -------------  ---------------------  -----------  -------------------------  -------------------
+2  (1, 1)         (1.570796, 1.570796)   0.074533     0.141775                   0.227973
+3  (1, 2)         (0.785398, 1.570796)   0.054061     0.105332                   0.866077
+4  (3, 4)         (1.178097, 1.570796)   0.0110711    0.0213574                  0.393407
+5  (5, 7)         (0.981748, 1.374447)   0.00185627   0.00358702                 0.564462
+6  (10, 14)       (0.981748, 1.374447)   0.00185627   0.00358702                 0.564462
+7  (20, 29)       (0.981748, 1.423534)   0.00451793   0.00874009                 0.56311
+8  (41, 58)       (1.006291, 1.423534)   5.438e-05    1.051e-04                  0.536872
+```
+
+Output 4 (cell 15):
+
+```text
+method              implementation_kind                 state_error  success_probability  residual_norm  relative_vector_error  phase_qubits  degree  gamma
+------------------  ----------------------------------  -----------  -------------------  -------------  ---------------------  ------------  ------  --------
+HHL finite          finite-spectral-hhl-simulation      5.438e-05    0.536872             1.051e-04      -                      8             -       -
+QSVT-style inverse  dense-spectral-polynomial-workflow  0.00966862   -                    0.0512108      0.0367455              -             8       0.707107
+
+QSVT-style solver rows:
+solver                         implementation_kind                 degree  residual_norm  relative_solution_error
+-----------------------------  ----------------------------------  ------  -------------  -----------------------
+dense_solve                    classical-dense-reference           8       0.000e+00      0.000e+00
+qsvt_style_polynomial_inverse  dense-spectral-polynomial-workflow  8       0.0512108      0.0367455
+```
+
+Output 5 (cell 17):
+
+```text
+HHL non-exact phase-estimation sweep:
+m  state_error  best_scaled_residual_norm  success_probability
+-  -----------  -------------------------  -------------------
+2  0.074533     0.141775                   0.227973
+3  0.054061     0.105332                   0.866077
+4  0.0110711    0.0213574                  0.393407
+5  0.00185627   0.00358702                 0.564462
+6  0.00185627   0.00358702                 0.564462
+7  0.00451793   0.00874009                 0.56311
+8  5.438e-05    1.051e-04                  0.536872
+
+QSVT-style degree sweep:
+degree  state_error  residual_norm  relative_vector_error
+------  -----------  -------------  ---------------------
+4       0.00304798   0.0756114      0.052888
+6       0.00241537   0.0767715      0.0538402
+8       0.00966862   0.0512108      0.0367455
+10      0.0105851    0.049006       0.0350409
+12      0.00197623   0.0390797      0.0279143
+14      0.00102514   0.0372169      0.0264762
 ```

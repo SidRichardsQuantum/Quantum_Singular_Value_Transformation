@@ -31,6 +31,8 @@ Rendered result pages:
 | `notebooks/tutorials/15_Block_Encoded_QSVT_Workflow.ipynb` | embedded plots | finite dense block-encoded QSVT workflow |
 | `notebooks/tutorials/16_Sparse_Oracle_Assumptions.ipynb` | embedded plot | sparse-oracle and access-model assumptions |
 | `notebooks/tutorials/17_QSVT_Compatibility_Failure_Cases.ipynb` | embedded plot | boundedness, parity, and synthesis failure cases |
+| `notebooks/tutorials/18_QSVT_Linear_System_Comparisons.ipynb` | embedded plots | dense, CG, and QSVT-style linear-system comparison rows |
+| `notebooks/tutorials/19_HHL_Linear_System_Solver.ipynb` | embedded plots | finite simulator-scale HHL linear-system solver |
 
 ## Real-Example Notebook Results
 
@@ -89,7 +91,7 @@ from the package CLI.
 | `results/tables/design_sweep_summary.csv` | design sweep summary table | n/a | n/a | tabular summary of committed design-sweep JSON reports |
 | `results/tables/qsvt-error-summary.csv` | release summary table | n/a | n/a | compact index over the generated JSON reports |
 
-These snapshots were refreshed for package version `0.2.1`.
+These snapshots were refreshed for package version `0.2.2`.
 
 ## Benchmark Artefacts
 
@@ -116,7 +118,7 @@ The benchmark notebook set also includes
 executable assumption-check notebook rather than a committed timing-artifact
 generator.
 
-Benchmark artefacts were refreshed for package version `0.2.1`.
+Benchmark artefacts were refreshed for package version `0.2.2`.
 
 ## Real-Example Artefacts
 

@@ -266,7 +266,7 @@ def _execute_probability_qnode(
     device_name: str,
     shots: int | None,
 ) -> np.ndarray:
-    dev = qml.device(device_name, wires=wire_order, shots=shots)
+    dev = qml.device(device_name, wires=wire_order)
 
     @qml.qnode(dev)
     def circuit():
@@ -279,7 +279,8 @@ def _execute_probability_qnode(
         )
         return qml.probs(wires=wire_order)
 
-    return np.asarray(circuit(), dtype=float)
+    executable = qml.set_shots(circuit, shots=shots) if shots is not None else circuit
+    return np.asarray(executable(), dtype=float)
 
 
 def _qsvt_circuit_resource_summary(
@@ -293,7 +294,7 @@ def _qsvt_circuit_resource_summary(
     device_name: str,
     shots: int | None,
 ) -> dict[str, object]:
-    dev = qml.device(device_name, wires=wire_order, shots=shots)
+    dev = qml.device(device_name, wires=wire_order)
 
     @qml.qnode(dev)
     def circuit():
@@ -306,7 +307,8 @@ def _qsvt_circuit_resource_summary(
         )
         return qml.probs(wires=wire_order)
 
-    specs = qml.specs(circuit)()
+    executable = qml.set_shots(circuit, shots=shots) if shots is not None else circuit
+    specs = qml.specs(executable)()
     resources = _spec_value(specs, "resources")
     return {
         "device_name": _spec_value(specs, "device_name", device_name),

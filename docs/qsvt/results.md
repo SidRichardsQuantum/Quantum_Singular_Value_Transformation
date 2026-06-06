@@ -22,7 +22,7 @@ documentation.
 
 <div class="metric-grid">
   <div class="metric-card">
-    <span class="metric-value">51</span>
+    <span class="metric-value">53</span>
     <span class="metric-label">validated notebooks</span>
   </div>
   <div class="metric-card">
@@ -34,7 +34,7 @@ documentation.
     <span class="metric-label">diagonal QSVT max-error scale</span>
   </div>
   <div class="metric-card">
-    <span class="metric-value">0.2.1</span>
+    <span class="metric-value">0.2.2</span>
     <span class="metric-label">current release marker</span>
   </div>
 </div>

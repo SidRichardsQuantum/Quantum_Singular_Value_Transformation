@@ -46,6 +46,7 @@ Tutorial notebooks live in `notebooks/tutorials/`.
 | `tutorials/16_Sparse_Oracle_Assumptions.ipynb` | sparse operators, oracle assumptions, and omitted costs |
 | `tutorials/17_QSVT_Compatibility_Failure_Cases.ipynb` | boundedness, parity, and QSVT compatibility failures |
 | `tutorials/18_QSVT_Linear_System_Comparisons.ipynb` | dense, CG, and QSVT-style linear-system comparison rows |
+| `tutorials/19_HHL_Linear_System_Solver.ipynb` | finite simulator-scale HHL linear-system solver |
 
 ## Benchmark notebooks
 
