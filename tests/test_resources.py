@@ -1,6 +1,5 @@
 import pytest
 
-import qsvt
 from qsvt.resources import estimate_qsvt_resources, qsvt_resource_report
 from qsvt.workflow import design_workflow
 
@@ -53,13 +52,6 @@ def test_resource_estimate_rejects_invalid_width():
             matrix_dimension=5,
             encoding_qubits=2,
         )
-
-
-def test_top_level_exports_resource_helpers():
-    assert qsvt.ResourceEstimate is not None
-    assert qsvt.estimate_qsvt_resources is estimate_qsvt_resources
-    assert qsvt.qsvt_resource_report is qsvt_resource_report
-    assert "qsvt_resource_report" in qsvt.__all__
 
 
 def test_design_workflow_can_emit_resource_report_with_diagnostics():

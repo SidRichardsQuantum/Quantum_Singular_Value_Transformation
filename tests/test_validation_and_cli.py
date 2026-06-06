@@ -39,10 +39,22 @@ def test_top_level_public_api_exports_are_resolvable():
         assert hasattr(qsvt, name), name
 
     expected_stable_surface = {
+        "ClassicalBenchmarkResult",
+        "LinearSystemComparisonResult",
+        "ResourceEstimate",
+        "benchmark_environment_report",
+        "conjugate_gradient_solve",
         "design_workflow",
+        "dense_linear_solve_benchmark",
+        "estimate_qsvt_resources",
         "linear_system_workflow",
+        "linear_system_comparison_summary_table",
+        "linear_system_comparison_workflow",
         "hamiltonian_simulation_workflow",
         "ground_state_filtering_workflow",
+        "plot_benchmark_timings",
+        "plot_qsvt_proxy_resources",
+        "qsvt_resource_report",
         "resolvent_workflow",
         "spectral_density_workflow",
         "thermal_gibbs_workflow",
@@ -50,6 +62,8 @@ def test_top_level_public_api_exports_are_resolvable():
         "qsvt_matrix_transform_report",
         "report_to_jsonable",
         "save_report",
+        "write_benchmark_summary_csv",
+        "write_linear_system_comparison_csv",
     }
     assert expected_stable_surface <= exported
 

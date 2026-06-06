@@ -9,8 +9,9 @@ the QSVT unitary with ``qml.matrix``.
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping, Sized
 from dataclasses import dataclass
+from typing import Any, cast
 
 import numpy as np
 import pennylane as qml
@@ -309,14 +310,16 @@ def _qsvt_circuit_resource_summary(
     resources = _spec_value(specs, "resources")
     return {
         "device_name": _spec_value(specs, "device_name", device_name),
-        "num_device_wires": int(
+        "num_device_wires": _object_to_int(
             _spec_value(specs, "num_device_wires", len(wire_order))
         ),
         "shots": shots,
-        "num_gates": int(_resource_value(resources, "num_gates", 0)),
-        "depth": int(_resource_value(resources, "depth", 0)),
-        "gate_types": dict(_resource_value(resources, "gate_types", {})),
-        "measurement_count": len(_resource_value(resources, "measurements", [])),
+        "num_gates": _object_to_int(_resource_value(resources, "num_gates", 0)),
+        "depth": _object_to_int(_resource_value(resources, "depth", 0)),
+        "gate_types": _object_to_dict(_resource_value(resources, "gate_types", {})),
+        "measurement_count": _object_len(
+            _resource_value(resources, "measurements", [])
+        ),
         "polynomial_degree": int(coeffs.size - 1),
         "encoding_wire_count": len(encoding_wires),
     }
@@ -349,6 +352,22 @@ def _resource_value(
     if callable(get_value):
         return get_value(key, default)
     return default
+
+
+def _object_to_int(value: object) -> int:
+    return int(cast(Any, value))
+
+
+def _object_to_dict(value: object) -> dict[str, object]:
+    if isinstance(value, Mapping):
+        return dict(value)
+    return dict(cast(Any, value))
+
+
+def _object_len(value: object) -> int:
+    if isinstance(value, Sized):
+        return len(value)
+    return len(cast(Any, value))
 
 
 def _validate_execution_operator(operator: np.ndarray) -> np.ndarray:

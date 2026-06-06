@@ -5,7 +5,6 @@ import pytest
 
 import qsvt
 from qsvt.benchmarks import (
-    benchmark_environment_report,
     benchmark_summary_table,
     conjugate_gradient_benchmark,
     conjugate_gradient_solve,
@@ -259,14 +258,3 @@ def test_benchmarks_reject_invalid_inputs():
 
     with pytest.raises(ValueError, match="tolerance must be positive"):
         conjugate_gradient_solve([[1.0]], [1.0], tolerance=0.0)
-
-
-def test_top_level_exports_benchmark_helpers():
-    assert qsvt.ClassicalBenchmarkResult is not None
-    assert qsvt.benchmark_environment_report is benchmark_environment_report
-    assert qsvt.dense_linear_solve_benchmark is dense_linear_solve_benchmark
-    assert qsvt.conjugate_gradient_solve is conjugate_gradient_solve
-    assert qsvt.plot_benchmark_timings is plot_benchmark_timings
-    assert qsvt.plot_qsvt_proxy_resources is plot_qsvt_proxy_resources
-    assert qsvt.write_benchmark_summary_csv is write_benchmark_summary_csv
-    assert "dense_linear_solve_benchmark" in qsvt.__all__

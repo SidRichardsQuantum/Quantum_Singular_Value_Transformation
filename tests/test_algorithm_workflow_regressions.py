@@ -1,6 +1,5 @@
 import numpy as np
 
-import qsvt
 from qsvt.algorithms import (
     ground_state_filtering_workflow,
     hamiltonian_simulation_workflow,
@@ -148,17 +147,6 @@ def test_write_linear_system_comparison_csv(tmp_path):
     text = path.read_text(encoding="utf-8")
     assert "solver,implementation_kind" in text
     assert "qsvt_style_polynomial_inverse" in text
-
-
-def test_top_level_exports_linear_system_comparison_workflow():
-    assert qsvt.LinearSystemComparisonResult is not None
-    assert qsvt.linear_system_comparison_workflow is linear_system_comparison_workflow
-    assert (
-        qsvt.linear_system_comparison_summary_table
-        is linear_system_comparison_summary_table
-    )
-    assert qsvt.write_linear_system_comparison_csv is write_linear_system_comparison_csv
-    assert "linear_system_comparison_workflow" in qsvt.__all__
 
 
 def test_ground_state_filtering_workflow_regression():
