@@ -73,6 +73,13 @@ Target function:
   scaled matrix, the result is divided by `gamma * scale` to approximate
   `A^{-1} b`.
 
+Notation:
+: `A` is the positive-definite input matrix, `b` is the right-hand side,
+  `x` is the scalar normalized spectral variable in the polynomial design,
+  `gamma` is the lower bound of the scaled positive spectrum, `scale` is the
+  positive factor used to normalize `A`, and `P` is the bounded inverse-like
+  polynomial.
+
 Rescaling:
 : `rescale_positive_semidefinite` divides the matrix by its largest eigenvalue.
   If `gamma` is omitted, the scaled minimum eigenvalue is used.
@@ -80,12 +87,30 @@ Rescaling:
 Diagnostics:
 : The result includes the classical solution, polynomial solution, residual
   norm, relative solution error, polynomial diagnostics, compatibility metadata,
-  and optional QSVT-applied solution fields.
+  condition-number metadata, scaled spectral bounds, a linear-system
+  resource-proxy block, and optional QSVT-applied solution fields.
 
 Limitations:
 : This is a dense simulator workflow. It does not include quantum state
-  preparation, block-encoding construction, amplitude amplification, condition
-  number resource estimates, or fault-tolerant costs.
+  preparation, block-encoding construction, amplitude amplification, readout,
+  fault-tolerant synthesis, or hardware costs. The resource-proxy fields expose
+  degree, `gamma`, residuals, and conditioning; they are not quantum runtimes.
+
+`linear_system_comparison_workflow(matrix, rhs, degree=...)`
+
+Purpose:
+: Compare the dense solve, optional conjugate-gradient baseline, QSVT-style
+  polynomial inverse row, and optional PennyLane QSVT matrix check for the same
+  small positive-definite instance.
+
+Output:
+: The result returns table-like rows with solver name, implementation kind,
+  residual norm, relative solution error, conditioning metadata, and degree or
+  iteration fields where applicable.
+
+Interpretation:
+: This is a numerical comparison helper, not a wall-clock benchmark. Use the
+  benchmark module when timing classical baselines is the primary goal.
 
 ## Block-Encoded QSVT
 
@@ -99,6 +124,11 @@ Target function:
 : The coefficients define a bounded polynomial `P(x)` in the normalized signal
   coordinate. The workflow compares the QSVT logical block with the spectral
   reference `P(matrix / alpha)`.
+
+Notation:
+: `matrix` is the finite positive Hermitian logical operator, `alpha` is the
+  block-encoding normalization, `x` is the normalized signal variable, and
+  `P` is the polynomial represented by `coeffs`.
 
 Block encoding:
 : `qsvt.block_encoding.block_encode_matrix` constructs an explicit dense

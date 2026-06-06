@@ -22,3 +22,4 @@ functional calculus.
 | Block-encoded QSVT workflow | `15_Block_Encoded_QSVT_Workflow.ipynb` |
 | Sparse operators and oracle assumptions | `16_Sparse_Oracle_Assumptions.ipynb` |
 | QSVT compatibility failure cases | `17_QSVT_Compatibility_Failure_Cases.ipynb` |
+| QSVT linear-system comparisons | `18_QSVT_Linear_System_Comparisons.ipynb` |

@@ -14,6 +14,17 @@ QSVT requires bounded polynomial transforms on the interval $[-1,1]$. In practic
 - $x^\alpha$
 - threshold-like filters
 
+Notation used on this page:
+
+- $x$ is the normalized scalar spectral variable, usually in `[-1, 1]`.
+- $p(x)$ or $f(x)$ is the scalar target or polynomial response.
+- `coeffs` is the returned coefficient array in ascending monomial order.
+- `degree` is the highest requested polynomial degree.
+- $\gamma$ is a positive gap or lower spectral cutoff.
+- $a$ is a lower endpoint for positive-domain fits.
+- $\alpha$ is an exponent for power-law targets on this page; it is distinct
+  from block-encoding normalization, which is documented separately.
+
 The role of `qsvt.design` is to provide small, readable constructors that return polynomial coefficients in the package’s standard format:
 
 - NumPy arrays
@@ -52,6 +63,10 @@ $$
 $$
 
 where $0 < \gamma < 1$.
+
+Here $\gamma$ is the minimum magnitude where the inverse-like approximation is
+expected to be accurate; values closer to zero are deliberately not treated as
+part of the inverse target.
 
 Because QSVT-compatible polynomials must remain bounded on $[-1,1]$, this helper approximates the **normalised inverse profile**
 
@@ -97,7 +112,7 @@ The sign function is a central object in spectral transformations and can be use
 - projector construction
 - threshold-like transforms
 
-This helper uses a smooth bounded surrogate and fits a polynomial that remains bounded on $[-1,1]`.
+This helper uses a smooth bounded surrogate and fits a polynomial that remains bounded on $[-1,1]$.
 
 ### Target behaviour
 
@@ -109,6 +124,9 @@ p(x) \approx \mathrm{sign}(x)
 $$
 
 The parameter $\gamma$ controls the width of the transition region around zero.
+
+Here $\gamma$ is the excluded transition half-width: accuracy is judged away
+from zero on $[-1,-\gamma] \cup [\gamma,1]$.
 
 ### Example
 
@@ -141,6 +159,9 @@ $$
 $$
 
 acts like a projector onto the positive spectral subspace of a Hermitian matrix $A$ when the spectrum is separated from zero.
+
+Here $I$ is the identity matrix, $A$ is Hermitian, and $\mathrm{sign}(A)$
+denotes the spectral sign function applied to the eigenvalues of $A$.
 
 ### Interpretation
 
@@ -189,6 +210,9 @@ $$
 
 This is useful for matrix-function experiments involving positive semidefinite spectra or singular values bounded away from zero.
 
+Here $a$ is the smallest normalized spectral value on which the square-root
+approximation is intended to be accurate.
+
 ### Extension outside the positive interval
 
 To preserve stable bounded behaviour on the full QSVT interval $[-1,1]$, the target is extended in a simple bounded way for non-positive inputs. This keeps the resulting polynomial usable in QSVT-style settings rather than only fitting well on a restricted interval and behaving poorly elsewhere.
@@ -224,6 +248,9 @@ $$
 $$
 
 This provides a general positive-power builder for smooth spectral shaping tasks.
+
+Here $\alpha$ is the real exponent in the target function $x^\alpha$, and $a$
+is the lower endpoint of the positive fitting interval.
 
 ### Typical use cases
 
@@ -263,12 +290,15 @@ The resulting polynomial behaves qualitatively like a smooth version of
 $$
 f(x) \approx
 \begin{cases}
-0, & |x| < \text{cutoff}, \
+0, & |x| < \text{cutoff}, \\
 1, & |x| > \text{cutoff}.
 \end{cases}
 $$
 
 Because the construction depends on $|x|$, the designed polynomial is even.
+
+Here `cutoff` is the normalized magnitude threshold separating suppressed and
+retained spectral components.
 
 ### Use cases
 
@@ -307,6 +337,9 @@ This helper is intended for positive definite operators that have already been
 rescaled so their spectra lie in `[gamma, 1]`. It is useful for finite
 dimensional linear-system and PDE workflows, where the relevant operator has no
 negative spectrum.
+
+Here $\gamma$ is the scaled minimum eigenvalue or user-chosen positive lower
+bound for the operator spectrum.
 
 ### Extension strategies
 

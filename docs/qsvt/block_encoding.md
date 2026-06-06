@@ -32,6 +32,16 @@ The normalization must make the encoded signal operator a contraction:
 For Hermitian workflows, this means the normalized eigenvalues lie in the QSVT
 signal domain.
 
+Notation:
+
+- `A` is the logical matrix to be transformed.
+- `U` is the enlarged unitary acting on ancilla plus logical registers.
+- `alpha` is the positive normalization; the QSVT signal operator is
+  `A / alpha`.
+- `B` below is shorthand for the normalized contraction `A / alpha`.
+- `B*` denotes the conjugate transpose of `B`.
+- `I` is the identity matrix with the same logical dimension as `A`.
+
 ## Dense Finite Construction
 
 `qsvt.block_encoding.block_encode_matrix` constructs an explicit dense unitary

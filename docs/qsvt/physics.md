@@ -129,7 +129,10 @@ higher degree is usually required.
 `qsvt.algorithms.linear_system_workflow` combines the positive-inverse design,
 positive-semidefinite rescaling, classical validation, optional PennyLane QSVT
 application, residual diagnostics, and compatibility metadata for small
-positive-definite systems.
+positive-definite systems. Its report includes scaled spectral bounds,
+2-norm condition-number metadata, a `gamma` condition proxy, and an explicit
+resource-proxy block that lists omitted quantum layers such as state
+preparation, block encoding, success-probability management, and readout.
 
 ```python
 import numpy as np
@@ -148,6 +151,12 @@ result = linear_system_workflow(
 print(result.polynomial_solution)
 print(result.polynomial_residual_norm)
 ```
+
+For solver-oriented comparisons, use
+`qsvt.algorithms.linear_system_comparison_workflow`. It returns rows for the
+dense reference solve, optional conjugate gradients, the QSVT-style polynomial
+inverse, and the optional PennyLane QSVT matrix check. The comparison is a
+finite numerical diagnostic, not a quantum runtime benchmark.
 
 The workflow is intended for educational and simulator-scale experiments. It
 does not replace production state preparation, block-encoding construction, or

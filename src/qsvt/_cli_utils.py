@@ -95,6 +95,7 @@ def emit_cli_result(args: argparse.Namespace, result: dict[str, Any]) -> None:
     """
     output_path = getattr(args, "output", None)
     plot_path = getattr(args, "plot", None)
+    rows_output_path = getattr(args, "rows_output", None)
 
     if output_path:
         save_report(result, output_path)
@@ -111,10 +112,13 @@ def emit_cli_result(args: argparse.Namespace, result: dict[str, Any]) -> None:
             "mode": result.get("mode", args.command),
             "report_written": output_path is not None,
             "plot_written": plot_path is not None,
+            "rows_written": rows_output_path is not None,
         }
         if output_path is not None:
             payload["output"] = output_path
         if plot_path is not None:
             payload["plot"] = plot_path
+        if rows_output_path is not None:
+            payload["rows_output"] = rows_output_path
 
     print(json.dumps(payload, indent=2))

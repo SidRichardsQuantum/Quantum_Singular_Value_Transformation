@@ -49,6 +49,9 @@ def test_block_encoded_qsvt_workflow_matches_spectral_reference():
     report = report_to_jsonable(result.as_report())
 
     assert report["mode"] == "block-encoded-qsvt-workflow"
+    assert report["implementation_kind"] == (
+        "verified-dense-block-encoded-qsvt-workflow"
+    )
     assert report["truth_contract"]["implementation_kind"] == (
         "verified-dense-block-encoded-qsvt-workflow"
     )

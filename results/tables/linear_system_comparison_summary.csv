@@ -1,0 +1,4 @@
+solver,implementation_kind,matrix_dimension,degree,gamma,condition_number_2,iterations,converged,residual_norm,relative_residual_norm,relative_solution_error,status
+dense_solve,classical-dense-reference,2,8,0.5657414540893352,1.7675918792439982,,,5.551115123125783e-17,,0.0,ok
+conjugate_gradient,classical-iterative-reference,2,8,0.5657414540893352,1.7675918792439982,2,True,5.551115123125783e-17,4.965068306494546e-17,0.0,ok
+qsvt_style_polynomial_inverse,dense-spectral-polynomial-workflow,2,8,0.5657414540893352,1.7675918792439982,,,0.05755331838177459,,0.057179605843630084,ok

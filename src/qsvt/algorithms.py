@@ -7,8 +7,10 @@ application, and classical diagnostics into small executable workflows.
 
 from __future__ import annotations
 
+import csv
 from collections.abc import Callable
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -57,6 +59,10 @@ class LinearSystemWorkflowResult:
     polynomial_residual_norm: float
     polynomial_relative_error: float
     gamma: float
+    scaled_min_eigenvalue: float
+    scaled_max_eigenvalue: float
+    condition_number_2: float
+    gamma_condition_proxy: float
     degree: int
     diagnostics: dict[str, object]
     compatibility: dict[str, object]
@@ -77,12 +83,17 @@ class LinearSystemWorkflowResult:
             qsvt_check = "not_attempted"
         return {
             "mode": "linear-system-workflow",
+            "implementation_kind": "dense-spectral-polynomial-workflow",
             "truth_contract": algorithm_truth_contract(
                 "linear-system-workflow",
                 target="positive-definite linear-system inverse action",
                 qsvt_check=qsvt_check,
             ),
             "gamma": self.gamma,
+            "scaled_min_eigenvalue": self.scaled_min_eigenvalue,
+            "scaled_max_eigenvalue": self.scaled_max_eigenvalue,
+            "condition_number_2": self.condition_number_2,
+            "gamma_condition_proxy": self.gamma_condition_proxy,
             "degree": self.degree,
             "coeffs": self.coeffs,
             "scaled_operator": scaled_operator_report(self.scaled_operator),
@@ -97,6 +108,54 @@ class LinearSystemWorkflowResult:
             "qsvt_error": self.qsvt_error,
             "diagnostics": self.diagnostics,
             "compatibility": self.compatibility,
+            "resource_proxy": linear_system_resource_proxy(
+                degree=self.degree,
+                gamma=self.gamma,
+                scaled_min_eigenvalue=self.scaled_min_eigenvalue,
+                condition_number_2=self.condition_number_2,
+                polynomial_residual_norm=self.polynomial_residual_norm,
+                polynomial_relative_error=self.polynomial_relative_error,
+                qsvt_check=qsvt_check,
+                attempted_pennylane_synthesis=bool(
+                    self.compatibility.get("attempted_pennylane_synthesis", False)
+                ),
+            ),
+        }
+
+
+@dataclass(frozen=True)
+class LinearSystemComparisonResult:
+    """
+    Structured comparison for small positive-definite linear-system solvers.
+    """
+
+    workflow: LinearSystemWorkflowResult
+    rows: tuple[dict[str, Any], ...]
+    dense_solution: np.ndarray
+    cg_solution: np.ndarray | None
+    reference_solution: np.ndarray
+    notes: tuple[str, ...] = ()
+
+    def as_report(self) -> dict[str, Any]:
+        """
+        Return a report-style dictionary for JSON conversion or persistence.
+        """
+        workflow_report = self.workflow.as_report()
+        return {
+            "mode": "linear-system-comparison-workflow",
+            "implementation_kind": "linear-system-solver-comparison",
+            "truth_contract": algorithm_truth_contract(
+                "linear-system-comparison-workflow",
+                target="positive-definite linear-system solver comparison",
+                qsvt_check=_qsvt_check_from_result(self.workflow),
+            ),
+            "rows": list(self.rows),
+            "reference_solution": self.reference_solution,
+            "dense_solution": self.dense_solution,
+            "cg_solution": self.cg_solution,
+            "linear_system_workflow": workflow_report,
+            "resource_proxy": workflow_report["resource_proxy"],
+            "notes": list(self.notes),
         }
 
 
@@ -129,6 +188,7 @@ class GroundStateFilteringWorkflowResult:
         """
         return {
             "mode": "ground-state-filtering-workflow",
+            "implementation_kind": "dense-spectral-polynomial-workflow",
             "truth_contract": algorithm_truth_contract(
                 "ground-state-filtering-workflow",
                 target="low-energy Gaussian spectral filtering",
@@ -179,6 +239,7 @@ class HamiltonianSimulationWorkflowResult:
         """
         return {
             "mode": "hamiltonian-simulation-workflow",
+            "implementation_kind": "dense-spectral-polynomial-workflow",
             "truth_contract": algorithm_truth_contract(
                 "hamiltonian-simulation-workflow",
                 target="real-time Hamiltonian matrix exponential action",
@@ -226,6 +287,7 @@ class ResolventWorkflowResult:
         """
         return {
             "mode": "resolvent-workflow",
+            "implementation_kind": "dense-spectral-polynomial-workflow",
             "truth_contract": algorithm_truth_contract(
                 "resolvent-workflow",
                 target="Green's-function resolvent matrix function",
@@ -271,6 +333,7 @@ class SpectralDensityWorkflowResult:
         """
         return {
             "mode": "spectral-density-workflow",
+            "implementation_kind": "dense-spectral-polynomial-workflow",
             "truth_contract": algorithm_truth_contract(
                 "spectral-density-workflow",
                 target="Gaussian-window spectral-density estimate",
@@ -322,6 +385,7 @@ class SpectralThresholdingWorkflowResult:
         """
         return {
             "mode": "spectral-thresholding-workflow",
+            "implementation_kind": "dense-spectral-polynomial-workflow",
             "truth_contract": algorithm_truth_contract(
                 "spectral-thresholding-workflow",
                 target="smooth spectral interval-projector approximation",
@@ -378,6 +442,7 @@ class ThermalGibbsWorkflowResult:
         """
         return {
             "mode": "thermal-gibbs-workflow",
+            "implementation_kind": "dense-spectral-polynomial-workflow",
             "truth_contract": algorithm_truth_contract(
                 "thermal-gibbs-workflow",
                 target="imaginary-time Boltzmann weighting and Gibbs normalization",
@@ -428,6 +493,7 @@ class BlockEncodedQSVTWorkflowResult:
         qsvt_check = "failed" if self.qsvt_error is not None else "succeeded"
         return {
             "mode": "block-encoded-qsvt-workflow",
+            "implementation_kind": "verified-dense-block-encoded-qsvt-workflow",
             "truth_contract": _block_encoded_qsvt_truth_contract(
                 qsvt_check=qsvt_check,
             ),
@@ -544,6 +610,14 @@ def _relative_error(reference: np.ndarray, approximate: np.ndarray) -> float:
     return float(diff / denom)
 
 
+def _qsvt_check_from_result(result: LinearSystemWorkflowResult) -> str:
+    if result.qsvt_error is not None:
+        return "failed"
+    if result.qsvt_solution is not None:
+        return "succeeded"
+    return "not_attempted"
+
+
 def _state_weight_error(
     state: np.ndarray | None,
     reference: np.ndarray | None,
@@ -588,6 +662,8 @@ def linear_system_workflow(
     A, b, evals = _validate_linear_system_inputs(matrix, rhs)
     scaled = rescale_positive_semidefinite(A)
     scaled_min = float(evals[0] / scaled.scale)
+    scaled_max = float(evals[-1] / scaled.scale)
+    condition_number = float(evals[-1] / evals[0])
 
     if gamma is None:
         gamma = min(scaled_min, 1.0 - 1e-12)
@@ -648,6 +724,10 @@ def linear_system_workflow(
             polynomial_solution,
         ),
         gamma=gamma,
+        scaled_min_eigenvalue=scaled_min,
+        scaled_max_eigenvalue=scaled_max,
+        condition_number_2=condition_number,
+        gamma_condition_proxy=float(1.0 / gamma),
         degree=int(degree),
         diagnostics=diagnostics,
         compatibility=compatibility,
@@ -656,6 +736,237 @@ def linear_system_workflow(
         qsvt_relative_error=qsvt_relative_error,
         qsvt_error=qsvt_error,
     )
+
+
+def linear_system_resource_proxy(
+    *,
+    degree: int,
+    gamma: float,
+    scaled_min_eigenvalue: float,
+    condition_number_2: float,
+    polynomial_residual_norm: float,
+    polynomial_relative_error: float,
+    qsvt_check: str,
+    attempted_pennylane_synthesis: bool,
+) -> dict[str, object]:
+    """
+    Return machine-readable proxy metadata for a linear-system workflow.
+    """
+    return {
+        "proxy_kind": "linear-system-qsvt-style-resource-proxy",
+        "degree": int(degree),
+        "gamma": float(gamma),
+        "scaled_min_eigenvalue": float(scaled_min_eigenvalue),
+        "gamma_condition_proxy": float(1.0 / gamma),
+        "condition_number_2": float(condition_number_2),
+        "polynomial_residual_norm": float(polynomial_residual_norm),
+        "polynomial_relative_error": float(polynomial_relative_error),
+        "pennylane_qsvt_check": qsvt_check,
+        "attempted_pennylane_synthesis": bool(attempted_pennylane_synthesis),
+        "requires_block_encoding": True,
+        "requires_state_preparation": True,
+        "requires_success_probability_management": True,
+        "requires_readout_strategy": True,
+        "omitted_layers": [
+            "state_preparation_or_data_loading",
+            "oracle_or_block_encoding_construction",
+            "controlled_reflection_sequence_cost",
+            "success_probability_management",
+            "amplitude_amplification",
+            "measurement_readout_or_tomography",
+            "fault_tolerant_synthesis",
+            "hardware_compilation",
+        ],
+        "limitations": (
+            "This is a polynomial-degree and conditioning proxy for a finite "
+            "dense instance. It is not a quantum runtime or an end-to-end "
+            "linear-system algorithm cost."
+        ),
+    }
+
+
+def linear_system_comparison_workflow(
+    matrix: np.ndarray,
+    rhs: np.ndarray,
+    *,
+    degree: int,
+    gamma: float | None = None,
+    num_points: int = 2001,
+    bounded_num_points: int = 4001,
+    attempt_synthesis: bool = True,
+    apply_qsvt: bool = True,
+    include_conjugate_gradient: bool = True,
+    cg_tolerance: float = 1e-10,
+    cg_max_iterations: int | None = None,
+) -> LinearSystemComparisonResult:
+    """
+    Compare dense, iterative, and QSVT-style positive linear-system paths.
+
+    This workflow is not a timing benchmark. It returns a compact numerical
+    table using the dense solve as the reference solution.
+    """
+    result = linear_system_workflow(
+        matrix,
+        rhs,
+        degree=degree,
+        gamma=gamma,
+        num_points=num_points,
+        bounded_num_points=bounded_num_points,
+        attempt_synthesis=attempt_synthesis,
+        apply_qsvt=apply_qsvt,
+    )
+    A, b, _ = _validate_linear_system_inputs(matrix, rhs)
+    reference = result.classical_solution
+    dense_residual = A @ reference - b
+    rows: list[dict[str, Any]] = [
+        {
+            "solver": "dense_solve",
+            "implementation_kind": "classical-dense-reference",
+            "residual_norm": float(np.linalg.norm(dense_residual)),
+            "relative_solution_error": 0.0,
+            "condition_number_2": result.condition_number_2,
+        },
+        {
+            "solver": "qsvt_style_polynomial_inverse",
+            "implementation_kind": "dense-spectral-polynomial-workflow",
+            "degree": result.degree,
+            "gamma": result.gamma,
+            "residual_norm": result.polynomial_residual_norm,
+            "relative_solution_error": result.polynomial_relative_error,
+            "condition_number_2": result.condition_number_2,
+        },
+    ]
+
+    cg_solution = None
+    if include_conjugate_gradient:
+        from .benchmarks import conjugate_gradient_solve
+
+        cg = conjugate_gradient_solve(
+            A,
+            b,
+            tolerance=cg_tolerance,
+            max_iterations=cg_max_iterations,
+        )
+        cg_solution = np.asarray(cg["solution"])
+        rows.insert(
+            1,
+            {
+                "solver": "conjugate_gradient",
+                "implementation_kind": "classical-iterative-reference",
+                "iterations": cg["iterations"],
+                "converged": cg["converged"],
+                "residual_norm": cg["residual_norm"],
+                "relative_residual_norm": cg["relative_residual_norm"],
+                "relative_solution_error": _relative_error(reference, cg_solution),
+                "condition_number_2": result.condition_number_2,
+            },
+        )
+
+    if result.qsvt_solution is not None:
+        rows.append(
+            {
+                "solver": "pennylane_qsvt_matrix_check",
+                "implementation_kind": "pennylane-small-qsvt-verification",
+                "degree": result.degree,
+                "gamma": result.gamma,
+                "residual_norm": result.qsvt_residual_norm,
+                "relative_solution_error": result.qsvt_relative_error,
+                "condition_number_2": result.condition_number_2,
+            },
+        )
+    elif result.qsvt_error is not None:
+        rows.append(
+            {
+                "solver": "pennylane_qsvt_matrix_check",
+                "implementation_kind": "pennylane-small-qsvt-verification",
+                "status": "failed",
+                "error": result.qsvt_error,
+            },
+        )
+
+    return LinearSystemComparisonResult(
+        workflow=result,
+        rows=tuple(rows),
+        dense_solution=reference,
+        cg_solution=cg_solution,
+        reference_solution=reference,
+        notes=(
+            "The dense solve is the numerical reference for this finite instance.",
+            (
+                "The QSVT-style row measures polynomial inverse accuracy, "
+                "not quantum runtime."
+            ),
+        ),
+    )
+
+
+def linear_system_comparison_summary_table(
+    report: LinearSystemComparisonResult | dict[str, Any],
+) -> list[dict[str, Any]]:
+    """
+    Convert a linear-system comparison report into compact table rows.
+    """
+    payload = (
+        report.as_report()
+        if isinstance(report, LinearSystemComparisonResult)
+        else report
+    )
+    workflow = payload.get("linear_system_workflow", {})
+    resource_proxy = payload.get("resource_proxy", {})
+    rhs = workflow.get("rhs", [])
+    rows = []
+    for row in payload.get("rows", []):
+        rows.append(
+            {
+                "solver": row.get("solver"),
+                "implementation_kind": row.get("implementation_kind"),
+                "matrix_dimension": len(rhs),
+                "degree": row.get("degree", resource_proxy.get("degree")),
+                "gamma": row.get("gamma", resource_proxy.get("gamma")),
+                "condition_number_2": row.get(
+                    "condition_number_2",
+                    resource_proxy.get("condition_number_2"),
+                ),
+                "iterations": row.get("iterations"),
+                "converged": row.get("converged"),
+                "residual_norm": row.get("residual_norm"),
+                "relative_residual_norm": row.get("relative_residual_norm"),
+                "relative_solution_error": row.get("relative_solution_error"),
+                "status": row.get("status", "ok"),
+            }
+        )
+    return rows
+
+
+def write_linear_system_comparison_csv(
+    report: LinearSystemComparisonResult | dict[str, Any],
+    path: str | Path,
+) -> Path:
+    """
+    Write compact linear-system comparison rows to a CSV file.
+    """
+    output_path = Path(path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    rows = linear_system_comparison_summary_table(report)
+    fieldnames = [
+        "solver",
+        "implementation_kind",
+        "matrix_dimension",
+        "degree",
+        "gamma",
+        "condition_number_2",
+        "iterations",
+        "converged",
+        "residual_norm",
+        "relative_residual_norm",
+        "relative_solution_error",
+        "status",
+    ]
+    with output_path.open("w", newline="", encoding="utf-8") as file:
+        writer = csv.DictWriter(file, fieldnames=fieldnames, lineterminator="\n")
+        writer.writeheader()
+        writer.writerows(rows)
+    return output_path
 
 
 def ground_state_filtering_workflow(
@@ -1199,6 +1510,7 @@ __all__ = [
     "BlockEncodedQSVTWorkflowResult",
     "GroundStateFilteringWorkflowResult",
     "HamiltonianSimulationWorkflowResult",
+    "LinearSystemComparisonResult",
     "LinearSystemWorkflowResult",
     "ResolventWorkflowResult",
     "SpectralDensityWorkflowResult",
@@ -1207,9 +1519,12 @@ __all__ = [
     "block_encoded_qsvt_workflow",
     "ground_state_filtering_workflow",
     "hamiltonian_simulation_workflow",
+    "linear_system_comparison_summary_table",
+    "linear_system_comparison_workflow",
     "linear_system_workflow",
     "resolvent_workflow",
     "spectral_density_workflow",
     "spectral_thresholding_workflow",
     "thermal_gibbs_workflow",
+    "write_linear_system_comparison_csv",
 ]

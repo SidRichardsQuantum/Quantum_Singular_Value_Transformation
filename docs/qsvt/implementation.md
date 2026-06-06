@@ -1,8 +1,8 @@
 # Implementation Notes
 
-This package favors explicit dense-matrix workflows over hidden abstractions.
-The implementation is organized so notebooks, tests, and CLI reports can share
-the same small set of reusable helpers.
+This package separates dense references, small matrix verification, and QNode
+execution. The implementation is organized so notebooks, tests, and CLI reports
+can share reusable helpers without blurring which layer actually ran.
 
 ## Coefficient Conventions
 
@@ -77,6 +77,32 @@ only source of truth. Report commands can allow QSVT failure and still record
 classical polynomial behavior, which is useful for studying polynomials that
 are educational but not accepted by a synthesis backend.
 
+## Circuit Execution Path
+
+`qsvt.execution.execute_qsvt_circuit` is the circuit-level path. It prepares a
+logical input state inside a PennyLane QNode, queues `qml.qsvt`, and measures
+either the final statevector (`shots=None`) or output probabilities (finite
+shots).
+
+This path is still simulator-scale when the input operator is an explicit dense
+matrix, but it is a true circuit execution model for the implemented finite
+instance:
+
+- it uses QNode state preparation,
+- it queues a PennyLane QSVT operation,
+- it measures through the QNode,
+- it records circuit resource metadata from PennyLane specs,
+- it keeps the dense polynomial output as a validation reference only.
+
+The execution helper deliberately does not call `qml.matrix` internally. Tests
+guard that boundary so the circuit path cannot silently regress into explicit
+unitary extraction.
+
+The circuit report still marks `is_end_to_end_quantum_algorithm = false`
+because scalable block-encoding construction, problem-specific state
+preparation cost, postselection/amplitude amplification, readout/tomography,
+and hardware compilation are separate layers.
+
 ## Reports And JSON
 
 Diagnostics often contain NumPy arrays, complex numbers, and NumPy scalars.
@@ -111,6 +137,9 @@ and papers can preserve the same claim boundary as the code:
 Direct `qsvt-transform-report` and `qsvt-matrix-transform-report` payloads use
 `implementation_kind = "pennylane-small-qsvt-verification"` when they compare
 an explicit small QSVT block against a classical polynomial reference.
+Circuit execution payloads use an implementation kind beginning with
+`pennylane-qnode-...` and mean that a QNode was executed, not that a scalable
+problem oracle or hardware deployment was supplied.
 Classical benchmark payloads use
 `implementation_kind = "classical-baseline-with-optional-qsvt-proxy"` and mark
 `is_quantum_runtime_benchmark = false`.
@@ -180,11 +209,11 @@ practical.
 The implementation intentionally does not provide:
 
 - production-scale block encoding construction,
-- state preparation methods,
+- problem-specific scalable state preparation methods,
 - amplitude amplification,
 - fault-tolerant synthesis,
-- circuit-depth or resource estimation,
 - hardware optimization.
 
-Those are separate engineering layers. This package focuses on the polynomial
-and spectral mechanics that those larger systems would use.
+Those are separate engineering layers. The package now provides circuit-level
+QNode execution for finite instances plus the polynomial and spectral mechanics
+that larger systems would use.

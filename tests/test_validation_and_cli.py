@@ -175,6 +175,7 @@ def test_cli_examples_command_emits_discovery_payload(capsys):
     assert "sign" in payload["design_kinds"]
     assert "exponential" in payload["template_kinds"]
     assert "cg-solve" in payload["benchmark_commands"]
+    assert "linear-system-compare" in payload["workflow_commands"]
     assert any("resource-report" in example for example in payload["examples"])
 
 
@@ -213,6 +214,69 @@ def test_cli_design_report_emits_json(capsys):
     assert payload["builder"] == "design_sign_polynomial"
     assert payload["max_error"] >= 0.0
     assert payload["bounded_margin"] >= -1e-8
+
+
+def test_cli_linear_system_compare_emits_json(capsys):
+    main(
+        [
+            "linear-system-compare",
+            "--matrix",
+            "2,0.25;0.25,1.25",
+            "--rhs",
+            "1,-0.5",
+            "--degree",
+            "8",
+            "--num-points",
+            "201",
+            "--bounded-num-points",
+            "401",
+            "--no-synthesis",
+            "--no-qsvt",
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+    rows = {row["solver"]: row for row in payload["rows"]}
+
+    assert payload["mode"] == "linear-system-comparison-workflow"
+    assert payload["resource_proxy"]["degree"] == 8
+    assert "dense_solve" in rows
+    assert "conjugate_gradient" in rows
+    assert "qsvt_style_polynomial_inverse" in rows
+
+
+def test_cli_linear_system_compare_writes_json_and_csv(tmp_path, capsys):
+    output = tmp_path / "comparison.json"
+    rows_output = tmp_path / "comparison.csv"
+
+    main(
+        [
+            "linear-system-compare",
+            "--matrix",
+            "2,0.25;0.25,1.25",
+            "--rhs",
+            "1,-0.5",
+            "--degree",
+            "8",
+            "--num-points",
+            "201",
+            "--bounded-num-points",
+            "401",
+            "--no-synthesis",
+            "--no-qsvt",
+            "--output",
+            str(output),
+            "--rows-output",
+            str(rows_output),
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["mode"] == "linear-system-comparison-workflow"
+    assert payload["report_written"] is True
+    assert payload["rows_written"] is True
+    assert output.exists()
+    assert rows_output.exists()
+    assert "qsvt_style_polynomial_inverse" in rows_output.read_text(encoding="utf-8")
 
 
 def test_cli_design_workflow_emits_json(capsys):

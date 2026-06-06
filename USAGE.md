@@ -387,6 +387,23 @@ phase-count proxy, signal-call proxy, optional encoding width, and compatibility
 metadata. It is for comparing small workflows; it is not a hardware runtime or
 fault-tolerant resource estimate.
 
+Linear-system comparison report:
+
+```bash
+qsvt linear-system-compare \
+  --matrix "2,0.25;0.25,1.25" \
+  --rhs "1,-0.5" \
+  --degree 8 \
+  --no-synthesis \
+  --no-qsvt \
+  --output results/algorithms/linear_system_comparison.json \
+  --rows-output results/tables/linear_system_comparison_summary.csv
+```
+
+The comparison command reports dense solve, optional conjugate gradients,
+QSVT-style polynomial inverse, and optional PennyLane QSVT matrix-check rows.
+The CSV path is a compact artifact table, not a timing benchmark.
+
 Use `qsvt examples` to list workflow families, benchmark subcommands, and
 compact command-line examples.
 

@@ -17,6 +17,14 @@ BENCHMARK_CSV = [
     Path("results/tables/benchmark_scaling_summary.csv"),
 ]
 
+ALGORITHM_JSON = [
+    Path("results/algorithms/linear_system_comparison.json"),
+]
+
+ALGORITHM_CSV = [
+    Path("results/tables/linear_system_comparison_summary.csv"),
+]
+
 
 def test_committed_benchmark_json_artifacts_are_well_formed():
     for path in BENCHMARK_JSON:
@@ -66,6 +74,37 @@ def test_committed_benchmark_csv_artifacts_have_expected_columns():
         "qsvt_signal_operator_calls",
     }
     for path in BENCHMARK_CSV:
+        assert path.exists(), path
+        with path.open(newline="", encoding="utf-8") as file:
+            rows = list(csv.DictReader(file))
+        assert rows, path
+        assert required.issubset(rows[0])
+
+
+def test_committed_algorithm_json_artifacts_are_well_formed():
+    for path in ALGORITHM_JSON:
+        assert path.exists(), path
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        assert payload["mode"] == "linear-system-comparison-workflow"
+        assert payload["implementation_kind"] == "linear-system-solver-comparison"
+        assert payload["resource_proxy"]["proxy_kind"] == (
+            "linear-system-qsvt-style-resource-proxy"
+        )
+        assert payload["rows"]
+
+
+def test_committed_algorithm_csv_artifacts_have_expected_columns():
+    required = {
+        "solver",
+        "implementation_kind",
+        "matrix_dimension",
+        "degree",
+        "gamma",
+        "condition_number_2",
+        "residual_norm",
+        "relative_solution_error",
+    }
+    for path in ALGORITHM_CSV:
         assert path.exists(), path
         with path.open(newline="", encoding="utf-8") as file:
             rows = list(csv.DictReader(file))

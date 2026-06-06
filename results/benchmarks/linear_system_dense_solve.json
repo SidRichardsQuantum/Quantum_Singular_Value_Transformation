@@ -16,8 +16,8 @@
   "problem": "dense-linear-system",
   "matrix_dimension": 12,
   "repeats": 3,
-  "best_time_seconds": 1.4678000297863036e-05,
-  "mean_time_seconds": 2.3120001666635897e-05,
+  "best_time_seconds": 1.3034000062361883e-05,
+  "mean_time_seconds": 2.1880666660460218e-05,
   "benchmark_environment": {
     "timing_kind": "python_wall_clock_microbenchmark",
     "timer": "time.perf_counter",

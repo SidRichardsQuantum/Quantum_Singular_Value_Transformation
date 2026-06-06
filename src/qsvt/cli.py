@@ -46,7 +46,11 @@ from ._cli_utils import (
     parse_matrix,
     parse_poly,
 )
-from .algorithms import spectral_thresholding_workflow
+from .algorithms import (
+    linear_system_comparison_workflow,
+    spectral_thresholding_workflow,
+    write_linear_system_comparison_csv,
+)
 from .benchmarks import (
     conjugate_gradient_benchmark,
     dense_eigendecomposition_benchmark,
@@ -558,6 +562,30 @@ def cmd_threshold_workflow(args: argparse.Namespace) -> dict:
     return result.as_report()
 
 
+def cmd_linear_system_compare(args: argparse.Namespace) -> dict:
+    """
+    Build a linear-system solver comparison workflow report.
+    """
+    result = linear_system_comparison_workflow(
+        np.asarray(parse_matrix(args.matrix)),
+        np.asarray(parse_complex_list(args.rhs)),
+        degree=args.degree,
+        gamma=args.gamma,
+        num_points=args.num_points,
+        bounded_num_points=args.bounded_num_points,
+        attempt_synthesis=args.attempt_synthesis,
+        apply_qsvt=args.apply_qsvt,
+        include_conjugate_gradient=not args.no_cg,
+        cg_tolerance=args.cg_tolerance,
+        cg_max_iterations=args.cg_max_iterations,
+    )
+    report = result.as_report()
+    rows_output = getattr(args, "rows_output", None)
+    if rows_output:
+        write_linear_system_comparison_csv(report, rows_output)
+    return report
+
+
 def cmd_benchmark_eigh(args: argparse.Namespace) -> dict:
     """
     Benchmark dense Hermitian eigendecomposition.
@@ -633,6 +661,7 @@ def cmd_examples(args: argparse.Namespace) -> dict:
         "workflow_commands": [
             "design-workflow",
             "design-sweep",
+            "linear-system-compare",
             "threshold-workflow",
             "resource-report",
         ],
@@ -642,6 +671,8 @@ def cmd_examples(args: argparse.Namespace) -> dict:
             'qsvt design-sweep --kind sign --degrees "5,9,13" --gamma 0.2 '
             "--no-synthesis --output sign-degree-sweep.json",
             'qsvt resource-report --poly "0,0,1" --matrix-dimension 4 --no-synthesis',
+            'qsvt linear-system-compare --matrix "2,0.25;0.25,1.25" '
+            '--rhs "1,-0.5" --degree 8 --no-synthesis --no-qsvt',
             'qsvt benchmark cg-solve --matrix "4,1;1,3" --rhs "1,2" --qsvt-poly "0,1"',
             'qsvt threshold-workflow --matrix "-1,0,0;0,0,0;0,0,1" '
             "--lower -0.25 --upper 0.25 --degree 24",
@@ -1046,6 +1077,63 @@ def build_parser() -> argparse.ArgumentParser:
     )
     add_report_output_args(p_apply_design)
     p_apply_design.set_defaults(func=cmd_apply_design)
+
+    p_linear_compare = sub.add_parser(
+        "linear-system-compare",
+        help="Compare dense, CG, and QSVT-style positive linear-system solves",
+    )
+    p_linear_compare.add_argument(
+        "--matrix",
+        type=str,
+        required=True,
+        help='Rows separated by semicolons, e.g. "2,0.25;0.25,1.25"',
+    )
+    p_linear_compare.add_argument(
+        "--rhs",
+        type=str,
+        required=True,
+        help='Right-hand side vector, e.g. "1,-0.5"',
+    )
+    p_linear_compare.add_argument("--degree", type=int, required=True)
+    p_linear_compare.add_argument("--gamma", type=float, default=None)
+    p_linear_compare.add_argument(
+        "--num-points",
+        dest="num_points",
+        type=int,
+        default=2001,
+    )
+    p_linear_compare.add_argument(
+        "--bounded-num-points",
+        dest="bounded_num_points",
+        type=int,
+        default=4001,
+    )
+    p_linear_compare.add_argument(
+        "--no-synthesis",
+        dest="attempt_synthesis",
+        action="store_false",
+        help="Skip the PennyLane synthesis attempt.",
+    )
+    p_linear_compare.add_argument(
+        "--no-qsvt",
+        dest="apply_qsvt",
+        action="store_false",
+        help="Skip the PennyLane QSVT matrix check.",
+    )
+    p_linear_compare.add_argument(
+        "--no-cg",
+        action="store_true",
+        help="Omit the conjugate-gradient comparison row.",
+    )
+    p_linear_compare.add_argument("--cg-tolerance", type=float, default=1e-10)
+    p_linear_compare.add_argument("--cg-max-iterations", type=int, default=None)
+    p_linear_compare.add_argument(
+        "--rows-output",
+        type=str,
+        help="Optional path for writing compact comparison rows as CSV.",
+    )
+    add_report_output_args(p_linear_compare)
+    p_linear_compare.set_defaults(func=cmd_linear_system_compare)
 
     p_threshold = sub.add_parser(
         "threshold-workflow",

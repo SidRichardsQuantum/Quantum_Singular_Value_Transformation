@@ -166,7 +166,7 @@ inline type annotations shipped with the public modules.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.1.27`
+Current release: `0.2.0`
 
 ## Notebooks
 
@@ -219,6 +219,9 @@ Implemented and tested:
 - simulator-scale workflows for linear systems, filters, matrix functions,
   resolvents, Gibbs weights, spectral density, and projectors,
 - PennyLane QSVT block checks for supported small compatible polynomials,
+- PennyLane QNode execution for finite QSVT circuits with state preparation,
+  queued `qml.qsvt`, statevector/probability measurement, and circuit resource
+  metadata,
 - classical benchmark baselines plus QSVT-oriented proxy metadata.
 
 Reported as assumptions or proxies:
@@ -230,21 +233,24 @@ Reported as assumptions or proxies:
 - end-to-end runtime or quantum advantage claims.
 
 Every high-level algorithm, direct QSVT comparison, resource, and benchmark
-report includes a `truth_contract` field. The field states the implemented
-dense-polynomial or small-backend check, the conditional QSVT interpretation,
-and the omitted quantum components. Resource reports are proxy summaries, not
-hardware estimates; benchmark reports time only the classical baseline path and
-include `benchmark_environment` metadata for interpreting timing snapshots.
+report includes a `truth_contract` field. Circuit execution reports separately
+state when a QNode was actually executed. The fields state the implemented
+dense-polynomial, small-backend check, or QNode path, the conditional QSVT
+interpretation, and the omitted quantum components. Resource reports are proxy
+summaries, not hardware estimates; benchmark reports time only the classical
+baseline path and include `benchmark_environment` metadata for interpreting
+timing snapshots.
 
 ## Scope
 
 This project is intentionally educational, explicit, simulator-friendly, and
 polynomial-focused.
 
-It does not aim to provide production-scale circuit optimization, resource
-estimation, fault-tolerant constructions, amplitude amplification, or state
-preparation methods. The emphasis is understanding how polynomial transforms
-act on spectra.
+It does not aim to provide production-scale circuit optimization,
+fault-tolerant constructions, amplitude amplification, or problem-specific
+scalable state preparation methods. The emphasis is understanding how
+polynomial transforms act on spectra and how finite QSVT circuits behave under
+explicit simulator execution.
 
 ## Support
 

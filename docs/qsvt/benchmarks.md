@@ -82,7 +82,9 @@ The generated notebook outputs are published on the
 ## Committed Artifacts
 
 The current benchmark notebooks write JSON reports under `results/benchmarks/`
-and compact CSV tables under `results/tables/`.
+and compact CSV tables under `results/tables/`. Algorithm comparison artifacts
+that are not wall-clock benchmarks live under `results/algorithms/` and share
+the same compact table directory.
 
 | artifact | contents |
 | --- | --- |
@@ -96,6 +98,8 @@ and compact CSV tables under `results/tables/`.
 | [`matrix_function_benchmark_summary.csv`](../../results/tables/matrix_function_benchmark_summary.csv) | compact matrix-function benchmark table |
 | [`benchmark_scaling_summary.csv`](../../results/tables/benchmark_scaling_summary.csv) | compact scaling-sweep benchmark table |
 | [`benchmark_plot_manifest.csv`](../../results/tables/benchmark_plot_manifest.csv) | generated plot manifest for benchmark notebooks |
+| [`linear_system_comparison.json`](../../results/algorithms/linear_system_comparison.json) | dense, CG, and QSVT-style linear-system comparison report |
+| [`linear_system_comparison_summary.csv`](../../results/tables/linear_system_comparison_summary.csv) | compact linear-system comparison rows |
 
 ## Interpretation
 

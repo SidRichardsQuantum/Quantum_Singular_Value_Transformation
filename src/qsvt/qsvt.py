@@ -20,6 +20,11 @@ from .diagonal import (
     qsvt_scalar_scan,
     qsvt_transform_report,
 )
+from .execution import (
+    QSVTCircuitExecutionResult,
+    execute_qsvt_circuit,
+    qsvt_circuit_truth_contract,
+)
 from .matrix import (
     compare_qsvt_vs_classical_matrix,
     qsvt_matrix_transform,
@@ -33,6 +38,9 @@ from .operators import (
 )
 
 __all__ = [
+    "QSVTCircuitExecutionResult",
+    "execute_qsvt_circuit",
+    "qsvt_circuit_truth_contract",
     "qsvt_operator",
     "qsvt_unitary",
     "qsvt_top_left_block",

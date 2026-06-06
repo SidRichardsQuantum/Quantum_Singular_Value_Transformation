@@ -1,9 +1,12 @@
 # Real Physics Examples
 
 These notebooks are small, executable real-world physics workflows for
-`qsvt-pennylane` v0.1.10. They use finite-dimensional Hamiltonians and PDE
+`qsvt-pennylane`. They use finite-dimensional Hamiltonians and PDE
 discretizations so each QSVT-style polynomial transform can be compared against
-an exact classical spectral reference.
+an exact classical spectral reference. Most examples are dense spectral
+workflows; the block-encoded Laplacian example additionally verifies an
+explicit finite block encoding and runs a finite PennyLane QNode execution
+check.
 
 | Area | Notebook |
 | --- | --- |
@@ -34,26 +37,3 @@ an exact classical spectral reference.
 | Block-encoded Laplacian smoothing | `30_block_encoded_laplacian_smoothing.ipynb` |
 | Transport physics | `11_transport_physics_landauer_chain.ipynb` |
 | Tensor-network hybrids | `12_tensor_network_hybrid_filtering.ipynb` |
-
-Additional PDE and filtering examples:
-
-- `04_heat_equation_pde.ipynb`
-- `13_heat_equation_2d_pde.ipynb`
-- `14_advection_diffusion_pde.ipynb`
-- `15_wave_equation_dynamics.ipynb`
-- `16_helmholtz_equation_pde.ipynb`
-- `18_ssh_chain_edge_state_filtering.ipynb`
-- `19_anderson_localization.ipynb`
-- `20_schrodinger_bound_states.ipynb`
-- `21_quantum_harmonic_oscillator_grid.ipynb`
-- `22_electrostatic_green_function_poisson.ipynb`
-- `23_coupled_oscillator_normal_modes.ipynb`
-- `24_ising_phase_transition_filtering.ipynb`
-- `25_diffusion_heat_treatment_slab.ipynb`
-- `26_graphene_nanoribbon_density_of_states.ipynb`
-- `27_fermi_dirac_electronic_occupations.ipynb`
-- `28_photonic_crystal_band_gap_filtering.ipynb`
-- `29_topological_band_projector_chern_marker.ipynb`
-- `30_block_encoded_laplacian_smoothing.ipynb`
-- `02_tight_binding_band_filter.ipynb`
-- `03_imaginary_time_filtering.ipynb`

@@ -27,6 +27,17 @@ as a polynomial-level proxy: it can compare degrees, phase-count proxies,
 signal-call proxies, widths, and sampled compatibility checks. It cannot by
 itself justify a runtime, hardware, or quantum-advantage claim.
 
+Notation used in resource discussions:
+
+- `degree` is the polynomial degree `d`.
+- `matrix_dimension` is the logical dimension `N` of the encoded matrix.
+- `encoding_qubits` is usually `ceil(log2(N))` when inferred from `N`.
+- `signal_operator_calls` is a proxy for calls to the block-encoded signal
+  operator, not a measured runtime.
+- For linear systems, `gamma` is the scaled positive lower spectral bound and
+  `1 / gamma` is a condition-number-style proxy when the scaled maximum
+  eigenvalue is one.
+
 ## Omitted Costs
 
 The proxy model does not include:

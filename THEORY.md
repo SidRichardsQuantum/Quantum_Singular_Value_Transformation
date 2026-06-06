@@ -79,6 +79,15 @@ $$
 
 for some normalization constant $\alpha \ge 1$, where the top-left block acts on a designated “logical” subspace.
 
+Notation in this block:
+
+- $A$ is the logical matrix whose singular values or eigenvalues we want to transform.
+- $U$ is a larger unitary acting on ancilla plus logical registers.
+- $\alpha$ is the positive block-encoding normalization; the encoded signal is $A/\alpha$.
+- The `*` entries denote other blocks of the unitary that are not used directly by the logical matrix function.
+- The dashes indicate unspecified off-diagonal blocks.
+- The logical subspace is selected by the ancilla state, usually $|0\rangle$.
+
 Operationally, this means that when the ancilla qubits are prepared in $|0\rangle$, the action of $U$ on the logical register reproduces the action of $A$ (up to normalization).
 
 The value of $\alpha$ is part of the algorithm. If the original matrix has
@@ -131,6 +140,11 @@ This is why reports track offsets, scales, and spectral bounds. A polynomial
 degree that is adequate after one normalization may be inadequate after another
 normalization.
 
+Here $I$ is the identity matrix, $\beta$ is an affine offset, $s>0$ is the
+scale factor, $\widetilde A$ is the normalized operator supplied to the
+polynomial, and $f$ is the physical matrix function induced on the original
+operator $A$.
+
 ---
 
 ## 3. Quantum Singular Value Transformation (QSVT)
@@ -148,6 +162,10 @@ $$
 $$
 
 to each singular value $\sigma_i$ of $A$.
+
+Here $i$ indexes singular values, $\sigma_i$ is the $i$th singular value of the
+normalized block-encoded matrix, and $f$ is the scalar polynomial
+transformation implemented on those singular values.
 
 In other words, QSVT implements **matrix functions via polynomial transformations**.
 
@@ -167,6 +185,11 @@ P(A)_{\mathrm{QSVT}} \sim
 $$
 
 up to the precise parity and signal-convention details of the construction.
+
+In this expression, $|u_i\rangle$ and $|v_i\rangle$ are the left and right
+singular vectors of $A$, $P$ is the admissible QSVT polynomial, and
+$P(A)_{\mathrm{QSVT}}$ denotes the logical transformed block rather than an
+ordinary matrix power series for a non-Hermitian matrix.
 
 ---
 
@@ -214,6 +237,10 @@ P(H) =
 \sum_i P(\lambda_i)|\psi_i\rangle\langle\psi_i|.
 $$
 
+Here $H$ is Hermitian, $\lambda_i$ are its eigenvalues,
+$|\psi_i\rangle$ are orthonormal eigenvectors, and $P(H)$ means ordinary
+spectral polynomial functional calculus.
+
 Odd polynomials can preserve sign information, while even polynomials depend
 only on magnitude. This distinction is why sign functions, projectors, and
 positive-spectrum inverse approximations are treated carefully in the notebooks.
@@ -228,6 +255,10 @@ In QSP:
 - a single “signal” unitary encodes $x$ in its eigenphases,
 - fixed phase rotations are interleaved with this signal unitary,
 - the resulting circuit implements a polynomial function of $x$.
+
+Here $x$ is the scalar signal value in the interval $[-1,1]$. In a full QSP
+sequence, the fixed rotation angles are usually denoted by phase parameters
+such as $\phi_0,\phi_1,\ldots,\phi_d$, where $d$ is the polynomial degree.
 
 The fixed rotations are often called **QSP phases**. Finding phases for a
 target polynomial is a synthesis problem: it is separate from fitting or
@@ -267,6 +298,10 @@ $$
 
 is odd, bounded, and directly admissible for QSVT.
 
+Here $n$ is a nonnegative integer polynomial degree, $x \in [-1,1]$ is the
+scalar approximation variable, and $T_n$ is the degree-$n$ Chebyshev polynomial
+of the first kind.
+
 This explains why Chebyshev polynomials appear repeatedly in filtering, inversion, projector construction, and Hamiltonian simulation.
 
 ---
@@ -280,6 +315,10 @@ Given a target function $g(x)$, one constructs a polynomial $P(x)$ such that:
 $$
 P(x) \approx g(x) \quad \text{on the relevant spectral interval}.
 $$
+
+Here $g$ is the desired scalar target function, $P$ is the polynomial
+approximation actually used by QSVT-style workflows, and the spectral interval
+is the subset of the normalized spectrum where accuracy matters.
 
 The polynomial degree controls:
 - approximation error,
@@ -324,6 +363,10 @@ Examples include:
 
 These functions can be approximated by Chebyshev polynomials to produce admissible QSVT transforms.
 
+Here $\kappa>0$ controls the steepness of the smooth sign surrogate; larger
+$\kappa$ gives a sharper transition and usually requires higher polynomial
+degree for the same approximation quality.
+
 Such constructions prioritise:
 
 - simplicity
@@ -352,6 +395,9 @@ $$
 [-1,-\gamma] \cup [\gamma,1].
 $$
 
+Here $\gamma \in (0,1)$ is a spectral gap or lower-magnitude cutoff that keeps
+the target away from the singularity at zero.
+
 Examples include:
 
 #### sign approximation
@@ -377,12 +423,14 @@ This produces relative scaling behaviour similar to matrix inversion while prese
 $$
 P(x) \approx
 \begin{cases}
-0 & |x| < \tau \
+0 & |x| < \tau \\
 1 & |x| > \tau
 \end{cases}
 $$
 
 using smooth bounded approximations.
+
+Here $\tau \in (0,1)$ is a threshold in the normalized signal coordinate.
 
 ### Role of Chebyshev approximation
 
@@ -416,6 +464,11 @@ any function $f$ acts spectrally as:
 $$
 f(A) = U f(\Lambda) U^\dagger.
 $$
+
+Here $U$ is the eigenvector matrix, $\Lambda$ is the diagonal matrix of
+eigenvalues, $U^\dagger$ is the conjugate transpose of $U$, and
+$f(\Lambda)$ means applying $f$ entrywise to the diagonal entries of
+$\Lambda$.
 
 QSVT implements this *functional calculus* using polynomial approximations.
 
@@ -455,6 +508,9 @@ $$
 \Pi_\pm = \frac{I \pm \mathrm{sgn}(A)}{2}.
 $$
 
+Here $\Pi_+$ and $\Pi_-$ are projectors onto the positive and negative spectral
+subspaces of a Hermitian matrix $A$, and $I$ is the identity on the same space.
+
 Approximating $\mathrm{sgn}(A)$ via QSVT yields **approximate spectral projectors** that:
 
 - suppress unwanted eigencomponents,
@@ -478,6 +534,10 @@ $$
 
 formally requires applying $A^{-1}$.
 
+Here $A$ is the linear-system matrix, $b$ is the right-hand side vector, and
+$x$ is the unknown solution vector. In the quantum-state version, $b$ is
+typically encoded as a normalized state $|b\rangle$.
+
 Since $1/x$ is unbounded, QSVT instead implements a polynomial $P(x)$ such that:
 
 $$
@@ -485,6 +545,10 @@ P(\lambda_i) \propto \frac{1}{\lambda_i}
 $$
 
 on the spectrum of interest.
+
+Here $\lambda_i$ are eigenvalues of the normalized positive-definite operator,
+and $\propto$ indicates that the polynomial reproduces inverse-like relative
+scaling up to an overall normalization factor.
 
 After normalization, only the **relative scaling of eigencomponents** matters.
 
@@ -513,6 +577,9 @@ Preparing this state may be easy for structured data, or it may dominate the
 cost for unstructured classical data. The polynomial transform alone does not
 solve data loading.
 
+Here $\|b\|$ is the Euclidean norm of the right-hand-side vector, and
+$|b\rangle$ is the corresponding normalized quantum state.
+
 ### Success probability
 
 The desired transformed vector often appears in a particular ancilla branch.
@@ -527,6 +594,9 @@ conditioned on measuring the ancilla in a success state. The norm of this
 component determines the success probability. Amplitude amplification or
 estimation can improve or estimate success probabilities, but those costs are
 additional to the polynomial degree.
+
+The vector $P(A)|b\rangle$ is generally an unnormalized postselected component
+before success-probability management.
 
 ### Readout
 

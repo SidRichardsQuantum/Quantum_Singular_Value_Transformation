@@ -18,6 +18,14 @@ Boundedness keeps the transformed block compatible with unitarity. Parity is a
 QSP/QSVT structural condition: even and odd polynomial sequences correspond to
 different phase-sequence forms and signal conventions.
 
+Notation:
+
+- `P(x)` is the real scalar polynomial being checked.
+- `x` is the normalized signal variable, usually sampled on `[-1, 1]`.
+- `degree` is the highest nonzero polynomial degree.
+- `parity` records whether `P(-x) = P(x)`, `P(-x) = -P(x)`, or neither.
+- `max_abs_value` is the sampled maximum of `|P(x)|` on the check interval.
+
 ## Compatibility Reports
 
 `qsvt.compatibility.qsvt_compatibility_report` samples the polynomial on the

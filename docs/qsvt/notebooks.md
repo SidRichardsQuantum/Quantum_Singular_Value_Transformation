@@ -45,6 +45,7 @@ Tutorial notebooks live in `notebooks/tutorials/`.
 | `tutorials/15_Block_Encoded_QSVT_Workflow.ipynb` | finite block-encoded QSVT workflow |
 | `tutorials/16_Sparse_Oracle_Assumptions.ipynb` | sparse operators, oracle assumptions, and omitted costs |
 | `tutorials/17_QSVT_Compatibility_Failure_Cases.ipynb` | boundedness, parity, and QSVT compatibility failures |
+| `tutorials/18_QSVT_Linear_System_Comparisons.ipynb` | dense, CG, and QSVT-style linear-system comparison rows |
 
 ## Benchmark notebooks
 

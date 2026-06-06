@@ -9,6 +9,7 @@ The package provides lightweight utilities for:
 - small Hermitian matrix construction
 - classical spectral matrix-function calculations
 - explicit PennyLane QSVT wrappers
+- QNode-based QSVT execution for finite instances
 
 Install with:
 
@@ -40,6 +41,7 @@ The package is organised into the following modules:
 - `qsvt.resources`
 - `qsvt.benchmarks`
 - `qsvt.operators`
+- `qsvt.execution`
 - `qsvt.diagonal`
 - `qsvt.matrix`
 - `qsvt.compatibility`
@@ -109,6 +111,36 @@ result = linear_system_workflow(
 
 print(result.polynomial_solution)
 print(result.polynomial_residual_norm)
+```
+
+Use `linear_system_comparison_workflow` when you want the same finite instance
+reported as rows for dense solve, conjugate gradients, QSVT-style polynomial
+inverse, and the optional PennyLane QSVT matrix check:
+
+```python
+from qsvt.algorithms import linear_system_comparison_workflow
+
+comparison = linear_system_comparison_workflow(
+    np.diag([1.0, 2.0]),
+    np.array([1.0, 1.0]),
+    degree=20,
+    attempt_synthesis=False,
+    apply_qsvt=False,
+)
+
+for row in comparison.as_report()["rows"]:
+    print(row["solver"], row["residual_norm"])
+```
+
+Compact comparison rows can be written as CSV:
+
+```python
+from qsvt.algorithms import write_linear_system_comparison_csv
+
+write_linear_system_comparison_csv(
+    comparison,
+    "results/tables/linear_system_comparison_summary.csv",
+)
 ```
 
 The module also includes simulator-scale physics workflows that wrap existing
@@ -248,6 +280,8 @@ Available baseline helpers include:
 - `write_benchmark_summary_csv`
 - `plot_benchmark_timings`
 - `plot_qsvt_proxy_resources`
+- `linear_system_comparison_summary_table`
+- `write_linear_system_comparison_csv`
 
 The same baseline reports are available from the CLI:
 
@@ -256,6 +290,19 @@ qsvt benchmark cg-solve \
   --matrix "4,1;1,3" \
   --rhs "1,2" \
   --qsvt-poly "0,1"
+```
+
+The linear-system comparison workflow is also available from the CLI:
+
+```bash
+qsvt linear-system-compare \
+  --matrix "2,0.25;0.25,1.25" \
+  --rhs "1,-0.5" \
+  --degree 8 \
+  --no-synthesis \
+  --no-qsvt \
+  --output results/algorithms/linear_system_comparison.json \
+  --rows-output results/tables/linear_system_comparison_summary.csv
 ```
 
 Benchmark reports are classical references and QSVT cost proxies. They are
@@ -588,10 +635,12 @@ Construct the real 2D rotation matrix:
 $$
 R(\theta) =
 \begin{pmatrix}
-\cos\theta & -\sin\theta \
+\cos\theta & -\sin\theta \\
 \sin\theta & \cos\theta
 \end{pmatrix}.
 $$
+
+Here $\theta$ is the rotation angle in radians.
 
 **Example**
 
@@ -859,6 +908,45 @@ print(block)
 Embed a logical vector into the enlarged Hilbert space, apply the full QSVT unitary, and extract the logical output.
 
 This is useful for explicit linear-solver-style demonstrations.
+
+---
+
+### `execute_qsvt_circuit(operator, poly, state, ...)`
+
+Execute a finite QSVT circuit through a PennyLane QNode.
+
+This path prepares the supplied logical state in the first amplitudes of the
+QNode register, queues `qml.qsvt`, and measures either:
+
+- a statevector plus exact probabilities when `shots=None`,
+- sampled probabilities when `shots` is finite.
+
+The result includes `execution_kind`, `resource_summary`,
+`logical_success_probability`, and a dense classical polynomial output used
+only as a validation reference. The helper does not call `qml.matrix`
+internally.
+
+Example:
+
+```python
+import numpy as np
+from qsvt.qsvt import execute_qsvt_circuit
+
+A = np.diag([0.2, 0.8])
+result = execute_qsvt_circuit(
+    A,
+    [0, 0, 1],
+    [1.0, 0.0],
+    encoding_wires=[0, 1],
+)
+
+print(result.execution_kind)
+print(result.logical_success_probability)
+print(result.resource_summary["gate_types"])
+```
+
+Use `result.as_report()` when you need a machine-readable truth contract for
+the circuit execution layer.
 
 ---
 

@@ -2,6 +2,48 @@
 
 ---
 
+## [0.2.0] – 6th June 2026
+
+### Added
+
+- added `qsvt.execution` with `execute_qsvt_circuit`, a PennyLane QNode
+  execution path that prepares a logical state, queues `qml.qsvt`, measures
+  statevectors or finite-shot probabilities, and reports circuit resource
+  metadata without calling `qml.matrix` internally
+- added `QSVTCircuitExecutionResult` and `qsvt_circuit_truth_contract` so
+  circuit execution reports distinguish finite QNode execution from dense
+  references and from end-to-end quantum algorithm claims
+- added `linear_system_comparison_workflow`,
+  `LinearSystemComparisonResult`, summary-table helpers, and CSV export for
+  comparing dense solves, conjugate gradient, and QSVT-style polynomial
+  inverse workflows on small positive-definite systems
+- added a `qsvt linear-system-compare` CLI command with JSON report output
+  and optional compact comparison-row CSV output
+- added committed linear-system comparison JSON and CSV artefacts under
+  `results/algorithms/` and `results/tables/`
+- added regression tests that guard the new circuit execution path against
+  falling back to explicit QSVT matrix extraction
+- added tests for the linear-system comparison workflow, CLI command, CSV
+  writer, top-level exports, and committed algorithm artefacts
+
+### Changed
+
+- documented the implementation layers as dense references, small PennyLane
+  matrix verification, and QNode circuit execution
+- expanded linear-system workflow reports with scaled eigenvalue bounds,
+  2-norm condition numbers, gamma-condition proxies, implementation-kind
+  metadata, and a QSVT-style resource proxy that names omitted quantum layers
+- added explicit `implementation_kind` fields across high-level algorithm
+  workflow reports to make report scope easier to inspect programmatically
+- updated README, usage, theory, API, algorithm, implementation,
+  resource-model, block-encoding, compatibility, design, physics, notebook,
+  and result documentation for the new execution and comparison surfaces
+- refreshed selected tutorial and real-example notebooks, generated result
+  tables, and benchmark snapshots for the `0.2.0` release
+- updated package metadata and release markers for `0.2.0`
+
+---
+
 ## [0.1.27] – 2nd June 2026
 
 ### Changed
