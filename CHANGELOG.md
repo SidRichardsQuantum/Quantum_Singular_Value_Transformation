@@ -2,6 +2,29 @@
 
 ---
 
+## [0.2.1] – 6th June 2026
+
+### Fixed
+
+- made QSVT circuit resource-summary extraction compatible with PennyLane
+  versions that return dict-like `qml.specs` results instead of attribute-only
+  circuit specs
+- narrowed the QSVT circuit execution regression guard so it catches explicit
+  QSVT/block-encoding matrix extraction without blocking PennyLane's internal
+  single-gate matrix use during angle synthesis
+- stripped trailing whitespace from generated notebook text-output tables so
+  regenerated documentation passes `git diff --check`
+- committed regenerated tutorial, real-example, and benchmark result pages,
+  plot manifests, and missing notebook plot artefacts needed by the notebook
+  extraction check
+
+### Changed
+
+- refreshed benchmark artefact version metadata and release markers for
+  `0.2.1`
+
+---
+
 ## [0.2.0] – 6th June 2026
 
 ### Added

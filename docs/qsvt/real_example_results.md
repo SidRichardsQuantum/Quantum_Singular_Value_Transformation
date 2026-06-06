@@ -9,8 +9,8 @@ This generated page displays embedded setup schematics, diagnostic plots, and te
 
 - Source notebooks: `notebooks/real_examples/`
 - Notebooks displayed: `30`
-- Embedded plot artefacts displayed: `53`
-- Plain-text notebook results displayed: `77`
+- Embedded plot artefacts displayed: `55`
+- Plain-text notebook results displayed: `80`
 - Plot manifest: [`results/tables/real_examples_plot_manifest.csv`](../../results/tables/real_examples_plot_manifest.csv)
 
 ## Related Pages
@@ -53,8 +53,8 @@ Energies [model energy units]: [-1.7205 -1.      1.      1.7205]
 Output 2 (cell 10):
 
 ```text
-Cutoff [model energy units]: -1.3602325267042625 
-Scale: 3.0806975801127883 
+Cutoff [model energy units]: -1.3602325267042625
+Scale: 3.0806975801127883
 Scaled Energies [model energy units]: [-1.     -0.7661 -0.1169  0.1169]
 ```
 
@@ -991,4 +991,40 @@ Bulk polynomial marker [Chern marker]: 0.6430191290198954
 
 Source: [`notebooks/real_examples/30_block_encoded_laplacian_smoothing.ipynb`](../../notebooks/real_examples/30_block_encoded_laplacian_smoothing.ipynb)
 
-No embedded plot or text outputs were found.
+```{image} ../../results/plots/real_examples/30_block_encoded_laplacian_smoothing-plot-01.png
+:alt: Block-Encoded QSVT Laplacian Smoothing plot 1
+:width: 760px
+```
+
+```{image} ../../results/plots/real_examples/30_block_encoded_laplacian_smoothing-plot-02.png
+:alt: Block-Encoded QSVT Laplacian Smoothing plot 2
+:width: 760px
+```
+
+Output 1 (cell 6):
+
+```text
+Block-Encoding Alpha: 392.788
+Logical Dimension: 8
+Unitary Dimension: 16
+Block Error: 0.000e+00
+Unitarity Error: 3.819e-15
+Operator Relative Error: 1.001e-12
+State Relative Error: 1.001e-12
+```
+
+Output 2 (cell 8):
+
+```text
+QNode Execution Kind: pennylane-qnode-statevector-qsvt-execution
+QNode Gate Types: {'StatePrep': 1, 'QSVT': 1}
+QNode Logical Success Probability: 0.959851950246
+QNode Real Logical Error: 9.746e-13
+QNode Max Imaginary Logical Amplitude: 4.517e-02
+```
+
+Output 3 (cell 14):
+
+```text
+validation: passed
+```

@@ -306,18 +306,49 @@ def _qsvt_circuit_resource_summary(
         return qml.probs(wires=wire_order)
 
     specs = qml.specs(circuit)()
-    resources = specs.resources
+    resources = _spec_value(specs, "resources")
     return {
-        "device_name": specs.device_name,
-        "num_device_wires": int(specs.num_device_wires),
+        "device_name": _spec_value(specs, "device_name", device_name),
+        "num_device_wires": int(
+            _spec_value(specs, "num_device_wires", len(wire_order))
+        ),
         "shots": shots,
-        "num_gates": int(resources.num_gates),
-        "depth": int(resources.depth),
-        "gate_types": dict(resources.gate_types),
-        "measurement_count": len(resources.measurements),
+        "num_gates": int(_resource_value(resources, "num_gates", 0)),
+        "depth": int(_resource_value(resources, "depth", 0)),
+        "gate_types": dict(_resource_value(resources, "gate_types", {})),
+        "measurement_count": len(_resource_value(resources, "measurements", [])),
         "polynomial_degree": int(coeffs.size - 1),
         "encoding_wire_count": len(encoding_wires),
     }
+
+
+def _spec_value(specs: object, key: str, default: object | None = None) -> object:
+    if hasattr(specs, key):
+        return getattr(specs, key)
+    if isinstance(specs, dict):
+        return specs.get(key, default)
+    get_value = getattr(specs, "get", None)
+    if callable(get_value):
+        return get_value(key, default)
+    to_dict = getattr(specs, "to_dict", None)
+    if callable(to_dict):
+        return to_dict().get(key, default)
+    return default
+
+
+def _resource_value(
+    resources: object,
+    key: str,
+    default: object | None = None,
+) -> object:
+    if hasattr(resources, key):
+        return getattr(resources, key)
+    if isinstance(resources, dict):
+        return resources.get(key, default)
+    get_value = getattr(resources, "get", None)
+    if callable(get_value):
+        return get_value(key, default)
+    return default
 
 
 def _validate_execution_operator(operator: np.ndarray) -> np.ndarray:

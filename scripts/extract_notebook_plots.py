@@ -102,7 +102,8 @@ def _format_text_output(text: str) -> str:
     formatted = text.rstrip()
     formatted = _unwrap_numpy_scalars(formatted)
     formatted = _unwrap_numpy_array_reprs(formatted)
-    return _strip_standalone_array_repr(formatted)
+    formatted = _strip_standalone_array_repr(formatted)
+    return "\n".join(line.rstrip() for line in formatted.splitlines())
 
 
 def _unwrap_numpy_scalars(text: str) -> str:

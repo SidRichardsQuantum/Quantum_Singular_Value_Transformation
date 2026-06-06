@@ -8,9 +8,9 @@ This generated page displays the embedded plots and text outputs from every tuto
 ## Current Status
 
 - Source notebooks: `notebooks/tutorials/`
-- Notebooks displayed: `17`
-- Embedded plot artefacts displayed: `35`
-- Plain-text notebook results displayed: `73`
+- Notebooks displayed: `18`
+- Embedded plot artefacts displayed: `36`
+- Plain-text notebook results displayed: `76`
 
 ## Related Pages
 
@@ -199,7 +199,10 @@ Direct A:
 Output 4 (cell 12):
 
 ```text
-QSVT solution (normalized): [0.89442719+1.26489707e-06j 0.4472136 +6.32448537e-07j]
+execution_kind: pennylane-qnode-statevector-qsvt-execution
+gate_types: {'StatePrep': 1, 'QSVT': 1}
+logical_success_probability: 1.000000000000
+QNode QSVT solution (normalized): [0.89442719+1.26489707e-06j 0.4472136 +6.32448537e-07j]
 
 Classical solution (normalized): [0.89442719 0.4472136 ]
 ```
@@ -269,7 +272,10 @@ Direct A:
 Output 4 (cell 12):
 
 ```text
-QSVT solution (normalized) = [ 0.18257419+2.58196034e-07j -0.36514837-5.16392068e-07j
+execution_kind: pennylane-qnode-statevector-qsvt-execution
+gate_types: {'StatePrep': 1, 'QSVT': 1}
+logical_success_probability: 1.000000000000
+QNode QSVT solution (normalized) = [ 0.18257419+2.58196034e-07j -0.36514837-5.16392068e-07j
   0.54772256+7.74588102e-07j -0.73029674-1.03278414e-06j]
 Classical solution (normalized) = [ 0.18257419 -0.36514837  0.54772256 -0.73029674]
 ```
@@ -339,7 +345,10 @@ Direct P(A):
 Output 4 (cell 15):
 
 ```text
-QSVT-based solution (normalized) = [ 0.70710678+9.99988939e-07j -0.70710678-9.99988939e-07j]
+execution_kind: pennylane-qnode-statevector-qsvt-execution
+gate_types: {'StatePrep': 1, 'QSVT': 1}
+logical_success_probability: 1.000000000000
+QNode QSVT solution (normalized) = [ 0.70710678+9.99988939e-07j -0.70710678-9.99988939e-07j]
 True inverse solution (normalized) = [-0.70710678  0.70710678]
 ```
 
@@ -347,12 +356,6 @@ Output 5 (cell 19):
 
 ```text
 block_max_error: 1.414e-06
-```
-
-Output 6 (cell 19):
-
-```text
-
 solution_direction_overlap: 1.000000000000
 validation: passed
 ```
@@ -973,7 +976,17 @@ operator_relative_error: 1.000085679496161e-12
 state_relative_error: 1.0000638768158241e-12
 ```
 
-Output 3 (cell 10):
+Output 3 (cell 9):
+
+```text
+execution_kind: pennylane-qnode-statevector-qsvt-execution
+gate_types: {'StatePrep': 1, 'QSVT': 1}
+logical_success_probability: 0.967454109399
+qnode_real_error: 9.771e-13
+qnode_max_imag: 5.830e-02
+```
+
+Output 4 (cell 12):
 
 ```text
 validation: passed
@@ -991,11 +1004,11 @@ Source: [`notebooks/tutorials/16_Sparse_Oracle_Assumptions.ipynb`](../../noteboo
 Output 1 (cell 4):
 
 ```text
-model                          implemented_here  visible_cost                           omitted_cost                             
+model                          implemented_here  visible_cost                           omitted_cost
 -----------------------------  ----------------  -------------------------------------  -----------------------------------------
-dense finite matrix            yes               matrix dimension and dense validation  scalable data loading                    
-explicit dense block encoding  finite only       unitary dimension and block error      asymptotic oracle construction           
-sparse-access block encoding   no                degree and signal-call proxy only      row oracle, value oracle, normalization  
+dense finite matrix            yes               matrix dimension and dense validation  scalable data loading
+explicit dense block encoding  finite only       unitary dimension and block error      asymptotic oracle construction
+sparse-access block encoding   no                degree and signal-call proxy only      row oracle, value oracle, normalization
 end-to-end quantum workflow    no                not estimated                          state preparation, readout, amplification
 ```
 
@@ -1064,4 +1077,46 @@ Output 3 (cell 9):
 
 ```text
 validation: passed
+```
+
+### `18_QSVT_Linear_System_Comparisons.ipynb`
+
+Source: [`notebooks/tutorials/18_QSVT_Linear_System_Comparisons.ipynb`](../../notebooks/tutorials/18_QSVT_Linear_System_Comparisons.ipynb)
+
+```{image} ../../results/plots/notebooks/18_QSVT_Linear_System_Comparisons-plot-01.png
+:alt: QSVT Linear-System Comparisons plot 1
+:width: 520px
+```
+
+Output 1 (cell 4):
+
+```text
+solver                         implementation_kind                 degree  iterations  residual_norm  relative_solution_error
+-----------------------------  ----------------------------------  ------  ----------  -------------  -----------------------
+dense_solve                    classical-dense-reference           8       -           5.551e-17      0.000e+00
+conjugate_gradient             classical-iterative-reference       8       2           5.551e-17      0.000e+00
+qsvt_style_polynomial_inverse  dense-spectral-polynomial-workflow  8       -           0.0575533      0.0571796
+```
+
+Output 2 (cell 6):
+
+```text
+quantity                   value
+-------------------------  ---------
+degree                     8
+gamma                      0.565741
+condition_number_2         1.76759
+gamma_condition_proxy      1.76759
+polynomial_relative_error  0.0571796
+```
+
+Output 3 (cell 7):
+
+```text
+degree  relative_solution_error  residual_norm
+------  -----------------------  -------------
+4       0.104276                 0.134979
+6       0.0578489                0.0549513
+8       0.0571796                0.0575533
+10      0.0438395                0.0489511
 ```

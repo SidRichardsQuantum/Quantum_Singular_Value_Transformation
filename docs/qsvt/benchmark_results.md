@@ -136,8 +136,8 @@ Linear-system baseline readout
 ==============================
 Case  Classical algorithm                       Condition  Relative residual  QSVT degree [polynomial degree]  Signal calls [operator calls]
 ----  ----------------------------------------  ---------  -----------------  -------------------------------  -----------------------------
-DLS   numpy.linalg.solve                        4          8.86e-17           9                                9                            
-CGS   qsvt.benchmarks.conjugate_gradient_solve  4          1.77e-16           9                                9                            
+DLS   numpy.linalg.solve                        4          8.86e-17           9                                9
+CGS   qsvt.benchmarks.conjugate_gradient_solve  4          1.77e-16           9                                9
 
 DLS times a dense direct solve. CGS reports iterative-solver diagnostics, but this educational benchmark still uses dense NumPy matrix-vector products.
 ```
@@ -149,8 +149,8 @@ Matrix-function baseline readout
 ================================
 Case  Classical algorithm             QSVT degree [polynomial degree]  Signal calls [operator calls]  Best time (s)
 ----  ------------------------------  -------------------------------  -----------------------------  -------------
-DSMF  dense-spectral-matrix-function  n/a                              n/a                            1.30e-04     
-PME   spectral-polynomial-evaluation  2                                2                              1.43e-04     
+DSMF  dense-spectral-matrix-function  n/a                              n/a                            1.30e-04
+PME   spectral-polynomial-evaluation  2                                2                              1.43e-04
 
 DSMF is the exact dense spectral reference. PME applies the supplied polynomial classically and is the closest fixed-polynomial comparison to a QSVT sequence.
 ```

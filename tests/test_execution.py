@@ -12,11 +12,16 @@ def test_execute_qsvt_circuit_statevector_runs_qnode_without_matrix_extraction(
     matrix = np.diag([0.2, 0.8])
     coeffs = [0.0, 0.0, 1.0]
     state = np.array([1.0, 0.0])
+    original_matrix = qml.matrix
 
-    def fail_matrix(*args, **kwargs):  # pragma: no cover - only runs on regression
-        raise AssertionError("execute_qsvt_circuit must not call qml.matrix")
+    def fail_qsvt_matrix(*args, **kwargs):  # pragma: no cover - regression guard
+        operation = args[0] if args else None
+        operation_name = operation.__class__.__name__
+        if operation_name in {"BlockEncode", "QSVT"}:
+            raise AssertionError("execute_qsvt_circuit must not extract a QSVT matrix")
+        return original_matrix(*args, **kwargs)
 
-    monkeypatch.setattr(qml, "matrix", fail_matrix)
+    monkeypatch.setattr(qml, "matrix", fail_qsvt_matrix)
 
     result = execute_qsvt_circuit(matrix, coeffs, state, encoding_wires=[0, 1])
     report = report_to_jsonable(result.as_report())
