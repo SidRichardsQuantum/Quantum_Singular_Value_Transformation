@@ -2,6 +2,21 @@
 
 ---
 
+## [0.2.3] – 11th June 2026
+
+### Changed
+
+- added an ordered push and version-tag release workflow that runs lint,
+  tests, Pages deployment, package build, and tag publishing in sequence
+- removed independent main-branch push triggers from the standalone lint,
+  tests, Pages, and package workflows so release checks do not race out of
+  order
+- changed automatic publishing to run only through the ordered version-tag
+  path, with the manual publish workflow guarded to version tags
+- updated package metadata and release markers for `0.2.3`
+
+---
+
 ## [0.2.2] – 6th June 2026
 
 ### Added

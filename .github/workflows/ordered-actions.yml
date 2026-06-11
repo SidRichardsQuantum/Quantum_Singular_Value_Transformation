@@ -1,0 +1,175 @@
+name: Ordered Actions
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install package and lint/type dependencies
+        run: python -m pip install -e ".[lint,type]"
+
+      - name: Run Ruff
+        run: ruff check .
+
+      - name: Check formatting
+        run: ruff format --check src tests
+
+      - name: Run mypy
+        run: mypy src/qsvt
+
+  tests:
+    runs-on: ubuntu-latest
+    needs: lint
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package and test dependencies
+        run: python -m pip install -e ".[test]"
+
+      - name: Run pytest
+        run: pytest -m "not notebook" --cov=qsvt --cov-report=term-missing --cov-report=xml
+
+      - name: Upload coverage XML artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.python-version }}
+          path: coverage.xml
+
+  pages:
+    runs-on: ubuntu-latest
+    needs: tests
+
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    concurrency:
+      group: "pages"
+      cancel-in-progress: false
+
+    env:
+      MPLCONFIGDIR: /tmp/matplotlib
+      PYTHONUTF8: "1"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: |
+            pyproject.toml
+
+      - name: Install package + docs/notebook deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev,docs]"
+
+      - name: Verify committed notebook result artefacts
+        run: |
+          python scripts/extract_notebook_plots.py --preset all --write-docs
+          git diff --exit-code -- docs/qsvt/tutorial_results.md docs/qsvt/real_example_results.md docs/qsvt/benchmark_results.md results/tables/real_examples_plot_manifest.csv results/tables/benchmark_plot_manifest.csv
+
+      - name: Build docs
+        run: |
+          python -m sphinx -W -b html docs docs/_build/html
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/_build/html
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  package:
+    runs-on: ubuntu-latest
+    needs: pages
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install package tooling
+        run: python -m pip install -e ".[release]"
+
+      - name: Build distribution artifacts
+        run: python -m build
+
+      - name: Check distribution metadata
+        run: python -m twine check dist/*
+
+      - name: Upload distribution artifacts
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-artifacts
+          path: dist/
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: package
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    permissions:
+      contents: read
+      id-token: write
+
+    environment:
+      name: pypi
+
+    steps:
+      - name: Download distribution artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-artifacts
+          path: dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1

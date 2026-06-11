@@ -112,6 +112,11 @@ from .hamiltonians import (
     pauli_string_matrix,
     tight_binding_chain,
 )
+from .hhl import (
+    HHLCircuitExecutionResult,
+    execute_hhl_circuit,
+    hhl_circuit_truth_contract,
+)
 from .matrices import (
     diagonal_matrix,
     embed_vector,
@@ -244,6 +249,7 @@ __all__ = [
     "ResourceEstimate",
     "ClassicalBenchmarkResult",
     "QSVTCircuitExecutionResult",
+    "HHLCircuitExecutionResult",
     "approximation_quality_report",
     "chebyshev_approximant",
     "chebyshev_eval",
@@ -350,6 +356,7 @@ __all__ = [
     "design_resolvent_polynomials",
     "density_matrix_error",
     "execute_qsvt_circuit",
+    "execute_hhl_circuit",
     "expectation_value",
     "ground_state_overlap",
     "operator_error",
@@ -365,6 +372,7 @@ __all__ = [
     "qsvt_operator",
     "qsvt_compatibility_report",
     "qsvt_circuit_truth_contract",
+    "hhl_circuit_truth_contract",
     "qsvt_scalar_output",
     "qsvt_scalar_scan",
     "qsvt_top_left_block",
