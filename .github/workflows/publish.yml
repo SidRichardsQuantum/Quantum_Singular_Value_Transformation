@@ -1,0 +1,85 @@
+name: Publish
+
+on:
+  workflow_run:
+    workflows:
+      - Ordered Actions
+    types:
+      - completed
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  resolve-release-tag:
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+
+    outputs:
+      publish: ${{ steps.release.outputs.publish }}
+      tag: ${{ steps.release.outputs.tag }}
+
+    steps:
+      - name: Resolve release tag
+        id: release
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const headSha = context.payload.workflow_run.head_sha;
+            let page = 1;
+
+            while (true) {
+              const { data: tags } = await github.rest.repos.listTags({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                per_page: 100,
+                page,
+              });
+
+              if (tags.length === 0) {
+                core.setOutput("publish", "false");
+                core.info(`No v* tag points at ${headSha}; skipping publish.`);
+                return;
+              }
+
+              const tag = tags.find(
+                (candidate) =>
+                  candidate.name.startsWith("v") &&
+                  candidate.commit.sha === headSha,
+              );
+
+              if (tag) {
+                core.setOutput("publish", "true");
+                core.setOutput("tag", tag.name);
+                core.info(`Publishing release tag ${tag.name}.`);
+                return;
+              }
+
+              page += 1;
+            }
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: resolve-release-tag
+    if: needs.resolve-release-tag.outputs.publish == 'true'
+
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+
+    environment:
+      name: pypi
+
+    steps:
+      - name: Download distribution artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-artifacts
+          path: dist/
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+
+      - name: Publish ${{ needs.resolve-release-tag.outputs.tag }} to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
