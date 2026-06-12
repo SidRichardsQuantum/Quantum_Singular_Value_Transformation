@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from qsvt.algorithms import (
     ground_state_filtering_workflow,
@@ -6,6 +7,7 @@ from qsvt.algorithms import (
     linear_system_comparison_summary_table,
     linear_system_comparison_workflow,
     linear_system_workflow,
+    quantum_walk_search_workflow,
     resolvent_workflow,
     spectral_density_workflow,
     spectral_thresholding_workflow,
@@ -127,6 +129,105 @@ def test_linear_system_comparison_workflow_rows():
     assert summary_rows[0]["solver"] == "dense_solve"
     assert summary_rows[0]["matrix_dimension"] == 2
     assert summary_rows[-1]["solver"] == "qsvt_style_polynomial_inverse"
+
+
+def test_linear_system_comparison_workflow_can_include_hhl_execution():
+    comparison = linear_system_comparison_workflow(
+        np.diag([1.0, 2.0]),
+        np.array([1.0, 1.0]) / np.sqrt(2.0),
+        degree=4,
+        gamma=0.5,
+        num_points=201,
+        bounded_num_points=401,
+        attempt_synthesis=False,
+        apply_qsvt=False,
+        include_hhl_execution=True,
+        hhl_num_phase_qubits=2,
+        hhl_evolution_time=np.pi / 2.0,
+        hhl_rotation_scale_C=1.0,
+        hhl_eigenvalue_lower_bound=1.0,
+    )
+    rows = {row["solver"]: row for row in comparison.as_report()["rows"]}
+    hhl = rows["hhl_circuit_execution"]
+
+    assert hhl["implementation_kind"] == "pennylane-qnode-statevector-hhl-execution"
+    assert hhl["status"] == "ok"
+    assert hhl["is_executable_hhl_circuit"] is True
+    assert hhl["uses_dense_time_evolution"] is True
+    assert np.isclose(hhl["success_probability"], 0.625, atol=1e-10)
+    assert hhl["fidelity"] is not None
+    assert hhl["fidelity"] > 1.0 - 1e-10
+    assert hhl["state_error"] is not None
+    assert hhl["state_error"] < 1e-10
+
+    summary_rows = {
+        row["solver"]: row for row in linear_system_comparison_summary_table(comparison)
+    }
+    assert summary_rows["hhl_circuit_execution"]["phase_qubits"] == 2
+    assert summary_rows["hhl_circuit_execution"]["num_gates"] > 0
+
+
+def test_linear_system_comparison_hhl_row_reports_incompatible_system():
+    comparison = linear_system_comparison_workflow(
+        np.diag([1.0, 2.0, 3.0]),
+        np.array([1.0, 0.0, 0.0]),
+        degree=4,
+        gamma=1.0 / 3.0,
+        num_points=201,
+        bounded_num_points=401,
+        attempt_synthesis=False,
+        apply_qsvt=False,
+        include_hhl_execution=True,
+    )
+    rows = {row["solver"]: row for row in comparison.as_report()["rows"]}
+
+    assert rows["hhl_circuit_execution"]["status"] == "failed"
+    assert "power of two" in rows["hhl_circuit_execution"]["error"]
+
+
+def test_quantum_walk_search_workflow_regression():
+    adjacency = np.ones((4, 4)) - np.eye(4)
+
+    result = quantum_walk_search_workflow(
+        adjacency,
+        marked_vertex=0,
+        degree=14,
+        num_points=801,
+        num_time_points=121,
+    )
+    report = report_to_jsonable(result.as_report())
+
+    assert report["mode"] == "quantum-walk-search-workflow"
+    assert report["implementation_kind"] == "dense-spectral-polynomial-workflow"
+    assert report["truth_contract"]["truth_status"] == "validated_polynomial_core"
+    assert report["truth_contract"]["is_end_to_end_quantum_algorithm"] is False
+    assert report["marked_vertex"] == 0
+    assert np.isclose(result.gamma, 0.25)
+    assert np.isclose(result.best_time, np.pi)
+    assert result.best_probability > 1.0 - 1e-12
+    assert result.probability_error < 1e-8
+    assert result.state_relative_error < 1e-8
+    assert report["resource_proxy"]["proxy_kind"] == (
+        "quantum-walk-search-resource-proxy"
+    )
+    assert report["resource_proxy"]["requires_marking_oracle"] is True
+    assert "QSP_or_QSVT_phase_synthesis" in report["resource_proxy"]["omitted_layers"]
+
+
+def test_quantum_walk_search_workflow_validates_inputs():
+    with pytest.raises(ValueError, match="Hermitian"):
+        quantum_walk_search_workflow(
+            np.array([[0.0, 1.0], [0.0, 0.0]]),
+            marked_vertex=0,
+            degree=4,
+        )
+
+    with pytest.raises(ValueError, match="valid vertex"):
+        quantum_walk_search_workflow(
+            np.ones((3, 3)) - np.eye(3),
+            marked_vertex=3,
+            degree=4,
+        )
 
 
 def test_write_linear_system_comparison_csv(tmp_path):

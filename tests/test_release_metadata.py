@@ -88,3 +88,14 @@ def test_release_extra_includes_no_isolation_build_requirements():
     release_deps = set(project["optional-dependencies"]["release"])
 
     assert {"build", "twine", "wheel"} <= release_deps
+
+
+def test_sdist_manifest_keeps_large_repo_artifacts_out_of_package():
+    manifest = _read_text("MANIFEST.in")
+
+    assert "graft src" in manifest
+    assert "include ROADMAP.md" in manifest
+    assert "prune notebooks" in manifest
+    assert "prune results" in manifest
+    assert "prune docs" in manifest
+    assert "prune tests" in manifest

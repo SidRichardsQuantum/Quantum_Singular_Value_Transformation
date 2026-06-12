@@ -2,6 +2,45 @@
 
 ---
 
+## [0.2.4] – 12th June 2026
+
+### Added
+
+- added quantum-walk search and amplitude-amplification style workflow helpers,
+  including machine-readable reports that separate finite polynomial validation
+  from graph-oracle, marking-oracle, state-preparation, sampling, synthesis,
+  and hardware assumptions
+- added a quantum-walk search tutorial notebook and a benchmark notebook for
+  success probability, polynomial error, and QSVT signal-call proxy scaling
+- added cookbook scripts under `examples/` for common package-client workflows
+  such as polynomial design, report export, threshold filtering, and
+  linear-system comparison
+- added project roadmap documentation that records the package direction,
+  notebook roles, claim-boundary policy, packaging scope, and near-term
+  workflow-polish priorities
+
+### Changed
+
+- pruned and merged redundant notebooks, including folding the separate exact
+  2x2 and 4x4 linear-solver tutorials into one exact toy-cases tutorial
+- renumbered tutorial notebooks to a strict consecutive `01` through `19`
+  sequence and real-example notebooks to a strict consecutive `01` through
+  `29` sequence after removing the redundant quantum-walk real example
+- refreshed tutorial, real-example, and benchmark result pages, plot artefacts,
+  and plot manifests for the new notebook layout
+- updated documentation indices, result ledgers, package-scope notes, and
+  release markers for `0.2.4`
+
+### Fixed
+
+- removed stale notebook links and generated plot references left behind by the
+  notebook pruning and renumbering pass
+- tightened release/package metadata so PyPI artefacts remain focused on the
+  importable package, root documentation, and essential project metadata rather
+  than full notebooks, generated result snapshots, or regression tests
+
+---
+
 ## [0.2.3] – 11th June 2026
 
 ### Changed

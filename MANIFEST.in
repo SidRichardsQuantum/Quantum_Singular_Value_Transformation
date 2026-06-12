@@ -2,17 +2,23 @@ include CHANGELOG.md
 include LICENSE
 include MANIFEST.in
 include README.md
+include ROADMAP.md
 include THEORY.md
 include USAGE.md
 include requirements.txt
 include pyproject.toml
 include src/qsvt/py.typed
 
-graft docs
-graft notebooks
-graft results
-graft tests
+graft src
+
+# The PyPI artifacts are package-focused. Full documentation, notebooks,
+# committed result snapshots, and regression tests live in the GitHub
+# repository and rendered project documentation instead of the sdist.
 prune docs/_build
+prune docs
+prune notebooks
+prune results
+prune tests
 
 global-exclude __pycache__
 global-exclude *.py[cod]

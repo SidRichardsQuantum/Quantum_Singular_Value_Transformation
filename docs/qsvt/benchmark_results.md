@@ -8,9 +8,9 @@ This generated page displays embedded benchmark plots and text outputs from the 
 ## Current Status
 
 - Source notebooks: `notebooks/benchmarks/`
-- Notebooks displayed: `4`
-- Embedded plot artefacts displayed: `8`
-- Plain-text notebook results displayed: `6`
+- Notebooks displayed: `5`
+- Embedded plot artefacts displayed: `10`
+- Plain-text notebook results displayed: `8`
 - Plot manifest: [`results/tables/benchmark_plot_manifest.csv`](../../results/tables/benchmark_plot_manifest.csv)
 
 ## Related Pages
@@ -35,13 +35,18 @@ python scripts/extract_notebook_plots.py --preset benchmarks --execute --write-d
 Source: [`notebooks/benchmarks/01_linear_system_classical_vs_qsvt_proxy.ipynb`](../../notebooks/benchmarks/01_linear_system_classical_vs_qsvt_proxy.ipynb)
 
 ```{image} ../../results/plots/benchmarks/01_linear_system_classical_vs_qsvt_proxy-plot-01.png
-:alt: Linear-System Classical Baselines vs QSVT Resource Proxies plot 1
+:alt: Linear-System Quantum/Classical Benchmarks plot 1
 :width: 520px
 ```
 
 ```{image} ../../results/plots/benchmarks/01_linear_system_classical_vs_qsvt_proxy-plot-02.png
-:alt: Linear-System Classical Baselines vs QSVT Resource Proxies plot 2
+:alt: Linear-System Quantum/Classical Benchmarks plot 2
 :width: 520px
+```
+
+```{image} ../../results/plots/benchmarks/01_linear_system_classical_vs_qsvt_proxy-plot-03.png
+:alt: Linear-System Quantum/Classical Benchmarks plot 3
+:width: 760px
 ```
 
 Output 1 (cell 7):
@@ -56,6 +61,21 @@ Inverse polynomial degree : 9
 ```
 
 Output 2 (cell 11):
+
+```text
+Finite HHL/QSVT/classical comparison
+------------------------------------
+Solver                        : dense_solve | conjugate_gradient | qsvt_style_polynomial_inverse | hhl_circuit_execution
+Implementation                            : classical-dense-reference | classical-iterative-reference | dense-spectral-polynomial-workflow | pennylane-qnode-statevector-hhl-execution
+Status : ok | ok | ok | ok
+Residual : 0 | 0 | 0.1571 | n/a
+Relative solution error : 0 | 0 | 0.1315 | n/a
+HHL fidelity : n/a | n/a | n/a | 1
+HHL success probability : n/a | n/a | n/a | 0.625
+Circuit depth : n/a | n/a | n/a | 11
+```
+
+Output 3 (cell 13):
 
 ```text
 Benchmark readout
@@ -153,4 +173,29 @@ DSMF  dense-spectral-matrix-function  n/a                              n/a      
 PME   spectral-polynomial-evaluation  2                                2                              1.43e-04
 
 DSMF is the exact dense spectral reference. PME applies the supplied polynomial classically and is the closest fixed-polynomial comparison to a QSVT sequence.
+```
+
+### `05_quantum_walk_search_scaling.ipynb`
+
+Source: [`notebooks/benchmarks/05_quantum_walk_search_scaling.ipynb`](../../notebooks/benchmarks/05_quantum_walk_search_scaling.ipynb)
+
+```{image} ../../results/plots/benchmarks/05_quantum_walk_search_scaling-plot-01.png
+:alt: Quantum Walk Search Scaling plot 1
+:width: 760px
+```
+
+Output 1 (cell 6):
+
+```text
+Quantum walk search scaling
+---------------------------
+Vertices : 4 | 4 | 8 | 8 | 16 | 16
+Degree : 8 | 14 | 8 | 14 | 10 | 18
+Best probability : 1 | 1 | 1 | 1 | 1 | 1
+Polynomial probability : 0.9999 | 1 | 0.9998 | 1 | 0.9999 | 1
+Probability error : 6.28e-05 | 6.13e-11 | 1.89e-04 | 5.21e-10 | 1.35e-04 | 1.11e-11
+State error : 3.96e-05 | 3.52e-11 | 2.05e-04 | 1.02e-09 | 9.39e-05 | 1.02e-11
+Signal calls : 8 | 14 | 8 | 14 | 10 | 18
+JSON: /workspaces/Quantum_Singular_Value_Transformation/results/benchmarks/quantum_walk_search_scaling.json
+CSV: /workspaces/Quantum_Singular_Value_Transformation/results/tables/quantum_walk_search_scaling_summary.csv
 ```

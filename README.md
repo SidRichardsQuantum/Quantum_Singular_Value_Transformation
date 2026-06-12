@@ -35,8 +35,10 @@ would be needed to turn the polynomial core into a complete algorithm.
 - PyPI: [qsvt-pennylane](https://pypi.org/project/qsvt-pennylane/)
 - Website: [project documentation](https://SidRichardsQuantum.github.io/Quantum_Singular_Value_Transformation/)
 - Usage guide: [USAGE.md](USAGE.md)
+- Cookbook examples: [examples/](examples/)
 - Theory notes: [THEORY.md](THEORY.md)
 - Results index: [RESULTS.md](RESULTS.md)
+- Roadmap: [ROADMAP.md](ROADMAP.md)
 - API reference: [docs/qsvt/api_reference.md](docs/qsvt/api_reference.md)
 
 ## Installation
@@ -103,6 +105,16 @@ qsvt benchmark cg-solve --matrix "4,1;1,3" --rhs "1,2" --qsvt-poly "0,1"
 qsvt examples
 ```
 
+Run copy-pasteable cookbook scripts from the repository root:
+
+```bash
+python examples/design_apply_report.py --output /tmp/qsvt-design-apply.json
+python examples/linear_system_compare.py \
+  --output /tmp/qsvt-linear-system.json \
+  --rows-output /tmp/qsvt-linear-system.csv
+python examples/threshold_filter.py --output /tmp/qsvt-threshold-filter.json
+```
+
 See [USAGE.md](USAGE.md) for full Python and CLI workflows.
 
 ## Package Map
@@ -133,9 +145,19 @@ For detailed function-level documentation, use
 The package includes a `py.typed` marker so type checkers can consume the
 inline type annotations shipped with the public modules.
 
+## Roadmap
+
+The project is moving toward general package workflows that users can apply to
+specific physics and mathematics problems from thin client notebooks. Core
+helpers should stay reusable across domains; notebooks should focus on problem
+setup, parameter choices, and interpretation.
+
+See [ROADMAP.md](ROADMAP.md) for the current development direction.
+
 ## Documentation
 
 - [USAGE.md](USAGE.md): practical package and CLI workflows
+- [examples/](examples/): short cookbook scripts for common package workflows
 - [THEORY.md](THEORY.md): QSVT, QSP, polynomial constraints, and spectral
   interpretation
 - [RESULTS.md](RESULTS.md): result-producing notebooks and reproducible
@@ -166,7 +188,7 @@ inline type annotations shipped with the public modules.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.2.3`
+Current release: `0.2.4`
 
 ## Notebooks
 
@@ -206,6 +228,15 @@ scripts/update_notebook_results.sh
 Commit the updated notebooks, extracted plots, manifests, and generated result
 pages together. CI checks that the committed result pages and manifests can be
 regenerated from the committed notebook outputs without re-executing notebooks.
+
+## Packaging
+
+PyPI distributions are package-focused: they include the importable `qsvt`
+package plus essential project metadata and root documentation. Full notebooks,
+rendered documentation, committed result snapshots, and regression tests remain
+in the GitHub repository and project website, where they can be audited and
+regenerated without making installs or source distributions unnecessarily
+large.
 
 ## Truth Contract
 

@@ -30,6 +30,7 @@ The repository also includes a sequence of notebooks that introduce QSVT concept
 | goal | start here |
 | --- | --- |
 | Install the package and run a transform | [Usage guide](usage.md) |
+| Run short cookbook scripts | [Cookbook examples](../../examples/) |
 | Understand the mathematical setup | [Theory](theory.md) |
 | Understand finite block encodings | [Block encodings](block_encoding.md) |
 | Interpret QSVT compatibility failures | [QSVT compatibility](compatibility.md) |
@@ -38,6 +39,7 @@ The repository also includes a sequence of notebooks that introduce QSVT concept
 | Compare classical baselines and QSVT proxies | [Classical benchmarks](benchmarks.md) |
 | Understand baseline assumptions | [Classical baseline details](classical_baselines.md) |
 | Interpret QSVT resource proxies | [QSVT resource model](qsvt_resource_model.md) |
+| See where the package is going next | [Roadmap](roadmap.md) |
 | Compare tutorial outputs directly | [Tutorial notebook outputs](tutorial_results.md) |
 | Browse real-example outputs | [Real-example notebook outputs](real_example_results.md) |
 | Inspect benchmark outputs | [Benchmark notebook outputs](benchmark_results.md) |
@@ -86,6 +88,7 @@ Practical workflows and command line examples:
 - applying transforms to scalars, diagonal matrices, and Hermitian matrices
 - comparing classical and QSVT outputs
 - using the package CLI
+- running short cookbook scripts from `examples/`
 
 See: [Usage guide](usage.md)
 
@@ -109,6 +112,14 @@ including matrix functions, spectral filters, PDE operators, Hamiltonian
 simulation, and transport examples.
 
 See: [Notebooks](notebooks.md)
+
+### Roadmap
+
+The roadmap describes the user-facing direction: general package algorithms,
+near-pure client notebooks for concrete physics and mathematics problems,
+explicit claim boundaries, and package-focused distribution.
+
+See: [Roadmap](roadmap.md)
 
 ### Results
 

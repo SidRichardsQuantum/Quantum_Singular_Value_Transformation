@@ -10,7 +10,7 @@ This generated page displays the embedded plots and text outputs from every tuto
 - Source notebooks: `notebooks/tutorials/`
 - Notebooks displayed: `19`
 - Embedded plot artefacts displayed: `38`
-- Plain-text notebook results displayed: `81`
+- Plain-text notebook results displayed: `77`
 
 ## Related Pages
 
@@ -148,156 +148,61 @@ circuit_max_error: 7.216e-16
 validation: passed
 ```
 
-### `04_QSVT_Linear_Solver_2x2.ipynb`
+### `04_QSVT_Exact_Linear_Solver_Toy_Cases.ipynb`
 
-Source: [`notebooks/tutorials/04_QSVT_Linear_Solver_2x2.ipynb`](../../notebooks/tutorials/04_QSVT_Linear_Solver_2x2.ipynb)
+Source: [`notebooks/tutorials/04_QSVT_Exact_Linear_Solver_Toy_Cases.ipynb`](../../notebooks/tutorials/04_QSVT_Exact_Linear_Solver_Toy_Cases.ipynb)
 
-```{image} ../../results/plots/notebooks/04_QSVT_Linear_Solver_2x2-plot-01.png
-:alt: QSVT Linear Solver (2×2 system, exact inverse via P(x)=x) plot 1
+```{image} ../../results/plots/notebooks/04_QSVT_Exact_Linear_Solver_Toy_Cases-plot-01.png
+:alt: QSVT Exact Linear Solver Toy Cases plot 1
 :width: 520px
 ```
 
-```{image} ../../results/plots/notebooks/04_QSVT_Linear_Solver_2x2-plot-02.png
-:alt: QSVT Linear Solver (2×2 system, exact inverse via P(x)=x) plot 2
-:width: 520px
+```{image} ../../results/plots/notebooks/04_QSVT_Exact_Linear_Solver_Toy_Cases-plot-02.png
+:alt: QSVT Exact Linear Solver Toy Cases plot 2
+:width: 760px
 ```
 
-Output 1 (cell 4):
-
-```text
-A = [[0. 1.]
- [1. 0.]]
-
-b = [1. 2.]
-
-Classical solution: [2. 1.]
-
-Normalized classical solution: [0.89442719 0.4472136 ]
-
-Eigenvalues of A: [-1.  1.]
-```
-
-Output 2 (cell 6):
+Output 1 (cell 5):
 
 ```text
 Polynomial coefficients: [0. 1.]
-Parity [polynomial parity]: odd
+Polynomial parity: odd
 ```
 
-Output 3 (cell 9):
+Output 2 (cell 9):
 
 ```text
-QSVT top-left block P(A):
-[[0.+0.e+00j 1.+1.e-06j]
- [1.+1.e-06j 0.+0.e+00j]]
-
-Direct A:
-[[0. 1.]
- [1. 0.]]
+2x2 Pauli-X system
+------------------
+eigenvalues: [-1.  1.]
+rhs: [1. 2.]
+classical solution: [2. 1.]
+QSVT block real-part error: 1.414e-12
+normalized solution-state error: 9.998e-13
 ```
 
-Output 4 (cell 12):
+Output 3 (cell 11):
 
 ```text
-execution_kind: pennylane-qnode-statevector-qsvt-execution
-gate_types: {'StatePrep': 1, 'QSVT': 1}
-logical_success_probability: 1.000000000000
-QNode QSVT solution (normalized): [0.89442719+1.26489707e-06j 0.4472136 +6.32448537e-07j]
-
-Classical solution (normalized): [0.89442719 0.4472136 ]
+4x4 diagonal involutory system
+------------------------------
+eigenvalues: [-1. -1.  1.  1.]
+rhs: [1. 2. 3. 4.]
+classical solution: [ 1. -2.  3. -4.]
+QSVT block real-part error: 2.000e-12
+normalized solution-state error: 1.000e-12
 ```
 
-Output 5 (cell 17):
+### `05_QSVT_Approximate_Linear_Solver.ipynb`
 
-```text
-block_max_error: 1.414e-06
-solution_overlap: 1.000000000000
-validation: passed
-```
+Source: [`notebooks/tutorials/05_QSVT_Approximate_Linear_Solver.ipynb`](../../notebooks/tutorials/05_QSVT_Approximate_Linear_Solver.ipynb)
 
-### `05_QSVT_Linear_Solver_4x4.ipynb`
-
-Source: [`notebooks/tutorials/05_QSVT_Linear_Solver_4x4.ipynb`](../../notebooks/tutorials/05_QSVT_Linear_Solver_4x4.ipynb)
-
-```{image} ../../results/plots/notebooks/05_QSVT_Linear_Solver_4x4-plot-01.png
-:alt: QSVT Linear Solver (4×4 system, exact inverse via P(x)=x) plot 1
-:width: 520px
-```
-
-```{image} ../../results/plots/notebooks/05_QSVT_Linear_Solver_4x4-plot-02.png
-:alt: QSVT Linear Solver (4×4 system, exact inverse via P(x)=x) plot 2
-:width: 520px
-```
-
-Output 1 (cell 4):
-
-```text
-A = [[ 1.  0.  0.  0.]
- [ 0. -1.  0.  0.]
- [ 0.  0.  1.  0.]
- [ 0.  0.  0. -1.]]
-
-Eigenvalues: [-1. -1.  1.  1.]
-
-b = [1. 2. 3. 4.]
-
-Classical x = [ 1. -2.  3. -4.]
-
-Classical (normalized) = [ 0.18257419 -0.36514837  0.54772256 -0.73029674]
-```
-
-Output 2 (cell 6):
-
-```text
-Polynomial coefficients: [0. 1.]
-Parity [polynomial parity]: odd
-```
-
-Output 3 (cell 9):
-
-```text
-QSVT top-left block P(A):
-[[ 1.+1.e-06j  0.+0.e+00j  0.+0.e+00j  0.+0.e+00j]
- [ 0.+0.e+00j -1.-1.e-06j  0.+0.e+00j  0.+0.e+00j]
- [ 0.+0.e+00j  0.+0.e+00j  1.+1.e-06j  0.+0.e+00j]
- [ 0.+0.e+00j  0.+0.e+00j  0.+0.e+00j -1.-1.e-06j]]
-
-Direct A:
-[[ 1.  0.  0.  0.]
- [ 0. -1.  0.  0.]
- [ 0.  0.  1.  0.]
- [ 0.  0.  0. -1.]]
-```
-
-Output 4 (cell 12):
-
-```text
-execution_kind: pennylane-qnode-statevector-qsvt-execution
-gate_types: {'StatePrep': 1, 'QSVT': 1}
-logical_success_probability: 1.000000000000
-QNode QSVT solution (normalized) = [ 0.18257419+2.58196034e-07j -0.36514837-5.16392068e-07j
-  0.54772256+7.74588102e-07j -0.73029674-1.03278414e-06j]
-Classical solution (normalized) = [ 0.18257419 -0.36514837  0.54772256 -0.73029674]
-```
-
-Output 5 (cell 16):
-
-```text
-block_max_error: 1.414e-06
-solution_overlap: 1.000000000000
-validation: passed
-```
-
-### `06_QSVT_Linear_Solver_Approximate.ipynb`
-
-Source: [`notebooks/tutorials/06_QSVT_Linear_Solver_Approximate.ipynb`](../../notebooks/tutorials/06_QSVT_Linear_Solver_Approximate.ipynb)
-
-```{image} ../../results/plots/notebooks/06_QSVT_Linear_Solver_Approximate-plot-01.png
+```{image} ../../results/plots/notebooks/05_QSVT_Approximate_Linear_Solver-plot-01.png
 :alt: QSVT Linear Solver (2×2 System with Chebyshev Polynomial) plot 1
 :width: 520px
 ```
 
-```{image} ../../results/plots/notebooks/06_QSVT_Linear_Solver_Approximate-plot-02.png
+```{image} ../../results/plots/notebooks/05_QSVT_Approximate_Linear_Solver-plot-02.png
 :alt: QSVT Linear Solver (2×2 System with Chebyshev Polynomial) plot 2
 :width: 520px
 ```
@@ -360,21 +265,21 @@ solution_direction_overlap: 1.000000000000
 validation: passed
 ```
 
-### `07_QSVT_Polynomial_Design_and_Approximation.ipynb`
+### `06_QSVT_Polynomial_Design_and_Approximation.ipynb`
 
-Source: [`notebooks/tutorials/07_QSVT_Polynomial_Design_and_Approximation.ipynb`](../../notebooks/tutorials/07_QSVT_Polynomial_Design_and_Approximation.ipynb)
+Source: [`notebooks/tutorials/06_QSVT_Polynomial_Design_and_Approximation.ipynb`](../../notebooks/tutorials/06_QSVT_Polynomial_Design_and_Approximation.ipynb)
 
-```{image} ../../results/plots/notebooks/07_QSVT_Polynomial_Design_and_Approximation-plot-01.png
+```{image} ../../results/plots/notebooks/06_QSVT_Polynomial_Design_and_Approximation-plot-01.png
 :alt: QSVT Polynomial Design and Approximation plot 1
 :width: 520px
 ```
 
-```{image} ../../results/plots/notebooks/07_QSVT_Polynomial_Design_and_Approximation-plot-02.png
+```{image} ../../results/plots/notebooks/06_QSVT_Polynomial_Design_and_Approximation-plot-02.png
 :alt: QSVT Polynomial Design and Approximation plot 2
 :width: 520px
 ```
 
-```{image} ../../results/plots/notebooks/07_QSVT_Polynomial_Design_and_Approximation-plot-03.png
+```{image} ../../results/plots/notebooks/06_QSVT_Polynomial_Design_and_Approximation-plot-03.png
 :alt: QSVT Polynomial Design and Approximation plot 3
 :width: 520px
 ```
@@ -388,21 +293,21 @@ max_bounded_value: 1.000000
 validation: passed
 ```
 
-### `08_QSVT_Matrix_Functions_Powers_and_Roots.ipynb`
+### `07_QSVT_Matrix_Functions_Powers_and_Roots.ipynb`
 
-Source: [`notebooks/tutorials/08_QSVT_Matrix_Functions_Powers_and_Roots.ipynb`](../../notebooks/tutorials/08_QSVT_Matrix_Functions_Powers_and_Roots.ipynb)
+Source: [`notebooks/tutorials/07_QSVT_Matrix_Functions_Powers_and_Roots.ipynb`](../../notebooks/tutorials/07_QSVT_Matrix_Functions_Powers_and_Roots.ipynb)
 
-```{image} ../../results/plots/notebooks/08_QSVT_Matrix_Functions_Powers_and_Roots-plot-01.png
+```{image} ../../results/plots/notebooks/07_QSVT_Matrix_Functions_Powers_and_Roots-plot-01.png
 :alt: QSVT as Matrix Functions: Powers and Roots plot 1
 :width: 520px
 ```
 
-```{image} ../../results/plots/notebooks/08_QSVT_Matrix_Functions_Powers_and_Roots-plot-02.png
+```{image} ../../results/plots/notebooks/07_QSVT_Matrix_Functions_Powers_and_Roots-plot-02.png
 :alt: QSVT as Matrix Functions: Powers and Roots plot 2
 :width: 520px
 ```
 
-```{image} ../../results/plots/notebooks/08_QSVT_Matrix_Functions_Powers_and_Roots-plot-03.png
+```{image} ../../results/plots/notebooks/07_QSVT_Matrix_Functions_Powers_and_Roots-plot-03.png
 :alt: QSVT as Matrix Functions: Powers and Roots plot 3
 :width: 520px
 ```
@@ -458,16 +363,16 @@ spectral_square_error: 3.331e-16
 validation: passed
 ```
 
-### `09_QSVT_Sign_Function_and_Projectors.ipynb`
+### `08_QSVT_Sign_Function_and_Projectors.ipynb`
 
-Source: [`notebooks/tutorials/09_QSVT_Sign_Function_and_Projectors.ipynb`](../../notebooks/tutorials/09_QSVT_Sign_Function_and_Projectors.ipynb)
+Source: [`notebooks/tutorials/08_QSVT_Sign_Function_and_Projectors.ipynb`](../../notebooks/tutorials/08_QSVT_Sign_Function_and_Projectors.ipynb)
 
-```{image} ../../results/plots/notebooks/09_QSVT_Sign_Function_and_Projectors-plot-01.png
+```{image} ../../results/plots/notebooks/08_QSVT_Sign_Function_and_Projectors-plot-01.png
 :alt: QSVT Sign Function and Spectral Projectors plot 1
 :width: 520px
 ```
 
-```{image} ../../results/plots/notebooks/09_QSVT_Sign_Function_and_Projectors-plot-02.png
+```{image} ../../results/plots/notebooks/08_QSVT_Sign_Function_and_Projectors-plot-02.png
 :alt: QSVT Sign Function and Spectral Projectors plot 2
 :width: 520px
 ```
@@ -518,31 +423,31 @@ positive_projector_trace [states]: 1.000000
 validation: passed
 ```
 
-### `10_QSVT_Design_and_Templates.ipynb`
+### `09_QSVT_Design_and_Templates.ipynb`
 
-Source: [`notebooks/tutorials/10_QSVT_Design_and_Templates.ipynb`](../../notebooks/tutorials/10_QSVT_Design_and_Templates.ipynb)
+Source: [`notebooks/tutorials/09_QSVT_Design_and_Templates.ipynb`](../../notebooks/tutorials/09_QSVT_Design_and_Templates.ipynb)
 
-```{image} ../../results/plots/notebooks/10_QSVT_Design_and_Templates-plot-01.png
+```{image} ../../results/plots/notebooks/09_QSVT_Design_and_Templates-plot-01.png
 :alt: Polynomial Design and Templates plot 1
 :width: 520px
 ```
 
-```{image} ../../results/plots/notebooks/10_QSVT_Design_and_Templates-plot-02.png
+```{image} ../../results/plots/notebooks/09_QSVT_Design_and_Templates-plot-02.png
 :alt: Polynomial Design and Templates plot 2
 :width: 520px
 ```
 
-```{image} ../../results/plots/notebooks/10_QSVT_Design_and_Templates-plot-03.png
+```{image} ../../results/plots/notebooks/09_QSVT_Design_and_Templates-plot-03.png
 :alt: Polynomial Design and Templates plot 3
 :width: 520px
 ```
 
-```{image} ../../results/plots/notebooks/10_QSVT_Design_and_Templates-plot-04.png
+```{image} ../../results/plots/notebooks/09_QSVT_Design_and_Templates-plot-04.png
 :alt: Polynomial Design and Templates plot 4
 :width: 520px
 ```
 
-```{image} ../../results/plots/notebooks/10_QSVT_Design_and_Templates-plot-05.png
+```{image} ../../results/plots/notebooks/09_QSVT_Design_and_Templates-plot-05.png
 :alt: Polynomial Design and Templates plot 5
 :width: 520px
 ```
@@ -782,11 +687,11 @@ Projector_design_max_error: 5.771e-02
 validation: passed
 ```
 
-### `11_QSVT_Algorithm_Workflows.ipynb`
+### `10_QSVT_Algorithm_Workflows.ipynb`
 
-Source: [`notebooks/tutorials/11_QSVT_Algorithm_Workflows.ipynb`](../../notebooks/tutorials/11_QSVT_Algorithm_Workflows.ipynb)
+Source: [`notebooks/tutorials/10_QSVT_Algorithm_Workflows.ipynb`](../../notebooks/tutorials/10_QSVT_Algorithm_Workflows.ipynb)
 
-```{image} ../../results/plots/notebooks/11_QSVT_Algorithm_Workflows-plot-01.png
+```{image} ../../results/plots/notebooks/10_QSVT_Algorithm_Workflows-plot-01.png
 :alt: QSVT Algorithm Workflows plot 1
 :width: 520px
 ```
@@ -822,11 +727,11 @@ thermal-gibbs-workflow
 report keys [count/list]: ['beta', 'coeffs', 'degree', 'density_matrix_relative_error', 'implementation_kind', 'mode', 'operator_relative_error', 'polynomial_boltzmann_operator'] ...
 ```
 
-### `12_QSVT_Reports_CLI_and_Artifacts.ipynb`
+### `11_QSVT_Reports_CLI_and_Artifacts.ipynb`
 
-Source: [`notebooks/tutorials/12_QSVT_Reports_CLI_and_Artifacts.ipynb`](../../notebooks/tutorials/12_QSVT_Reports_CLI_and_Artifacts.ipynb)
+Source: [`notebooks/tutorials/11_QSVT_Reports_CLI_and_Artifacts.ipynb`](../../notebooks/tutorials/11_QSVT_Reports_CLI_and_Artifacts.ipynb)
 
-```{image} ../../results/plots/notebooks/12_QSVT_Reports_CLI_and_Artifacts-plot-01.png
+```{image} ../../results/plots/notebooks/11_QSVT_Reports_CLI_and_Artifacts-plot-01.png
 :alt: QSVT Reports, CLI, and Artifacts plot 1
 :width: 760px
 ```
@@ -870,16 +775,16 @@ Filter             max_error=2.284e-01, margin=-1.998e-15, parity [polynomial pa
 Interval Projector max_error=1.968e-01, margin=0.000e+00, parity [polynomial parity]=mixed
 ```
 
-### `13_QSVT_Design_Tradeoffs.ipynb`
+### `12_QSVT_Design_Tradeoffs.ipynb`
 
-Source: [`notebooks/tutorials/13_QSVT_Design_Tradeoffs.ipynb`](../../notebooks/tutorials/13_QSVT_Design_Tradeoffs.ipynb)
+Source: [`notebooks/tutorials/12_QSVT_Design_Tradeoffs.ipynb`](../../notebooks/tutorials/12_QSVT_Design_Tradeoffs.ipynb)
 
-```{image} ../../results/plots/notebooks/13_QSVT_Design_Tradeoffs-plot-01.png
+```{image} ../../results/plots/notebooks/12_QSVT_Design_Tradeoffs-plot-01.png
 :alt: QSVT Design Tradeoffs: Degree, Error, and Boundedness plot 1
 :width: 760px
 ```
 
-```{image} ../../results/plots/notebooks/13_QSVT_Design_Tradeoffs-plot-02.png
+```{image} ../../results/plots/notebooks/12_QSVT_Design_Tradeoffs-plot-02.png
 :alt: QSVT Design Tradeoffs: Degree, Error, and Boundedness plot 2
 :width: 520px
 ```
@@ -910,16 +815,16 @@ Max error: 0.1632978061045941
 Bounded margin: 1.1102230246251565e-16
 ```
 
-### `14_QSVT_Resource_Proxy_Limits.ipynb`
+### `13_QSVT_Resource_Proxy_Limits.ipynb`
 
-Source: [`notebooks/tutorials/14_QSVT_Resource_Proxy_Limits.ipynb`](../../notebooks/tutorials/14_QSVT_Resource_Proxy_Limits.ipynb)
+Source: [`notebooks/tutorials/13_QSVT_Resource_Proxy_Limits.ipynb`](../../notebooks/tutorials/13_QSVT_Resource_Proxy_Limits.ipynb)
 
-```{image} ../../results/plots/notebooks/14_QSVT_Resource_Proxy_Limits-plot-01.png
+```{image} ../../results/plots/notebooks/13_QSVT_Resource_Proxy_Limits-plot-01.png
 :alt: QSVT Resource Proxy Limits plot 1
 :width: 520px
 ```
 
-```{image} ../../results/plots/notebooks/14_QSVT_Resource_Proxy_Limits-plot-02.png
+```{image} ../../results/plots/notebooks/13_QSVT_Resource_Proxy_Limits-plot-02.png
 :alt: QSVT Resource Proxy Limits plot 2
 :width: 760px
 ```
@@ -942,16 +847,16 @@ Leakage: 0.017
 State weight error: 0.008
 ```
 
-### `15_Block_Encoded_QSVT_Workflow.ipynb`
+### `14_Block_Encoded_QSVT_Workflow.ipynb`
 
-Source: [`notebooks/tutorials/15_Block_Encoded_QSVT_Workflow.ipynb`](../../notebooks/tutorials/15_Block_Encoded_QSVT_Workflow.ipynb)
+Source: [`notebooks/tutorials/14_Block_Encoded_QSVT_Workflow.ipynb`](../../notebooks/tutorials/14_Block_Encoded_QSVT_Workflow.ipynb)
 
-```{image} ../../results/plots/notebooks/15_Block_Encoded_QSVT_Workflow-plot-01.png
+```{image} ../../results/plots/notebooks/14_Block_Encoded_QSVT_Workflow-plot-01.png
 :alt: Block-Encoded QSVT Workflow plot 1
 :width: 760px
 ```
 
-```{image} ../../results/plots/notebooks/15_Block_Encoded_QSVT_Workflow-plot-02.png
+```{image} ../../results/plots/notebooks/14_Block_Encoded_QSVT_Workflow-plot-02.png
 :alt: Block-Encoded QSVT Workflow plot 2
 :width: 760px
 ```
@@ -992,11 +897,11 @@ Output 4 (cell 12):
 validation: passed
 ```
 
-### `16_Sparse_Oracle_Assumptions.ipynb`
+### `15_Sparse_Oracle_Assumptions.ipynb`
 
-Source: [`notebooks/tutorials/16_Sparse_Oracle_Assumptions.ipynb`](../../notebooks/tutorials/16_Sparse_Oracle_Assumptions.ipynb)
+Source: [`notebooks/tutorials/15_Sparse_Oracle_Assumptions.ipynb`](../../notebooks/tutorials/15_Sparse_Oracle_Assumptions.ipynb)
 
-```{image} ../../results/plots/notebooks/16_Sparse_Oracle_Assumptions-plot-01.png
+```{image} ../../results/plots/notebooks/15_Sparse_Oracle_Assumptions-plot-01.png
 :alt: Sparse Operators and Oracle Assumptions plot 1
 :width: 760px
 ```
@@ -1042,11 +947,11 @@ Output 4 (cell 11):
 validation: passed
 ```
 
-### `17_QSVT_Compatibility_Failure_Cases.ipynb`
+### `16_QSVT_Compatibility_Failure_Cases.ipynb`
 
-Source: [`notebooks/tutorials/17_QSVT_Compatibility_Failure_Cases.ipynb`](../../notebooks/tutorials/17_QSVT_Compatibility_Failure_Cases.ipynb)
+Source: [`notebooks/tutorials/16_QSVT_Compatibility_Failure_Cases.ipynb`](../../notebooks/tutorials/16_QSVT_Compatibility_Failure_Cases.ipynb)
 
-```{image} ../../results/plots/notebooks/17_QSVT_Compatibility_Failure_Cases-plot-01.png
+```{image} ../../results/plots/notebooks/16_QSVT_Compatibility_Failure_Cases-plot-01.png
 :alt: QSVT Compatibility Failure Cases plot 1
 :width: 760px
 ```
@@ -1079,11 +984,11 @@ Output 3 (cell 9):
 validation: passed
 ```
 
-### `18_QSVT_Linear_System_Comparisons.ipynb`
+### `17_QSVT_Linear_System_Comparisons.ipynb`
 
-Source: [`notebooks/tutorials/18_QSVT_Linear_System_Comparisons.ipynb`](../../notebooks/tutorials/18_QSVT_Linear_System_Comparisons.ipynb)
+Source: [`notebooks/tutorials/17_QSVT_Linear_System_Comparisons.ipynb`](../../notebooks/tutorials/17_QSVT_Linear_System_Comparisons.ipynb)
 
-```{image} ../../results/plots/notebooks/18_QSVT_Linear_System_Comparisons-plot-01.png
+```{image} ../../results/plots/notebooks/17_QSVT_Linear_System_Comparisons-plot-01.png
 :alt: QSVT Linear-System Comparisons plot 1
 :width: 520px
 ```
@@ -1121,16 +1026,16 @@ degree  relative_solution_error  residual_norm
 10      0.0438395                0.0489511
 ```
 
-### `19_HHL_Linear_System_Solver.ipynb`
+### `18_HHL_Linear_System_Solver.ipynb`
 
-Source: [`notebooks/tutorials/19_HHL_Linear_System_Solver.ipynb`](../../notebooks/tutorials/19_HHL_Linear_System_Solver.ipynb)
+Source: [`notebooks/tutorials/18_HHL_Linear_System_Solver.ipynb`](../../notebooks/tutorials/18_HHL_Linear_System_Solver.ipynb)
 
-```{image} ../../results/plots/notebooks/19_HHL_Linear_System_Solver-plot-01.png
+```{image} ../../results/plots/notebooks/18_HHL_Linear_System_Solver-plot-01.png
 :alt: HHL Linear-System Solver plot 1
 :width: 520px
 ```
 
-```{image} ../../results/plots/notebooks/19_HHL_Linear_System_Solver-plot-02.png
+```{image} ../../results/plots/notebooks/18_HHL_Linear_System_Solver-plot-02.png
 :alt: HHL Linear-System Solver plot 2
 :width: 760px
 ```
@@ -1221,4 +1126,61 @@ degree  state_error  residual_norm  relative_vector_error
 10      0.0105851    0.049006       0.0350409
 12      0.00197623   0.0390797      0.0279143
 14      0.00102514   0.0372169      0.0264762
+```
+
+### `19_Quantum_Walk_Search_Workflow.ipynb`
+
+Source: [`notebooks/tutorials/19_Quantum_Walk_Search_Workflow.ipynb`](../../notebooks/tutorials/19_Quantum_Walk_Search_Workflow.ipynb)
+
+```{image} ../../results/plots/notebooks/19_Quantum_Walk_Search_Workflow-plot-01.png
+:alt: Quantum Walk Search Workflow plot 1
+:width: 520px
+```
+
+```{image} ../../results/plots/notebooks/19_Quantum_Walk_Search_Workflow-plot-02.png
+:alt: Quantum Walk Search Workflow plot 2
+:width: 520px
+```
+
+Output 1 (cell 6):
+
+```text
+Adjacency matrix:
+[[0. 1. 1. 1.]
+ [1. 0. 1. 1.]
+ [1. 1. 0. 1.]
+ [1. 1. 1. 0.]]
+```
+
+Output 2 (cell 8):
+
+```text
+gamma = 0.250
+best sampled time = 3.141593
+best marked probability = 1.000000000000
+polynomial marked probability = 1.000000000061
+probability error = 6.125e-11
+state relative error = 3.520e-11
+```
+
+Output 3 (cell 14):
+
+```text
+mode: quantum-walk-search-workflow
+truth status: validated_polynomial_core
+resource proxy:
+  proxy_kind: quantum-walk-search-resource-proxy
+  graph_vertices: 4
+  degree: 14
+  qsp_phase_count: 15
+  signal_call_proxy: 14
+  requires_graph_oracle: True
+  requires_marking_oracle: True
+omitted layers:
+  - graph_oracle_or_sparse_walk_construction
+  - marked_vertex_oracle_construction
+  - initial_state_preparation
+  - QSP_or_QSVT_phase_synthesis
+  - success_probability_estimation_or_sampling
+  - hardware_noise_and_fault_tolerance
 ```

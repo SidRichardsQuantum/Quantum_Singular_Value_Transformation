@@ -71,10 +71,11 @@ Benchmark notebooks live in `notebooks/benchmarks/`:
 
 | notebook | output |
 | --- | --- |
-| `01_linear_system_classical_vs_qsvt_proxy.ipynb` | dense and CG Poisson-system baselines |
+| `01_linear_system_classical_vs_qsvt_proxy.ipynb` | dense/CG Poisson timings plus finite QSVT/HHL/classical comparison |
 | `02_matrix_functions_spectral_baselines.ipynb` | spectral and polynomial matrix-function baselines |
 | `03_scaling_sweeps.ipynb` | dimension and inverse-degree benchmark sweeps |
 | `04_classical_baseline_assumptions.ipynb` | timed baseline assumptions versus QSVT proxy fields |
+| `05_quantum_walk_search_scaling.ipynb` | quantum walk search success, polynomial error, and QSVT signal-call proxies |
 
 The generated notebook outputs are published on the
 [Benchmark notebook outputs](benchmark_results.md) page.
@@ -94,19 +95,24 @@ the same compact table directory.
 | [`matrix_function_thermal_polynomial.json`](../../results/benchmarks/matrix_function_thermal_polynomial.json) | polynomial thermal matrix-function baseline |
 | [`matrix_function_filter_polynomial.json`](../../results/benchmarks/matrix_function_filter_polynomial.json) | polynomial filter matrix-function baseline |
 | [`scaling_sweep_reports.json`](../../results/benchmarks/scaling_sweep_reports.json) | combined dense/CG scaling sweep reports |
+| [`quantum_walk_search_scaling.json`](../../results/benchmarks/quantum_walk_search_scaling.json) | quantum walk search scaling and polynomial approximation report |
 | [`linear_system_benchmark_summary.csv`](../../results/tables/linear_system_benchmark_summary.csv) | compact linear-system benchmark table |
 | [`matrix_function_benchmark_summary.csv`](../../results/tables/matrix_function_benchmark_summary.csv) | compact matrix-function benchmark table |
 | [`benchmark_scaling_summary.csv`](../../results/tables/benchmark_scaling_summary.csv) | compact scaling-sweep benchmark table |
+| [`quantum_walk_search_scaling_summary.csv`](../../results/tables/quantum_walk_search_scaling_summary.csv) | compact quantum walk search scaling table |
 | [`benchmark_plot_manifest.csv`](../../results/tables/benchmark_plot_manifest.csv) | generated plot manifest for benchmark notebooks |
 | [`linear_system_comparison.json`](../../results/algorithms/linear_system_comparison.json) | dense, CG, and QSVT-style linear-system comparison report |
 | [`linear_system_comparison_summary.csv`](../../results/tables/linear_system_comparison_summary.csv) | compact linear-system comparison rows |
+| [`linear_system_quantum_classical_comparison.json`](../../results/algorithms/linear_system_quantum_classical_comparison.json) | dense, CG, QSVT-style inverse, and executable finite HHL comparison report |
+| [`linear_system_quantum_classical_summary.csv`](../../results/tables/linear_system_quantum_classical_summary.csv) | compact finite HHL/QSVT/classical comparison rows |
 
 ## Interpretation
 
 The QSVT proxy fields summarize polynomial degree, phase-count proxy,
-signal-call proxy, and encoding width. They do not include block-encoding
-construction, state preparation, amplitude amplification, error correction,
-hardware compilation, or data-loading costs.
+signal-call proxy, and encoding width. HHL rows marked as executable are finite
+PennyLane QNode executions for simulator-scale systems. Neither path includes
+all scalable block-encoding construction, state preparation, amplitude
+amplification, error correction, hardware compilation, or data-loading costs.
 
 Use these reports to compare regimes and identify where a quantum implementation
 would need favorable block encoding, state preparation, and scaling assumptions.

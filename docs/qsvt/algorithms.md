@@ -198,6 +198,36 @@ Limitations:
 : The workflow validates polynomial matrix-function accuracy. It does not
   synthesize an optimized Hamiltonian-simulation circuit.
 
+## Quantum Walk Search
+
+`quantum_walk_search_workflow(adjacency, marked_vertex, degree=...)`
+
+Purpose:
+: Demonstrate continuous-time quantum walk search and amplitude amplification
+  toward a marked vertex.
+
+Search Hamiltonian:
+: The workflow uses
+  `H = -gamma * A - oracle_strength * |m><m|`, where `A` is the graph
+  adjacency matrix and `m` is the marked vertex.
+
+Implementation:
+: The workflow samples exact dense spectral evolution over a time grid, selects
+  the best marked-vertex probability, then fits polynomial cosine and sine
+  phase components for the best sampled time in the scaled spectral coordinate.
+
+Diagnostics:
+: `QuantumWalkSearchWorkflowResult` stores the adjacency matrix, search
+  Hamiltonian, marked vertex, hopping rate, time grid, marked-vertex
+  probabilities, best exact state, polynomial best-time state, probability
+  error, state error, operator error, and a resource proxy.
+
+Limitations:
+: The workflow demonstrates a finite dense graph instance and the
+  polynomial-transform view of the search propagator. It does not implement
+  scalable graph or marking oracles, state preparation, phase synthesis,
+  amplitude estimation, or hardware execution.
+
 ## Resolvents
 
 `resolvent_workflow(matrix, omega=..., eta=..., degree=..., source=None)`

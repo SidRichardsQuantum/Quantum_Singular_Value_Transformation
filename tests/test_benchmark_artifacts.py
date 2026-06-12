@@ -9,20 +9,24 @@ BENCHMARK_JSON = [
     Path("results/benchmarks/matrix_function_thermal_polynomial.json"),
     Path("results/benchmarks/matrix_function_filter_polynomial.json"),
     Path("results/benchmarks/scaling_sweep_reports.json"),
+    Path("results/benchmarks/quantum_walk_search_scaling.json"),
 ]
 
 BENCHMARK_CSV = [
     Path("results/tables/linear_system_benchmark_summary.csv"),
     Path("results/tables/matrix_function_benchmark_summary.csv"),
     Path("results/tables/benchmark_scaling_summary.csv"),
+    Path("results/tables/quantum_walk_search_scaling_summary.csv"),
 ]
 
 ALGORITHM_JSON = [
     Path("results/algorithms/linear_system_comparison.json"),
+    Path("results/algorithms/linear_system_quantum_classical_comparison.json"),
 ]
 
 ALGORITHM_CSV = [
     Path("results/tables/linear_system_comparison_summary.csv"),
+    Path("results/tables/linear_system_quantum_classical_summary.csv"),
 ]
 
 
@@ -30,6 +34,24 @@ def test_committed_benchmark_json_artifacts_are_well_formed():
     for path in BENCHMARK_JSON:
         assert path.exists(), path
         payload = json.loads(path.read_text(encoding="utf-8"))
+        if path.name == "quantum_walk_search_scaling.json":
+            assert payload["mode"] == "quantum-walk-search-scaling-benchmark"
+            assert payload["truth_contract"]["truth_status"] == (
+                "algorithm_comparison_benchmark"
+            )
+            assert payload["truth_contract"]["is_quantum_runtime_benchmark"] is False
+            assert payload["rows"]
+            assert payload["reports"]
+            assert all(
+                report["mode"] == "quantum-walk-search-workflow"
+                for report in payload["reports"]
+            )
+            assert all(
+                report["resource_proxy"]["proxy_kind"]
+                == "quantum-walk-search-resource-proxy"
+                for report in payload["reports"]
+            )
+            continue
         if path.name == "scaling_sweep_reports.json":
             assert payload["mode"] == "benchmark-scaling-sweep"
             assert len(payload["reports"]) >= 2
@@ -78,7 +100,17 @@ def test_committed_benchmark_csv_artifacts_have_expected_columns():
         with path.open(newline="", encoding="utf-8") as file:
             rows = list(csv.DictReader(file))
         assert rows, path
-        assert required.issubset(rows[0])
+        if path.name == "quantum_walk_search_scaling_summary.csv":
+            assert {
+                "n_vertices",
+                "degree",
+                "best_probability",
+                "probability_error",
+                "state_relative_error",
+                "signal_call_proxy",
+            }.issubset(rows[0])
+        else:
+            assert required.issubset(rows[0])
 
 
 def test_committed_algorithm_json_artifacts_are_well_formed():
@@ -91,6 +123,11 @@ def test_committed_algorithm_json_artifacts_are_well_formed():
             "linear-system-qsvt-style-resource-proxy"
         )
         assert payload["rows"]
+        rows = {row["solver"]: row for row in payload["rows"]}
+        if path.name == "linear_system_quantum_classical_comparison.json":
+            assert rows["hhl_circuit_execution"]["status"] == "ok"
+            assert rows["hhl_circuit_execution"]["is_executable_hhl_circuit"] is True
+            assert rows["hhl_circuit_execution"]["fidelity"] > 1.0 - 1e-10
 
 
 def test_committed_algorithm_csv_artifacts_have_expected_columns():

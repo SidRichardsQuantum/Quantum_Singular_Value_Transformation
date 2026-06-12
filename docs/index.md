@@ -188,6 +188,21 @@
 
       <article class="project-card">
         <div>
+          <h3>Roadmap</h3>
+          <p>See the direction for general package workflows, thin client notebooks, artifact hygiene, and packaging.</p>
+        </div>
+        <div class="tags">
+          <span>Roadmap</span>
+          <span>Users</span>
+          <span>Package</span>
+        </div>
+        <div class="card-links">
+          <a href="qsvt/roadmap.html">Open roadmap</a>
+        </div>
+      </article>
+
+      <article class="project-card">
+        <div>
           <h3>Algorithm Notes</h3>
           <p>Read concise workflow-level theory for linear systems, filtering, simulation, resolvents, spectral density, and Gibbs weighting.</p>
         </div>
@@ -364,6 +379,7 @@ Overview <qsvt/index>
 Usage Guide <qsvt/usage>
 Theory <qsvt/theory>
 Notebooks <qsvt/notebooks>
+Roadmap <qsvt/roadmap>
 ```
 
 ```{toctree}

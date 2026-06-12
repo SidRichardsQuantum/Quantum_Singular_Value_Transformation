@@ -56,6 +56,7 @@ def test_top_level_public_api_exports_are_resolvable():
         "ground_state_filtering_workflow",
         "plot_benchmark_timings",
         "plot_qsvt_proxy_resources",
+        "quantum_walk_search_workflow",
         "qsvt_resource_report",
         "resolvent_workflow",
         "spectral_density_workflow",

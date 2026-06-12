@@ -132,6 +132,24 @@ coeffs = result.coeffs
 report = result.as_report()
 ```
 
+## Cookbook Scripts
+
+The repository includes short package-client scripts in
+[`examples/`](../../examples/). They keep the common workflow visible without
+requiring a notebook:
+
+```bash
+python examples/design_apply_report.py --output /tmp/qsvt-design-apply.json
+python examples/linear_system_compare.py \
+  --output /tmp/qsvt-linear-system.json \
+  --rows-output /tmp/qsvt-linear-system.csv
+python examples/threshold_filter.py --output /tmp/qsvt-threshold-filter.json
+```
+
+The scripts cover choosing a polynomial, applying it, saving diagnostics,
+comparing linear-system solver paths, and running a spectral thresholding
+workflow.
+
 ## Common Tasks
 
 ### Sign Transform

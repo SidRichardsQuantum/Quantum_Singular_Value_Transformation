@@ -1,8 +1,16 @@
 # Notebooks
 
-The repository includes notebook-first examples that introduce QSVT and QSP
-concepts step by step, followed by real physics workflows and classical
-benchmark notebooks that reuse the package APIs.
+The repository has three notebook roles.
+
+- Tutorial notebooks are succinct package-client walkthroughs for how to use
+  the available algorithms, implementations, diagnostics, reports, and CLI
+  commands.
+- Real-example notebooks apply the general package workflows to concrete
+  physics and mathematics problems with only domain setup and interpretation in
+  the notebook.
+- Benchmark notebooks compare quantum/QSVT algorithms or implementations
+  against the relevant classical algorithms or implementations for the same
+  task.
 
 ## Notebook outputs
 
@@ -17,7 +25,9 @@ notebooks:
 
 Benchmark notebooks are package-client workflows that write JSON/CSV artifacts
 under `results/benchmarks/` and `results/tables/`; their plots are extracted
-to `results/plots/benchmarks/`.
+to `results/plots/benchmarks/`. They should use implemented finite
+PennyLane/QSVT execution paths where available and clearly labeled QSVT
+resource proxies where a full quantum implementation is not the measured path.
 
 For the compact result summary and regeneration commands, see
 [Results](results.md).
@@ -25,39 +35,46 @@ For the compact result summary and regeneration commands, see
 ## Tutorial notebooks
 
 Tutorial notebooks live in `notebooks/tutorials/`.
+They should stay compact and teach package usage patterns rather than carrying
+domain-specific implementation logic.
 
 | notebook | focus |
 |---|---|
 | `tutorials/01_QSVT_Scalar_and_Diagonal_Matrix.ipynb` | scalar and diagonal QSVT transforms |
 | `tutorials/02_QSVT_Singular_Value_Filter.ipynb` | singular-value filtering |
 | `tutorials/03_QSP_Polynomial_Demo.ipynb` | QSP polynomial behaviour |
-| `tutorials/04_QSVT_Linear_Solver_2x2.ipynb` | small linear-solver intuition |
-| `tutorials/05_QSVT_Linear_Solver_4x4.ipynb` | larger diagonal linear-solver experiment |
-| `tutorials/06_QSVT_Linear_Solver_Approximate.ipynb` | approximate inverse-like transforms |
-| `tutorials/07_QSVT_Polynomial_Design_and_Approximation.ipynb` | polynomial design and approximation |
-| `tutorials/08_QSVT_Matrix_Functions_Powers_and_Roots.ipynb` | matrix functions, powers, and roots |
-| `tutorials/09_QSVT_Sign_Function_and_Projectors.ipynb` | sign functions and projectors |
-| `tutorials/10_QSVT_Design_and_Templates.ipynb` | design helpers and templates |
-| `tutorials/11_QSVT_Algorithm_Workflows.ipynb` | QSVT algorithm workflow diagnostics |
-| `tutorials/12_QSVT_Reports_CLI_and_Artifacts.ipynb` | QSVT reports, CLI output, and reproducible artifacts |
-| `tutorials/13_QSVT_Design_Tradeoffs.ipynb` | QSVT design degree/error/boundedness tradeoffs |
-| `tutorials/14_QSVT_Resource_Proxy_Limits.ipynb` | block-encoding assumptions and QSVT resource-proxy limits |
-| `tutorials/15_Block_Encoded_QSVT_Workflow.ipynb` | finite block-encoded QSVT workflow |
-| `tutorials/16_Sparse_Oracle_Assumptions.ipynb` | sparse operators, oracle assumptions, and omitted costs |
-| `tutorials/17_QSVT_Compatibility_Failure_Cases.ipynb` | boundedness, parity, and QSVT compatibility failures |
-| `tutorials/18_QSVT_Linear_System_Comparisons.ipynb` | dense, CG, and QSVT-style linear-system comparison rows |
-| `tutorials/19_HHL_Linear_System_Solver.ipynb` | finite simulator-scale HHL linear-system solver |
+| `tutorials/04_QSVT_Exact_Linear_Solver_Toy_Cases.ipynb` | exact 2x2 and 4x4 toy linear-solver cases |
+| `tutorials/05_QSVT_Approximate_Linear_Solver.ipynb` | approximate inverse-like transforms |
+| `tutorials/06_QSVT_Polynomial_Design_and_Approximation.ipynb` | polynomial design and approximation |
+| `tutorials/07_QSVT_Matrix_Functions_Powers_and_Roots.ipynb` | matrix functions, powers, and roots |
+| `tutorials/08_QSVT_Sign_Function_and_Projectors.ipynb` | sign functions and projectors |
+| `tutorials/09_QSVT_Design_and_Templates.ipynb` | design helpers and templates |
+| `tutorials/10_QSVT_Algorithm_Workflows.ipynb` | QSVT algorithm workflow diagnostics |
+| `tutorials/11_QSVT_Reports_CLI_and_Artifacts.ipynb` | QSVT reports, CLI output, and reproducible artifacts |
+| `tutorials/12_QSVT_Design_Tradeoffs.ipynb` | QSVT design degree/error/boundedness tradeoffs |
+| `tutorials/13_QSVT_Resource_Proxy_Limits.ipynb` | block-encoding assumptions and QSVT resource-proxy limits |
+| `tutorials/14_Block_Encoded_QSVT_Workflow.ipynb` | finite block-encoded QSVT workflow |
+| `tutorials/15_Sparse_Oracle_Assumptions.ipynb` | sparse operators, oracle assumptions, and omitted costs |
+| `tutorials/16_QSVT_Compatibility_Failure_Cases.ipynb` | boundedness, parity, and QSVT compatibility failures |
+| `tutorials/17_QSVT_Linear_System_Comparisons.ipynb` | dense, CG, and QSVT-style linear-system comparison rows |
+| `tutorials/18_HHL_Linear_System_Solver.ipynb` | finite simulator-scale HHL linear-system solver |
+| `tutorials/19_Quantum_Walk_Search_Workflow.ipynb` | continuous-time quantum walk search and polynomial phase approximation |
 
 ## Benchmark notebooks
 
 Benchmark notebooks live in `notebooks/benchmarks/`.
+They should benchmark the quantum/QSVT algorithm or implementation being
+studied against the relevant classical algorithm or implementation, such as a
+dense direct solve, conjugate-gradient solve, dense spectral matrix function,
+or polynomial matrix evaluation.
 
 | notebook | focus |
 |---|---|
-| `benchmarks/01_linear_system_classical_vs_qsvt_proxy.ipynb` | dense and CG linear-system baselines with QSVT inverse-polynomial resource proxies |
+| `benchmarks/01_linear_system_classical_vs_qsvt_proxy.ipynb` | dense/CG linear-system baselines, QSVT inverse-polynomial resource proxies, and finite HHL execution diagnostics |
 | `benchmarks/02_matrix_functions_spectral_baselines.ipynb` | dense spectral and polynomial matrix-function baselines for thermal/filter workflows |
 | `benchmarks/03_scaling_sweeps.ipynb` | dimension, conditioning, and inverse-degree sweeps for compact benchmark tables |
 | `benchmarks/04_classical_baseline_assumptions.ipynb` | what classical benchmark helpers time versus what QSVT proxy fields estimate |
+| `benchmarks/05_quantum_walk_search_scaling.ipynb` | quantum walk search success, polynomial error, and QSVT signal-call proxies |
 
 ## Real physics examples
 
@@ -84,20 +101,19 @@ or quantum-relevance context for the toy-scale example.
 | `14_advection_diffusion_pde.ipynb` | advection-diffusion PDE workflow |
 | `15_wave_equation_dynamics.ipynb` | wave-equation dynamics |
 | `16_helmholtz_equation_pde.ipynb` | Helmholtz-equation PDE workflow |
-| `17_quantum_walk_search_toy.ipynb` | quantum-walk search toy model |
-| `18_ssh_chain_edge_state_filtering.ipynb` | SSH-chain edge-state filtering |
-| `19_anderson_localization.ipynb` | Anderson localization |
-| `20_schrodinger_bound_states.ipynb` | Schrödinger bound states |
-| `21_quantum_harmonic_oscillator_grid.ipynb` | harmonic-oscillator grid spectrum |
-| `22_electrostatic_green_function_poisson.ipynb` | electrostatic Green's function |
-| `23_coupled_oscillator_normal_modes.ipynb` | coupled-oscillator normal modes |
-| `24_ising_phase_transition_filtering.ipynb` | Ising phase-transition filtering |
-| `25_diffusion_heat_treatment_slab.ipynb` | diffusion-limited heat treatment |
-| `26_graphene_nanoribbon_density_of_states.ipynb` | graphene nanoribbon density of states |
-| `27_fermi_dirac_electronic_occupations.ipynb` | Fermi-Dirac electronic occupations |
-| `28_photonic_crystal_band_gap_filtering.ipynb` | photonic-crystal band-gap filtering |
-| `29_topological_band_projector_chern_marker.ipynb` | topological band projectors and Chern markers |
-| `30_block_encoded_laplacian_smoothing.ipynb` | block-encoded QSVT Laplacian smoothing |
+| `17_ssh_chain_edge_state_filtering.ipynb` | SSH-chain edge-state filtering |
+| `18_anderson_localization.ipynb` | Anderson localization |
+| `19_schrodinger_bound_states.ipynb` | Schrödinger bound states |
+| `20_quantum_harmonic_oscillator_grid.ipynb` | harmonic-oscillator grid spectrum |
+| `21_electrostatic_green_function_poisson.ipynb` | electrostatic Green's function |
+| `22_coupled_oscillator_normal_modes.ipynb` | coupled-oscillator normal modes |
+| `23_ising_phase_transition_filtering.ipynb` | Ising phase-transition filtering |
+| `24_diffusion_heat_treatment_slab.ipynb` | diffusion-limited heat treatment |
+| `25_graphene_nanoribbon_density_of_states.ipynb` | graphene nanoribbon density of states |
+| `26_fermi_dirac_electronic_occupations.ipynb` | Fermi-Dirac electronic occupations |
+| `27_photonic_crystal_band_gap_filtering.ipynb` | photonic-crystal band-gap filtering |
+| `28_topological_band_projector_chern_marker.ipynb` | topological band projectors and Chern markers |
+| `29_block_encoded_laplacian_smoothing.ipynb` | block-encoded QSVT Laplacian smoothing |
 
 See the repository notebook directory for executable files:
 [notebooks](https://github.com/SidRichardsQuantum/Quantum_Singular_Value_Transformation/tree/main/notebooks).

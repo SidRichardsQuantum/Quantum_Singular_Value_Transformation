@@ -149,6 +149,7 @@ matrix-function polynomial builders with exact spectral references:
 - `block_encoded_qsvt_workflow`
 - `ground_state_filtering_workflow`
 - `hamiltonian_simulation_workflow`
+- `quantum_walk_search_workflow`
 - `resolvent_workflow`
 - `spectral_density_workflow`
 - `spectral_thresholding_workflow`
@@ -156,6 +157,27 @@ matrix-function polynomial builders with exact spectral references:
 
 Each returns a frozen dataclass with numerical outputs, diagnostics, and an
 `as_report()` helper.
+
+Use `quantum_walk_search_workflow` for a finite continuous-time graph-search
+example with exact marked-vertex probability and a polynomial phase
+approximation at the best sampled time:
+
+```python
+import numpy as np
+from qsvt.algorithms import quantum_walk_search_workflow
+
+n_vertices = 4
+adjacency = np.ones((n_vertices, n_vertices)) - np.eye(n_vertices)
+
+result = quantum_walk_search_workflow(
+    adjacency,
+    marked_vertex=0,
+    degree=14,
+)
+
+print(result.best_probability)
+print(result.probability_error)
+```
 
 Use `spectral_thresholding_workflow` when you want a smooth QSVT-style
 interval projector and an exact hard-projector reference:
