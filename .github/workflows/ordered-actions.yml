@@ -2,13 +2,15 @@ name: Ordered Actions
 
 on:
   push:
-    branches:
-      - main
     tags:
       - "v*"
 
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.sha }}
+  cancel-in-progress: false
 
 jobs:
   lint:
