@@ -16,8 +16,8 @@
   "problem": "polynomial-matrix-function",
   "matrix_dimension": 10,
   "repeats": 3,
-  "best_time_seconds": 0.00015211399977488327,
-  "mean_time_seconds": 0.00019866033320189067,
+  "best_time_seconds": 0.0001826010002332623,
+  "mean_time_seconds": 0.00022218800040718634,
   "benchmark_environment": {
     "timing_kind": "python_wall_clock_microbenchmark",
     "timer": "time.perf_counter",

@@ -1,3 +1,4 @@
+import importlib.util
 import re
 from pathlib import Path
 
@@ -62,7 +63,12 @@ def test_release_metadata_markers_match_project_version():
 
 
 def test_release_check_build_command_supports_local_no_isolation_mode():
-    import scripts.release_check as release_check
+    module_path = REPO_ROOT / "scripts" / "release_check.py"
+    spec = importlib.util.spec_from_file_location("release_check", module_path)
+    assert spec is not None
+    assert spec.loader is not None
+    release_check = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(release_check)
 
     assert release_check._build_command(no_isolation=False) == [
         release_check.sys.executable,
