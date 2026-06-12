@@ -1,68 +1,89 @@
 name: Publish
 
 on:
-  workflow_run:
-    workflows:
-      - Ordered Actions
-    types:
-      - completed
+  push:
+    tags:
+      - "v*"
 
 permissions:
   actions: read
   contents: read
 
 jobs:
-  resolve-release-tag:
+  verify-release-checks:
     runs-on: ubuntu-latest
-    if: github.event.workflow_run.conclusion == 'success'
 
     outputs:
-      publish: ${{ steps.release.outputs.publish }}
-      tag: ${{ steps.release.outputs.tag }}
+      run-id: ${{ steps.checks.outputs.run-id }}
+      tag: ${{ steps.checks.outputs.tag }}
 
     steps:
-      - name: Resolve release tag
-        id: release
+      - name: Require green Ordered Actions for tagged commit
+        id: checks
         uses: actions/github-script@v8
         with:
           script: |
-            const headSha = context.payload.workflow_run.head_sha;
-            let page = 1;
+            const tag = context.ref.replace("refs/tags/", "");
+            const { data: tagRef } = await github.rest.git.getRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `tags/${tag}`,
+            });
 
-            while (true) {
-              const { data: tags } = await github.rest.repos.listTags({
+            let taggedSha = tagRef.object.sha;
+            if (tagRef.object.type === "tag") {
+              const { data: annotatedTag } = await github.rest.git.getTag({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                per_page: 100,
-                page,
+                tag_sha: tagRef.object.sha,
               });
-
-              if (tags.length === 0) {
-                core.setOutput("publish", "false");
-                core.info(`No v* tag points at ${headSha}; skipping publish.`);
-                return;
-              }
-
-              const tag = tags.find(
-                (candidate) =>
-                  candidate.name.startsWith("v") &&
-                  candidate.commit.sha === headSha,
-              );
-
-              if (tag) {
-                core.setOutput("publish", "true");
-                core.setOutput("tag", tag.name);
-                core.info(`Publishing release tag ${tag.name}.`);
-                return;
-              }
-
-              page += 1;
+              taggedSha = annotatedTag.object.sha;
             }
+
+            const { data: runs } = await github.rest.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: "ordered-actions.yml",
+              event: "push",
+              per_page: 100,
+            });
+
+            const matchingRuns = runs.workflow_runs
+              .filter((run) => run.head_sha === taggedSha)
+              .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+            if (matchingRuns.length === 0) {
+              core.setFailed(
+                `No Ordered Actions push run was found for ${taggedSha}. ` +
+                  `Push the commit to main and wait for Ordered Actions to pass before tagging ${tag}.`,
+              );
+              return;
+            }
+
+            const latestRun = matchingRuns[0];
+            if (latestRun.status !== "completed") {
+              core.setFailed(
+                `Latest Ordered Actions run for ${taggedSha} is ${latestRun.status}; ` +
+                  `wait for it to complete before publishing ${tag}.`,
+              );
+              return;
+            }
+
+            if (latestRun.conclusion !== "success") {
+              core.setFailed(
+                `Latest Ordered Actions run for ${taggedSha} concluded ${latestRun.conclusion}; ` +
+                  `publishing ${tag} is blocked until the commit checks are green.`,
+              );
+              return;
+            }
+
+            core.info(`Publishing ${tag} from green Ordered Actions run ${latestRun.id}.`);
+            core.setOutput("run-id", String(latestRun.id));
+            core.setOutput("tag", tag);
 
   publish:
     runs-on: ubuntu-latest
-    needs: resolve-release-tag
-    if: needs.resolve-release-tag.outputs.publish == 'true'
+    needs: verify-release-checks
 
     permissions:
       actions: read
@@ -78,8 +99,8 @@ jobs:
         with:
           name: dist-artifacts
           path: dist/
-          run-id: ${{ github.event.workflow_run.id }}
+          run-id: ${{ needs.verify-release-checks.outputs.run-id }}
           github-token: ${{ github.token }}
 
-      - name: Publish ${{ needs.resolve-release-tag.outputs.tag }} to PyPI
+      - name: Publish ${{ needs.verify-release-checks.outputs.tag }} to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
