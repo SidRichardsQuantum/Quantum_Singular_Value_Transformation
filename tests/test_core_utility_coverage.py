@@ -1,6 +1,12 @@
 import numpy as np
 import pytest
 
+from qsvt._algorithm_reports import (
+    algorithm_truth_contract,
+    benchmark_truth_contract,
+    qsvt_verification_truth_contract,
+    scaled_operator_report,
+)
 from qsvt.approximation import (
     approximation_quality_report,
     chebyshev_approximant,
@@ -25,6 +31,14 @@ from qsvt.matrices import (
     rotated_diagonal,
     rotation,
 )
+from qsvt.polynomials import (
+    chebyshev_t3,
+    is_bounded_on_interval,
+    normalize_coefficients,
+    polynomial_degree,
+    polynomial_parity,
+)
+from qsvt.rescaling import ScaledOperator
 from qsvt.spectral import (
     apply_function_to_hermitian,
     apply_polynomial_to_hermitian,
@@ -39,6 +53,57 @@ from qsvt.spectral import (
     spectral_projector_positive,
     transformed_eigenvalues,
 )
+
+
+def test_algorithm_truth_contract_helpers_validate_status_values():
+    scaled = ScaledOperator(
+        matrix=np.eye(2),
+        offset=0.5,
+        scale=2.0,
+        eigenvalue_bounds=(0.0, 1.0),
+    )
+    report = scaled_operator_report(scaled)
+    contract = algorithm_truth_contract(
+        "workflow",
+        target="target",
+        qsvt_check="succeeded",
+    )
+    verification = qsvt_verification_truth_contract(
+        "verification",
+        target="target",
+        qsvt_check="failed",
+    )
+    benchmark = benchmark_truth_contract()
+
+    assert report["scale"] == 2.0
+    assert contract["pennylane_qsvt_check"] == "succeeded"
+    assert verification["truth_status"] == "classical_reference_only_qsvt_failed"
+    assert benchmark["is_quantum_runtime_benchmark"] is False
+
+    with pytest.raises(ValueError, match="not_attempted"):
+        algorithm_truth_contract("workflow", target="target", qsvt_check="bad")
+    with pytest.raises(ValueError, match="succeeded"):
+        qsvt_verification_truth_contract(
+            "verification",
+            target="target",
+            qsvt_check="not_attempted",
+        )
+
+
+def test_polynomial_utility_edge_cases_and_validation_paths():
+    assert chebyshev_t3(np.array([-0.5, 0.5])).tolist() == [1.0, -1.0]
+    assert polynomial_degree([0.0, 1e-13]) == 0
+    assert polynomial_parity([0.0, 0.0]) == "zero"
+    assert polynomial_parity([0.0, 1.0]) == "odd"
+    assert polynomial_parity([1.0, 1.0]) == "mixed"
+    assert is_bounded_on_interval([0.0, 2.0], bound=1.0) is False
+    assert normalize_coefficients([]).tolist() == [0.0]
+    assert normalize_coefficients([1e-13, 0.0]).tolist() == [0.0]
+
+    with pytest.raises(ValueError, match="upper must be"):
+        is_bounded_on_interval([1.0], lower=1.0, upper=-1.0)
+    with pytest.raises(ValueError, match="at least 2"):
+        is_bounded_on_interval([1.0], num_points=1)
 
 
 def test_matrix_constructors_and_validation_paths():

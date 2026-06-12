@@ -5,12 +5,16 @@ import numpy as np
 from qsvt.matrices import rotated_diagonal
 from qsvt.polynomials import chebyshev_t, polynomial_parity
 from qsvt.qsvt import (
+    apply_qsvt_to_embedded_vector,
+    compare_qsvt_vs_classical_diagonal,
     compare_qsvt_vs_classical_matrix,
     qsvt_compatibility_report,
     qsvt_diagonal_transform,
     qsvt_matrix_transform,
     qsvt_matrix_transform_report,
+    qsvt_operator,
     qsvt_scalar_output,
+    qsvt_scalar_scan,
     qsvt_transform_report,
 )
 from qsvt.spectral import apply_polynomial_to_hermitian
@@ -29,6 +33,22 @@ def test_qsvt_scalar_x_squared():
     assert np.isclose(out, 0.25, atol=1e-10)
 
 
+def test_qsvt_operator_and_scalar_scan_cover_public_helper_paths():
+    op = qsvt_operator(0.5, [0, 0, 1], encoding_wires=[0])
+    values = qsvt_scalar_scan([-0.5, 0.0, 0.5], [0, 0, 1], encoding_wires=[0])
+    complex_value = qsvt_scalar_output(
+        0.5,
+        [0, 0, 1],
+        encoding_wires=[0],
+        real_output=False,
+    )
+
+    assert op.__class__.__name__ == "QSVT"
+    assert np.allclose(values, [0.25, 0.0, 0.25], atol=1e-10)
+    assert isinstance(complex_value, complex)
+    assert np.isclose(complex_value.real, 0.25, atol=1e-10)
+
+
 def test_qsvt_diagonal_x_squared():
     vals = qsvt_diagonal_transform(
         [1.0, 0.7, 0.3, 0.1],
@@ -37,6 +57,42 @@ def test_qsvt_diagonal_x_squared():
     )
     expected = np.array([1.0, 0.49, 0.09, 0.01])
     assert np.allclose(vals, expected, atol=1e-10)
+
+
+def test_compare_qsvt_vs_classical_diagonal_reports_component_errors():
+    comparison = compare_qsvt_vs_classical_diagonal(
+        [0.2, 0.8],
+        [0, 0, 1],
+        encoding_wires=[0, 1],
+    )
+
+    assert np.allclose(comparison["input"], [0.2, 0.8])
+    assert np.allclose(comparison["qsvt"], comparison["classical"], atol=1e-10)
+    assert np.max(comparison["abs_error"]) < 1e-10
+
+
+def test_apply_qsvt_to_embedded_vector_matches_classical_logical_action():
+    matrix = np.diag([0.2, 0.8])
+    vector = np.array([1.0, 0.0])
+
+    output = apply_qsvt_to_embedded_vector(
+        matrix,
+        vector,
+        [0, 0, 1],
+        encoding_wires=[0, 1],
+    )
+    normalized = apply_qsvt_to_embedded_vector(
+        matrix,
+        vector,
+        [0, 0, 1],
+        encoding_wires=[0, 1],
+        normalize_output=True,
+    )
+
+    assert np.allclose(np.real(output), [0.04, 0.0], atol=1e-10)
+    assert np.isclose(np.linalg.norm(normalized), 1.0, atol=1e-10)
+    assert np.isclose(abs(normalized[0]), 1.0, atol=1e-10)
+    assert np.isclose(normalized[1], 0.0, atol=1e-10)
 
 
 def test_qsvt_matrix_transform_matches_rotated_hermitian_reference():

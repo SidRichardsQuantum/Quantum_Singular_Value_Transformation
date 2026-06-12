@@ -1,6 +1,7 @@
 import json
 
 import matplotlib
+import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 
@@ -75,6 +76,21 @@ def test_report_to_jsonable_converts_complex_values():
     json.dumps(payload)
 
 
+def test_report_to_jsonable_converts_lists_and_complex_scalars():
+    payload = report_to_jsonable(
+        {
+            "items": [np.int64(1), (np.float64(2.0), 3 + 4j)],
+            5: "integer key",
+        }
+    )
+
+    assert payload == {
+        "items": [1, [2.0, {"real": 3.0, "imag": 4.0}]],
+        "5": "integer key",
+    }
+    json.dumps(payload)
+
+
 def test_save_and_load_report_round_trip(tmp_path, approximation_report):
     path = tmp_path / "report.json"
 
@@ -95,6 +111,55 @@ def test_plot_approximation_report_returns_figure_and_axes(approximation_report)
     assert len(axes) == 2
     assert axes[0].get_ylabel() == "value"
     assert axes[1].get_ylabel() == "error"
+
+
+def test_plot_approximation_report_supports_existing_axis_and_default_label():
+    xs = np.linspace(-1.0, 1.0, 5)
+    report = {
+        "xs": xs,
+        "target_values": xs,
+        "polynomial_values": xs,
+        "errors": np.zeros_like(xs),
+    }
+    fig, ax = plt.subplots()
+
+    returned_fig, axes = plot_approximation_report(report, ax=ax)
+
+    assert returned_fig is fig
+    assert axes[0] is ax
+    assert axes[1].get_ylim() == pytest.approx((-1.0, 1.0))
+    assert axes[0].get_legend() is not None
+    plt.close(fig)
+
+
+def test_plot_approximation_report_handles_nonfinite_errors():
+    xs = np.linspace(-1.0, 1.0, 5)
+    report = {
+        "xs": xs,
+        "target_values": xs,
+        "polynomial_values": xs,
+        "errors": np.full_like(xs, np.nan),
+    }
+
+    fig, axes = plot_approximation_report(report)
+
+    assert axes[1].get_ylim()[0] < axes[1].get_ylim()[1]
+    plt.close(fig)
+
+
+def test_plot_approximation_report_validates_required_arrays():
+    with pytest.raises(KeyError, match="missing required key"):
+        plot_approximation_report({})
+
+    with pytest.raises(ValueError, match="one-dimensional"):
+        plot_approximation_report(
+            {
+                "xs": [[0.0, 1.0]],
+                "target_values": [0.0, 1.0],
+                "polynomial_values": [0.0, 1.0],
+                "errors": [0.0, 0.0],
+            }
+        )
 
 
 def test_save_report_plot_writes_image(tmp_path, approximation_report):

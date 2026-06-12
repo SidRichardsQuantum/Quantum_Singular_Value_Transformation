@@ -1,8 +1,11 @@
 import numpy as np
+import pytest
 
+import qsvt.block_encoding as block_encoding_module
 from qsvt.algorithms import block_encoded_qsvt_workflow
 from qsvt.block_encoding import (
     block_encode_matrix,
+    block_encoding_report,
     extract_block_encoded_operator,
     verify_block_encoding,
 )
@@ -34,6 +37,56 @@ def test_unitary_dilation_block_encoding_recovers_operator():
         matrix,
         atol=1e-12,
     )
+
+
+def test_block_encoding_report_and_zero_operator_defaults():
+    report = block_encoding_report(np.zeros((2, 2)))
+
+    assert report["mode"] == "block-encoding-report"
+    assert report["alpha"] == 1.0
+    assert report["logical_dimension"] == 2
+    assert report["unitary_dimension"] == 4
+    assert report["block_error"] == pytest.approx(0.0)
+    assert report["unitarity_error"] == pytest.approx(0.0)
+
+
+@pytest.mark.parametrize(
+    ("matrix", "message"),
+    [
+        (np.ones((1, 2)), "square 2D matrix"),
+        (np.array([[np.inf]]), "entries must be finite"),
+    ],
+)
+def test_block_encode_matrix_rejects_invalid_matrices(matrix, message):
+    with pytest.raises(ValueError, match=message):
+        block_encode_matrix(matrix)
+
+
+@pytest.mark.parametrize("alpha", [0.0, -1.0, np.inf])
+def test_block_encode_matrix_rejects_invalid_alpha(alpha):
+    with pytest.raises(ValueError, match="positive and finite"):
+        block_encode_matrix(np.eye(2), alpha=alpha)
+
+
+def test_block_encode_matrix_rejects_alpha_below_spectral_norm():
+    with pytest.raises(ValueError, match="at least the spectral norm"):
+        block_encode_matrix(np.eye(2), alpha=0.5)
+
+
+def test_extract_block_encoded_operator_validates_dimension_and_alpha():
+    unitary = np.eye(2)
+
+    with pytest.raises(ValueError, match="logical_dimension must be positive"):
+        extract_block_encoded_operator(unitary, 0)
+    with pytest.raises(ValueError, match="cannot exceed unitary dimension"):
+        extract_block_encoded_operator(unitary, 3)
+    with pytest.raises(ValueError, match="positive and finite"):
+        extract_block_encoded_operator(unitary, 1, alpha=0.0)
+
+
+def test_hermitian_psd_sqrt_rejects_negative_spectrum():
+    with pytest.raises(ValueError, match="positive semidefinite"):
+        block_encoding_module._hermitian_psd_sqrt(np.diag([-0.1, 1.0]))
 
 
 def test_block_encoded_qsvt_workflow_matches_spectral_reference():

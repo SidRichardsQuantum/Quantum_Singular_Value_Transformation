@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from qsvt.algorithms import (
     GroundStateFilteringWorkflowResult,
@@ -19,6 +20,7 @@ from qsvt.design import (
     design_positive_inverse_polynomial,
 )
 from qsvt.diagnostics import (
+    density_matrix_error,
     expectation_value,
     ground_state_overlap,
     operator_error,
@@ -105,6 +107,31 @@ def test_hamiltonian_constructors_return_hermitian_matrices():
         assert np.allclose(matrix, matrix.conj().T)
 
 
+def test_hamiltonian_constructors_cover_validation_and_boundary_paths():
+    assert np.allclose(
+        tight_binding_chain(2, periodic=True), [[0.0, -1.0], [-1.0, 0.0]]
+    )
+    assert np.allclose(
+        tight_binding_chain(2, onsite=[0.25, -0.5]),
+        [[0.25, -1.0], [-1.0, -0.5]],
+    )
+    assert ising_hamiltonian(2, periodic=True).shape == (4, 4)
+    assert heisenberg_chain(2, jx=0.5, jy=0.25, jz=0.125).shape == (4, 4)
+
+    with pytest.raises(ValueError, match="nonempty"):
+        pauli_string_matrix("")
+    with pytest.raises(ValueError, match="I, X, Y, and Z"):
+        pauli_string_matrix("XA")
+    with pytest.raises(ValueError, match="n_sites must be positive"):
+        tight_binding_chain(0)
+    with pytest.raises(ValueError, match="onsite must have length"):
+        tight_binding_chain(2, onsite=[0.0])
+    with pytest.raises(ValueError, match="n_spins must be positive"):
+        ising_hamiltonian(0)
+    with pytest.raises(ValueError, match="greater than 1"):
+        heisenberg_chain(1)
+
+
 def test_pde_laplacian_constructors_return_expected_shapes():
     x, l1 = dirichlet_laplacian_1d(5)
     xp, lp = periodic_laplacian_1d(5)
@@ -118,6 +145,69 @@ def test_pde_laplacian_constructors_return_expected_shapes():
     assert y2.shape == (4,)
     assert l2.shape == (12, 12)
     assert np.all(np.linalg.eigvalsh(l1) > 0.0)
+
+
+def test_pde_laplacian_constructors_reject_invalid_domains():
+    with pytest.raises(ValueError, match="n_points must be positive"):
+        dirichlet_laplacian_1d(0)
+    with pytest.raises(ValueError, match="length must be positive"):
+        dirichlet_laplacian_1d(3, length=0.0)
+    with pytest.raises(ValueError, match="greater than 2"):
+        periodic_laplacian_1d(2)
+    with pytest.raises(ValueError, match="length must be positive"):
+        periodic_laplacian_1d(3, length=-1.0)
+    with pytest.raises(ValueError, match="n_points must be positive"):
+        dirichlet_laplacian_2d(0, 2)
+    with pytest.raises(ValueError, match="length must be positive"):
+        dirichlet_laplacian_2d(2, 2, ly=0.0)
+
+
+def test_diagnostics_error_paths_and_complex_expectation_values():
+    reference_state = np.array([1.0, 0.0])
+    approximate_state = np.array([0.5, 0.5])
+    assert relative_state_error(reference_state, approximate_state) > 0.0
+
+    with pytest.raises(ValueError, match="reference state must be nonzero"):
+        relative_state_error(np.zeros(2), approximate_state)
+
+    reference_operator = np.eye(2)
+    approximate_operator = np.diag([1.0, 2.0])
+    assert operator_error(reference_operator, approximate_operator, relative=False) == (
+        pytest.approx(1.0)
+    )
+    assert density_matrix_error(reference_operator, approximate_operator) > 0.0
+
+    with pytest.raises(ValueError, match="reference operator must be nonzero"):
+        operator_error(np.zeros((2, 2)), approximate_operator)
+
+    value = expectation_value(
+        np.array([[0.0, 1.0j], [1.0j, 0.0]]),
+        np.array([1.0, 1.0]) / np.sqrt(2.0),
+    )
+    assert value == pytest.approx(1.0j)
+
+
+def test_rescaling_helpers_cover_error_and_inverse_coordinate_paths():
+    identity_matrix = np.eye(2)
+    with pytest.raises(ValueError, match="nonzero spectral width"):
+        rescale_hermitian_to_unit_interval(identity_matrix)
+    with pytest.raises(ValueError, match="cutoff must not equal"):
+        rescale_hermitian_about_cutoff(identity_matrix, cutoff=1.0)
+    with pytest.raises(ValueError, match="positive semidefinite"):
+        rescale_positive_semidefinite(np.diag([-0.1, 1.0]))
+    with pytest.raises(ValueError, match="positive maximum"):
+        rescale_positive_semidefinite(np.zeros((2, 2)))
+
+    scaled = rescale_hermitian_about_cutoff(
+        np.diag([0.0, 2.0]),
+        cutoff=1.0,
+        low_energy_positive=False,
+    )
+    assert scaled.original_from_scaled_value(np.array([-1.0, 1.0])).tolist() == [
+        0.0,
+        2.0,
+    ]
+    assert scaled.original_from_scaled_value(0.5) == pytest.approx(1.5)
 
 
 def test_matrix_function_builders_match_simple_targets():

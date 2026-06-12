@@ -1,7 +1,10 @@
+from types import SimpleNamespace
+
 import numpy as np
 import pennylane as qml
 import pytest
 
+import qsvt.execution as execution_module
 from qsvt.execution import execute_qsvt_circuit, qsvt_circuit_truth_contract
 from qsvt.reports import report_to_jsonable
 
@@ -75,6 +78,97 @@ def test_execute_qsvt_circuit_requires_normalized_state_unless_requested():
     )
 
     assert np.allclose(result.input_state, [1.0, 0.0])
+
+
+@pytest.mark.parametrize(
+    ("matrix", "state", "message"),
+    [
+        (0.5, [1.0], "not a scalar"),
+        (np.array([[np.inf, 0.0], [0.0, 0.2]]), [1.0, 0.0], "entries must be finite"),
+        (np.array([[0.0, 0.2], [0.0, 0.0]]), [1.0, 0.0], "Hermitian"),
+        (np.diag([1.2, 0.1]), [1.0, 0.0], r"\[-1, 1\]"),
+    ],
+)
+def test_execute_qsvt_circuit_rejects_invalid_operators(matrix, state, message):
+    with pytest.raises(ValueError, match=message):
+        execute_qsvt_circuit(matrix, [0.0, 1.0], state)
+
+
+@pytest.mark.parametrize(
+    ("poly", "message"),
+    [
+        ([], "poly must contain"),
+        ([np.inf], "polynomial coefficients must be finite"),
+    ],
+)
+def test_execute_qsvt_circuit_rejects_invalid_polynomials(poly, message):
+    with pytest.raises(ValueError, match=message):
+        execute_qsvt_circuit(np.diag([0.2, 0.8]), poly, [1.0, 0.0])
+
+
+@pytest.mark.parametrize(
+    ("state", "message"),
+    [
+        ([1.0], "state length"),
+        ([np.nan, 0.0], "state entries must be finite"),
+        ([0.0, 0.0], "state must be nonzero"),
+    ],
+)
+def test_execute_qsvt_circuit_rejects_invalid_states(state, message):
+    with pytest.raises(ValueError, match=message):
+        execute_qsvt_circuit(np.diag([0.2, 0.8]), [0.0, 1.0], state)
+
+
+def test_execute_qsvt_circuit_validates_wires_and_shots():
+    matrix = np.diag([0.2, 0.8])
+
+    with pytest.raises(ValueError, match="contain all encoding_wires"):
+        execute_qsvt_circuit(
+            matrix,
+            [0.0, 1.0],
+            [1.0, 0.0],
+            encoding_wires=[0, 1],
+            wire_order=[0],
+        )
+
+    with pytest.raises(ValueError, match="shots must be positive"):
+        execute_qsvt_circuit(matrix, [0.0, 1.0], [1.0, 0.0], shots=0)
+
+
+def test_execution_spec_resource_adapters_support_mapping_and_object_shapes():
+    class DictLike:
+        def __init__(self, payload):
+            self.payload = payload
+
+        def get(self, key, default=None):
+            return self.payload.get(key, default)
+
+    class ToDictOnly:
+        def to_dict(self):
+            return {"device_name": "custom.device"}
+
+    resource_object = SimpleNamespace(num_gates=2, depth=3, gate_types={"QSVT": 1})
+    resource_mapping = {"num_gates": 4, "measurements": ["probs"]}
+
+    assert execution_module._spec_value({"resources": resource_mapping}, "resources")
+    assert (
+        execution_module._spec_value(
+            DictLike({"device_name": "dictlike.device"}),
+            "device_name",
+        )
+        == "dictlike.device"
+    )
+    assert execution_module._spec_value(ToDictOnly(), "device_name") == "custom.device"
+    assert execution_module._spec_value(object(), "missing", "fallback") == "fallback"
+    assert execution_module._resource_value(resource_object, "depth") == 3
+    assert execution_module._resource_value(resource_mapping, "num_gates") == 4
+    assert execution_module._resource_value(DictLike({"depth": 5}), "depth") == 5
+    assert execution_module._resource_value(object(), "missing", "fallback") == (
+        "fallback"
+    )
+    assert execution_module._object_to_dict([("Hadamard", 1)]) == {"Hadamard": 1}
+    with pytest.raises(TypeError):
+        execution_module._object_len(iter([1, 2, 3]))
 
 
 def test_qsvt_circuit_truth_contract_marks_missing_algorithm_layers():

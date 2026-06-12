@@ -40,6 +40,11 @@ def _dist_artifacts() -> list[str]:
     return artifacts
 
 
+def _build_command(*, no_isolation: bool) -> list[str]:
+    args = ["--no-isolation"] if no_isolation else []
+    return _python_module("build", *args)
+
+
 def _check_git_hygiene() -> None:
     ignored_outputs = [
         ".coverage",
@@ -73,6 +78,15 @@ def main(argv: Sequence[str] | None = None) -> None:
         help="Skip package build and twine metadata checks.",
     )
     parser.add_argument(
+        "--no-build-isolation",
+        action="store_true",
+        help=(
+            "Build the package with the current environment instead of creating "
+            "an isolated build environment. Useful for offline local preflights "
+            "when build-system requirements are already installed."
+        ),
+    )
+    parser.add_argument(
         "--skip-type",
         action="store_true",
         help="Skip mypy type checking.",
@@ -99,7 +113,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     if not args.skip_docs:
         _run(_python_module("sphinx", "-W", "-b", "html", "docs", "docs/_build/html"))
     if not args.skip_build:
-        _run(_python_module("build"))
+        _run(_build_command(no_isolation=args.no_build_isolation))
         _run(_python_module("twine", "check", *_dist_artifacts()))
 
 

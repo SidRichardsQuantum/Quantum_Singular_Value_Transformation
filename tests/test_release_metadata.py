@@ -59,3 +59,26 @@ def test_release_metadata_markers_match_project_version():
     }
 
     assert markers == {source: version for source in markers}
+
+
+def test_release_check_build_command_supports_local_no_isolation_mode():
+    import scripts.release_check as release_check
+
+    assert release_check._build_command(no_isolation=False) == [
+        release_check.sys.executable,
+        "-m",
+        "build",
+    ]
+    assert release_check._build_command(no_isolation=True) == [
+        release_check.sys.executable,
+        "-m",
+        "build",
+        "--no-isolation",
+    ]
+
+
+def test_release_extra_includes_no_isolation_build_requirements():
+    project = tomllib.loads(_read_text("pyproject.toml"))["project"]
+    release_deps = set(project["optional-dependencies"]["release"])
+
+    assert {"build", "twine", "wheel"} <= release_deps

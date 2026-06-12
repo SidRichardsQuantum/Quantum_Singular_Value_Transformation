@@ -5,6 +5,8 @@ import numpy as np
 import pytest
 
 import qsvt
+import qsvt.diagonal as diagonal_module
+import qsvt.matrix as matrix_module
 from qsvt.__main__ import main
 from qsvt.design import (
     design_filter_polynomial,
@@ -164,11 +166,116 @@ def test_qsvt_top_left_block_rejects_scalar_input():
         qsvt_top_left_block(0.5, [0.0, 0.0, 1.0], encoding_wires=[0])
 
 
+def test_apply_qsvt_to_embedded_vector_rejects_invalid_inputs():
+    with pytest.raises(ValueError, match="matrix operator"):
+        qsvt.apply_qsvt_to_embedded_vector(0.5, [1.0], [0.0, 1.0])
+
+    with pytest.raises(ValueError, match="vector length"):
+        qsvt.apply_qsvt_to_embedded_vector(
+            np.eye(2),
+            [1.0],
+            [0.0, 1.0],
+            encoding_wires=[0, 1],
+        )
+
+
+def test_apply_qsvt_to_embedded_vector_rejects_zero_normalized_output(monkeypatch):
+    def zero_unitary(*args, **kwargs):
+        return np.zeros((2, 2), dtype=complex)
+
+    monkeypatch.setattr("qsvt.operators.qsvt_unitary", zero_unitary)
+
+    with pytest.raises(ValueError, match="zero output vector"):
+        qsvt.apply_qsvt_to_embedded_vector(
+            np.eye(2),
+            [1.0, 0.0],
+            [0.0, 1.0],
+            normalize_output=True,
+        )
+
+
 def test_qsvt_transform_report_rejects_values_outside_qsvt_domain():
     from qsvt.qsvt import qsvt_transform_report
 
     with pytest.raises(ValueError, match=r"\[-1, 1\]"):
         qsvt_transform_report([1.2], [0.0, 1.0], encoding_wires=[0])
+
+
+@pytest.mark.parametrize(
+    ("diagonal", "poly", "message"),
+    [
+        ([], [0.0, 1.0], "diagonal must contain"),
+        ([0.2], [], "poly must contain"),
+        ([np.inf], [0.0, 1.0], "diagonal values must be finite"),
+        ([0.2], [np.nan], "polynomial coefficients must be finite"),
+    ],
+)
+def test_qsvt_transform_report_rejects_invalid_payloads(diagonal, poly, message):
+    with pytest.raises(ValueError, match=message):
+        qsvt.qsvt_transform_report(diagonal, poly, encoding_wires=[0])
+
+
+def test_qsvt_transform_report_can_capture_synthesis_failure(monkeypatch):
+    def fail_transform(*args, **kwargs):
+        raise RuntimeError("synthetic failure")
+
+    monkeypatch.setattr(diagonal_module, "qsvt_diagonal_transform", fail_transform)
+
+    report = qsvt.qsvt_transform_report(
+        [0.2],
+        [0.0, 1.0],
+        encoding_wires=[0],
+        allow_qsvt_failure=True,
+    )
+
+    assert report["qsvt_succeeded"] is False
+    assert report["qsvt_error_type"] == "RuntimeError"
+    assert report["qsvt_error"] == "synthetic failure"
+    assert report["truth_contract"]["pennylane_qsvt_check"] == "failed"
+
+
+@pytest.mark.parametrize(
+    ("matrix", "message"),
+    [
+        (0.5, "not a scalar"),
+        (np.array([[np.inf, 0.0], [0.0, 0.2]]), "entries must be finite"),
+        (np.array([[0.0, 2.0], [0.0, 0.0]]), "Hermitian"),
+        (np.diag([1.2, 0.1]), r"\[-1, 1\]"),
+    ],
+)
+def test_qsvt_matrix_transform_report_rejects_invalid_operators(matrix, message):
+    with pytest.raises(ValueError, match=message):
+        qsvt.qsvt_matrix_transform_report(matrix, [0.0, 1.0])
+
+
+@pytest.mark.parametrize(
+    ("poly", "message"),
+    [
+        ([], "poly must contain"),
+        ([np.nan], "polynomial coefficients must be finite"),
+    ],
+)
+def test_qsvt_matrix_transform_report_rejects_invalid_polynomials(poly, message):
+    with pytest.raises(ValueError, match=message):
+        qsvt.qsvt_matrix_transform_report(np.diag([0.2, 0.8]), poly)
+
+
+def test_qsvt_matrix_transform_report_can_capture_synthesis_failure(monkeypatch):
+    def fail_transform(*args, **kwargs):
+        raise RuntimeError("matrix synthesis failed")
+
+    monkeypatch.setattr(matrix_module, "qsvt_matrix_transform", fail_transform)
+
+    report = qsvt.qsvt_matrix_transform_report(
+        np.diag([0.2, 0.8]),
+        [0.0, 1.0],
+        allow_qsvt_failure=True,
+    )
+
+    assert report["qsvt_succeeded"] is False
+    assert report["qsvt_error_type"] == "RuntimeError"
+    assert report["qsvt_error"] == "matrix synthesis failed"
+    assert report["truth_contract"]["pennylane_qsvt_check"] == "failed"
 
 
 def test_cli_poly_command_emits_json(capsys):
