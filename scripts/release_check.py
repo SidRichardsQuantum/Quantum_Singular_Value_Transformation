@@ -104,7 +104,7 @@ def main(argv: Sequence[str] | None = None) -> None:
         _python_module(
             "pytest",
             "-m",
-            "not notebook",
+            "not notebook and not integration",
             "--cov=qsvt",
             "--cov-report=term-missing",
             "--cov-report=xml",

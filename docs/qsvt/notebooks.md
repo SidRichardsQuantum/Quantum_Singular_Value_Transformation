@@ -44,21 +44,20 @@ domain-specific implementation logic.
 | `tutorials/02_QSVT_Singular_Value_Filter.ipynb` | singular-value filtering |
 | `tutorials/03_QSP_Polynomial_Demo.ipynb` | QSP polynomial behaviour |
 | `tutorials/04_QSVT_Exact_Linear_Solver_Toy_Cases.ipynb` | exact 2x2 and 4x4 toy linear-solver cases |
-| `tutorials/05_QSVT_Approximate_Linear_Solver.ipynb` | approximate inverse-like transforms |
-| `tutorials/06_QSVT_Polynomial_Design_and_Approximation.ipynb` | polynomial design and approximation |
-| `tutorials/07_QSVT_Matrix_Functions_Powers_and_Roots.ipynb` | matrix functions, powers, and roots |
-| `tutorials/08_QSVT_Sign_Function_and_Projectors.ipynb` | sign functions and projectors |
-| `tutorials/09_QSVT_Design_and_Templates.ipynb` | design helpers and templates |
-| `tutorials/10_QSVT_Algorithm_Workflows.ipynb` | QSVT algorithm workflow diagnostics |
-| `tutorials/11_QSVT_Reports_CLI_and_Artifacts.ipynb` | QSVT reports, CLI output, and reproducible artifacts |
-| `tutorials/12_QSVT_Design_Tradeoffs.ipynb` | QSVT design degree/error/boundedness tradeoffs |
-| `tutorials/13_QSVT_Resource_Proxy_Limits.ipynb` | block-encoding assumptions and QSVT resource-proxy limits |
-| `tutorials/14_Block_Encoded_QSVT_Workflow.ipynb` | finite block-encoded QSVT workflow |
-| `tutorials/15_Sparse_Oracle_Assumptions.ipynb` | sparse operators, oracle assumptions, and omitted costs |
-| `tutorials/16_QSVT_Compatibility_Failure_Cases.ipynb` | boundedness, parity, and QSVT compatibility failures |
-| `tutorials/17_QSVT_Linear_System_Comparisons.ipynb` | dense, CG, and QSVT-style linear-system comparison rows |
-| `tutorials/18_HHL_Linear_System_Solver.ipynb` | finite simulator-scale HHL linear-system solver |
-| `tutorials/19_Quantum_Walk_Search_Workflow.ipynb` | continuous-time quantum walk search and polynomial phase approximation |
+| `tutorials/05_QSVT_Polynomial_Design_and_Approximation.ipynb` | polynomial design and approximation |
+| `tutorials/06_QSVT_Matrix_Functions_Powers_and_Roots.ipynb` | matrix functions, powers, and roots |
+| `tutorials/07_QSVT_Sign_Function_and_Projectors.ipynb` | sign functions and projectors |
+| `tutorials/08_QSVT_Design_and_Templates.ipynb` | design helpers and templates |
+| `tutorials/09_QSVT_Algorithm_Workflows.ipynb` | QSVT algorithm workflow diagnostics |
+| `tutorials/10_QSVT_Reports_CLI_and_Artifacts.ipynb` | QSVT reports, CLI output, and reproducible artifacts |
+| `tutorials/11_QSVT_Design_Tradeoffs.ipynb` | QSVT design degree/error/boundedness tradeoffs |
+| `tutorials/12_QSVT_Resource_Proxy_Limits.ipynb` | block-encoding assumptions and QSVT resource-proxy limits |
+| `tutorials/13_Block_Encoded_QSVT_Workflow.ipynb` | finite block-encoded QSVT workflow |
+| `tutorials/14_Sparse_Oracle_Assumptions.ipynb` | sparse operators, oracle assumptions, and omitted costs |
+| `tutorials/15_QSVT_Compatibility_Failure_Cases.ipynb` | boundedness, parity, and QSVT compatibility failures |
+| `tutorials/16_QSVT_Linear_System_Comparisons.ipynb` | dense, CG, and QSVT-style linear-system comparison rows |
+| `tutorials/17_HHL_Linear_System_Solver.ipynb` | finite simulator-scale HHL linear-system solver |
+| `tutorials/18_Quantum_Walk_Search_Workflow.ipynb` | continuous-time quantum walk search and polynomial phase approximation |
 
 ## Benchmark notebooks
 
@@ -88,32 +87,31 @@ or quantum-relevance context for the toy-scale example.
 | `01_ground_state_filtering.ipynb` | ground-state filtering |
 | `02_tight_binding_band_filter.ipynb` | tight-binding band filters |
 | `03_imaginary_time_filtering.ipynb` | imaginary-time filtering |
-| `04_heat_equation_pde.ipynb` | heat-equation PDE workflow |
-| `05_poisson_equation_pde.ipynb` | Poisson-equation PDE workflow |
-| `06_hamiltonian_simulation_schrodinger_dynamics.ipynb` | Hamiltonian simulation |
-| `07_quantum_chemistry_h2_toy_solver.ipynb` | H2 toy chemistry solver |
-| `08_greens_function_response.ipynb` | Green's-function response |
-| `09_spectral_density_estimation.ipynb` | spectral density estimation |
-| `10_gibbs_state_thermal_weights.ipynb` | Gibbs-state thermal weights |
-| `11_transport_physics_landauer_chain.ipynb` | transport physics and Landauer chains |
-| `12_tensor_network_hybrid_filtering.ipynb` | tensor-network hybrid filtering |
-| `13_heat_equation_2d_pde.ipynb` | 2D heat-equation PDE workflow |
-| `14_advection_diffusion_pde.ipynb` | advection-diffusion PDE workflow |
-| `15_wave_equation_dynamics.ipynb` | wave-equation dynamics |
-| `16_helmholtz_equation_pde.ipynb` | Helmholtz-equation PDE workflow |
-| `17_ssh_chain_edge_state_filtering.ipynb` | SSH-chain edge-state filtering |
-| `18_anderson_localization.ipynb` | Anderson localization |
-| `19_schrodinger_bound_states.ipynb` | Schrödinger bound states |
-| `20_quantum_harmonic_oscillator_grid.ipynb` | harmonic-oscillator grid spectrum |
-| `21_electrostatic_green_function_poisson.ipynb` | electrostatic Green's function |
-| `22_coupled_oscillator_normal_modes.ipynb` | coupled-oscillator normal modes |
-| `23_ising_phase_transition_filtering.ipynb` | Ising phase-transition filtering |
-| `24_diffusion_heat_treatment_slab.ipynb` | diffusion-limited heat treatment |
-| `25_graphene_nanoribbon_density_of_states.ipynb` | graphene nanoribbon density of states |
-| `26_fermi_dirac_electronic_occupations.ipynb` | Fermi-Dirac electronic occupations |
-| `27_photonic_crystal_band_gap_filtering.ipynb` | photonic-crystal band-gap filtering |
-| `28_topological_band_projector_chern_marker.ipynb` | topological band projectors and Chern markers |
-| `29_block_encoded_laplacian_smoothing.ipynb` | block-encoded QSVT Laplacian smoothing |
+| `04_poisson_equation_pde.ipynb` | Poisson-equation PDE workflow |
+| `05_hamiltonian_simulation_schrodinger_dynamics.ipynb` | Hamiltonian simulation |
+| `06_quantum_chemistry_h2_toy_solver.ipynb` | H2 toy chemistry solver |
+| `07_greens_function_response.ipynb` | Green's-function response |
+| `08_spectral_density_estimation.ipynb` | spectral density estimation |
+| `09_gibbs_state_thermal_weights.ipynb` | Gibbs-state thermal weights |
+| `10_transport_physics_landauer_chain.ipynb` | transport physics and Landauer chains |
+| `11_tensor_network_hybrid_filtering.ipynb` | tensor-network hybrid filtering |
+| `12_heat_equation_2d_pde.ipynb` | 2D heat-equation PDE workflow |
+| `13_advection_diffusion_pde.ipynb` | advection-diffusion PDE workflow |
+| `14_wave_equation_dynamics.ipynb` | wave-equation dynamics |
+| `15_helmholtz_equation_pde.ipynb` | Helmholtz-equation PDE workflow |
+| `16_ssh_chain_edge_state_filtering.ipynb` | SSH-chain edge-state filtering |
+| `17_anderson_localization.ipynb` | Anderson localization |
+| `18_schrodinger_bound_states.ipynb` | Schrödinger bound states |
+| `19_quantum_harmonic_oscillator_grid.ipynb` | harmonic-oscillator grid spectrum |
+| `20_electrostatic_green_function_poisson.ipynb` | electrostatic Green's function |
+| `21_coupled_oscillator_normal_modes.ipynb` | coupled-oscillator normal modes |
+| `22_ising_phase_transition_filtering.ipynb` | Ising phase-transition filtering |
+| `23_diffusion_heat_treatment_slab.ipynb` | diffusion-limited heat treatment |
+| `24_graphene_nanoribbon_density_of_states.ipynb` | graphene nanoribbon density of states |
+| `25_fermi_dirac_electronic_occupations.ipynb` | Fermi-Dirac electronic occupations |
+| `26_photonic_crystal_band_gap_filtering.ipynb` | photonic-crystal band-gap filtering |
+| `27_topological_band_projector_chern_marker.ipynb` | topological band projectors and Chern markers |
+| `28_block_encoded_laplacian_smoothing.ipynb` | block-encoded QSVT Laplacian smoothing |
 
 See the repository notebook directory for executable files:
 [notebooks](https://github.com/SidRichardsQuantum/Quantum_Singular_Value_Transformation/tree/main/notebooks).

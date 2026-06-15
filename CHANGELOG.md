@@ -2,6 +2,41 @@
 
 ---
 
+## [0.2.5] – 15th June 2026
+
+### Added
+
+- added public API status metadata and documentation so stable and experimental
+  helpers are visible from the package surface
+- added cookbook examples for block-encoded workflows, circuit execution,
+  compatibility reports, and benchmark summary export
+- added dependency-compatibility CI coverage for supported Python, NumPy, and
+  PennyLane version bands
+
+### Changed
+
+- consolidated redundant linear-system tutorials by preserving the approximate
+  Chebyshev inverse-direction discussion in the exact toy-cases tutorial and
+  keeping the practical QSVT and HHL comparison notebooks separate
+- removed the redundant one-dimensional heat-equation real example now covered
+  by the two-dimensional heat-equation workflow
+- renumbered tutorial notebooks to a strict consecutive `01` through `18`
+  sequence and real-example notebooks to a strict consecutive `01` through
+  `28` sequence after the pruning pass
+- refreshed notebook indexes, usage guides, roadmap notes, example
+  descriptions, result ledgers, plot artifact names, and release markers for
+  `0.2.5`
+- split heavier cookbook script subprocess checks behind an `integration`
+  pytest marker while keeping a representative cookbook smoke test in the fast
+  release path
+
+### Fixed
+
+- removed stale references to pruned notebooks and stale generated docs build
+  outputs from the release tree
+
+---
+
 ## [0.2.4] – 12th June 2026
 
 ### Added

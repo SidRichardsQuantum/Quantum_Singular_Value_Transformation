@@ -144,11 +144,19 @@ python examples/linear_system_compare.py \
   --output /tmp/qsvt-linear-system.json \
   --rows-output /tmp/qsvt-linear-system.csv
 python examples/threshold_filter.py --output /tmp/qsvt-threshold-filter.json
+python examples/block_encoded_workflow.py \
+  --output /tmp/qsvt-block-encoded-workflow.json
+python examples/circuit_execution.py --output /tmp/qsvt-circuit-execution.json
+python examples/compatibility_report.py --output /tmp/qsvt-compatibility.json
+python examples/benchmark_summary.py \
+  --output /tmp/qsvt-benchmark-summary.json \
+  --rows-output /tmp/qsvt-benchmark-summary.csv
 ```
 
-The scripts cover choosing a polynomial, applying it, saving diagnostics,
-comparing linear-system solver paths, and running a spectral thresholding
-workflow.
+The scripts cover polynomial design, matrix application, saved diagnostics,
+linear-system comparison, threshold filtering, block-encoded QSVT checks,
+PennyLane circuit execution, compatibility reports, and benchmark summary
+export.
 
 ## Common Tasks
 
@@ -453,7 +461,10 @@ artifact to disk and prints a compact summary to stdout. Add `--print-report`
 to also emit the full JSON payload on stdout.
 
 Compatibility reports distinguish bounded polynomial approximation from
-PennyLane QSVT synthesis compatibility.
+PennyLane QSVT synthesis compatibility. Use
+`python examples/compatibility_report.py --output /tmp/qsvt-compatibility.json`
+for the shortest Python workflow, or use `qsvt design-workflow` and inspect the
+compatibility payload in the generated report.
 
 For release validation from a local checkout, run
 `python scripts/release_check.py` to execute lint, formatting, type, fast test,

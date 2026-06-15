@@ -108,7 +108,7 @@ auditable source for examples and reproducible outputs.
 
 ## Later Directions
 
-- clearer stable/experimental API labels before a `1.0` release,
+- expand and enforce stable/experimental API labels before a `1.0` release,
 - more package-level plotting/report helpers shared by real-example notebooks,
 - stronger compatibility tests across supported PennyLane, NumPy, and Python
   versions,

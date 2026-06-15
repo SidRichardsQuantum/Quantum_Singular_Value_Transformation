@@ -18,21 +18,20 @@ Rendered result pages:
 | `notebooks/tutorials/02_QSVT_Singular_Value_Filter.ipynb` | embedded plots | soft singular-value filtering |
 | `notebooks/tutorials/03_QSP_Polynomial_Demo.ipynb` | embedded plots | QSP polynomial behaviour from two perspectives |
 | `notebooks/tutorials/04_QSVT_Exact_Linear_Solver_Toy_Cases.ipynb` | embedded plots | exact 2x2 and 4x4 toy linear-solver cases |
-| `notebooks/tutorials/05_QSVT_Approximate_Linear_Solver.ipynb` | embedded plots | Chebyshev inverse-like approximation |
-| `notebooks/tutorials/06_QSVT_Polynomial_Design_and_Approximation.ipynb` | embedded plots | polynomial approximation and boundedness |
-| `notebooks/tutorials/07_QSVT_Matrix_Functions_Powers_and_Roots.ipynb` | embedded plots | matrix powers and square-root-style transforms |
-| `notebooks/tutorials/08_QSVT_Sign_Function_and_Projectors.ipynb` | embedded plots | sign functions and spectral projectors |
-| `notebooks/tutorials/09_QSVT_Design_and_Templates.ipynb` | embedded plots | reusable design and template families |
-| `notebooks/tutorials/10_QSVT_Algorithm_Workflows.ipynb` | embedded plot | QSVT algorithm workflow diagnostics |
-| `notebooks/tutorials/11_QSVT_Reports_CLI_and_Artifacts.ipynb` | embedded plot | QSVT report, CLI, and artifact workflows |
-| `notebooks/tutorials/12_QSVT_Design_Tradeoffs.ipynb` | embedded plots | QSVT design degree/error/boundedness tradeoffs |
-| `notebooks/tutorials/13_QSVT_Resource_Proxy_Limits.ipynb` | embedded plots | block-encoding assumptions and resource-proxy limits |
-| `notebooks/tutorials/14_Block_Encoded_QSVT_Workflow.ipynb` | embedded plots | finite dense block-encoded QSVT workflow |
-| `notebooks/tutorials/15_Sparse_Oracle_Assumptions.ipynb` | embedded plot | sparse-oracle and access-model assumptions |
-| `notebooks/tutorials/16_QSVT_Compatibility_Failure_Cases.ipynb` | embedded plot | boundedness, parity, and synthesis failure cases |
-| `notebooks/tutorials/17_QSVT_Linear_System_Comparisons.ipynb` | embedded plots | dense, CG, and QSVT-style linear-system comparison rows |
-| `notebooks/tutorials/18_HHL_Linear_System_Solver.ipynb` | embedded plots | finite simulator-scale HHL linear-system solver |
-| `notebooks/tutorials/19_Quantum_Walk_Search_Workflow.ipynb` | embedded plots | continuous-time quantum-walk search workflow |
+| `notebooks/tutorials/05_QSVT_Polynomial_Design_and_Approximation.ipynb` | embedded plots | polynomial approximation and boundedness |
+| `notebooks/tutorials/06_QSVT_Matrix_Functions_Powers_and_Roots.ipynb` | embedded plots | matrix powers and square-root-style transforms |
+| `notebooks/tutorials/07_QSVT_Sign_Function_and_Projectors.ipynb` | embedded plots | sign functions and spectral projectors |
+| `notebooks/tutorials/08_QSVT_Design_and_Templates.ipynb` | embedded plots | reusable design and template families |
+| `notebooks/tutorials/09_QSVT_Algorithm_Workflows.ipynb` | embedded plot | QSVT algorithm workflow diagnostics |
+| `notebooks/tutorials/10_QSVT_Reports_CLI_and_Artifacts.ipynb` | embedded plot | QSVT report, CLI, and artifact workflows |
+| `notebooks/tutorials/11_QSVT_Design_Tradeoffs.ipynb` | embedded plots | QSVT design degree/error/boundedness tradeoffs |
+| `notebooks/tutorials/12_QSVT_Resource_Proxy_Limits.ipynb` | embedded plots | block-encoding assumptions and resource-proxy limits |
+| `notebooks/tutorials/13_Block_Encoded_QSVT_Workflow.ipynb` | embedded plots | finite dense block-encoded QSVT workflow |
+| `notebooks/tutorials/14_Sparse_Oracle_Assumptions.ipynb` | embedded plot | sparse-oracle and access-model assumptions |
+| `notebooks/tutorials/15_QSVT_Compatibility_Failure_Cases.ipynb` | embedded plot | boundedness, parity, and synthesis failure cases |
+| `notebooks/tutorials/16_QSVT_Linear_System_Comparisons.ipynb` | embedded plots | dense, CG, and QSVT-style linear-system comparison rows |
+| `notebooks/tutorials/17_HHL_Linear_System_Solver.ipynb` | embedded plots | finite simulator-scale HHL linear-system solver |
+| `notebooks/tutorials/18_Quantum_Walk_Search_Workflow.ipynb` | embedded plots | continuous-time quantum-walk search workflow |
 
 ## Real-Example Notebook Results
 
@@ -47,32 +46,31 @@ the real-example plot ledger.
 | `notebooks/real_examples/01_ground_state_filtering.ipynb` | committed plots | two-spin schematic, ground-state filtering, and overlap checks |
 | `notebooks/real_examples/02_tight_binding_band_filter.ipynb` | committed plots | chain schematic plus band-pass and band-rejection filters |
 | `notebooks/real_examples/03_imaginary_time_filtering.ipynb` | committed plot | imaginary-time exponential filtering |
-| `notebooks/real_examples/04_heat_equation_pde.ipynb` | committed plots | 1D rod schematic and heat-equation diffusion workflow |
-| `notebooks/real_examples/05_poisson_equation_pde.ipynb` | committed plots | Poisson domain schematics and inverse workflow |
-| `notebooks/real_examples/06_hamiltonian_simulation_schrodinger_dynamics.ipynb` | committed plot | real-time Hamiltonian dynamics |
-| `notebooks/real_examples/07_quantum_chemistry_h2_toy_solver.ipynb` | committed plots | H2 schematic and toy Hamiltonian solver |
-| `notebooks/real_examples/08_greens_function_response.ipynb` | committed plot | resolvent and Green's-function response |
-| `notebooks/real_examples/09_spectral_density_estimation.ipynb` | committed plot | spectral density estimation |
-| `notebooks/real_examples/10_gibbs_state_thermal_weights.ipynb` | committed plot | Gibbs-state thermal weights |
-| `notebooks/real_examples/11_transport_physics_landauer_chain.ipynb` | committed plots | lead-device schematic and Landauer-style transmission |
-| `notebooks/real_examples/12_tensor_network_hybrid_filtering.ipynb` | committed plot | product-state energy filtering |
-| `notebooks/real_examples/13_heat_equation_2d_pde.ipynb` | committed plots | unit-square schematic and 2D heat-equation diffusion workflow |
-| `notebooks/real_examples/14_advection_diffusion_pde.ipynb` | committed plots | advection-diffusion schematic and PDE workflow |
-| `notebooks/real_examples/15_wave_equation_dynamics.ipynb` | committed plots | fixed-string schematic and wave-equation dynamics |
-| `notebooks/real_examples/16_helmholtz_equation_pde.ipynb` | committed plots | Helmholtz source/spectrum schematic and PDE workflow |
-| `notebooks/real_examples/17_ssh_chain_edge_state_filtering.ipynb` | committed plots | SSH-chain schematic and edge-state filtering |
-| `notebooks/real_examples/18_anderson_localization.ipynb` | committed plot | Anderson localization |
-| `notebooks/real_examples/19_schrodinger_bound_states.ipynb` | committed plots | potential-well schematic and Schrodinger bound states |
-| `notebooks/real_examples/20_quantum_harmonic_oscillator_grid.ipynb` | committed plot | harmonic-oscillator grid spectrum |
-| `notebooks/real_examples/21_electrostatic_green_function_poisson.ipynb` | committed plot | electrostatic Green's function |
-| `notebooks/real_examples/22_coupled_oscillator_normal_modes.ipynb` | committed plots | mass-spring schematic and coupled-oscillator normal modes |
-| `notebooks/real_examples/23_ising_phase_transition_filtering.ipynb` | committed plots | spin-chain schematic and Ising phase-transition filtering |
-| `notebooks/real_examples/24_diffusion_heat_treatment_slab.ipynb` | committed plots | slab schematic and diffusion-limited heat treatment |
-| `notebooks/real_examples/25_graphene_nanoribbon_density_of_states.ipynb` | committed plots | nanoribbon schematic and graphene density of states |
-| `notebooks/real_examples/26_fermi_dirac_electronic_occupations.ipynb` | committed plot | Fermi-Dirac electronic occupations |
-| `notebooks/real_examples/27_photonic_crystal_band_gap_filtering.ipynb` | committed plots | photonic-crystal schematic and band-gap filtering |
-| `notebooks/real_examples/28_topological_band_projector_chern_marker.ipynb` | committed plots | QWZ lattice schematic and Chern-marker diagnostics |
-| `notebooks/real_examples/29_block_encoded_laplacian_smoothing.ipynb` | committed plots | block-encoded Laplacian smoothing |
+| `notebooks/real_examples/04_poisson_equation_pde.ipynb` | committed plots | Poisson domain schematics and inverse workflow |
+| `notebooks/real_examples/05_hamiltonian_simulation_schrodinger_dynamics.ipynb` | committed plot | real-time Hamiltonian dynamics |
+| `notebooks/real_examples/06_quantum_chemistry_h2_toy_solver.ipynb` | committed plots | H2 schematic and toy Hamiltonian solver |
+| `notebooks/real_examples/07_greens_function_response.ipynb` | committed plot | resolvent and Green's-function response |
+| `notebooks/real_examples/08_spectral_density_estimation.ipynb` | committed plot | spectral density estimation |
+| `notebooks/real_examples/09_gibbs_state_thermal_weights.ipynb` | committed plot | Gibbs-state thermal weights |
+| `notebooks/real_examples/10_transport_physics_landauer_chain.ipynb` | committed plots | lead-device schematic and Landauer-style transmission |
+| `notebooks/real_examples/11_tensor_network_hybrid_filtering.ipynb` | committed plot | product-state energy filtering |
+| `notebooks/real_examples/12_heat_equation_2d_pde.ipynb` | committed plots | unit-square schematic and 2D heat-equation diffusion workflow |
+| `notebooks/real_examples/13_advection_diffusion_pde.ipynb` | committed plots | advection-diffusion schematic and PDE workflow |
+| `notebooks/real_examples/14_wave_equation_dynamics.ipynb` | committed plots | fixed-string schematic and wave-equation dynamics |
+| `notebooks/real_examples/15_helmholtz_equation_pde.ipynb` | committed plots | Helmholtz source/spectrum schematic and PDE workflow |
+| `notebooks/real_examples/16_ssh_chain_edge_state_filtering.ipynb` | committed plots | SSH-chain schematic and edge-state filtering |
+| `notebooks/real_examples/17_anderson_localization.ipynb` | committed plot | Anderson localization |
+| `notebooks/real_examples/18_schrodinger_bound_states.ipynb` | committed plots | potential-well schematic and Schrodinger bound states |
+| `notebooks/real_examples/19_quantum_harmonic_oscillator_grid.ipynb` | committed plot | harmonic-oscillator grid spectrum |
+| `notebooks/real_examples/20_electrostatic_green_function_poisson.ipynb` | committed plot | electrostatic Green's function |
+| `notebooks/real_examples/21_coupled_oscillator_normal_modes.ipynb` | committed plots | mass-spring schematic and coupled-oscillator normal modes |
+| `notebooks/real_examples/22_ising_phase_transition_filtering.ipynb` | committed plots | spin-chain schematic and Ising phase-transition filtering |
+| `notebooks/real_examples/23_diffusion_heat_treatment_slab.ipynb` | committed plots | slab schematic and diffusion-limited heat treatment |
+| `notebooks/real_examples/24_graphene_nanoribbon_density_of_states.ipynb` | committed plots | nanoribbon schematic and graphene density of states |
+| `notebooks/real_examples/25_fermi_dirac_electronic_occupations.ipynb` | committed plot | Fermi-Dirac electronic occupations |
+| `notebooks/real_examples/26_photonic_crystal_band_gap_filtering.ipynb` | committed plots | photonic-crystal schematic and band-gap filtering |
+| `notebooks/real_examples/27_topological_band_projector_chern_marker.ipynb` | committed plots | QWZ lattice schematic and Chern-marker diagnostics |
+| `notebooks/real_examples/28_block_encoded_laplacian_smoothing.ipynb` | committed plots | block-encoded Laplacian smoothing |
 
 ## Committed Release Artefacts
 
@@ -90,7 +88,7 @@ from the package CLI.
 | `results/tables/design_sweep_summary.csv` | design sweep summary table | n/a | n/a | tabular summary of committed design-sweep JSON reports |
 | `results/tables/qsvt-error-summary.csv` | release summary table | n/a | n/a | compact index over the generated JSON reports |
 
-These snapshots were refreshed for package version `0.2.4`.
+These snapshots were refreshed for package version `0.2.5`.
 
 ## Benchmark Artefacts
 
@@ -119,7 +117,7 @@ The benchmark notebook set also includes
 executable assumption-check notebook rather than a committed timing-artifact
 generator.
 
-Benchmark artefacts were refreshed for package version `0.2.4`.
+Benchmark artefacts were refreshed for package version `0.2.5`.
 
 ## Real-Example Artefacts
 
@@ -130,11 +128,11 @@ The complete machine-readable manifest is
 
 | artefact | notebook | result type | notes |
 | --- | --- | --- | --- |
-| `results/tables/real_examples_plot_manifest.csv` | all notebooks with committed PNG outputs | table | manifest for 53 extracted real-example plots |
+| `results/tables/real_examples_plot_manifest.csv` | all notebooks with committed PNG outputs | table | manifest for 50 extracted real-example plots |
 | `results/plots/real_examples/01_ground_state_filtering-plot-01.png` | `01_ground_state_filtering.ipynb` | plot | representative setup schematic output |
-| `results/plots/real_examples/13_heat_equation_2d_pde-plot-01.png` | `13_heat_equation_2d_pde.ipynb` | plot | representative unit-square setup schematic |
-| `results/plots/real_examples/28_photonic_crystal_band_gap_filtering-plot-01.png` | `28_photonic_crystal_band_gap_filtering.ipynb` | plot | representative photonic-crystal setup schematic |
-| `results/plots/real_examples/29_topological_band_projector_chern_marker-plot-01.png` | `29_topological_band_projector_chern_marker.ipynb` | plot | representative QWZ lattice setup schematic |
+| `results/plots/real_examples/12_heat_equation_2d_pde-plot-01.png` | `12_heat_equation_2d_pde.ipynb` | plot | representative unit-square setup schematic |
+| `results/plots/real_examples/26_photonic_crystal_band_gap_filtering-plot-01.png` | `26_photonic_crystal_band_gap_filtering.ipynb` | plot | representative photonic-crystal setup schematic |
+| `results/plots/real_examples/27_topological_band_projector_chern_marker-plot-01.png` | `27_topological_band_projector_chern_marker.ipynb` | plot | representative QWZ lattice setup schematic |
 
 ## Regeneration Commands
 

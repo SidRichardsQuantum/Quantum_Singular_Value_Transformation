@@ -22,11 +22,11 @@ documentation.
 
 <div class="metric-grid">
   <div class="metric-card">
-    <span class="metric-value">53</span>
+    <span class="metric-value">51</span>
     <span class="metric-label">validated notebooks</span>
   </div>
   <div class="metric-card">
-    <span class="metric-value">29</span>
+    <span class="metric-value">28</span>
     <span class="metric-label">real-example workflows</span>
   </div>
   <div class="metric-card">
@@ -34,7 +34,7 @@ documentation.
     <span class="metric-label">diagonal QSVT max-error scale</span>
   </div>
   <div class="metric-card">
-    <span class="metric-value">0.2.4</span>
+    <span class="metric-value">0.2.5</span>
     <span class="metric-label">current release marker</span>
   </div>
 </div>
@@ -144,21 +144,21 @@ Degree-13 sign design report showing the target, polynomial fit, and residual
 structure.
 ```
 
-```{figure} ../../results/plots/notebooks/10_QSVT_Algorithm_Workflows-plot-01.png
+```{figure} ../../results/plots/notebooks/09_QSVT_Algorithm_Workflows-plot-01.png
 :alt: End-to-end QSVT algorithm workflow plot
 :width: 520px
 
 QSVT algorithm workflow diagnostics from the tutorial sequence.
 ```
 
-```{figure} ../../results/plots/notebooks/12_QSVT_Design_Tradeoffs-plot-01.png
+```{figure} ../../results/plots/notebooks/11_QSVT_Design_Tradeoffs-plot-01.png
 :alt: Degree error tradeoff plot
 :width: 520px
 
 Degree/error/boundedness tradeoff results for QSVT-compatible polynomial design.
 ```
 
-```{figure} ../../results/plots/real_examples/28_topological_band_projector_chern_marker-plot-02.png
+```{figure} ../../results/plots/real_examples/27_topological_band_projector_chern_marker-plot-02.png
 :alt: Topological band projector Chern marker plot
 :width: 520px
 

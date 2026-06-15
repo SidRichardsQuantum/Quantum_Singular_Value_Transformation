@@ -113,6 +113,13 @@ python examples/linear_system_compare.py \
   --output /tmp/qsvt-linear-system.json \
   --rows-output /tmp/qsvt-linear-system.csv
 python examples/threshold_filter.py --output /tmp/qsvt-threshold-filter.json
+python examples/block_encoded_workflow.py \
+  --output /tmp/qsvt-block-encoded-workflow.json
+python examples/circuit_execution.py --output /tmp/qsvt-circuit-execution.json
+python examples/compatibility_report.py --output /tmp/qsvt-compatibility.json
+python examples/benchmark_summary.py \
+  --output /tmp/qsvt-benchmark-summary.json \
+  --rows-output /tmp/qsvt-benchmark-summary.csv
 ```
 
 See [USAGE.md](USAGE.md) for full Python and CLI workflows.
@@ -144,6 +151,12 @@ For detailed function-level documentation, use
 
 The package includes a `py.typed` marker so type checkers can consume the
 inline type annotations shipped with the public modules.
+
+During the `0.x` series, `qsvt.api_status(name)` labels exported names as
+`stable` or `experimental`. Workflow-level helpers and report/export utilities
+are the most stable user-facing surface; lower-level circuit execution and
+backend-adapter helpers remain experimental while the package approaches a
+`1.0` API.
 
 ## Roadmap
 
@@ -188,7 +201,7 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.2.4`
+Current release: `0.2.5`
 
 ## Notebooks
 

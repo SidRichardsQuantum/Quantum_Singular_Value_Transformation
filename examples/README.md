@@ -12,7 +12,19 @@ python examples/linear_system_compare.py \
   --output /tmp/qsvt-linear-system.json \
   --rows-output /tmp/qsvt-linear-system.csv
 python examples/threshold_filter.py --output /tmp/qsvt-threshold-filter.json
+python examples/block_encoded_workflow.py \
+  --output /tmp/qsvt-block-encoded-workflow.json
+python examples/circuit_execution.py --output /tmp/qsvt-circuit-execution.json
+python examples/compatibility_report.py --output /tmp/qsvt-compatibility.json
+python examples/benchmark_summary.py \
+  --output /tmp/qsvt-benchmark-summary.json \
+  --rows-output /tmp/qsvt-benchmark-summary.csv
 ```
 
 Each script writes a JSON report with machine-readable diagnostics. The
-linear-system example also writes a compact CSV summary table.
+linear-system and benchmark-summary examples also write compact CSV summary
+tables.
+
+The examples cover design/report basics, linear systems, spectral filtering,
+finite block encodings, PennyLane circuit execution, compatibility checks, and
+benchmark table export.

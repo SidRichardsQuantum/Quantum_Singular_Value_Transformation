@@ -8,9 +8,9 @@ This generated page displays embedded setup schematics, diagnostic plots, and te
 ## Current Status
 
 - Source notebooks: `notebooks/real_examples/`
-- Notebooks displayed: `29`
-- Embedded plot artefacts displayed: `53`
-- Plain-text notebook results displayed: `76`
+- Notebooks displayed: `28`
+- Embedded plot artefacts displayed: `50`
+- Plain-text notebook results displayed: `73`
 - Plot manifest: [`results/tables/real_examples_plot_manifest.csv`](../../results/tables/real_examples_plot_manifest.csv)
 
 ## Related Pages
@@ -133,62 +133,21 @@ Cooled Ground Weight [probability]: 0.9930808704605139
 Exact Ground Weight [probability]: 0.9930808704691421
 ```
 
-### `04_heat_equation_pde.ipynb`
+### `04_poisson_equation_pde.ipynb`
 
-Source: [`notebooks/real_examples/04_heat_equation_pde.ipynb`](../../notebooks/real_examples/04_heat_equation_pde.ipynb)
+Source: [`notebooks/real_examples/04_poisson_equation_pde.ipynb`](../../notebooks/real_examples/04_poisson_equation_pde.ipynb)
 
-```{image} ../../results/plots/real_examples/04_heat_equation_pde-plot-01.png
-:alt: Solving a Real Physics PDE: The 1D Heat Equation plot 1
-:width: 760px
-```
-
-```{image} ../../results/plots/real_examples/04_heat_equation_pde-plot-02.png
-:alt: Solving a Real Physics PDE: The 1D Heat Equation plot 2
-:width: 520px
-```
-
-```{image} ../../results/plots/real_examples/04_heat_equation_pde-plot-03.png
-:alt: Solving a Real Physics PDE: The 1D Heat Equation plot 3
-:width: 760px
-```
-
-Output 1 (cell 6):
-
-```text
-First 5 Eigenvalues [inverse grid-length units]: [  9.8566  39.271   87.7794 154.6166 238.7288]
-Last Eigenvalue [inverse grid-length units]: 2490.1433766430973
-```
-
-Output 2 (cell 12):
-
-```text
-First Eigenvalue [model spectral units]: -0.9999999999999999
-Last Eigenvalue [model spectral units]: 1.0000000000000002
-Beta: 2.232258077957575
-Prefactor: 0.9824145391823961
-```
-
-Output 3 (cell 14):
-
-```text
-Relative Error: 1.2039058554241987e-15
-```
-
-### `05_poisson_equation_pde.ipynb`
-
-Source: [`notebooks/real_examples/05_poisson_equation_pde.ipynb`](../../notebooks/real_examples/05_poisson_equation_pde.ipynb)
-
-```{image} ../../results/plots/real_examples/05_poisson_equation_pde-plot-01.png
+```{image} ../../results/plots/real_examples/04_poisson_equation_pde-plot-01.png
 :alt: Solving Real Physics PDEs: 1D and 2D Poisson Equations plot 1
 :width: 760px
 ```
 
-```{image} ../../results/plots/real_examples/05_poisson_equation_pde-plot-02.png
+```{image} ../../results/plots/real_examples/04_poisson_equation_pde-plot-02.png
 :alt: Solving Real Physics PDEs: 1D and 2D Poisson Equations plot 2
 :width: 760px
 ```
 
-```{image} ../../results/plots/real_examples/05_poisson_equation_pde-plot-03.png
+```{image} ../../results/plots/real_examples/04_poisson_equation_pde-plot-03.png
 :alt: Solving Real Physics PDEs: 1D and 2D Poisson Equations plot 3
 :width: 760px
 ```
@@ -237,11 +196,11 @@ Output 6 (cell 21):
 validation: passed
 ```
 
-### `06_hamiltonian_simulation_schrodinger_dynamics.ipynb`
+### `05_hamiltonian_simulation_schrodinger_dynamics.ipynb`
 
-Source: [`notebooks/real_examples/06_hamiltonian_simulation_schrodinger_dynamics.ipynb`](../../notebooks/real_examples/06_hamiltonian_simulation_schrodinger_dynamics.ipynb)
+Source: [`notebooks/real_examples/05_hamiltonian_simulation_schrodinger_dynamics.ipynb`](../../notebooks/real_examples/05_hamiltonian_simulation_schrodinger_dynamics.ipynb)
 
-```{image} ../../results/plots/real_examples/06_hamiltonian_simulation_schrodinger_dynamics-plot-01.png
+```{image} ../../results/plots/real_examples/05_hamiltonian_simulation_schrodinger_dynamics-plot-01.png
 :alt: Hamiltonian Simulation: Real-Time Dynamics plot 1
 :width: 760px
 ```
@@ -252,16 +211,16 @@ Output 1 (cell 5):
 State Error: 3.324978121461713e-13
 ```
 
-### `07_quantum_chemistry_h2_toy_solver.ipynb`
+### `06_quantum_chemistry_h2_toy_solver.ipynb`
 
-Source: [`notebooks/real_examples/07_quantum_chemistry_h2_toy_solver.ipynb`](../../notebooks/real_examples/07_quantum_chemistry_h2_toy_solver.ipynb)
+Source: [`notebooks/real_examples/06_quantum_chemistry_h2_toy_solver.ipynb`](../../notebooks/real_examples/06_quantum_chemistry_h2_toy_solver.ipynb)
 
-```{image} ../../results/plots/real_examples/07_quantum_chemistry_h2_toy_solver-plot-01.png
+```{image} ../../results/plots/real_examples/06_quantum_chemistry_h2_toy_solver-plot-01.png
 :alt: Quantum Chemistry: Toy H2 Hamiltonian Solver plot 1
 :width: 520px
 ```
 
-```{image} ../../results/plots/real_examples/07_quantum_chemistry_h2_toy_solver-plot-02.png
+```{image} ../../results/plots/real_examples/06_quantum_chemistry_h2_toy_solver-plot-02.png
 :alt: Quantum Chemistry: Toy H2 Hamiltonian Solver plot 2
 :width: 520px
 ```
@@ -280,11 +239,11 @@ Filtered Overlap [probability]: 6.719832005838039e-33
 Energy Estimate [hartree]: -0.9424088608987823
 ```
 
-### `08_greens_function_response.ipynb`
+### `07_greens_function_response.ipynb`
 
-Source: [`notebooks/real_examples/08_greens_function_response.ipynb`](../../notebooks/real_examples/08_greens_function_response.ipynb)
+Source: [`notebooks/real_examples/07_greens_function_response.ipynb`](../../notebooks/real_examples/07_greens_function_response.ipynb)
 
-```{image} ../../results/plots/real_examples/08_greens_function_response-plot-01.png
+```{image} ../../results/plots/real_examples/07_greens_function_response-plot-01.png
 :alt: Green's Functions: Resolvent Response Solver plot 1
 :width: 520px
 ```
@@ -295,11 +254,11 @@ Output 1 (cell 4):
 Response Error: 0.001236443161688136
 ```
 
-### `09_spectral_density_estimation.ipynb`
+### `08_spectral_density_estimation.ipynb`
 
-Source: [`notebooks/real_examples/09_spectral_density_estimation.ipynb`](../../notebooks/real_examples/09_spectral_density_estimation.ipynb)
+Source: [`notebooks/real_examples/08_spectral_density_estimation.ipynb`](../../notebooks/real_examples/08_spectral_density_estimation.ipynb)
 
-```{image} ../../results/plots/real_examples/09_spectral_density_estimation-plot-01.png
+```{image} ../../results/plots/real_examples/08_spectral_density_estimation-plot-01.png
 :alt: Spectral Density Estimation plot 1
 :width: 520px
 ```
@@ -310,11 +269,11 @@ Output 1 (cell 4):
 Curve Error: 0.0019122824182919095
 ```
 
-### `10_gibbs_state_thermal_weights.ipynb`
+### `09_gibbs_state_thermal_weights.ipynb`
 
-Source: [`notebooks/real_examples/10_gibbs_state_thermal_weights.ipynb`](../../notebooks/real_examples/10_gibbs_state_thermal_weights.ipynb)
+Source: [`notebooks/real_examples/09_gibbs_state_thermal_weights.ipynb`](../../notebooks/real_examples/09_gibbs_state_thermal_weights.ipynb)
 
-```{image} ../../results/plots/real_examples/10_gibbs_state_thermal_weights-plot-01.png
+```{image} ../../results/plots/real_examples/09_gibbs_state_thermal_weights-plot-01.png
 :alt: Gibbs States: Thermal Weight Solver plot 1
 :width: 520px
 ```
@@ -325,16 +284,16 @@ Output 1 (cell 4):
 Rho Error: 1.8102065129092896e-13
 ```
 
-### `11_transport_physics_landauer_chain.ipynb`
+### `10_transport_physics_landauer_chain.ipynb`
 
-Source: [`notebooks/real_examples/11_transport_physics_landauer_chain.ipynb`](../../notebooks/real_examples/11_transport_physics_landauer_chain.ipynb)
+Source: [`notebooks/real_examples/10_transport_physics_landauer_chain.ipynb`](../../notebooks/real_examples/10_transport_physics_landauer_chain.ipynb)
 
-```{image} ../../results/plots/real_examples/11_transport_physics_landauer_chain-plot-01.png
+```{image} ../../results/plots/real_examples/10_transport_physics_landauer_chain-plot-01.png
 :alt: Transport Physics: Landauer-Style Chain Transmission plot 1
 :width: 760px
 ```
 
-```{image} ../../results/plots/real_examples/11_transport_physics_landauer_chain-plot-02.png
+```{image} ../../results/plots/real_examples/10_transport_physics_landauer_chain-plot-02.png
 :alt: Transport Physics: Landauer-Style Chain Transmission plot 2
 :width: 520px
 ```
@@ -345,11 +304,11 @@ Output 1 (cell 4):
 Curve Error: 0.00625639231073604
 ```
 
-### `12_tensor_network_hybrid_filtering.ipynb`
+### `11_tensor_network_hybrid_filtering.ipynb`
 
-Source: [`notebooks/real_examples/12_tensor_network_hybrid_filtering.ipynb`](../../notebooks/real_examples/12_tensor_network_hybrid_filtering.ipynb)
+Source: [`notebooks/real_examples/11_tensor_network_hybrid_filtering.ipynb`](../../notebooks/real_examples/11_tensor_network_hybrid_filtering.ipynb)
 
-```{image} ../../results/plots/real_examples/12_tensor_network_hybrid_filtering-plot-01.png
+```{image} ../../results/plots/real_examples/11_tensor_network_hybrid_filtering-plot-01.png
 :alt: Tensor-Network Hybrid: Product-State Energy Filtering plot 1
 :width: 760px
 ```
@@ -363,26 +322,26 @@ Initial Overlap [probability]: 0.651393401185215
 Filtered Overlap [probability]: 0.8772155174329324
 ```
 
-### `13_heat_equation_2d_pde.ipynb`
+### `12_heat_equation_2d_pde.ipynb`
 
-Source: [`notebooks/real_examples/13_heat_equation_2d_pde.ipynb`](../../notebooks/real_examples/13_heat_equation_2d_pde.ipynb)
+Source: [`notebooks/real_examples/12_heat_equation_2d_pde.ipynb`](../../notebooks/real_examples/12_heat_equation_2d_pde.ipynb)
 
-```{image} ../../results/plots/real_examples/13_heat_equation_2d_pde-plot-01.png
+```{image} ../../results/plots/real_examples/12_heat_equation_2d_pde-plot-01.png
 :alt: Solving a Real Physics PDE: The 2D Heat Equation plot 1
 :width: 520px
 ```
 
-```{image} ../../results/plots/real_examples/13_heat_equation_2d_pde-plot-02.png
+```{image} ../../results/plots/real_examples/12_heat_equation_2d_pde-plot-02.png
 :alt: Solving a Real Physics PDE: The 2D Heat Equation plot 2
 :width: 520px
 ```
 
-```{image} ../../results/plots/real_examples/13_heat_equation_2d_pde-plot-03.png
+```{image} ../../results/plots/real_examples/12_heat_equation_2d_pde-plot-03.png
 :alt: Solving a Real Physics PDE: The 2D Heat Equation plot 3
 :width: 760px
 ```
 
-```{image} ../../results/plots/real_examples/13_heat_equation_2d_pde-plot-04.png
+```{image} ../../results/plots/real_examples/12_heat_equation_2d_pde-plot-04.png
 :alt: Solving a Real Physics PDE: The 2D Heat Equation plot 4
 :width: 520px
 ```
@@ -424,16 +383,16 @@ max_abs_difference [field units]: 3.149e-13
 validation: passed
 ```
 
-### `14_advection_diffusion_pde.ipynb`
+### `13_advection_diffusion_pde.ipynb`
 
-Source: [`notebooks/real_examples/14_advection_diffusion_pde.ipynb`](../../notebooks/real_examples/14_advection_diffusion_pde.ipynb)
+Source: [`notebooks/real_examples/13_advection_diffusion_pde.ipynb`](../../notebooks/real_examples/13_advection_diffusion_pde.ipynb)
 
-```{image} ../../results/plots/real_examples/14_advection_diffusion_pde-plot-01.png
+```{image} ../../results/plots/real_examples/13_advection_diffusion_pde-plot-01.png
 :alt: Advection-Diffusion as a Non-Hermitian PDE Example plot 1
 :width: 760px
 ```
 
-```{image} ../../results/plots/real_examples/14_advection_diffusion_pde-plot-02.png
+```{image} ../../results/plots/real_examples/13_advection_diffusion_pde-plot-02.png
 :alt: Advection-Diffusion as a Non-Hermitian PDE Example plot 2
 :width: 520px
 ```
@@ -461,16 +420,16 @@ relative_error: 2.281e-01
 validation: passed
 ```
 
-### `15_wave_equation_dynamics.ipynb`
+### `14_wave_equation_dynamics.ipynb`
 
-Source: [`notebooks/real_examples/15_wave_equation_dynamics.ipynb`](../../notebooks/real_examples/15_wave_equation_dynamics.ipynb)
+Source: [`notebooks/real_examples/14_wave_equation_dynamics.ipynb`](../../notebooks/real_examples/14_wave_equation_dynamics.ipynb)
 
-```{image} ../../results/plots/real_examples/15_wave_equation_dynamics-plot-01.png
+```{image} ../../results/plots/real_examples/14_wave_equation_dynamics-plot-01.png
 :alt: Wave Equation Dynamics from Spectral Polynomials plot 1
 :width: 760px
 ```
 
-```{image} ../../results/plots/real_examples/15_wave_equation_dynamics-plot-02.png
+```{image} ../../results/plots/real_examples/14_wave_equation_dynamics-plot-02.png
 :alt: Wave Equation Dynamics from Spectral Polynomials plot 2
 :width: 760px
 ```
@@ -497,16 +456,16 @@ relative_error: 2.942e-15
 validation: passed
 ```
 
-### `16_helmholtz_equation_pde.ipynb`
+### `15_helmholtz_equation_pde.ipynb`
 
-Source: [`notebooks/real_examples/16_helmholtz_equation_pde.ipynb`](../../notebooks/real_examples/16_helmholtz_equation_pde.ipynb)
+Source: [`notebooks/real_examples/15_helmholtz_equation_pde.ipynb`](../../notebooks/real_examples/15_helmholtz_equation_pde.ipynb)
 
-```{image} ../../results/plots/real_examples/16_helmholtz_equation_pde-plot-01.png
+```{image} ../../results/plots/real_examples/15_helmholtz_equation_pde-plot-01.png
 :alt: Helmholtz Equation with an Indefinite Spectrum plot 1
 :width: 760px
 ```
 
-```{image} ../../results/plots/real_examples/16_helmholtz_equation_pde-plot-02.png
+```{image} ../../results/plots/real_examples/15_helmholtz_equation_pde-plot-02.png
 :alt: Helmholtz Equation with an Indefinite Spectrum plot 2
 :width: 760px
 ```
@@ -535,16 +494,16 @@ relative_error: 1.687e-01
 validation: passed
 ```
 
-### `17_ssh_chain_edge_state_filtering.ipynb`
+### `16_ssh_chain_edge_state_filtering.ipynb`
 
-Source: [`notebooks/real_examples/17_ssh_chain_edge_state_filtering.ipynb`](../../notebooks/real_examples/17_ssh_chain_edge_state_filtering.ipynb)
+Source: [`notebooks/real_examples/16_ssh_chain_edge_state_filtering.ipynb`](../../notebooks/real_examples/16_ssh_chain_edge_state_filtering.ipynb)
 
-```{image} ../../results/plots/real_examples/17_ssh_chain_edge_state_filtering-plot-01.png
+```{image} ../../results/plots/real_examples/16_ssh_chain_edge_state_filtering-plot-01.png
 :alt: SSH Chain Edge-State Filtering plot 1
 :width: 760px
 ```
 
-```{image} ../../results/plots/real_examples/17_ssh_chain_edge_state_filtering-plot-02.png
+```{image} ../../results/plots/real_examples/16_ssh_chain_edge_state_filtering-plot-02.png
 :alt: SSH Chain Edge-State Filtering plot 2
 :width: 760px
 ```
@@ -571,11 +530,11 @@ projector_trace [states]: 2.033
 validation: passed
 ```
 
-### `18_anderson_localization.ipynb`
+### `17_anderson_localization.ipynb`
 
-Source: [`notebooks/real_examples/18_anderson_localization.ipynb`](../../notebooks/real_examples/18_anderson_localization.ipynb)
+Source: [`notebooks/real_examples/17_anderson_localization.ipynb`](../../notebooks/real_examples/17_anderson_localization.ipynb)
 
-```{image} ../../results/plots/real_examples/18_anderson_localization-plot-01.png
+```{image} ../../results/plots/real_examples/17_anderson_localization-plot-01.png
 :alt: Anderson Localization in a Disordered Tight-Binding Chain plot 1
 :width: 760px
 ```
@@ -604,16 +563,16 @@ peak_site_filter_weight [probability]: 0.1007
 validation: passed
 ```
 
-### `19_schrodinger_bound_states.ipynb`
+### `18_schrodinger_bound_states.ipynb`
 
-Source: [`notebooks/real_examples/19_schrodinger_bound_states.ipynb`](../../notebooks/real_examples/19_schrodinger_bound_states.ipynb)
+Source: [`notebooks/real_examples/18_schrodinger_bound_states.ipynb`](../../notebooks/real_examples/18_schrodinger_bound_states.ipynb)
 
-```{image} ../../results/plots/real_examples/19_schrodinger_bound_states-plot-01.png
+```{image} ../../results/plots/real_examples/18_schrodinger_bound_states-plot-01.png
 :alt: Schrödinger Bound States in a Potential Well plot 1
 :width: 760px
 ```
 
-```{image} ../../results/plots/real_examples/19_schrodinger_bound_states-plot-02.png
+```{image} ../../results/plots/real_examples/18_schrodinger_bound_states-plot-02.png
 :alt: Schrödinger Bound States in a Potential Well plot 2
 :width: 760px
 ```
@@ -642,11 +601,11 @@ filtered_energy [model energy units]: -6.5870
 validation: passed
 ```
 
-### `20_quantum_harmonic_oscillator_grid.ipynb`
+### `19_quantum_harmonic_oscillator_grid.ipynb`
 
-Source: [`notebooks/real_examples/20_quantum_harmonic_oscillator_grid.ipynb`](../../notebooks/real_examples/20_quantum_harmonic_oscillator_grid.ipynb)
+Source: [`notebooks/real_examples/19_quantum_harmonic_oscillator_grid.ipynb`](../../notebooks/real_examples/19_quantum_harmonic_oscillator_grid.ipynb)
 
-```{image} ../../results/plots/real_examples/20_quantum_harmonic_oscillator_grid-plot-01.png
+```{image} ../../results/plots/real_examples/19_quantum_harmonic_oscillator_grid-plot-01.png
 :alt: Quantum Harmonic Oscillator on a Grid plot 1
 :width: 760px
 ```
@@ -674,11 +633,11 @@ ground_overlap [probability]: 0.9970
 validation: passed
 ```
 
-### `21_electrostatic_green_function_poisson.ipynb`
+### `20_electrostatic_green_function_poisson.ipynb`
 
-Source: [`notebooks/real_examples/21_electrostatic_green_function_poisson.ipynb`](../../notebooks/real_examples/21_electrostatic_green_function_poisson.ipynb)
+Source: [`notebooks/real_examples/20_electrostatic_green_function_poisson.ipynb`](../../notebooks/real_examples/20_electrostatic_green_function_poisson.ipynb)
 
-```{image} ../../results/plots/real_examples/21_electrostatic_green_function_poisson-plot-01.png
+```{image} ../../results/plots/real_examples/20_electrostatic_green_function_poisson-plot-01.png
 :alt: Electrostatic Green's Function from a 2D Poisson Solve plot 1
 :width: 760px
 ```
@@ -710,16 +669,16 @@ relative_error: 2.680e-01
 validation: passed
 ```
 
-### `22_coupled_oscillator_normal_modes.ipynb`
+### `21_coupled_oscillator_normal_modes.ipynb`
 
-Source: [`notebooks/real_examples/22_coupled_oscillator_normal_modes.ipynb`](../../notebooks/real_examples/22_coupled_oscillator_normal_modes.ipynb)
+Source: [`notebooks/real_examples/21_coupled_oscillator_normal_modes.ipynb`](../../notebooks/real_examples/21_coupled_oscillator_normal_modes.ipynb)
 
-```{image} ../../results/plots/real_examples/22_coupled_oscillator_normal_modes-plot-01.png
+```{image} ../../results/plots/real_examples/21_coupled_oscillator_normal_modes-plot-01.png
 :alt: Coupled Oscillator Normal Modes plot 1
 :width: 760px
 ```
 
-```{image} ../../results/plots/real_examples/22_coupled_oscillator_normal_modes-plot-02.png
+```{image} ../../results/plots/real_examples/21_coupled_oscillator_normal_modes-plot-02.png
 :alt: Coupled Oscillator Normal Modes plot 2
 :width: 760px
 ```
@@ -745,16 +704,16 @@ slow_mode_overlap [probability]: 0.9147
 validation: passed
 ```
 
-### `23_ising_phase_transition_filtering.ipynb`
+### `22_ising_phase_transition_filtering.ipynb`
 
-Source: [`notebooks/real_examples/23_ising_phase_transition_filtering.ipynb`](../../notebooks/real_examples/23_ising_phase_transition_filtering.ipynb)
+Source: [`notebooks/real_examples/22_ising_phase_transition_filtering.ipynb`](../../notebooks/real_examples/22_ising_phase_transition_filtering.ipynb)
 
-```{image} ../../results/plots/real_examples/23_ising_phase_transition_filtering-plot-01.png
+```{image} ../../results/plots/real_examples/22_ising_phase_transition_filtering-plot-01.png
 :alt: Transverse-Field Ising Phase Transition Filtering plot 1
 :width: 760px
 ```
 
-```{image} ../../results/plots/real_examples/23_ising_phase_transition_filtering-plot-02.png
+```{image} ../../results/plots/real_examples/22_ising_phase_transition_filtering-plot-02.png
 :alt: Transverse-Field Ising Phase Transition Filtering plot 2
 :width: 760px
 ```
@@ -786,16 +745,16 @@ projector_error: 0.529
 validation: passed
 ```
 
-### `24_diffusion_heat_treatment_slab.ipynb`
+### `23_diffusion_heat_treatment_slab.ipynb`
 
-Source: [`notebooks/real_examples/24_diffusion_heat_treatment_slab.ipynb`](../../notebooks/real_examples/24_diffusion_heat_treatment_slab.ipynb)
+Source: [`notebooks/real_examples/23_diffusion_heat_treatment_slab.ipynb`](../../notebooks/real_examples/23_diffusion_heat_treatment_slab.ipynb)
 
-```{image} ../../results/plots/real_examples/24_diffusion_heat_treatment_slab-plot-01.png
+```{image} ../../results/plots/real_examples/23_diffusion_heat_treatment_slab-plot-01.png
 :alt: Diffusion-Limited Heat Treatment in a Slab plot 1
 :width: 760px
 ```
 
-```{image} ../../results/plots/real_examples/24_diffusion_heat_treatment_slab-plot-02.png
+```{image} ../../results/plots/real_examples/23_diffusion_heat_treatment_slab-plot-02.png
 :alt: Diffusion-Limited Heat Treatment in a Slab plot 2
 :width: 760px
 ```
@@ -815,16 +774,16 @@ cooled_norm [temperature units]: 2.7152
 validation: passed
 ```
 
-### `25_graphene_nanoribbon_density_of_states.ipynb`
+### `24_graphene_nanoribbon_density_of_states.ipynb`
 
-Source: [`notebooks/real_examples/25_graphene_nanoribbon_density_of_states.ipynb`](../../notebooks/real_examples/25_graphene_nanoribbon_density_of_states.ipynb)
+Source: [`notebooks/real_examples/24_graphene_nanoribbon_density_of_states.ipynb`](../../notebooks/real_examples/24_graphene_nanoribbon_density_of_states.ipynb)
 
-```{image} ../../results/plots/real_examples/25_graphene_nanoribbon_density_of_states-plot-01.png
+```{image} ../../results/plots/real_examples/24_graphene_nanoribbon_density_of_states-plot-01.png
 :alt: Graphene Nanoribbon Density of States plot 1
 :width: 520px
 ```
 
-```{image} ../../results/plots/real_examples/25_graphene_nanoribbon_density_of_states-plot-02.png
+```{image} ../../results/plots/real_examples/24_graphene_nanoribbon_density_of_states-plot-02.png
 :alt: Graphene Nanoribbon Density of States plot 2
 :width: 760px
 ```
@@ -843,11 +802,11 @@ edge_fraction_of_near_zero_ldos [probability]: 0.664
 validation: passed
 ```
 
-### `26_fermi_dirac_electronic_occupations.ipynb`
+### `25_fermi_dirac_electronic_occupations.ipynb`
 
-Source: [`notebooks/real_examples/26_fermi_dirac_electronic_occupations.ipynb`](../../notebooks/real_examples/26_fermi_dirac_electronic_occupations.ipynb)
+Source: [`notebooks/real_examples/25_fermi_dirac_electronic_occupations.ipynb`](../../notebooks/real_examples/25_fermi_dirac_electronic_occupations.ipynb)
 
-```{image} ../../results/plots/real_examples/26_fermi_dirac_electronic_occupations-plot-01.png
+```{image} ../../results/plots/real_examples/25_fermi_dirac_electronic_occupations-plot-01.png
 :alt: Fermi-Dirac Electronic Occupations plot 1
 :width: 760px
 ```
@@ -869,21 +828,21 @@ polynomial_particle_number [electrons]: 9.385
 validation: passed
 ```
 
-### `27_photonic_crystal_band_gap_filtering.ipynb`
+### `26_photonic_crystal_band_gap_filtering.ipynb`
 
-Source: [`notebooks/real_examples/27_photonic_crystal_band_gap_filtering.ipynb`](../../notebooks/real_examples/27_photonic_crystal_band_gap_filtering.ipynb)
+Source: [`notebooks/real_examples/26_photonic_crystal_band_gap_filtering.ipynb`](../../notebooks/real_examples/26_photonic_crystal_band_gap_filtering.ipynb)
 
-```{image} ../../results/plots/real_examples/27_photonic_crystal_band_gap_filtering-plot-01.png
+```{image} ../../results/plots/real_examples/26_photonic_crystal_band_gap_filtering-plot-01.png
 :alt: Photonic Crystal Band-Gap Filtering plot 1
 :width: 760px
 ```
 
-```{image} ../../results/plots/real_examples/27_photonic_crystal_band_gap_filtering-plot-02.png
+```{image} ../../results/plots/real_examples/26_photonic_crystal_band_gap_filtering-plot-02.png
 :alt: Photonic Crystal Band-Gap Filtering plot 2
 :width: 760px
 ```
 
-```{image} ../../results/plots/real_examples/27_photonic_crystal_band_gap_filtering-plot-03.png
+```{image} ../../results/plots/real_examples/26_photonic_crystal_band_gap_filtering-plot-03.png
 :alt: Photonic Crystal Band-Gap Filtering plot 3
 :width: 760px
 ```
@@ -905,16 +864,16 @@ max_window_weight: 0.814
 validation: passed
 ```
 
-### `28_topological_band_projector_chern_marker.ipynb`
+### `27_topological_band_projector_chern_marker.ipynb`
 
-Source: [`notebooks/real_examples/28_topological_band_projector_chern_marker.ipynb`](../../notebooks/real_examples/28_topological_band_projector_chern_marker.ipynb)
+Source: [`notebooks/real_examples/27_topological_band_projector_chern_marker.ipynb`](../../notebooks/real_examples/27_topological_band_projector_chern_marker.ipynb)
 
-```{image} ../../results/plots/real_examples/28_topological_band_projector_chern_marker-plot-01.png
+```{image} ../../results/plots/real_examples/27_topological_band_projector_chern_marker-plot-01.png
 :alt: Topological Band Projector and Chern Marker plot 1
 :width: 520px
 ```
 
-```{image} ../../results/plots/real_examples/28_topological_band_projector_chern_marker-plot-02.png
+```{image} ../../results/plots/real_examples/27_topological_band_projector_chern_marker-plot-02.png
 :alt: Topological Band Projector and Chern Marker plot 2
 :width: 760px
 ```
@@ -942,16 +901,16 @@ Bulk exact marker [Chern marker]: 0.9583268200049554
 Bulk polynomial marker [Chern marker]: 0.6430191290198954
 ```
 
-### `29_block_encoded_laplacian_smoothing.ipynb`
+### `28_block_encoded_laplacian_smoothing.ipynb`
 
-Source: [`notebooks/real_examples/29_block_encoded_laplacian_smoothing.ipynb`](../../notebooks/real_examples/29_block_encoded_laplacian_smoothing.ipynb)
+Source: [`notebooks/real_examples/28_block_encoded_laplacian_smoothing.ipynb`](../../notebooks/real_examples/28_block_encoded_laplacian_smoothing.ipynb)
 
-```{image} ../../results/plots/real_examples/29_block_encoded_laplacian_smoothing-plot-01.png
+```{image} ../../results/plots/real_examples/28_block_encoded_laplacian_smoothing-plot-01.png
 :alt: Block-Encoded QSVT Laplacian Smoothing plot 1
 :width: 760px
 ```
 
-```{image} ../../results/plots/real_examples/29_block_encoded_laplacian_smoothing-plot-02.png
+```{image} ../../results/plots/real_examples/28_block_encoded_laplacian_smoothing-plot-02.png
 :alt: Block-Encoded QSVT Laplacian Smoothing plot 2
 :width: 760px
 ```

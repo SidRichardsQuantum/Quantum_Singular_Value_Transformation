@@ -198,11 +198,20 @@ asymptotic resource estimates.
 
 ## Public API Status
 
-The package root exposes `__api_status__ = "alpha"` and a
-`__public_api_policy__` string. Names in `qsvt.__all__` are the intended public
-surface, but the project is still in the `0.x` series. Incompatible changes
-should be documented in the changelog and should use a deprecation period when
-practical.
+The package root exposes `__api_status__ = "alpha"`, a
+`__public_api_policy__` string, and `qsvt.api_status(name)`. Names in
+`qsvt.__all__` are the intended public surface, but the project is still in the
+`0.x` series.
+
+`qsvt.api_status(name)` returns:
+
+- `stable` for workflow-level helpers, report/export utilities, and benchmark
+  baselines that are intended as the primary user-facing surface,
+- `experimental` for lower-level circuit execution, backend-adapter helpers,
+  and any exported name that has not yet been explicitly promoted.
+
+Incompatible changes should be documented in the changelog and should use a
+deprecation period when practical.
 
 ## Scope Boundaries
 

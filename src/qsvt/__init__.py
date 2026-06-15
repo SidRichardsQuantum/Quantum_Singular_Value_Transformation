@@ -45,6 +45,12 @@ from .algorithms import (
     thermal_gibbs_workflow,
     write_linear_system_comparison_csv,
 )
+from .api import (
+    API_STATUS_EXPERIMENTAL,
+    API_STATUS_STABLE,
+    __api_statuses__,
+    api_status,
+)
 from .approximation import (
     approximation_quality_report,
     chebyshev_approximant,
@@ -232,14 +238,19 @@ except PackageNotFoundError:  # pragma: no cover
 __api_status__ = "alpha"
 __public_api_policy__ = (
     "Names exported from qsvt.__all__ are the intended public API. During the "
-    "0.x series, incompatible changes should be documented in the changelog and "
-    "prefer a deprecation period when practical."
+    "0.x series, qsvt.api_status(name) identifies stable workflow-level names "
+    "and experimental lower-level names. Incompatible changes should be "
+    "documented in the changelog and prefer a deprecation period when practical."
 )
 
 __all__ = [
     "__version__",
     "__api_status__",
+    "__api_statuses__",
     "__public_api_policy__",
+    "API_STATUS_EXPERIMENTAL",
+    "API_STATUS_STABLE",
+    "api_status",
     "GroundStateFilteringWorkflowResult",
     "BlockEncodedQSVTWorkflowResult",
     "HamiltonianSimulationWorkflowResult",

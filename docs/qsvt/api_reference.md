@@ -40,6 +40,7 @@ The package is organised into the following modules:
 - `qsvt.reports`
 - `qsvt.resources`
 - `qsvt.benchmarks`
+- `qsvt.api`
 - `qsvt.operators`
 - `qsvt.execution`
 - `qsvt.diagonal`
@@ -70,6 +71,21 @@ For the higher-level polynomial builders and ready-made templates, see:
 - [Implementation notes](implementation.md)
 - [Diagnostics reports](reports.md)
 - [QSVT transform reports](qsvt_reports.md)
+
+### `qsvt.api`
+
+During the `0.x` series, exported names carry coarse stability labels:
+
+```python
+import qsvt
+
+qsvt.api_status("design_workflow")
+qsvt.api_status("execute_qsvt_circuit")
+```
+
+Workflow-level helpers, report/export utilities, and benchmark baselines are
+the most stable user-facing surface. Lower-level circuit execution and backend
+adapter helpers are marked experimental until the package approaches `1.0`.
 
 ### `qsvt.workflow`
 

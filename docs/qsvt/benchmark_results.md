@@ -9,7 +9,7 @@ This generated page displays embedded benchmark plots and text outputs from the 
 
 - Source notebooks: `notebooks/benchmarks/`
 - Notebooks displayed: `5`
-- Embedded plot artefacts displayed: `10`
+- Embedded plot artefacts displayed: `13`
 - Plain-text notebook results displayed: `8`
 - Plot manifest: [`results/tables/benchmark_plot_manifest.csv`](../../results/tables/benchmark_plot_manifest.csv)
 
@@ -100,6 +100,11 @@ Source: [`notebooks/benchmarks/02_matrix_functions_spectral_baselines.ipynb`](..
 :width: 520px
 ```
 
+```{image} ../../results/plots/benchmarks/02_matrix_functions_spectral_baselines-plot-03.png
+:alt: Matrix-Function Spectral Baselines plot 3
+:width: 760px
+```
+
 Output 1 (cell 8):
 
 ```text
@@ -123,6 +128,11 @@ Source: [`notebooks/benchmarks/03_scaling_sweeps.ipynb`](../../notebooks/benchma
 ```{image} ../../results/plots/benchmarks/03_scaling_sweeps-plot-02.png
 :alt: Scaling Sweeps For Classical Baselines And QSVT Proxies plot 2
 :width: 520px
+```
+
+```{image} ../../results/plots/benchmarks/03_scaling_sweeps-plot-03.png
+:alt: Scaling Sweeps For Classical Baselines And QSVT Proxies plot 3
+:width: 760px
 ```
 
 Output 1 (cell 8):
@@ -149,6 +159,11 @@ Source: [`notebooks/benchmarks/04_classical_baseline_assumptions.ipynb`](../../n
 :width: 520px
 ```
 
+```{image} ../../results/plots/benchmarks/04_classical_baseline_assumptions-plot-03.png
+:alt: Classical Baseline Assumptions plot 3
+:width: 760px
+```
+
 Output 1 (cell 8):
 
 ```text
@@ -169,8 +184,8 @@ Matrix-function baseline readout
 ================================
 Case  Classical algorithm             QSVT degree [polynomial degree]  Signal calls [operator calls]  Best time (s)
 ----  ------------------------------  -------------------------------  -----------------------------  -------------
-DSMF  dense-spectral-matrix-function  n/a                              n/a                            1.30e-04
-PME   spectral-polynomial-evaluation  2                                2                              1.43e-04
+DSMF  dense-spectral-matrix-function  n/a                              n/a                            3.24e-04
+PME   spectral-polynomial-evaluation  2                                2                              1.46e-04
 
 DSMF is the exact dense spectral reference. PME applies the supplied polynomial classically and is the closest fixed-polynomial comparison to a QSVT sequence.
 ```

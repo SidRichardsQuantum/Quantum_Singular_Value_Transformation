@@ -35,6 +35,7 @@ def test_package_exposes_pep561_type_marker():
 def test_top_level_public_api_exports_are_resolvable():
     assert qsvt.__api_status__ == "alpha"
     assert "qsvt.__all__" in qsvt.__public_api_policy__
+    assert "qsvt.api_status(name)" in qsvt.__public_api_policy__
 
     exported = set(qsvt.__all__)
     for name in exported:
@@ -69,6 +70,13 @@ def test_top_level_public_api_exports_are_resolvable():
         "write_linear_system_comparison_csv",
     }
     assert expected_stable_surface <= exported
+    assert qsvt.api_status("design_workflow") == qsvt.API_STATUS_STABLE
+    assert qsvt.api_status("execute_qsvt_circuit") == qsvt.API_STATUS_EXPERIMENTAL
+    assert qsvt.api_status("unknown_future_name") == qsvt.API_STATUS_EXPERIMENTAL
+    assert set(qsvt.__api_statuses__.values()) <= {
+        qsvt.API_STATUS_STABLE,
+        qsvt.API_STATUS_EXPERIMENTAL,
+    }
 
 
 @pytest.mark.parametrize("n", [-1, -3])
