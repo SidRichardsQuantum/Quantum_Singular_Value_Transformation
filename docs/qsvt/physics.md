@@ -13,13 +13,24 @@ The real-example notebooks in `notebooks/real_examples/` use this pattern for
 Hamiltonian simulation, ground-state filtering, quantum chemistry, Green's
 functions, spectral density estimation, Gibbs states, PDE linear systems,
 transport physics, spin-chain phase diagnostics, electronic occupations,
-photonic band gaps, graphene nanoribbon density of states, and tensor-network
-hybrid filtering.
+singular-value inverse problems, photonic band gaps, graphene nanoribbon
+density of states, and tensor-network hybrid filtering.
 
 For concise theory and diagnostics notes on the high-level workflow functions,
 see [Algorithm notes](algorithms.md). For coefficient conventions, rescaling,
 boundedness checks, and report serialization choices, see
 [Implementation notes](implementation.md).
+
+Focused theory notes for the main physics algorithm families are also
+available:
+
+- [Linear systems](linear_systems.md) covers inverse-polynomial workflows,
+  solver comparisons, and finite HHL circuit execution.
+- [Spectral filters](spectral_filters.md) covers ground-state filtering,
+  interval projectors, sign/threshold filters, and spectral density windows.
+- [Time evolution and response](time_evolution_and_response.md) covers
+  Hamiltonian simulation, resolvents, imaginary-time evolution, and Gibbs
+  weighting.
 
 ## Hamiltonians
 
@@ -162,6 +173,9 @@ The workflow is intended for educational and simulator-scale experiments. It
 does not replace production state preparation, block-encoding construction, or
 fault-tolerant resource estimation.
 
+See [Linear systems](linear_systems.md) for the inverse-polynomial and HHL
+theory behind these workflows.
+
 ## Algorithm Workflows
 
 `qsvt.algorithms` also provides end-to-end workflows for common small physics
@@ -169,7 +183,9 @@ tasks. These combine rescaling, polynomial design, spectral reference
 calculations, and diagnostics:
 
 - `ground_state_filtering_workflow(matrix, state, degree=...)`
+- `fermi_dirac_occupation_workflow(matrix, chemical_potential=..., beta=..., degree=...)`
 - `hamiltonian_simulation_workflow(matrix, state, time=..., degree=...)`
+- `singular_value_pseudoinverse_workflow(matrix, rhs, cutoff=..., degree=...)`
 - `resolvent_workflow(matrix, omega=..., eta=..., degree=..., source=None)`
 - `spectral_density_workflow(matrix, centers, width=..., degree=..., state=None)`
 - `thermal_gibbs_workflow(matrix, beta=..., degree=..., state=None)`
@@ -195,6 +211,19 @@ print(result.norm_drift)
 Each workflow result exposes `as_report()` for JSON-safe conversion through
 `qsvt.reports.report_to_jsonable`.
 
+See [Spectral filters](spectral_filters.md) for filtering and projector
+workflows, and [Time evolution and response](time_evolution_and_response.md)
+for Hamiltonian simulation, resolvents, and Gibbs weighting.
+
+For concrete package-client examples, see
+`notebooks/real_examples/25_fermi_dirac_electronic_occupations.ipynb` for
+finite-temperature electronic occupations and
+`notebooks/real_examples/29_singular_value_pseudoinverse_deblurring.ipynb` for
+a regularized inverse problem driven by singular-value pseudoinverse
+polynomials, and
+`notebooks/real_examples/30_matrix_log_entropy_graph_laplacian.ipynb` for a
+regularized graph-spectrum entropy diagnostic.
+
 ## Interval Projectors
 
 `qsvt.design.design_interval_projector_polynomial` builds a bounded smooth
@@ -213,3 +242,6 @@ coeffs = design_interval_projector_polynomial(
 
 This is useful for spectral windows, density-of-states demos, band filtering,
 and projector-style workflows where both interval edges matter.
+
+See [Spectral filters](spectral_filters.md) for the related filter and
+projector theory.

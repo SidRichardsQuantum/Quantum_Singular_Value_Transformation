@@ -201,7 +201,7 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.2.5`
+Current release: `0.2.6`
 
 ## Notebooks
 
@@ -214,10 +214,11 @@ resource-proxy limitations.
 Real physics examples live in `notebooks/real_examples/` and cover Hamiltonian
 simulation, ground-state filtering, quantum chemistry, Green's functions,
 spectral density estimation, Gibbs states, PDE systems, transport physics,
-spin-chain diagnostics, electronic occupations, photonic band gaps, graphene
-density of states, topological band projectors, and tensor-network hybrid
-filtering. Each real-example notebook includes a near-top orientation block for
-the system, QSVT implementation strategy, and quantum relevance.
+spin-chain diagnostics, electronic occupations, singular-value inverse
+problems, matrix-log graph entropy, photonic band gaps, graphene density of
+states, topological band projectors, and tensor-network hybrid filtering. Each
+real-example notebook includes a near-top orientation block for the system,
+QSVT implementation strategy, and quantum relevance.
 
 Benchmark notebooks live in `notebooks/benchmarks/` and compare classical
 linear-system, spectral, and polynomial matrix-function baselines against

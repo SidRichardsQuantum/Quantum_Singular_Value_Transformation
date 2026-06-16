@@ -8,6 +8,7 @@ application, and classical diagnostics into small executable workflows.
 from __future__ import annotations
 
 import csv
+import math
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
@@ -16,6 +17,7 @@ from typing import Any
 import numpy as np
 
 from ._algorithm_reports import algorithm_truth_contract, scaled_operator_report
+from .approximation import chebyshev_fit_function
 from .block_encoding import BlockEncoding, block_encode_matrix, verify_block_encoding
 from .compatibility import qsvt_compatibility_report
 from .design import (
@@ -33,6 +35,7 @@ from .matrix_functions import (
     design_real_time_evolution_polynomials,
     design_resolvent_polynomials,
 )
+from .polynomials import chebyshev_to_monomial, eval_polynomial
 from .rescaling import (
     ScaledOperator,
     rescale_hermitian_to_unit_interval,
@@ -602,6 +605,290 @@ class BlockEncodedQSVTWorkflowResult:
         }
 
 
+@dataclass(frozen=True)
+class SingularValueFilteringWorkflowResult:
+    """
+    Structured output from a rectangular singular-value filter workflow.
+    """
+
+    coeffs: np.ndarray
+    matrix: np.ndarray
+    singular_values: np.ndarray
+    normalized_singular_values: np.ndarray
+    polynomial_matrix: np.ndarray
+    reference_matrix: np.ndarray
+    cutoff: float
+    sharpness: float
+    scale: float
+    degree: int
+    operator_relative_error: float
+    input_vector: np.ndarray | None = None
+    polynomial_output: np.ndarray | None = None
+    reference_output: np.ndarray | None = None
+    output_relative_error: float | None = None
+
+    def as_report(self) -> dict[str, Any]:
+        return {
+            "mode": "singular-value-filtering-workflow",
+            "implementation_kind": "dense-svd-polynomial-workflow",
+            "truth_contract": algorithm_truth_contract(
+                "singular-value-filtering-workflow",
+                target="rectangular singular-value filter transform",
+            ),
+            "degree": self.degree,
+            "cutoff": self.cutoff,
+            "sharpness": self.sharpness,
+            "scale": self.scale,
+            "coeffs": self.coeffs,
+            "matrix": self.matrix,
+            "singular_values": self.singular_values,
+            "normalized_singular_values": self.normalized_singular_values,
+            "polynomial_matrix": self.polynomial_matrix,
+            "reference_matrix": self.reference_matrix,
+            "operator_relative_error": self.operator_relative_error,
+            "input_vector": self.input_vector,
+            "polynomial_output": self.polynomial_output,
+            "reference_output": self.reference_output,
+            "output_relative_error": self.output_relative_error,
+        }
+
+
+@dataclass(frozen=True)
+class SingularValuePseudoinverseWorkflowResult:
+    """
+    Structured output from a truncated SVD pseudoinverse workflow.
+    """
+
+    coeffs: np.ndarray
+    matrix: np.ndarray
+    rhs: np.ndarray
+    singular_values: np.ndarray
+    normalized_singular_values: np.ndarray
+    polynomial_solution: np.ndarray
+    reference_solution: np.ndarray
+    polynomial_pseudoinverse: np.ndarray
+    reference_pseudoinverse: np.ndarray
+    cutoff: float
+    scale: float
+    degree: int
+    residual_norm: float
+    reference_residual_norm: float
+    solution_relative_error: float
+    operator_relative_error: float
+
+    def as_report(self) -> dict[str, Any]:
+        return {
+            "mode": "singular-value-pseudoinverse-workflow",
+            "implementation_kind": "dense-svd-polynomial-workflow",
+            "truth_contract": algorithm_truth_contract(
+                "singular-value-pseudoinverse-workflow",
+                target="truncated singular-value pseudoinverse action",
+            ),
+            "degree": self.degree,
+            "cutoff": self.cutoff,
+            "scale": self.scale,
+            "coeffs": self.coeffs,
+            "matrix": self.matrix,
+            "rhs": self.rhs,
+            "singular_values": self.singular_values,
+            "normalized_singular_values": self.normalized_singular_values,
+            "polynomial_solution": self.polynomial_solution,
+            "reference_solution": self.reference_solution,
+            "polynomial_pseudoinverse": self.polynomial_pseudoinverse,
+            "reference_pseudoinverse": self.reference_pseudoinverse,
+            "residual_norm": self.residual_norm,
+            "reference_residual_norm": self.reference_residual_norm,
+            "solution_relative_error": self.solution_relative_error,
+            "operator_relative_error": self.operator_relative_error,
+        }
+
+
+@dataclass(frozen=True)
+class FermiDiracWorkflowResult:
+    """
+    Structured output from a Fermi-Dirac occupation workflow.
+    """
+
+    coeffs: np.ndarray
+    scaled_operator: ScaledOperator
+    polynomial_occupation_operator: np.ndarray
+    reference_occupation_operator: np.ndarray
+    chemical_potential: float
+    beta: float
+    degree: int
+    particle_number: float | complex
+    reference_particle_number: float | complex
+    operator_relative_error: float
+    state: np.ndarray | None = None
+    polynomial_state_occupation: float | complex | None = None
+    reference_state_occupation: float | complex | None = None
+    state_occupation_error: float | None = None
+
+    def as_report(self) -> dict[str, Any]:
+        return {
+            "mode": "fermi-dirac-occupation-workflow",
+            "implementation_kind": "dense-spectral-polynomial-workflow",
+            "truth_contract": algorithm_truth_contract(
+                "fermi-dirac-occupation-workflow",
+                target="finite-temperature Fermi-Dirac spectral occupation",
+            ),
+            "chemical_potential": self.chemical_potential,
+            "beta": self.beta,
+            "degree": self.degree,
+            "coeffs": self.coeffs,
+            "scaled_operator": scaled_operator_report(self.scaled_operator),
+            "polynomial_occupation_operator": self.polynomial_occupation_operator,
+            "reference_occupation_operator": self.reference_occupation_operator,
+            "particle_number": self.particle_number,
+            "reference_particle_number": self.reference_particle_number,
+            "operator_relative_error": self.operator_relative_error,
+            "state": self.state,
+            "polynomial_state_occupation": self.polynomial_state_occupation,
+            "reference_state_occupation": self.reference_state_occupation,
+            "state_occupation_error": self.state_occupation_error,
+        }
+
+
+@dataclass(frozen=True)
+class MatrixLogEntropyWorkflowResult:
+    """
+    Structured output from a regularized matrix-log and entropy workflow.
+    """
+
+    log_coeffs: np.ndarray
+    entropy_coeffs: np.ndarray
+    scaled_operator: ScaledOperator
+    polynomial_log_operator: np.ndarray
+    reference_log_operator: np.ndarray
+    polynomial_entropy_operator: np.ndarray
+    reference_entropy_operator: np.ndarray
+    epsilon: float
+    degree: int
+    polynomial_entropy: float | complex
+    reference_entropy: float | complex
+    log_operator_relative_error: float
+    entropy_operator_relative_error: float
+
+    def as_report(self) -> dict[str, Any]:
+        return {
+            "mode": "matrix-log-entropy-workflow",
+            "implementation_kind": "dense-spectral-polynomial-workflow",
+            "truth_contract": algorithm_truth_contract(
+                "matrix-log-entropy-workflow",
+                target="regularized matrix logarithm and x log x entropy density",
+            ),
+            "epsilon": self.epsilon,
+            "degree": self.degree,
+            "log_coeffs": self.log_coeffs,
+            "entropy_coeffs": self.entropy_coeffs,
+            "scaled_operator": scaled_operator_report(self.scaled_operator),
+            "polynomial_log_operator": self.polynomial_log_operator,
+            "reference_log_operator": self.reference_log_operator,
+            "polynomial_entropy_operator": self.polynomial_entropy_operator,
+            "reference_entropy_operator": self.reference_entropy_operator,
+            "polynomial_entropy": self.polynomial_entropy,
+            "reference_entropy": self.reference_entropy,
+            "log_operator_relative_error": self.log_operator_relative_error,
+            "entropy_operator_relative_error": self.entropy_operator_relative_error,
+        }
+
+
+@dataclass(frozen=True)
+class SpectralCountingWorkflowResult:
+    """
+    Structured output from a spectral interval-counting workflow.
+    """
+
+    coeffs: np.ndarray
+    scaled_operator: ScaledOperator
+    polynomial_projector: np.ndarray
+    reference_projector: np.ndarray
+    lower: float
+    upper: float
+    scaled_lower: float
+    scaled_upper: float
+    sharpness: float
+    degree: int
+    exact_count: int
+    polynomial_count: float | complex
+    count_error: float
+    stochastic_count: float | None = None
+    stochastic_count_error: float | None = None
+    probe_count: int | None = None
+
+    def as_report(self) -> dict[str, Any]:
+        return {
+            "mode": "spectral-counting-workflow",
+            "implementation_kind": "dense-spectral-polynomial-workflow",
+            "truth_contract": algorithm_truth_contract(
+                "spectral-counting-workflow",
+                target="spectral interval counting through smooth projector traces",
+            ),
+            "degree": self.degree,
+            "lower": self.lower,
+            "upper": self.upper,
+            "scaled_lower": self.scaled_lower,
+            "scaled_upper": self.scaled_upper,
+            "sharpness": self.sharpness,
+            "coeffs": self.coeffs,
+            "scaled_operator": scaled_operator_report(self.scaled_operator),
+            "polynomial_projector": self.polynomial_projector,
+            "reference_projector": self.reference_projector,
+            "exact_count": self.exact_count,
+            "polynomial_count": self.polynomial_count,
+            "count_error": self.count_error,
+            "stochastic_count": self.stochastic_count,
+            "stochastic_count_error": self.stochastic_count_error,
+            "probe_count": self.probe_count,
+        }
+
+
+@dataclass(frozen=True)
+class FixedPointAmplificationWorkflowResult:
+    """
+    Structured output from a monotone fixed-point spectral amplification workflow.
+    """
+
+    coeffs: np.ndarray
+    score_operator: np.ndarray
+    input_state: np.ndarray
+    amplified_state: np.ndarray
+    reference_state: np.ndarray
+    polynomial_operator: np.ndarray
+    reference_operator: np.ndarray
+    rounds: int
+    degree: int
+    initial_score: float | complex
+    amplified_score: float | complex
+    reference_score: float | complex
+    state_relative_error: float
+    operator_relative_error: float
+
+    def as_report(self) -> dict[str, Any]:
+        return {
+            "mode": "fixed-point-amplification-workflow",
+            "implementation_kind": "dense-spectral-polynomial-workflow",
+            "truth_contract": algorithm_truth_contract(
+                "fixed-point-amplification-workflow",
+                target="monotone fixed-point polynomial amplification of scores",
+            ),
+            "rounds": self.rounds,
+            "degree": self.degree,
+            "coeffs": self.coeffs,
+            "score_operator": self.score_operator,
+            "input_state": self.input_state,
+            "amplified_state": self.amplified_state,
+            "reference_state": self.reference_state,
+            "polynomial_operator": self.polynomial_operator,
+            "reference_operator": self.reference_operator,
+            "initial_score": self.initial_score,
+            "amplified_score": self.amplified_score,
+            "reference_score": self.reference_score,
+            "state_relative_error": self.state_relative_error,
+            "operator_relative_error": self.operator_relative_error,
+        }
+
+
 def _block_encoded_qsvt_truth_contract(*, qsvt_check: str) -> dict[str, object]:
     if qsvt_check not in {"succeeded", "failed"}:
         raise ValueError("qsvt_check must be 'succeeded' or 'failed'.")
@@ -770,6 +1057,451 @@ def _gaussian_window_function(
         return np.exp(-0.5 * ((x - center) / width) ** 2)
 
     return gaussian_window
+
+
+def _validate_matrix_2d(matrix: np.ndarray, name: str = "matrix") -> np.ndarray:
+    A = np.asarray(matrix, dtype=complex if np.iscomplexobj(matrix) else float)
+    if A.ndim != 2:
+        raise ValueError(f"{name} must be a two-dimensional array.")
+    if min(A.shape) == 0:
+        raise ValueError(f"{name} must have nonzero dimensions.")
+    return A
+
+
+def _svd_filter_matrix(
+    matrix: np.ndarray,
+    singular_weights: np.ndarray,
+) -> np.ndarray:
+    U, _, Vh = np.linalg.svd(matrix, full_matrices=False)
+    return U @ np.diag(singular_weights) @ Vh
+
+
+def _relative_matrix_error(reference: np.ndarray, approximate: np.ndarray) -> float:
+    return _relative_error(np.ravel(reference), np.ravel(approximate))
+
+
+def _stable_fermi_dirac(
+    energies: np.ndarray,
+    *,
+    chemical_potential: float,
+    beta: float,
+) -> np.ndarray:
+    z = np.clip(float(beta) * (energies - float(chemical_potential)), -700.0, 700.0)
+    return 1.0 / (1.0 + np.exp(z))
+
+
+def singular_value_filtering_workflow(
+    matrix: np.ndarray,
+    *,
+    degree: int,
+    cutoff: float,
+    sharpness: float = 20.0,
+    input_vector: np.ndarray | None = None,
+    num_points: int = 1001,
+) -> SingularValueFilteringWorkflowResult:
+    """
+    Apply a smooth QSVT-style filter to the singular values of a matrix.
+
+    The matrix is normalized by its largest singular value. The polynomial is
+    designed on normalized singular values in ``[0, 1]`` and compared with the
+    smooth reference filter
+    ``0.5 * (1 + tanh(sharpness * (sigma - cutoff)))``.
+    """
+    A = _validate_matrix_2d(matrix)
+    cutoff = float(cutoff)
+    sharpness = float(sharpness)
+    if not 0.0 < cutoff < 1.0:
+        raise ValueError("cutoff must satisfy 0 < cutoff < 1.")
+    if sharpness <= 0.0:
+        raise ValueError("sharpness must be positive.")
+
+    singular_values = np.linalg.svd(A, compute_uv=False)
+    scale = float(np.max(singular_values))
+    if scale <= 0.0:
+        raise ValueError("matrix must have at least one nonzero singular value.")
+    normalized = singular_values / scale
+
+    def target(sigma: np.ndarray) -> np.ndarray:
+        return 0.5 * (1.0 + np.tanh(sharpness * (sigma - cutoff)))
+
+    cheb = chebyshev_fit_function(
+        target,
+        degree=degree,
+        domain=(0.0, 1.0),
+        num_points=num_points,
+    )
+    coeffs = chebyshev_to_monomial(cheb, domain=(0.0, 1.0))
+    polynomial_weights = np.asarray(eval_polynomial(coeffs, normalized), dtype=float)
+    reference_weights = target(normalized)
+    polynomial_matrix = _svd_filter_matrix(A, polynomial_weights)
+    reference_matrix = _svd_filter_matrix(A, reference_weights)
+
+    vec = None
+    polynomial_output = None
+    reference_output = None
+    output_error = None
+    if input_vector is not None:
+        vec = _validate_state(input_vector, A.shape[1], name="input_vector")
+        polynomial_output = polynomial_matrix @ vec
+        reference_output = reference_matrix @ vec
+        output_error = _relative_error(reference_output, polynomial_output)
+
+    return SingularValueFilteringWorkflowResult(
+        coeffs=coeffs,
+        matrix=A,
+        singular_values=singular_values,
+        normalized_singular_values=normalized,
+        polynomial_matrix=polynomial_matrix,
+        reference_matrix=reference_matrix,
+        cutoff=cutoff,
+        sharpness=sharpness,
+        scale=scale,
+        degree=int(degree),
+        operator_relative_error=_relative_matrix_error(
+            reference_matrix,
+            polynomial_matrix,
+        ),
+        input_vector=vec,
+        polynomial_output=polynomial_output,
+        reference_output=reference_output,
+        output_relative_error=output_error,
+    )
+
+
+def singular_value_pseudoinverse_workflow(
+    matrix: np.ndarray,
+    rhs: np.ndarray,
+    *,
+    degree: int,
+    cutoff: float,
+    num_points: int = 2001,
+) -> SingularValuePseudoinverseWorkflowResult:
+    """
+    Approximate a truncated SVD pseudoinverse action with an inverse polynomial.
+
+    ``cutoff`` is the normalized singular-value threshold. Singular values
+    below the threshold are omitted from the dense reference pseudoinverse.
+    """
+    A = _validate_matrix_2d(matrix)
+    b = _validate_state(rhs, A.shape[0], name="rhs")
+    cutoff = float(cutoff)
+    if not 0.0 < cutoff < 1.0:
+        raise ValueError("cutoff must satisfy 0 < cutoff < 1.")
+
+    U, singular_values, Vh = np.linalg.svd(A, full_matrices=False)
+    scale = float(np.max(singular_values))
+    if scale <= 0.0:
+        raise ValueError("matrix must have at least one nonzero singular value.")
+    normalized = singular_values / scale
+
+    coeffs = design_positive_inverse_polynomial(
+        gamma=cutoff,
+        degree=degree,
+        num_points=num_points,
+    )
+    polynomial_inverse_weights = eval_polynomial(coeffs, normalized) / (cutoff * scale)
+    reference_inverse_weights = np.where(
+        normalized >= cutoff,
+        1.0 / singular_values,
+        0.0,
+    )
+    polynomial_pinv = Vh.conj().T @ np.diag(polynomial_inverse_weights) @ U.conj().T
+    reference_pinv = Vh.conj().T @ np.diag(reference_inverse_weights) @ U.conj().T
+    polynomial_solution = polynomial_pinv @ b
+    reference_solution = reference_pinv @ b
+
+    return SingularValuePseudoinverseWorkflowResult(
+        coeffs=coeffs,
+        matrix=A,
+        rhs=b,
+        singular_values=singular_values,
+        normalized_singular_values=normalized,
+        polynomial_solution=polynomial_solution,
+        reference_solution=reference_solution,
+        polynomial_pseudoinverse=polynomial_pinv,
+        reference_pseudoinverse=reference_pinv,
+        cutoff=cutoff,
+        scale=scale,
+        degree=int(degree),
+        residual_norm=float(np.linalg.norm(A @ polynomial_solution - b)),
+        reference_residual_norm=float(np.linalg.norm(A @ reference_solution - b)),
+        solution_relative_error=_relative_error(
+            reference_solution, polynomial_solution
+        ),
+        operator_relative_error=_relative_matrix_error(reference_pinv, polynomial_pinv),
+    )
+
+
+def fermi_dirac_occupation_workflow(
+    matrix: np.ndarray,
+    *,
+    chemical_potential: float,
+    beta: float,
+    degree: int,
+    state: np.ndarray | None = None,
+    num_points: int = 2001,
+) -> FermiDiracWorkflowResult:
+    """
+    Approximate finite-temperature Fermi-Dirac occupations for a Hamiltonian.
+    """
+    if beta < 0.0:
+        raise ValueError("beta must be non-negative.")
+    scaled = rescale_hermitian_to_unit_interval(matrix)
+    coeffs = chebyshev_to_monomial(
+        chebyshev_fit_function(
+            lambda x: _stable_fermi_dirac(
+                scaled.offset + scaled.scale * x,
+                chemical_potential=chemical_potential,
+                beta=beta,
+            ),
+            degree=degree,
+            num_points=num_points,
+        )
+    )
+    polynomial_operator = apply_polynomial_to_hermitian(scaled.matrix, coeffs)
+    reference_operator = apply_function_to_hermitian(
+        np.asarray(matrix),
+        lambda x: _stable_fermi_dirac(
+            x,
+            chemical_potential=chemical_potential,
+            beta=beta,
+        ),
+    )
+
+    state_vec = None
+    polynomial_state_occupation = None
+    reference_state_occupation = None
+    state_error = None
+    if state is not None:
+        state_vec = _normalize_state(_validate_state(state, scaled.matrix.shape[0]))
+        polynomial_state_occupation = np.real_if_close(
+            np.vdot(state_vec, polynomial_operator @ state_vec)
+        ).item()
+        reference_state_occupation = np.real_if_close(
+            np.vdot(state_vec, reference_operator @ state_vec)
+        ).item()
+        state_error = float(
+            abs(polynomial_state_occupation - reference_state_occupation)
+        )
+
+    return FermiDiracWorkflowResult(
+        coeffs=coeffs,
+        scaled_operator=scaled,
+        polynomial_occupation_operator=polynomial_operator,
+        reference_occupation_operator=reference_operator,
+        chemical_potential=float(chemical_potential),
+        beta=float(beta),
+        degree=int(degree),
+        particle_number=np.real_if_close(np.trace(polynomial_operator)).item(),
+        reference_particle_number=np.real_if_close(np.trace(reference_operator)).item(),
+        operator_relative_error=operator_error(reference_operator, polynomial_operator),
+        state=state_vec,
+        polynomial_state_occupation=polynomial_state_occupation,
+        reference_state_occupation=reference_state_occupation,
+        state_occupation_error=state_error,
+    )
+
+
+def matrix_log_entropy_workflow(
+    matrix: np.ndarray,
+    *,
+    degree: int,
+    epsilon: float = 1e-8,
+    num_points: int = 2001,
+) -> MatrixLogEntropyWorkflowResult:
+    """
+    Approximate a regularized matrix logarithm and ``-x log(x)`` entropy term.
+    """
+    if epsilon <= 0.0:
+        raise ValueError("epsilon must be positive.")
+    evals, _ = eigh_hermitian(matrix)
+    if evals[0] < -1e-10:
+        raise ValueError("matrix must be positive semidefinite.")
+    scaled = rescale_positive_semidefinite(np.asarray(matrix))
+
+    def physical_from_scaled(x: np.ndarray) -> np.ndarray:
+        return scaled.scale * x
+
+    log_coeffs = chebyshev_to_monomial(
+        chebyshev_fit_function(
+            lambda x: np.log(physical_from_scaled(x) + float(epsilon)),
+            degree=degree,
+            domain=(0.0, 1.0),
+            num_points=num_points,
+        ),
+        domain=(0.0, 1.0),
+    )
+    entropy_coeffs = chebyshev_to_monomial(
+        chebyshev_fit_function(
+            lambda x: (
+                -physical_from_scaled(x)
+                * np.log(physical_from_scaled(x) + float(epsilon))
+            ),
+            degree=degree,
+            domain=(0.0, 1.0),
+            num_points=num_points,
+        ),
+        domain=(0.0, 1.0),
+    )
+    polynomial_log = apply_polynomial_to_hermitian(scaled.matrix, log_coeffs)
+    reference_log = apply_function_to_hermitian(
+        np.asarray(matrix),
+        lambda x: np.log(x + float(epsilon)),
+    )
+    polynomial_entropy_op = apply_polynomial_to_hermitian(
+        scaled.matrix,
+        entropy_coeffs,
+    )
+    reference_entropy_op = apply_function_to_hermitian(
+        np.asarray(matrix),
+        lambda x: -x * np.log(x + float(epsilon)),
+    )
+
+    return MatrixLogEntropyWorkflowResult(
+        log_coeffs=log_coeffs,
+        entropy_coeffs=entropy_coeffs,
+        scaled_operator=scaled,
+        polynomial_log_operator=polynomial_log,
+        reference_log_operator=reference_log,
+        polynomial_entropy_operator=polynomial_entropy_op,
+        reference_entropy_operator=reference_entropy_op,
+        epsilon=float(epsilon),
+        degree=int(degree),
+        polynomial_entropy=np.real_if_close(np.trace(polynomial_entropy_op)).item(),
+        reference_entropy=np.real_if_close(np.trace(reference_entropy_op)).item(),
+        log_operator_relative_error=operator_error(reference_log, polynomial_log),
+        entropy_operator_relative_error=operator_error(
+            reference_entropy_op,
+            polynomial_entropy_op,
+        ),
+    )
+
+
+def spectral_counting_workflow(
+    matrix: np.ndarray,
+    *,
+    lower: float,
+    upper: float,
+    degree: int,
+    sharpness: float = 12.0,
+    num_points: int = 2001,
+    probe_count: int | None = None,
+    random_seed: int | None = None,
+) -> SpectralCountingWorkflowResult:
+    """
+    Count eigenvalues in an interval using a smooth polynomial projector trace.
+    """
+    lower = float(lower)
+    upper = float(upper)
+    if not lower < upper:
+        raise ValueError("lower must be less than upper.")
+    evals, _ = eigh_hermitian(matrix)
+    if lower <= float(evals[0]) or upper >= float(evals[-1]):
+        raise ValueError(
+            "lower and upper must lie strictly inside the matrix spectral range."
+        )
+    scaled = rescale_hermitian_to_unit_interval(matrix)
+    scaled_lower = (lower - scaled.offset) / scaled.scale
+    scaled_upper = (upper - scaled.offset) / scaled.scale
+    coeffs = design_interval_projector_polynomial(
+        lower=scaled_lower,
+        upper=scaled_upper,
+        degree=degree,
+        sharpness=sharpness,
+        num_points=num_points,
+    )
+    polynomial_projector = apply_polynomial_to_hermitian(scaled.matrix, coeffs)
+    reference_projector = apply_function_to_hermitian(
+        np.asarray(matrix),
+        lambda x: np.where((lower <= x) & (x <= upper), 1.0, 0.0),
+    )
+    exact_count = int(np.count_nonzero((evals >= lower) & (evals <= upper)))
+    polynomial_count = np.real_if_close(np.trace(polynomial_projector)).item()
+
+    stochastic_count = None
+    stochastic_error = None
+    if probe_count is not None:
+        probes = int(probe_count)
+        if probes <= 0:
+            raise ValueError("probe_count must be positive when provided.")
+        rng = np.random.default_rng(random_seed)
+        estimates = []
+        dimension = scaled.matrix.shape[0]
+        for _ in range(probes):
+            signs = rng.choice([-1.0, 1.0], size=dimension)
+            estimates.append(np.vdot(signs, polynomial_projector @ signs))
+        stochastic_count = float(np.real_if_close(np.mean(estimates)).item())
+        stochastic_error = float(abs(stochastic_count - exact_count))
+
+    return SpectralCountingWorkflowResult(
+        coeffs=coeffs,
+        scaled_operator=scaled,
+        polynomial_projector=polynomial_projector,
+        reference_projector=reference_projector,
+        lower=lower,
+        upper=upper,
+        scaled_lower=float(scaled_lower),
+        scaled_upper=float(scaled_upper),
+        sharpness=float(sharpness),
+        degree=int(degree),
+        exact_count=exact_count,
+        polynomial_count=polynomial_count,
+        count_error=float(abs(polynomial_count - exact_count)),
+        stochastic_count=stochastic_count,
+        stochastic_count_error=stochastic_error,
+        probe_count=probe_count,
+    )
+
+
+def fixed_point_amplification_workflow(
+    score_operator: np.ndarray,
+    state: np.ndarray,
+    *,
+    rounds: int,
+) -> FixedPointAmplificationWorkflowResult:
+    """
+    Apply the monotone fixed-point polynomial ``1 - (1 - x)^rounds``.
+
+    The score operator must be positive semidefinite with spectrum in
+    ``[0, 1]``. This is a robust projector/score amplification primitive for
+    finite spectral workflows, not a full Grover iterate implementation.
+    """
+    if rounds <= 0:
+        raise ValueError("rounds must be positive.")
+    evals, _ = eigh_hermitian(score_operator)
+    if evals[0] < -1e-10 or evals[-1] > 1.0 + 1e-10:
+        raise ValueError("score_operator spectrum must lie in [0, 1].")
+    A = np.asarray(score_operator)
+    psi = _normalize_state(_validate_state(state, A.shape[0]))
+
+    coeffs = np.zeros(rounds + 1, dtype=float)
+    for k in range(1, rounds + 1):
+        coeffs[k] = ((-1.0) ** (k + 1)) * math.comb(rounds, k)
+
+    polynomial_operator = apply_polynomial_to_hermitian(A, coeffs)
+    reference_operator = apply_function_to_hermitian(
+        A,
+        lambda x: 1.0 - (1.0 - x) ** rounds,
+    )
+    amplified = _normalize_state(polynomial_operator @ psi)
+    reference = _normalize_state(reference_operator @ psi)
+
+    return FixedPointAmplificationWorkflowResult(
+        coeffs=coeffs,
+        score_operator=A,
+        input_state=psi,
+        amplified_state=amplified,
+        reference_state=reference,
+        polynomial_operator=polynomial_operator,
+        reference_operator=reference_operator,
+        rounds=int(rounds),
+        degree=int(rounds),
+        initial_score=np.real_if_close(np.vdot(psi, A @ psi)).item(),
+        amplified_score=np.real_if_close(np.vdot(amplified, A @ amplified)).item(),
+        reference_score=np.real_if_close(np.vdot(reference, A @ reference)).item(),
+        state_relative_error=_state_error(reference, amplified),
+        operator_relative_error=operator_error(reference_operator, polynomial_operator),
+    )
 
 
 def linear_system_workflow(
@@ -1889,24 +2621,36 @@ def block_encoded_qsvt_workflow(
 
 __all__ = [
     "BlockEncodedQSVTWorkflowResult",
+    "FermiDiracWorkflowResult",
+    "FixedPointAmplificationWorkflowResult",
     "GroundStateFilteringWorkflowResult",
     "HamiltonianSimulationWorkflowResult",
     "LinearSystemComparisonResult",
     "LinearSystemWorkflowResult",
+    "MatrixLogEntropyWorkflowResult",
     "QuantumWalkSearchWorkflowResult",
     "ResolventWorkflowResult",
+    "SingularValueFilteringWorkflowResult",
+    "SingularValuePseudoinverseWorkflowResult",
+    "SpectralCountingWorkflowResult",
     "SpectralDensityWorkflowResult",
     "SpectralThresholdingWorkflowResult",
     "ThermalGibbsWorkflowResult",
     "block_encoded_qsvt_workflow",
+    "fermi_dirac_occupation_workflow",
+    "fixed_point_amplification_workflow",
     "ground_state_filtering_workflow",
     "hamiltonian_simulation_workflow",
     "linear_system_comparison_summary_table",
     "linear_system_comparison_workflow",
     "linear_system_workflow",
+    "matrix_log_entropy_workflow",
     "quantum_walk_search_resource_proxy",
     "quantum_walk_search_workflow",
     "resolvent_workflow",
+    "singular_value_filtering_workflow",
+    "singular_value_pseudoinverse_workflow",
+    "spectral_counting_workflow",
     "spectral_density_workflow",
     "spectral_thresholding_workflow",
     "thermal_gibbs_workflow",

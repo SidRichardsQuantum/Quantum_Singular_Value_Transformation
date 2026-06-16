@@ -218,6 +218,51 @@
 
       <article class="project-card">
         <div>
+          <h3>Linear Systems</h3>
+          <p>Understand QSVT inverse-polynomial workflows, solver comparisons, and finite HHL circuit execution.</p>
+        </div>
+        <div class="tags">
+          <span>Linear Systems</span>
+          <span>HHL</span>
+          <span>QSVT</span>
+        </div>
+        <div class="card-links">
+          <a href="qsvt/linear_systems.html">Open linear systems</a>
+        </div>
+      </article>
+
+      <article class="project-card">
+        <div>
+          <h3>Spectral Filters</h3>
+          <p>Review the theory behind ground-state filters, interval projectors, sign thresholds, and spectral density windows.</p>
+        </div>
+        <div class="tags">
+          <span>Filters</span>
+          <span>Projectors</span>
+          <span>Density</span>
+        </div>
+        <div class="card-links">
+          <a href="qsvt/spectral_filters.html">Open spectral filters</a>
+        </div>
+      </article>
+
+      <article class="project-card">
+        <div>
+          <h3>Time and Response</h3>
+          <p>Connect Hamiltonian simulation, Green's functions, imaginary-time evolution, and Gibbs weighting to polynomial matrix functions.</p>
+        </div>
+        <div class="tags">
+          <span>Dynamics</span>
+          <span>Response</span>
+          <span>Thermal</span>
+        </div>
+        <div class="card-links">
+          <a href="qsvt/time_evolution_and_response.html">Open time and response</a>
+        </div>
+      </article>
+
+      <article class="project-card">
+        <div>
           <h3>Polynomial Design</h3>
           <p>See the higher-level bounded polynomial builders for inverse, sign, projector, and filter workflows.</p>
         </div>
@@ -390,6 +435,9 @@ Roadmap <qsvt/roadmap>
 
 Polynomial Design <qsvt/design>
 Algorithm Notes <qsvt/algorithms>
+Linear Systems <qsvt/linear_systems>
+Spectral Filters <qsvt/spectral_filters>
+Time Evolution and Response <qsvt/time_evolution_and_response>
 Block Encodings <qsvt/block_encoding>
 QSVT Compatibility <qsvt/compatibility>
 Physics Workflows <qsvt/physics>

@@ -68,11 +68,52 @@ clients:
 - move reusable construction, diagnostics, and plotting logic back into
   `src/qsvt` when a second notebook needs it.
 
-Good target examples include finite-difference PDEs, spectral filters,
-transport chains, topological projectors, Gibbs weights, Green's functions,
-linear systems, and small Hamiltonian models.
+### 4. Package-Client Problem Targets
 
-### 4. Claim-Boundary and Resource Modeling
+Good real-world physics and mathematics notebooks should be thin clients of
+the package: they should build or load a domain operator, call one or two
+general workflow functions, and spend the remaining notebook space on
+interpretation. Useful targets include:
+
+- image deblurring, tomography, and inverse scattering with
+  `singular_value_pseudoinverse_workflow`, using singular-value cutoffs to
+  study regularization, residuals, and noise amplification,
+- low-rank denoising, PCA, model reduction, and compressed sensing diagnostics
+  with `singular_value_filtering_workflow`, comparing retained singular modes
+  against dense SVD references,
+- Poisson, Helmholtz, diffusion, and graph-Laplacian linear systems with
+  `linear_system_workflow` or `linear_system_comparison_workflow`, where the
+  notebook supplies the finite-difference or graph operator,
+- quantum chemistry and condensed-matter occupation problems with
+  `fermi_dirac_occupation_workflow`, estimating finite-temperature particle
+  number, band filling, and chemical-potential sensitivity,
+- Gibbs weights, imaginary-time filters, and thermal density matrices with
+  `thermal_gibbs_workflow`, including small spin chains, lattice Hamiltonians,
+  and molecular toy models,
+- Green's functions, spectral response, local density of states, and transport
+  response with `resolvent_workflow`, using source vectors to probe spatial or
+  orbital response channels,
+- density of states, band-gap detection, Weyl-law checks, and graph spectral
+  statistics with `spectral_density_workflow` and
+  `spectral_counting_workflow`,
+- topological band projectors, edge-state selection, photonic band gaps, and
+  spectral subspace isolation with `spectral_thresholding_workflow`,
+- entropy, free-energy proxies, covariance spectra, graph von Neumann entropy,
+  and regularized log-determinant studies with `matrix_log_entropy_workflow`,
+- real-time Schrödinger dynamics, wave propagation, coupled oscillator motion,
+  and continuous-time quantum walks with `hamiltonian_simulation_workflow` or
+  `quantum_walk_search_workflow`,
+- robust marked-subspace or high-score amplification demonstrations with
+  `fixed_point_amplification_workflow`, where the notebook supplies a finite
+  score/projector operator.
+
+Each notebook should report the implemented finite workflow, approximation
+error, degree or cutoff choices, and the omitted quantum layers. If a notebook
+needs reusable domain constructors, plotting helpers, or diagnostics that would
+benefit a second example, that logic should move into `src/qsvt` before the
+notebook grows around it.
+
+### 5. Claim-Boundary and Resource Modeling
 
 The package should continue to separate implemented finite workflows from
 conditional quantum-algorithm interpretation. Reports should make these layers
@@ -87,7 +128,7 @@ machine-readable:
 Future work should improve resource proxies without turning them into hardware
 runtime claims.
 
-### 5. Reproducible Artifacts Without Release Churn
+### 6. Reproducible Artifacts Without Release Churn
 
 Release checks should verify code, docs, package metadata, and committed
 artifact structure without rewriting timing snapshots. Artifact regeneration
@@ -97,7 +138,7 @@ belongs to explicit notebook/result workflows such as
 Benchmark timing fields should be treated as environment-specific snapshots.
 When they are refreshed, the commit should say so directly.
 
-### 6. Packaging and Distribution
+### 7. Packaging and Distribution
 
 PyPI artifacts should stay focused on the importable package and essential
 project metadata. The full notebooks, rendered documentation, result snapshots,

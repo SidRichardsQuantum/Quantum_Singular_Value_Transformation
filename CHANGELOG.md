@@ -2,6 +2,39 @@
 
 ---
 
+## [0.2.6] – 16th June 2026
+
+### Added
+
+- added focused theory documentation pages for linear-system workflows,
+  spectral filtering and projector workflows, and time-evolution, response,
+  and Gibbs-weighting workflows
+- added homepage, overview, algorithm-note, physics-guide, and notebook-index
+  links so the new theory pages are discoverable from the main documentation
+  paths
+- added package-client workflow coverage for rectangular singular-value
+  filtering, singular-value pseudoinverses, Fermi-Dirac occupations, spectral
+  counting, matrix-log entropy, and fixed-point amplification
+- added real-example notebooks for singular-value pseudoinverse deblurring and
+  matrix-log graph entropy, plus upgraded the Fermi-Dirac occupation notebook
+  to use the package workflow directly
+
+### Changed
+
+- expanded notebook index tables with related theory-note links for tutorial,
+  benchmark, and real-example notebooks
+- aligned the new documentation pages with the existing Markdown style,
+  heading conventions, MyST math blocks, and table formatting
+- refreshed tutorial and real-example result pages, plot manifests, and
+  package-client notebook outputs after adding the new workflow examples
+
+### Fixed
+
+- refreshed the local Sphinx HTML build to verify the new documentation pages,
+  cross-links, and notebook-index tables render successfully
+
+---
+
 ## [0.2.5] – 15th June 2026
 
 ### Added

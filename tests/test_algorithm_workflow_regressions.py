@@ -2,13 +2,19 @@ import numpy as np
 import pytest
 
 from qsvt.algorithms import (
+    fermi_dirac_occupation_workflow,
+    fixed_point_amplification_workflow,
     ground_state_filtering_workflow,
     hamiltonian_simulation_workflow,
     linear_system_comparison_summary_table,
     linear_system_comparison_workflow,
     linear_system_workflow,
+    matrix_log_entropy_workflow,
     quantum_walk_search_workflow,
     resolvent_workflow,
+    singular_value_filtering_workflow,
+    singular_value_pseudoinverse_workflow,
+    spectral_counting_workflow,
     spectral_density_workflow,
     spectral_thresholding_workflow,
     thermal_gibbs_workflow,
@@ -23,6 +29,136 @@ HERMitian_2X2 = np.array(
     ],
 )
 STATE_2 = np.array([1.0, 0.3])
+
+
+def test_singular_value_filtering_workflow_regression():
+    matrix = np.array(
+        [
+            [2.0, 0.0],
+            [0.0, 0.5],
+            [0.25, 0.0],
+        ],
+    )
+    result = singular_value_filtering_workflow(
+        matrix,
+        degree=20,
+        cutoff=0.4,
+        sharpness=8.0,
+        input_vector=np.array([1.0, -0.5]),
+        num_points=1001,
+    )
+    report = report_to_jsonable(result.as_report())
+
+    assert report["mode"] == "singular-value-filtering-workflow"
+    assert report["implementation_kind"] == "dense-svd-polynomial-workflow"
+    assert result.polynomial_matrix.shape == matrix.shape
+    assert result.reference_matrix.shape == matrix.shape
+    assert result.operator_relative_error < 3e-4
+    assert result.output_relative_error is not None
+    assert result.output_relative_error < 3e-4
+
+
+def test_singular_value_pseudoinverse_workflow_regression():
+    matrix = np.array(
+        [
+            [2.0, 0.0],
+            [0.0, 1.0],
+            [0.0, 0.0],
+        ],
+    )
+    rhs = np.array([2.0, -1.0, 0.2])
+
+    result = singular_value_pseudoinverse_workflow(
+        matrix,
+        rhs,
+        degree=18,
+        cutoff=0.45,
+        num_points=501,
+    )
+    report = report_to_jsonable(result.as_report())
+
+    assert report["mode"] == "singular-value-pseudoinverse-workflow"
+    assert result.polynomial_solution.shape == (2,)
+    assert result.solution_relative_error < 0.08
+    assert result.residual_norm < 0.25
+    assert np.isclose(result.reference_residual_norm, 0.2)
+
+
+def test_fermi_dirac_occupation_workflow_regression():
+    matrix = np.diag([-1.0, 0.2, 1.5])
+
+    result = fermi_dirac_occupation_workflow(
+        matrix,
+        chemical_potential=0.0,
+        beta=4.0,
+        degree=24,
+        state=np.array([1.0, 0.0, 1.0]),
+        num_points=1001,
+    )
+    report = report_to_jsonable(result.as_report())
+
+    assert report["mode"] == "fermi-dirac-occupation-workflow"
+    assert result.operator_relative_error < 1e-5
+    assert result.state_occupation_error is not None
+    assert result.state_occupation_error < 1e-5
+    assert 1.0 < result.reference_particle_number < 2.0
+
+
+def test_matrix_log_entropy_workflow_regression():
+    matrix = np.diag([0.2, 0.8])
+
+    result = matrix_log_entropy_workflow(
+        matrix,
+        degree=24,
+        epsilon=0.05,
+        num_points=1201,
+    )
+    report = report_to_jsonable(result.as_report())
+
+    assert report["mode"] == "matrix-log-entropy-workflow"
+    assert result.log_operator_relative_error < 1e-3
+    assert result.entropy_operator_relative_error < 1e-3
+    assert result.reference_entropy > 0.0
+
+
+def test_spectral_counting_workflow_regression():
+    matrix = np.diag([-2.0, -0.5, 0.1, 0.8, 2.0])
+
+    result = spectral_counting_workflow(
+        matrix,
+        lower=-0.7,
+        upper=1.0,
+        degree=24,
+        sharpness=12.0,
+        num_points=1201,
+        probe_count=16,
+        random_seed=123,
+    )
+    report = report_to_jsonable(result.as_report())
+
+    assert report["mode"] == "spectral-counting-workflow"
+    assert result.exact_count == 3
+    assert abs(result.polynomial_count - 3.0) < 0.2
+    assert result.stochastic_count is not None
+    assert result.probe_count == 16
+
+
+def test_fixed_point_amplification_workflow_regression():
+    score = np.diag([0.1, 0.8])
+    state = np.array([1.0, 1.0])
+
+    result = fixed_point_amplification_workflow(
+        score,
+        state,
+        rounds=4,
+    )
+    report = report_to_jsonable(result.as_report())
+
+    assert report["mode"] == "fixed-point-amplification-workflow"
+    assert result.degree == 4
+    assert result.operator_relative_error < 1e-12
+    assert result.state_relative_error < 1e-12
+    assert result.amplified_score > result.initial_score
 
 
 def test_linear_system_workflow_regression():

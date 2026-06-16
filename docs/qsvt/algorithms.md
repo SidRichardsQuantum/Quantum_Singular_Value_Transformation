@@ -12,7 +12,7 @@ Each workflow returns a frozen dataclass with numerical fields and an
 
 ## Common Pattern
 
-The workflows follow the same structure:
+Most Hermitian workflows follow the same structure:
 
 1. validate a small dense Hermitian input,
 2. rescale the spectrum to a polynomial design interval,
@@ -25,6 +25,15 @@ The QSVT interpretation is that a block encoding of the scaled operator would
 allow the same polynomial transform to be implemented as a quantum signal
 processing sequence, provided the polynomial satisfies the necessary
 boundedness and parity constraints.
+
+For focused theory by algorithm family, see [Linear systems](linear_systems.md),
+[Spectral filters](spectral_filters.md), and
+[Time evolution and response](time_evolution_and_response.md).
+
+The singular-value workflows are the rectangular/non-Hermitian exception to
+this Hermitian pattern. They use dense SVD validation: normalize singular
+values, apply a polynomial to those singular values, and compare against a
+dense SVD reference.
 
 `block_encoded_qsvt_workflow` is the package's finite block-encoded exception
 to the usual dense-polynomial-only pattern. It constructs an explicit dense
@@ -111,6 +120,47 @@ Output:
 Interpretation:
 : This is a numerical comparison helper, not a wall-clock benchmark. Use the
   benchmark module when timing classical baselines is the primary goal.
+
+## Singular-Value Filtering and Pseudoinverses
+
+`singular_value_filtering_workflow(matrix, cutoff=..., degree=...)`
+
+Purpose:
+: Apply a smooth filter to the singular values of a rectangular or
+  non-Hermitian matrix.
+
+Target function:
+: The workflow normalizes singular values by the largest singular value and
+  fits a smooth threshold
+  `0.5 * (1 + tanh(sharpness * (sigma - cutoff)))` on `[0, 1]`.
+
+Diagnostics:
+: The result includes original and normalized singular values, polynomial and
+  exact filtered matrices, operator relative error, and optional output-vector
+  error when an input vector is supplied.
+
+`singular_value_pseudoinverse_workflow(matrix, rhs, cutoff=..., degree=...)`
+
+Purpose:
+: Approximate a truncated SVD pseudoinverse action for inverse problems and
+  least-squares systems.
+
+Target function:
+: For normalized singular values above `cutoff`, the workflow designs a
+  bounded inverse-like polynomial and rescales it to approximate `1 / sigma`.
+  Singular values below the cutoff are omitted from the dense reference
+  pseudoinverse.
+
+Diagnostics:
+: The result includes the polynomial and truncated-SVD reference solutions,
+  residual norms, solution relative error, pseudoinverse operator error,
+  singular values, cutoff, scale, and coefficients.
+
+Interpretation:
+: These are dense SVD workflows for studying singular-value transformations,
+  regularization, and noise amplification. A full QSVT algorithm would still
+  need a block encoding of the rectangular operator, state preparation,
+  success-probability management, and readout.
 
 ## Block-Encoded QSVT
 
@@ -228,6 +278,29 @@ Limitations:
   scalable graph or marking oracles, state preparation, phase synthesis,
   amplitude estimation, or hardware execution.
 
+## Fixed-Point Amplification
+
+`fixed_point_amplification_workflow(score_operator, state, rounds=...)`
+
+Purpose:
+: Apply the monotone fixed-point polynomial `1 - (1 - x)^rounds` to a finite
+  positive score operator with spectrum in `[0, 1]`.
+
+Target function:
+: The scalar polynomial boosts larger scores toward one while leaving low
+  scores suppressed. This is useful for robust projector or high-score
+  amplification demonstrations.
+
+Diagnostics:
+: The result reports the polynomial and exact reference operators, normalized
+  amplified state, state error, operator error, initial score, amplified score,
+  reference score, degree, and coefficients.
+
+Interpretation:
+: This is a spectral polynomial amplification primitive, not a full Grover
+  iterate or amplitude-amplification circuit. The notebook or caller supplies
+  the finite score/projector operator.
+
 ## Resolvents
 
 `resolvent_workflow(matrix, omega=..., eta=..., degree=..., source=None)`
@@ -278,6 +351,28 @@ Limitations:
 : This is a small dense trace calculation. It does not implement stochastic
   trace estimation or large-scale density-of-states sampling.
 
+## Spectral Counting
+
+`spectral_counting_workflow(matrix, lower=..., upper=..., degree=...)`
+
+Purpose:
+: Estimate how many eigenvalues lie in a physical interval by tracing a smooth
+  polynomial interval projector.
+
+Target function:
+: The workflow maps `[lower, upper]` into the scaled coordinate and applies
+  `design_interval_projector_polynomial`.
+
+Diagnostics:
+: The result includes the polynomial projector, exact hard projector, exact
+  count, polynomial trace count, count error, and optional Hutchinson-style
+  stochastic trace estimate when `probe_count` is supplied.
+
+Interpretation:
+: This supports density-of-states, band-counting, Weyl-law, and graph-spectrum
+  examples. The stochastic option is a finite dense diagnostic and not a
+  scalable trace-estimation implementation.
+
 ## Spectral Thresholding
 
 `spectral_thresholding_workflow(matrix, lower=..., upper=..., degree=...)`
@@ -306,6 +401,28 @@ Interpretation:
   thresholding studies. Sharp interval edges require higher degree, and the
   reported leakage should be considered alongside any retained-rank proxy.
 
+## Fermi-Dirac Occupations
+
+`fermi_dirac_occupation_workflow(matrix, chemical_potential=..., beta=..., degree=...)`
+
+Purpose:
+: Approximate finite-temperature Fermi-Dirac occupation of a Hamiltonian.
+
+Target function:
+: `1 / (1 + exp(beta * (H - chemical_potential * I)))`, represented as a
+  polynomial on the rescaled Hamiltonian spectrum.
+
+Diagnostics:
+: The result includes polynomial and exact occupation operators, particle
+  numbers, operator relative error, coefficients, rescaling metadata, and
+  optional state occupation/error fields.
+
+Interpretation:
+: This workflow is useful for electronic occupations, band filling, and
+  chemical-potential sensitivity on small finite Hamiltonians. It does not
+  implement quantum thermal state preparation or electronic-structure data
+  loading.
+
 ## Thermal Gibbs Weighting
 
 `thermal_gibbs_workflow(matrix, beta=..., degree=..., state=None)`
@@ -330,6 +447,30 @@ Diagnostics:
 Interpretation:
 : This workflow is a matrix-function validation path for Gibbs-style weighting.
   It does not implement quantum thermal state preparation.
+
+## Matrix Log and Entropy
+
+`matrix_log_entropy_workflow(matrix, epsilon=..., degree=...)`
+
+Purpose:
+: Approximate a regularized matrix logarithm and the entropy-like spectral
+  density `-x log(x + epsilon)` for positive semidefinite matrices.
+
+Target function:
+: The matrix is normalized to a positive spectrum in `[0, 1]`; the workflow
+  fits separate polynomials for `log(x + epsilon)` and
+  `-x log(x + epsilon)` in physical units.
+
+Diagnostics:
+: The result includes log and entropy coefficients, polynomial and exact log
+  operators, polynomial and exact entropy operators, trace entropy values, and
+  relative operator errors.
+
+Interpretation:
+: This supports covariance-spectrum, graph entropy, free-energy proxy, and
+  regularized log-determinant examples. The `epsilon` parameter is part of the
+  mathematical problem definition and should be reported with the degree and
+  spectral scale.
 
 ## Choosing Degree
 

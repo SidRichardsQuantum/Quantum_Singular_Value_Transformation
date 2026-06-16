@@ -71,6 +71,8 @@ the real-example plot ledger.
 | `notebooks/real_examples/26_photonic_crystal_band_gap_filtering.ipynb` | committed plots | photonic-crystal schematic and band-gap filtering |
 | `notebooks/real_examples/27_topological_band_projector_chern_marker.ipynb` | committed plots | QWZ lattice schematic and Chern-marker diagnostics |
 | `notebooks/real_examples/28_block_encoded_laplacian_smoothing.ipynb` | committed plots | block-encoded Laplacian smoothing |
+| `notebooks/real_examples/29_singular_value_pseudoinverse_deblurring.ipynb` | committed plot | singular-value pseudoinverse deblurring |
+| `notebooks/real_examples/30_matrix_log_entropy_graph_laplacian.ipynb` | committed plot | matrix-log graph entropy |
 
 ## Committed Release Artefacts
 
@@ -88,7 +90,7 @@ from the package CLI.
 | `results/tables/design_sweep_summary.csv` | design sweep summary table | n/a | n/a | tabular summary of committed design-sweep JSON reports |
 | `results/tables/qsvt-error-summary.csv` | release summary table | n/a | n/a | compact index over the generated JSON reports |
 
-These snapshots were refreshed for package version `0.2.5`.
+These snapshots were refreshed for package version `0.2.6`.
 
 ## Benchmark Artefacts
 
@@ -117,7 +119,7 @@ The benchmark notebook set also includes
 executable assumption-check notebook rather than a committed timing-artifact
 generator.
 
-Benchmark artefacts were refreshed for package version `0.2.5`.
+Benchmark artefacts were refreshed for package version `0.2.6`.
 
 ## Real-Example Artefacts
 

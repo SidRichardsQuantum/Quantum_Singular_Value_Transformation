@@ -32,6 +32,9 @@ The repository also includes a sequence of notebooks that introduce QSVT concept
 | Install the package and run a transform | [Usage guide](usage.md) |
 | Run short cookbook scripts | [Cookbook examples](../../examples/) |
 | Understand the mathematical setup | [Theory](theory.md) |
+| Understand linear-system algorithms | [Linear systems](linear_systems.md) |
+| Understand filtering and projector workflows | [Spectral filters](spectral_filters.md) |
+| Understand time-evolution and response workflows | [Time evolution and response](time_evolution_and_response.md) |
 | Understand finite block encodings | [Block encodings](block_encoding.md) |
 | Interpret QSVT compatibility failures | [QSVT compatibility](compatibility.md) |
 | Explore executable examples | [Notebooks](notebooks.md) |
@@ -63,7 +66,9 @@ See: [Theory](theory.md)
 
 General QSVT/QSP background belongs in [Theory](theory.md), which is rendered
 from the repository root `THEORY.md`. Focused implementation theory belongs in
-dedicated pages: [Block encodings](block_encoding.md), [QSVT compatibility](compatibility.md),
+dedicated pages: [Linear systems](linear_systems.md), [Spectral filters](spectral_filters.md),
+[Time evolution and response](time_evolution_and_response.md),
+[Block encodings](block_encoding.md), [QSVT compatibility](compatibility.md),
 [QSVT resource model](qsvt_resource_model.md), and [Algorithm notes](algorithms.md).
 
 ---
@@ -144,6 +149,14 @@ Workflow-level theory and implementation conventions:
 
 - [Algorithm notes](algorithms.md): concise descriptions of the high-level
   algorithm workflows, their mathematical targets, diagnostics, and limits
+- [Linear systems](linear_systems.md): QSVT inverse-polynomial workflows,
+  solver comparisons, and finite HHL circuit execution
+- [Spectral filters](spectral_filters.md): ground-state filtering, interval
+  projectors, sign/threshold filters, spectral density windows, and design
+  tradeoffs
+- [Time evolution and response](time_evolution_and_response.md): Hamiltonian
+  simulation, resolvents/Green's functions, imaginary-time evolution, and Gibbs
+  weighting
 - [Implementation notes](implementation.md): coefficient conventions,
   rescaling choices, boundedness/compatibility checks, report serialization,
   and public API status

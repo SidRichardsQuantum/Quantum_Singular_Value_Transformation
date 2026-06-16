@@ -38,3 +38,5 @@ check.
 | Photonic crystal band gap | `26_photonic_crystal_band_gap_filtering.ipynb` |
 | Topological band projector | `27_topological_band_projector_chern_marker.ipynb` |
 | Block-encoded Laplacian smoothing | `28_block_encoded_laplacian_smoothing.ipynb` |
+| Singular-value pseudoinverse deblurring | `29_singular_value_pseudoinverse_deblurring.ipynb` |
+| Matrix-log graph entropy | `30_matrix_log_entropy_graph_laplacian.ipynb` |

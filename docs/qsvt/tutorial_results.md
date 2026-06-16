@@ -530,11 +530,6 @@ Output 12 (cell 31):
 Sign template
   Degree [polynomial degree]: 13
   Parity [polynomial parity]: odd
-```
-
-Output 13 (cell 31):
-
-```text
   bounded [boolean]: True
   max_abs_on_grid: 0.9999999999999876
 
@@ -611,7 +606,7 @@ Filter diag consistency [boolean]: True
 Projector diag consistency [boolean]: True
 ```
 
-Output 14 (cell 33):
+Output 13 (cell 33):
 
 ```text
 Sign_design_max_error: 1.154e-01
@@ -645,6 +640,13 @@ Relative error: 0.04364138768069171
 Output 3 (cell 8):
 
 ```text
+SVD pseudoinverse residual: 0.2565205851400423
+SVD pseudoinverse relative error: 0.20781080071097086
+```
+
+Output 4 (cell 10):
+
+```text
 Ground state overlap [probability]: 9.855e-01
 Ground filter state error: 1.252e-03
 Hamiltonian state error: 3.953e-08
@@ -653,7 +655,7 @@ Spectral density error: 4.670e-02
 Thermal density error: 6.412e-08
 ```
 
-Output 4 (cell 12):
+Output 5 (cell 14):
 
 ```text
 thermal-gibbs-workflow
@@ -738,7 +740,7 @@ Bounded : True | True | True | True | True
 Output 2 (cell 6):
 
 ```text
-<matplotlib.legend.Legend at 0x758b46804830>
+<matplotlib.legend.Legend at 0x7fce23aa57f0>
 ```
 
 Output 3 (cell 8):

@@ -8,9 +8,9 @@ This generated page displays embedded setup schematics, diagnostic plots, and te
 ## Current Status
 
 - Source notebooks: `notebooks/real_examples/`
-- Notebooks displayed: `28`
-- Embedded plot artefacts displayed: `50`
-- Plain-text notebook results displayed: `73`
+- Notebooks displayed: `30`
+- Embedded plot artefacts displayed: `52`
+- Plain-text notebook results displayed: `77`
 - Plot manifest: [`results/tables/real_examples_plot_manifest.csv`](../../results/tables/real_examples_plot_manifest.csv)
 
 ## Related Pages
@@ -814,17 +814,17 @@ Source: [`notebooks/real_examples/25_fermi_dirac_electronic_occupations.ipynb`](
 Output 1 (cell 5):
 
 ```text
-Occupation Error: 7.804084211610466e-05
+Occupation Error: 0.00040589862385073276
 Exact Particle Number [electrons]: 9.385723227081577
-Polynomial Particle Number [electrons]: 9.385329756322626
+Polynomial Particle Number [electrons]: 9.386398855727302
 ```
 
 Output 2 (cell 7):
 
 ```text
-relative_density_matrix_error: 0.0001
+relative_density_matrix_error: 0.0004
 exact_particle_number [electrons]: 9.386
-polynomial_particle_number [electrons]: 9.385
+polynomial_particle_number [electrons]: 9.386
 validation: passed
 ```
 
@@ -940,5 +940,57 @@ QNode Max Imaginary Logical Amplitude: 4.517e-02
 Output 3 (cell 14):
 
 ```text
+validation: passed
+```
+
+### `29_singular_value_pseudoinverse_deblurring.ipynb`
+
+Source: [`notebooks/real_examples/29_singular_value_pseudoinverse_deblurring.ipynb`](../../notebooks/real_examples/29_singular_value_pseudoinverse_deblurring.ipynb)
+
+```{image} ../../results/plots/real_examples/29_singular_value_pseudoinverse_deblurring-plot-01.png
+:alt: Singular-Value Pseudoinverse Deblurring plot 1
+:width: 760px
+```
+
+Output 1 (cell 5):
+
+```text
+polynomial residual norm: 0.0606
+solution relative error vs truncated SVD: 0.1145
+signal reconstruction error: 0.2002
+```
+
+Output 2 (cell 7):
+
+```text
+polynomial_vs_truncated_svd_error: 0.1145
+regularized_signal_error: 0.2002
+naive_least_squares_signal_error: 899062.9002
+validation: passed
+```
+
+### `30_matrix_log_entropy_graph_laplacian.ipynb`
+
+Source: [`notebooks/real_examples/30_matrix_log_entropy_graph_laplacian.ipynb`](../../notebooks/real_examples/30_matrix_log_entropy_graph_laplacian.ipynb)
+
+```{image} ../../results/plots/real_examples/30_matrix_log_entropy_graph_laplacian-plot-01.png
+:alt: Matrix-Log Entropy of a Graph Laplacian plot 1
+:width: 760px
+```
+
+Output 1 (cell 5):
+
+```text
+reference entropy: 1.938678
+polynomial entropy: 1.938678
+log operator relative error: 1.803e-08
+entropy operator relative error: 4.289e-10
+```
+
+Output 2 (cell 7):
+
+```text
+regularized_entropy: 1.938678
+polynomial_entropy_error: 2.830e-11
 validation: passed
 ```
