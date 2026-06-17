@@ -140,6 +140,7 @@ The public package lives under `src/qsvt`.
 | `qsvt.reports` | JSON-safe reports and plot helpers |
 | `qsvt.resources` | degree, phase-count, width, and compatibility proxy reports |
 | `qsvt.benchmarks` | classical baselines and QSVT-oriented benchmark summaries |
+| `qsvt.notebook` | experimental notebook presentation and path helpers used by committed notebooks |
 | `qsvt.matrices` | small Hermitian test matrices |
 | `qsvt.spectral` | classical spectral matrix-function references |
 | `qsvt.qsvt` | PennyLane QSVT wrappers and comparisons |
@@ -201,7 +202,7 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.2.6`
+Current release: `0.2.7`
 
 ## Notebooks
 

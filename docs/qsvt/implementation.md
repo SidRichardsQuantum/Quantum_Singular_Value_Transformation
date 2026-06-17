@@ -210,6 +210,11 @@ The package root exposes `__api_status__ = "alpha"`, a
 - `experimental` for lower-level circuit execution, backend-adapter helpers,
   and any exported name that has not yet been explicitly promoted.
 
+Notebook presentation helpers live in the `qsvt.notebook` submodule. They are
+shipped with the package so committed notebooks can import them, but they are
+not re-exported from the package root in `0.2.7`. Treat them as experimental
+notebook support rather than stable algorithm APIs.
+
 Incompatible changes should be documented in the changelog and should use a
 deprecation period when practical.
 

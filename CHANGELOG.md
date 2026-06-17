@@ -2,6 +2,38 @@
 
 ---
 
+## [0.2.7] – 16th June 2026
+
+### Added
+
+- added `qsvt.notebook` with shared notebook presentation and path helpers for
+  repository-root discovery, benchmark output directories, compact value
+  formatting, and fixed-width text tables
+- added regression coverage for the new notebook helpers so table formatting
+  and benchmark output-directory behavior stay stable
+- added defensive notebook-helper tests for invalid table layouts and empty
+  table output
+
+### Changed
+
+- refactored benchmark and tutorial notebooks to import shared helpers instead
+  of redefining local `find_repo_root`, `display_table`, `fmt`,
+  `format_value`, and `print_rows` functions
+- documented `qsvt.notebook` as experimental submodule-level notebook support
+  that is shipped for notebooks but not re-exported from the root package API
+- refreshed benchmark notebook outputs and generated benchmark artefacts after
+  the helper extraction
+- updated release markers and result ledgers for `0.2.7`
+
+### Fixed
+
+- reduced duplicated notebook support code so package-client notebooks remain
+  thinner and shared presentation behavior is tested in one place
+- fixed `print_rows` so empty row sets still render deterministic table
+  headers instead of failing during width calculation
+
+---
+
 ## [0.2.6] – 16th June 2026
 
 ### Added

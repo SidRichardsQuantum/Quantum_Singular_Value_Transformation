@@ -32,6 +32,18 @@ resource proxies where a full quantum implementation is not the measured path.
 For the compact result summary and regeneration commands, see
 [Results](results.md).
 
+## Shared notebook helpers
+
+Several tutorial and benchmark notebooks import compact presentation and path
+helpers from `qsvt.notebook`. These helpers keep result tables, benchmark
+output directories, and repository-root discovery consistent across notebooks
+without duplicating local support code.
+
+`qsvt.notebook` is notebook support, not a core QSVT algorithm module. During
+the `0.x` series it should be imported explicitly as a submodule, for example
+`from qsvt.notebook import display_table`, rather than treated as part of the
+root `qsvt` API.
+
 ## Tutorial notebooks
 
 Tutorial notebooks live in `notebooks/tutorials/`.
