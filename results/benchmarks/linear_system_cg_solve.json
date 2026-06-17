@@ -16,8 +16,8 @@
   "problem": "positive-definite-linear-system",
   "matrix_dimension": 12,
   "repeats": 3,
-  "best_time_seconds": 0.00010586700000203564,
-  "mean_time_seconds": 0.00012366666661970763,
+  "best_time_seconds": 9.312400015915046e-05,
+  "mean_time_seconds": 0.00010197666673169199,
   "benchmark_environment": {
     "timing_kind": "python_wall_clock_microbenchmark",
     "timer": "time.perf_counter",

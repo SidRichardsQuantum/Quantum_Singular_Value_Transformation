@@ -184,8 +184,8 @@ Matrix-function baseline readout
 ================================
 Case  Classical algorithm             QSVT degree [polynomial degree]  Signal calls [operator calls]  Best time (s)
 ----  ------------------------------  -------------------------------  -----------------------------  -------------
-DSMF  dense-spectral-matrix-function  n/a                              n/a                            3.24e-04
-PME   spectral-polynomial-evaluation  2                                2                              1.46e-04
+DSMF  dense-spectral-matrix-function  n/a                              n/a                            1.46e-04
+PME   spectral-polynomial-evaluation  2                                2                              1.44e-04
 
 DSMF is the exact dense spectral reference. PME applies the supplied polynomial classically and is the closest fixed-polynomial comparison to a QSVT sequence.
 ```

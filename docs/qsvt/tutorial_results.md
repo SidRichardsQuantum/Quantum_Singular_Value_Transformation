@@ -740,7 +740,7 @@ Bounded : True | True | True | True | True
 Output 2 (cell 6):
 
 ```text
-<matplotlib.legend.Legend at 0x7fce23aa57f0>
+<matplotlib.legend.Legend at 0x700140cecad0>
 ```
 
 Output 3 (cell 8):
@@ -933,8 +933,8 @@ Output 1 (cell 4):
 ```text
 solver                         implementation_kind                 degree  iterations  residual_norm  relative_solution_error
 -----------------------------  ----------------------------------  ------  ----------  -------------  -----------------------
-dense_solve                    classical-dense-reference           8       -           5.551e-17      0.000e+00
-conjugate_gradient             classical-iterative-reference       8       2           5.551e-17      0.000e+00
+dense_solve                    classical-dense-reference           8       -           5.551e-17      0
+conjugate_gradient             classical-iterative-reference       8       2           5.551e-17      0
 qsvt_style_polynomial_inverse  dense-spectral-polynomial-workflow  8       -           0.0575533      0.0571796
 ```
 
@@ -999,11 +999,11 @@ Output 2 (cell 10):
 ```text
 m  grid_size  phase_indices  success_probability  state_error  fidelity
 -  ---------  -------------  -------------------  -----------  --------
-1  2          (1, 1)         0.0631731            0.0894421    0.992016
-2  4          (1, 2)         0.997308             2.289e-16    1
-3  8          (2, 4)         0.997308             1.637e-16    1
-4  16         (4, 8)         0.997308             1.121e-16    1
-5  32         (8, 16)        0.997308             1.118e-16    1
+1  2          1, 1           0.0631731            0.0894421    0.992016
+2  4          1, 2           0.997308             2.289e-16    1
+3  8          2, 4           0.997308             1.637e-16    1
+4  16         4, 8           0.997308             1.121e-16    1
+5  32         8, 16          0.997308             1.118e-16    1
 ```
 
 Output 3 (cell 13):
@@ -1014,13 +1014,13 @@ normalized |b_sweep> = [0.707107+0.j 0.707107+0.j]
 
 m  phase_indices  estimated_eigenvalues  state_error  best_scaled_residual_norm  success_probability
 -  -------------  ---------------------  -----------  -------------------------  -------------------
-2  (1, 1)         (1.570796, 1.570796)   0.168411     0.311589                   0.120052
-3  (1, 2)         (0.785398, 1.570796)   0.0286405    0.0556184                  0.634515
-4  (3, 4)         (1.178097, 1.570796)   0.0124953    0.0240983                  0.433046
-5  (5, 7)         (0.981748, 1.374447)   5.060e-04    9.780e-04                  0.556117
-6  (10, 14)       (0.981748, 1.374447)   0.00101221   0.00195697                 0.544308
-7  (20, 29)       (0.981748, 1.423534)   0.00155934   0.00301338                 0.527153
-8  (41, 58)       (1.006291, 1.423534)   0.00101394   0.0019596                  0.532957
+2  1, 1           1.5708, 1.5708         0.168411     0.311589                   0.120052
+3  1, 2           0.785398, 1.5708       0.0286405    0.0556184                  0.634515
+4  3, 4           1.1781, 1.5708         0.0124953    0.0240983                  0.433046
+5  5, 7           0.981748, 1.37445      5.060e-04    9.780e-04                  0.556117
+6  10, 14         0.981748, 1.37445      0.00101221   0.00195697                 0.544308
+7  20, 29         0.981748, 1.42353      0.00155934   0.00301338                 0.527153
+8  41, 58         1.00629, 1.42353       0.00101394   0.0019596                  0.532957
 ```
 
 Output 4 (cell 15):
@@ -1034,7 +1034,7 @@ QSVT-style inverse  dense-spectral-polynomial-workflow         0.00966862   -   
 QSVT-style solver rows:
 solver                         implementation_kind                 degree  residual_norm  relative_solution_error
 -----------------------------  ----------------------------------  ------  -------------  -----------------------
-dense_solve                    classical-dense-reference           8       0.000e+00      0.000e+00
+dense_solve                    classical-dense-reference           8       0              0
 qsvt_style_polynomial_inverse  dense-spectral-polynomial-workflow  8       0.0512108      0.0367455
 ```
 
