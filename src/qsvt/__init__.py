@@ -129,8 +129,10 @@ from .diagnostics import (
     spectral_weights,
 )
 from .execution import (
+    BlockEncodingQSVTExecutionResult,
     QSVTCircuitExecutionResult,
     execute_qsvt_circuit,
+    execute_qsvt_from_spec,
     qsvt_circuit_truth_contract,
 )
 from .hamiltonians import (
@@ -296,6 +298,7 @@ __all__ = [
     "ThermalGibbsWorkflowResult",
     "ResourceEstimate",
     "ClassicalBenchmarkResult",
+    "BlockEncodingQSVTExecutionResult",
     "QSVTCircuitExecutionResult",
     "HHLCircuitExecutionResult",
     "approximation_quality_report",
@@ -429,6 +432,7 @@ __all__ = [
     "design_resolvent_polynomials",
     "density_matrix_error",
     "execute_qsvt_circuit",
+    "execute_qsvt_from_spec",
     "execute_hhl_circuit",
     "expectation_value",
     "ground_state_overlap",

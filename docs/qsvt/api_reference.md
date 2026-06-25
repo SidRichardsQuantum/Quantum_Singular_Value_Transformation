@@ -82,6 +82,7 @@ import qsvt
 
 qsvt.api_status("design_workflow")
 qsvt.api_status("execute_qsvt_circuit")
+qsvt.api_status("execute_qsvt_from_spec")
 ```
 
 Workflow-level helpers, report/export utilities, and benchmark baselines are
@@ -1019,6 +1020,50 @@ print(result.resource_summary["gate_types"])
 
 Use `result.as_report()` when you need a machine-readable truth contract for
 the circuit execution layer.
+
+---
+
+### `execute_qsvt_from_spec(spec, poly, state, ...)`
+
+Execute QSVT from a `BlockEncodingSpec` using PennyLane's lower-level
+`qml.QSVT` operation.
+
+The helper supports matrix, rectangular matrix, PrepSelPrep, qubitization, and
+custom-circuit specifications. It synthesizes projector phases from `poly` by
+default or accepts explicit `projectors` for caller-defined signal subspaces.
+The returned `BlockEncodingQSVTExecutionResult` contains:
+
+- structured success or backend-failure data,
+- statevector or finite-shot probabilities,
+- logical output and success probability,
+- dense spectral or SVD validation where available,
+- normalization, wire, phase, signal-call, gate, depth, and shot resources.
+
+Reports use schema name `block-encoding-qsvt-execution`, schema version `1.0`,
+and separate real-output error, complex leakage, logical-subspace leakage,
+normalization error, and finite-shot uncertainty fields.
+
+```python
+import pennylane as qml
+from qsvt import (
+    execute_qsvt_from_spec,
+    pennylane_operator_block_encoding_spec,
+)
+
+H = qml.dot([0.3, 0.7], [qml.Z(1), qml.X(1)])
+spec = pennylane_operator_block_encoding_spec(H, encoding_wires=[0])
+result = execute_qsvt_from_spec(spec, [0.0, 1.0], [1.0, 0.0])
+
+print(result.succeeded)
+print(result.resource_summary["block_encoding_method"])
+```
+
+The matrix-specification CLI equivalent is:
+
+```bash
+qsvt execute-spec --kind matrix --matrix "0.2,0;0,0.8" \
+  --poly "0,0,1" --state "1,0"
+```
 
 ---
 

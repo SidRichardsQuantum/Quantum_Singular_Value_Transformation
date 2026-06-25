@@ -235,8 +235,12 @@ The implementation intentionally does not provide:
 - problem-specific scalable state preparation methods,
 - amplitude amplification,
 - fault-tolerant synthesis,
-- hardware optimization.
+- production-scale hardware optimization.
 
 Those are separate engineering layers. The package now provides circuit-level
 QNode execution for finite instances plus the polynomial and spectral mechanics
-that larger systems would use.
+that larger systems would use. The roadmap includes a distinct hardware-facing
+execution layer for small circuits: caller-provided devices and preparation
+circuits, finite-shot measurements, decomposable encodings, native-gate
+compilation checks, and hardware job metadata. That work will not change the
+scope boundary around scalability, fault tolerance, or quantum advantage.

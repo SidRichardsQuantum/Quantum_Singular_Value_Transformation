@@ -79,6 +79,11 @@ print(verification["unitary_verified"])
 
 `BlockEncodingSpec` describes how a caller intends to supply a signal operator
 without claiming that every source is directly executable by one backend.
+Its `execution_supported` and `high_level_qsvt_supported` fields describe
+PennyLane's high-level `qml.qsvt` adapter. The separate
+`lower_level_qsvt_supported` field identifies specifications accepted by
+`execute_qsvt_from_spec`; actual device compatibility is determined during
+execution and reported as structured success or failure data.
 
 Supported specification constructors are:
 
@@ -88,9 +93,69 @@ Supported specification constructors are:
 
 `build_block_encoding_operator` constructs the corresponding PennyLane
 block-encoding operation. `qsvt_operator_from_block_encoding` supports sources
-accepted by PennyLane's high-level QSVT path. Rectangular matrices and custom
-circuits remain representable, but their reports explain why caller-supplied
-signal projectors or a lower-level construction are required.
+accepted by PennyLane's high-level QSVT path.
+
+`execute_qsvt_from_spec` uses PennyLane's lower-level `qml.QSVT` operation to
+execute these specifications in a QNode. It supports:
+
+- dense and sparse-like matrix specifications,
+- rectangular matrix specifications with alternating output/input projector
+  dimensions,
+- PennyLane operators through PrepSelPrep or qubitization,
+- custom operation factories with synthesized or caller-supplied projectors.
+
+```python
+import pennylane as qml
+from qsvt import (
+    execute_qsvt_from_spec,
+    pennylane_operator_block_encoding_spec,
+)
+
+H = qml.dot([0.3, 0.7], [qml.Z(1), qml.X(1)])
+spec = pennylane_operator_block_encoding_spec(
+    H,
+    encoding_wires=[0],
+    block_encoding="prepselprep",
+)
+result = execute_qsvt_from_spec(spec, [0.0, 1.0], [1.0, 0.0])
+```
+
+The execution report includes the access model, normalization, projector
+source, logical output, finite reference output where available, relative
+error, and encoding-specific circuit resources. Backend failures are retained
+as structured report data unless `raise_on_failure=True`.
+
+Reports identify themselves with schema name
+`block-encoding-qsvt-execution` and schema version `1.0`. Numerical diagnostics
+separate real-output error, complex leakage, logical-subspace leakage,
+normalization error, and finite-shot uncertainty.
+
+For a complete rectangular example, run:
+
+```bash
+python examples/rectangular_execution.py \
+  --output /tmp/qsvt-rectangular-execution.json
+```
+
+## Hardware Execution Direction
+
+The current execution helpers are simulator-first and may use statevector
+measurement or arbitrary `StatePrep`. A future hardware API should instead
+accept a caller-provided PennyLane device, preparation circuit, and finite-shot
+measurement contract.
+
+Hardware-facing paths should use block encodings with gate decompositions:
+FABLE for suitable matrix inputs, PrepSelPrep or qubitization for compatible
+LCU operators, or explicitly supplied decomposable custom circuits.
+`BlockEncode` remains useful for finite simulator validation but should not be
+presented as hardware-executable when it cannot be decomposed for the selected
+device.
+
+The planned hardware reports will include native-gate compilation checks,
+two-qubit gate counts, depth, wire mapping, shots, device/job metadata, and
+statistical uncertainty. These fields will describe genuine execution of a
+small circuit while keeping scalability and quantum-advantage claims out of
+scope.
 
 ## What Is Verified
 

@@ -106,6 +106,8 @@ def test_matrix_block_encoding_spec_supports_rectangular_matrices():
     assert spec.is_rectangular is True
     assert spec.execution_supported is False
     assert report["kind"] == "dense-matrix"
+    assert report["high_level_qsvt_supported"] is False
+    assert report["lower_level_qsvt_supported"] is True
     assert np.allclose(spec.dense_matrix(), matrix)
     assert isinstance(build_block_encoding_operator(spec), qml.BlockEncode)
 
@@ -163,6 +165,7 @@ def test_custom_circuit_block_encoding_spec_queues_factory():
     assert spec.kind == "custom-circuit"
     assert build_block_encoding_operator(spec).name == "Hadamard"
     assert spec.as_report()["metadata"]["signal_projector"] == "caller-supplied"
+    assert spec.as_report()["lower_level_qsvt_supported"] is True
 
 
 def test_block_encoded_qsvt_workflow_matches_spectral_reference():

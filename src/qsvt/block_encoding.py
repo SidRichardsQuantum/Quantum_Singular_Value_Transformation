@@ -72,6 +72,8 @@ class BlockEncodingSpec:
             "encoding_wires": self.encoding_wires,
             "block_encoding": self.block_encoding,
             "execution_supported": self.execution_supported,
+            "high_level_qsvt_supported": self.execution_supported,
+            "lower_level_qsvt_supported": True,
             "execution_reason": self.execution_reason,
             "source_type": type(self.source).__name__,
             "metadata": self.metadata,
@@ -123,9 +125,8 @@ def matrix_block_encoding_spec(
         rows == columns and np.allclose(matrix, matrix.conj().T, atol=1e-10)
     )
     normalized_matrix = matrix / resolved_alpha
-    fable_condition_value = float(
-        max(rows, columns) * np.linalg.norm(normalized_matrix, ord="fro") ** 2
-    )
+    fable_dimension = max(rows, columns)
+    fable_condition_value = float(fable_dimension * np.max(np.abs(normalized_matrix)))
     fable_compatible = bool(fable_condition_value <= 1.0 + 1e-12)
     execution_supported = bool(
         rows == columns
@@ -135,7 +136,8 @@ def matrix_block_encoding_spec(
     if rows != columns or not hermitian:
         execution_reason = (
             "Representable as a block encoding, but the package's high-level "
-            "PennyLane QSVT adapter requires a square Hermitian matrix."
+            "PennyLane QSVT adapter requires a square Hermitian matrix. Use "
+            "execute_qsvt_from_spec for the lower-level rectangular path."
         )
     elif block_encoding == "fable" and not fable_compatible:
         execution_reason = (
@@ -230,8 +232,9 @@ def circuit_block_encoding_spec(
         block_encoding="custom",
         execution_supported=False,
         execution_reason=(
-            "The custom block encoding can be queued, but QSVT projectors and "
-            "signal subspaces must be supplied by the caller."
+            "The custom block encoding is supported by execute_qsvt_from_spec. "
+            "Supply explicit QSVT projectors when its signal-subspace convention "
+            "cannot be inferred from logical_shape."
         ),
         metadata=dict(metadata or {}),
     )
@@ -244,7 +247,9 @@ def build_block_encoding_operator(spec: BlockEncodingSpec):
         if spec.block_encoding == "embedding":
             return qml.BlockEncode(matrix, wires=spec.encoding_wires)
         if spec.block_encoding == "fable":
-            return qml.FABLE(matrix, wires=spec.encoding_wires)
+            dimension = max(spec.logical_shape)
+            scale = 2 ** int(np.ceil(np.log2(dimension)))
+            return qml.FABLE(scale * matrix, wires=spec.encoding_wires)
         raise ValueError("matrix block_encoding must be 'embedding' or 'fable'.")
     if spec.kind == "pennylane-operator":
         if spec.block_encoding == "prepselprep":

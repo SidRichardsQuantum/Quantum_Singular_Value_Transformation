@@ -20,6 +20,8 @@ and demonstration of core functionality:
     python -m qsvt compare-report --values "1.0,0.7,0.3,0.1" --poly "0,0,1"
     python -m qsvt matrix-report --matrix "0.3135,-0.235;-0.235,0.6865" \
         --poly "0,0,1"
+    python -m qsvt execute-spec --kind matrix \
+        --matrix "0.2,0;0,0.8" --poly "0,0,1" --state "1,0"
     python -m qsvt apply-design --kind sign --values="-0.8,-0.3,0.3,0.8" \
         --degree 13
     python -m qsvt threshold-workflow --matrix="-1,0,0;0,0,0;0,0,1" \
@@ -59,6 +61,7 @@ from .benchmarks import (
     polynomial_matrix_function_benchmark,
     spectral_matrix_function_benchmark,
 )
+from .block_encoding import matrix_block_encoding_spec
 from .design import (
     design_filter_diagnostics,
     design_filter_polynomial,
@@ -75,6 +78,7 @@ from .design import (
     design_sqrt_diagnostics,
     design_sqrt_polynomial,
 )
+from .execution import execute_qsvt_from_spec
 from .polynomials import chebyshev_t, eval_polynomial
 from .qsvt import (
     compare_qsvt_vs_classical_diagonal,
@@ -409,6 +413,29 @@ def cmd_matrix_report(args: argparse.Namespace) -> dict:
     )
 
 
+def cmd_execute_spec(args: argparse.Namespace) -> dict:
+    """Execute QSVT from a serializable block-encoding specification."""
+    if args.kind != "matrix":  # defensive guard for direct function callers
+        raise ValueError("execute-spec currently supports only --kind matrix.")
+    matrix = np.asarray(parse_matrix(args.matrix))
+    state = np.asarray(parse_complex_list(args.state))
+    spec = matrix_block_encoding_spec(
+        matrix,
+        alpha=args.alpha,
+        block_encoding=args.block_encoding,
+    )
+    result = execute_qsvt_from_spec(
+        spec,
+        parse_poly(args.poly),
+        state,
+        angle_solver=args.angle_solver,
+        device_name=args.device,
+        shots=args.shots,
+        normalize_state=args.normalize_state,
+    )
+    return result.as_report()
+
+
 def cmd_compatibility_report(args: argparse.Namespace) -> dict:
     """
     Build a QSVT compatibility report for explicit coefficients.
@@ -716,6 +743,7 @@ def cmd_examples(args: argparse.Namespace) -> dict:
             "linear-system-compare",
             "threshold-workflow",
             "resource-report",
+            "execute-spec",
         ],
         "examples": [
             'qsvt scalar --x 0.5 --poly "0,0,1"',
@@ -723,6 +751,8 @@ def cmd_examples(args: argparse.Namespace) -> dict:
             'qsvt design-sweep --kind sign --degrees "5,9,13" --gamma 0.2 '
             "--no-synthesis --output sign-degree-sweep.json",
             'qsvt resource-report --poly "0,0,1" --matrix-dimension 4 --no-synthesis',
+            'qsvt execute-spec --kind matrix --matrix "0.2,0;0,0.8" '
+            '--poly "0,0,1" --state "1,0"',
             'qsvt linear-system-compare --matrix "2,0.25;0.25,1.25" '
             '--rhs "1,-0.5" --degree 8 --no-synthesis --no-qsvt',
             'qsvt benchmark cg-solve --matrix "4,1;1,3" --rhs "1,2" --qsvt-poly "0,1"',
@@ -994,6 +1024,55 @@ def build_parser() -> argparse.ArgumentParser:
     )
     add_report_output_args(p_matrix_report)
     p_matrix_report.set_defaults(func=cmd_matrix_report)
+
+    p_execute_spec = sub.add_parser(
+        "execute-spec",
+        help="Execute QSVT from a matrix block-encoding specification",
+    )
+    p_execute_spec.add_argument(
+        "--kind",
+        choices=["matrix"],
+        default="matrix",
+        help="Serializable block-encoding specification kind.",
+    )
+    p_execute_spec.add_argument(
+        "--matrix",
+        type=str,
+        required=True,
+        help='Rows separated by semicolons, e.g. "0.2,0;0,0.8".',
+    )
+    p_execute_spec.add_argument(
+        "--poly",
+        type=str,
+        required=True,
+        help='Polynomial coefficients, e.g. "0,0,1".',
+    )
+    p_execute_spec.add_argument(
+        "--state",
+        type=str,
+        required=True,
+        help='Logical input state, e.g. "1,0".',
+    )
+    p_execute_spec.add_argument("--alpha", type=float, default=None)
+    p_execute_spec.add_argument(
+        "--block-encoding",
+        choices=["embedding", "fable"],
+        default="embedding",
+    )
+    p_execute_spec.add_argument(
+        "--angle-solver",
+        choices=["root-finding", "iterative", "iterative-optax"],
+        default="root-finding",
+    )
+    p_execute_spec.add_argument("--device", type=str, default="default.qubit")
+    p_execute_spec.add_argument("--shots", type=int, default=None)
+    p_execute_spec.add_argument(
+        "--normalize-state",
+        action="store_true",
+        help="Normalize the supplied logical state before execution.",
+    )
+    add_report_output_args(p_execute_spec)
+    p_execute_spec.set_defaults(func=cmd_execute_spec)
 
     p_compatibility = sub.add_parser(
         "compatibility-report",

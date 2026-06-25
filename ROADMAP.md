@@ -1,184 +1,224 @@
 # Roadmap
 
-This project should be useful to users who want to learn, prototype, and audit
-QSVT-style workflows without having to read every notebook first.
+This project aims to support users who are learning, implementing,
+experimenting with, or researching Quantum Singular Value Transformation
+(QSVT). The package should connect the mathematical description of QSVT to
+auditable polynomial design, phase synthesis, block encodings, finite circuit
+execution, validation, and resource analysis.
 
-The package direction is:
+The roadmap is organized by implementation area rather than release number.
+Release versions describe shipped snapshots; this document describes the
+capabilities and upgrades the repository should continue to pursue.
 
-- keep algorithms and implementation helpers general,
-- keep numerical assumptions and omitted quantum layers explicit,
-- make real physics and mathematics examples thin clients of the package,
-- keep tutorial notebooks succinct and focused on how to use the package
-  algorithms and implementations,
-- use real-example notebooks to demonstrate domain workflows, not to hide
-  reusable logic,
-- benchmark quantum/QSVT algorithms and implementations against the relevant
-  classical algorithms and implementations,
-- keep artifacts reproducible and clearly separated from release validation.
+## Project Direction
 
-## Current Milestones
+- keep mathematical assumptions, numerical approximations, and omitted quantum
+  layers explicit,
+- provide useful entry points at several levels, from polynomial experiments to
+  caller-supplied circuit components,
+- keep algorithms and implementation helpers domain-general,
+- validate quantum-facing results against appropriate finite classical
+  references,
+- distinguish executable circuits from analytical models and resource proxies,
+- make examples thin, reproducible clients of tested package functionality,
+- maintain a compact and discoverable public API without hiding lower-level
+  research interfaces.
 
-### 0.2.8: Realizability, Synthesis, And Block-Encoding Interfaces
+## Implementation Priorities
 
-Version 0.2.8 establishes the research-facing boundary between polynomial
-functional calculus and executable QSP/QSVT constructions:
+### Executable QSVT Interfaces
 
-- classify finite polynomials as classical-only, one-sequence QSP/QSVT, or
-  mixed-parity transforms requiring multiple sequences or LCU,
-- expose phase synthesis with solver, convention, timing, reconstruction
-  diagnostics, and structured failures,
-- describe dense, rectangular, sparse-like, PennyLane-operator, and custom
-  circuit block-encoding access models without implying backend support.
+- maintain and extend lower-level execution from `BlockEncodingSpec` inputs,
+  including caller-supplied block encodings and signal projectors,
+- broaden backend coverage for the implemented dense, rectangular,
+  PrepSelPrep, qubitization, and custom-circuit execution paths,
+- strengthen explicit wire, projector, normalization, and convention contracts
+  for custom circuits,
+- expand rectangular singular-value transformation beyond dense classical
+  references and small embedding demonstrations,
+- expose statevector and finite-shot execution with consistent validation and
+  report schemas.
 
-### 0.3: Synthesis Robustness And Certification
+### Hardware-Executable QSVT
 
-- implemented extrema-based boundedness certificates using interval endpoints
-  and derivative roots,
-- implemented root-finding and iterative phase-solver benchmarks with degree,
-  coefficient dynamic range, margin, convergence, timing, and error fields,
-- implemented even/odd multi-sequence synthesis with explicit LCU assumptions,
-  normalization, and postselection-cost proxies,
-- version report schemas and record dependency, tolerance, and solver metadata.
+- add a separate hardware-oriented execution API that accepts an existing
+  PennyLane device instead of constructing a simulator internally,
+- require finite-shot measurements and support observables, marginal
+  probabilities, and postselected probabilities without depending on
+  statevector access,
+- support preparation circuits supplied by the caller so hardware examples do
+  not rely on arbitrary amplitude-vector `StatePrep` as an uncosted primitive,
+- target decomposable block encodings such as FABLE, PrepSelPrep, qubitization,
+  and explicitly supplied hardware-compatible custom circuits,
+- reject simulator-only constructions such as undecomposed `BlockEncode` when
+  a target device cannot execute them,
+- decompose and compile QSVT circuits to a requested or device-native gate set,
+  with validation that no unsupported operations remain,
+- report pre- and post-compilation depth, total gates, two-qubit gates, wire
+  mapping, shots, device metadata, job metadata, and statistical uncertainty,
+- compare identical small circuits across an ideal simulator, a noisy
+  simulator, and available real hardware,
+- add end-to-end hardware demonstrations beginning with one- or two-qubit
+  logical Hamiltonians, low-degree polynomials, simple basis-state
+  preparation, and narrowly defined measurements,
+- keep hardware execution claims separate from scalability, fault tolerance,
+  practical advantage, and complete application-algorithm claims.
 
-### 0.4: Executable Access Models
+### Polynomial Design, Realizability, and Phase Synthesis
 
-- add lower-level execution support for caller-supplied block encodings and
-  signal projectors,
-- expand rectangular singular-value transformation examples beyond dense
-  classical references,
-- add encoding-specific resource reports for embedding, FABLE, PrepSelPrep,
-  and qubitization.
+- strengthen bounded polynomial design for inverse, sign, threshold, filter,
+  exponential, resolvent, and other matrix-function targets,
+- preserve explicit classification of classical-only, single-sequence, and
+  mixed-parity constructions,
+- improve numerical robustness for high-degree and poorly conditioned phase
+  synthesis,
+- compare supported phase solvers across degree, coefficient dynamic range,
+  boundedness margin, convergence, runtime, and reconstruction error,
+- provide actionable diagnostics when a polynomial is bounded but not
+  realizable by the requested construction,
+- continue developing certification and reconstruction checks that do not rely
+  only on sampled grids,
+- document phase conventions and conversion rules alongside every synthesis
+  interface.
 
-### 0.5: Stable Research API
+### Block Encodings and Signal Conventions
+
+- maintain consistent interfaces across dense, sparse-like, rectangular,
+  PennyLane-operator, and custom circuit access models,
+- verify normalization, encoded blocks, signal subspaces, dimensions, and
+  unitarity wherever finite verification is possible,
+- add encoding-specific diagnostics and resource reports for embedding, FABLE,
+  PrepSelPrep, qubitization, and custom encodings,
+- make unsupported backend combinations fail with structured, informative
+  reports,
+- keep scalable oracle assumptions separate from finite matrix constructions,
+- add examples that compare multiple valid encodings of the same logical
+  operator.
+
+### Verification and Numerical Reliability
+
+- provide dense spectral and singular-value references for every finite
+  executable workflow,
+- report approximation, synthesis, block-encoding, state, observable, and
+  sampling errors separately,
+- add property-based and adversarial tests for parity, boundedness,
+  normalization, wire layouts, degenerate spectra, and near-boundary inputs,
+- strengthen compatibility tests across supported Python, NumPy, PennyLane,
+  and optional solver versions,
+- record tolerances, dependency versions, solver configuration, random seeds,
+  and report-schema versions in generated research artifacts,
+- maintain regression cases for known synthesis and backend failure modes.
+
+### Resource Estimation and Claim Boundaries
+
+- report polynomial degree, phase count, signal-operator calls, encoding width,
+  circuit depth, gate counts, shots, and postselection proxies where available,
+- identify which costs come from polynomial transformation, block encoding,
+  state preparation, amplitude amplification, readout, compilation, and
+  hardware assumptions,
+- compare encoding-specific resource profiles without presenting simulator
+  timings as hardware runtime claims,
+- distinguish machine-readable implementation layers:
+  dense reference, verified finite block encoding, QNode execution, analytical
+  resource proxy, and omitted quantum components,
+- add scaling studies that state the access model and classical baseline
+  required for a meaningful comparison.
+
+### Public API and Package Architecture
 
 - define a compact stable facade around design, synthesis, execution,
-  verification, and resource estimation,
-- split the large algorithm and CLI modules by workflow family,
-- add deprecation policy and migration tests before the `1.0` API.
+  verification, reporting, and resource estimation,
+- keep experimental lower-level interfaces clearly labeled and accessible for
+  research,
+- split large algorithm and CLI modules by workflow family,
+- use shared result and report types across Python, CLI, examples, and
+  notebooks,
+- establish a documented deprecation policy and migration tests before a
+  stable major API,
+- keep type annotations, API-status metadata, and generated API documentation
+  synchronized with exported behavior.
 
-## Ongoing Project Policies
+### Learning and Implementation Guides
 
-### 2. Notebook Roles
+- maintain a progressive path from scalar polynomial transforms through QSP,
+  block encoding, QSVT circuits, and application workflows,
+- include derivations and numerical checks for parity, boundedness,
+  normalization, projector conventions, and phase conventions,
+- add small implementation exercises whose expected outputs can be reproduced
+  with package functions,
+- show both successful constructions and representative failure cases,
+- keep tutorials succinct and focused on reusable package interfaces rather
+  than notebook-local implementations,
+- link theory, code, tests, examples, and result artifacts so users can audit a
+  workflow at the level they need.
 
-Notebook families should have distinct jobs:
+### Research Workflows and Domain Examples
 
-- tutorials: succinct package-client walkthroughs for using the available
-  algorithms, implementations, diagnostics, reports, and CLI commands,
-- real examples: near-pure package-client applications to concrete physics and
-  mathematics problems,
-- benchmarks: comparisons between quantum/QSVT algorithms or implementations
-  and the relevant classical algorithms or implementations for the same task.
+Core workflows should accept matrices, operators, spectral bounds, target
+functions, tolerances, access models, and report options without depending on a
+particular application domain.
 
-Benchmarks should use actual finite PennyLane/QSVT execution paths where that
-is implemented and clearly marked QSVT resource proxies where full execution is
-not the measured object. Classical comparisons should be the appropriate
-baseline for the task: dense direct solve, conjugate gradient, dense spectral
-matrix functions, polynomial matrix evaluation, or other domain-relevant
-classical methods.
+Useful package-client examples include:
 
-### 3. General Algorithms, Specific Client Notebooks
+- linear systems, regularized pseudoinverses, image deblurring, tomography, and
+  inverse problems,
+- singular-value filtering, low-rank approximation, PCA, denoising, and model
+  reduction,
+- spectral projectors, ground-state filtering, band selection, and topological
+  subspaces,
+- Hamiltonian simulation, quantum walks, and wave propagation,
+- Gibbs weights, imaginary-time evolution, and finite-temperature occupation
+  functions,
+- resolvents, Green's functions, response functions, and density-of-states
+  estimation,
+- PDE, graph-Laplacian, condensed-matter, quantum-chemistry, and
+  matrix-function studies.
 
-Core algorithms should stay domain-general. A workflow should accept matrices,
-operators, spectral bounds, target functions, tolerances, and report options
-without knowing whether the caller is studying a PDE, lattice model,
-Hamiltonian, Green's function, thermal state, or linear system.
+Each example should state the implemented finite workflow, approximation and
+execution errors, parameter choices, access assumptions, resource model, and
+omitted quantum layers. Reusable constructors, diagnostics, and plots should
+move into `src/qsvt` when they are useful beyond one example.
 
-Real-world physics and mathematics notebooks should become near-pure package
-clients:
+### Benchmarks and Comparative Evaluation
 
-- construct or load the domain operator,
-- call package helpers for rescaling, polynomial design, validation, and
-  reporting,
-- keep only domain explanation, parameter choices, and interpretation in the
-  notebook,
-- move reusable construction, diagnostics, and plotting logic back into
-  `src/qsvt` when a second notebook needs it.
+- compare QSVT workflows with the relevant classical algorithm for the same
+  finite task,
+- use actual finite circuit execution when implemented and explicitly labeled
+  resource proxies otherwise,
+- include dense direct solves, iterative solvers, eigendecomposition, SVD,
+  polynomial matrix evaluation, or domain-specific methods as appropriate,
+- separate approximation quality, synthesis cost, circuit resources, sampling
+  cost, and wall-clock timing,
+- treat benchmark timings as environment-specific snapshots rather than
+  portable performance claims,
+- provide machine-readable tables and reports for reproducible comparisons.
 
-### 4. Package-Client Problem Targets
+## Repository and Documentation Policies
 
-Good real-world physics and mathematics notebooks should be thin clients of
-the package: they should build or load a domain operator, call one or two
-general workflow functions, and spend the remaining notebook space on
-interpretation. Useful targets include:
+### Notebook Roles
 
-- image deblurring, tomography, and inverse scattering with
-  `singular_value_pseudoinverse_workflow`, using singular-value cutoffs to
-  study regularization, residuals, and noise amplification,
-- low-rank denoising, PCA, model reduction, and compressed sensing diagnostics
-  with `singular_value_filtering_workflow`, comparing retained singular modes
-  against dense SVD references,
-- Poisson, Helmholtz, diffusion, and graph-Laplacian linear systems with
-  `linear_system_workflow` or `linear_system_comparison_workflow`, where the
-  notebook supplies the finite-difference or graph operator,
-- quantum chemistry and condensed-matter occupation problems with
-  `fermi_dirac_occupation_workflow`, estimating finite-temperature particle
-  number, band filling, and chemical-potential sensitivity,
-- Gibbs weights, imaginary-time filters, and thermal density matrices with
-  `thermal_gibbs_workflow`, including small spin chains, lattice Hamiltonians,
-  and molecular toy models,
-- Green's functions, spectral response, local density of states, and transport
-  response with `resolvent_workflow`, using source vectors to probe spatial or
-  orbital response channels,
-- density of states, band-gap detection, Weyl-law checks, and graph spectral
-  statistics with `spectral_density_workflow` and
-  `spectral_counting_workflow`,
-- topological band projectors, edge-state selection, photonic band gaps, and
-  spectral subspace isolation with `spectral_thresholding_workflow`,
-- entropy, free-energy proxies, covariance spectra, graph von Neumann entropy,
-  and regularized log-determinant studies with `matrix_log_entropy_workflow`,
-- real-time Schrödinger dynamics, wave propagation, coupled oscillator motion,
-  and continuous-time quantum walks with `hamiltonian_simulation_workflow` or
-  `quantum_walk_search_workflow`,
-- robust marked-subspace or high-score amplification demonstrations with
-  `fixed_point_amplification_workflow`, where the notebook supplies a finite
-  score/projector operator.
+- tutorials explain how QSVT concepts map to package interfaces,
+- real examples apply general workflows to concrete physics and mathematics
+  problems,
+- benchmarks compare implementations and assumptions for a defined task.
 
-Each notebook should report the implemented finite workflow, approximation
-error, degree or cutoff choices, and the omitted quantum layers. If a notebook
-needs reusable domain constructors, plotting helpers, or diagnostics that would
-benefit a second example, that logic should move into `src/qsvt` before the
-notebook grows around it.
+Notebooks should construct the problem, call package helpers, and focus on
+interpretation. Reusable algorithm, validation, reporting, and plotting logic
+belongs in the package.
 
-### 5. Claim-Boundary and Resource Modeling
+### Reproducible Artifacts
 
-The package should continue to separate implemented finite workflows from
-conditional quantum-algorithm interpretation. Reports should make these layers
-machine-readable:
+Committed notebook outputs and generated reports should remain reproducible
+through explicit scripts such as `scripts/update_notebook_results.sh`.
+Release checks should verify code, documentation, metadata, and artifact
+structure without silently refreshing environment-dependent timing snapshots.
 
-- dense spectral reference,
-- finite block encoding,
-- PennyLane QNode circuit execution,
-- QSVT resource proxy,
-- omitted state-preparation, oracle, readout, synthesis, and hardware costs.
+Reports should be JSON-safe, schema-versioned where appropriate, and explicit
+about the software environment and numerical tolerances that produced them.
 
-Future work should improve resource proxies without turning them into hardware
-runtime claims.
+### Packaging and Distribution
 
-### 6. Reproducible Artifacts Without Release Churn
-
-Release checks should verify code, docs, package metadata, and committed
-artifact structure without rewriting timing snapshots. Artifact regeneration
-belongs to explicit notebook/result workflows such as
-`scripts/update_notebook_results.sh`.
-
-Benchmark timing fields should be treated as environment-specific snapshots.
-When they are refreshed, the commit should say so directly.
-
-### 7. Packaging and Distribution
-
-PyPI artifacts should stay focused on the importable package and essential
-project metadata. The full notebooks, rendered documentation, result snapshots,
-and regression tests belong in the GitHub repository and project website.
-
-This keeps installation lightweight while preserving the repository as the
-auditable source for examples and reproducible outputs.
-
-## Later Directions
-
-- expand and enforce stable/experimental API labels before a `1.0` release,
-- more package-level plotting/report helpers shared by real-example notebooks,
-- stronger compatibility tests across supported PennyLane, NumPy, and Python
-  versions,
-- optional adapters for user-provided sparse matrices or domain operators,
-- more examples where one general package workflow solves several concrete
-  physics or mathematics instances.
+PyPI artifacts should remain focused on the importable package and essential
+project metadata. Full notebooks, rendered documentation, result snapshots,
+benchmark artifacts, and regression tests belong in the repository and project
+website as the auditable research record.

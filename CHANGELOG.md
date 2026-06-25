@@ -2,6 +2,52 @@
 
 ---
 
+## [0.2.9] – 25th June 2026
+
+### Added
+
+- added `execute_qsvt_from_spec` and
+  `BlockEncodingQSVTExecutionResult` for executing QSVT directly from
+  `BlockEncodingSpec` access models
+- added lower-level `qml.QSVT` execution for dense, sparse-like, rectangular,
+  PrepSelPrep, qubitization, and custom-circuit block encodings
+- added automatic QSVT projector construction from synthesized phases, with
+  explicit caller-supplied projector support for custom signal conventions
+- added finite dense spectral or singular-value reference outputs and logical
+  output error diagnostics where a finite reference is available
+- added encoding-specific resource fields for normalization, logical shape,
+  wires, phases, signal calls, gates, depth, shots, and projector source
+- added structured backend and circuit-construction failures, with optional
+  `raise_on_failure` behavior
+- added a block-encoding execution cookbook example and regression coverage for
+  rectangular, PrepSelPrep, qubitization, custom-projector, and failure paths
+- added the `qsvt execute-spec` command for serializable matrix block-encoding
+  execution with embedding or FABLE, finite shots, normalization, and JSON
+  output options
+- added schema name `block-encoding-qsvt-execution` and schema version `1.0`
+  to specification-based execution reports
+- added separate real-output error, complex leakage, logical-subspace leakage,
+  probability/statevector normalization, and finite-shot uncertainty fields
+- added a dedicated rectangular singular-value execution cookbook example with
+  an SVD validation reference
+
+### Changed
+
+- reorganized the roadmap around implementation areas and research capabilities
+  instead of release-number milestones
+- added a hardware-executable QSVT roadmap covering device-supplied execution,
+  finite-shot measurements, caller-supplied preparation circuits, decomposable
+  encodings, native-gate compilation, hardware metadata, and simulator/noisy
+  simulator/hardware comparisons
+- clarified that planned small hardware demonstrations would be genuine circuit
+  executions without implying scalability, fault tolerance, or quantum
+  advantage
+- expanded block-encoding, execution, API, usage, and truth-contract
+  documentation for specification-based QSVT execution
+- updated release markers and package metadata for `0.2.9`
+
+---
+
 ## [0.2.8] – 25th June 2026
 
 ### Added

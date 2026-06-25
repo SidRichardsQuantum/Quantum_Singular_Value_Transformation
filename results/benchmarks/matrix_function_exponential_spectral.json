@@ -16,8 +16,8 @@
   "problem": "exponential-matrix-function",
   "matrix_dimension": 10,
   "repeats": 3,
-  "best_time_seconds": 8.798399994702777e-05,
-  "mean_time_seconds": 9.862733327281603e-05,
+  "best_time_seconds": 9.999600024457322e-05,
+  "mean_time_seconds": 0.0001105863334487367,
   "benchmark_environment": {
     "timing_kind": "python_wall_clock_microbenchmark",
     "timer": "time.perf_counter",

@@ -21,8 +21,10 @@ from .diagonal import (
     qsvt_transform_report,
 )
 from .execution import (
+    BlockEncodingQSVTExecutionResult,
     QSVTCircuitExecutionResult,
     execute_qsvt_circuit,
+    execute_qsvt_from_spec,
     qsvt_circuit_truth_contract,
 )
 from .matrix import (
@@ -51,6 +53,7 @@ from .synthesis import (
 )
 
 __all__ = [
+    "BlockEncodingQSVTExecutionResult",
     "QSVTCircuitExecutionResult",
     "BoundednessCertificate",
     "MixedParitySynthesisResult",
@@ -58,6 +61,7 @@ __all__ = [
     "PhaseSolverBenchmarkResult",
     "PolynomialRealizability",
     "execute_qsvt_circuit",
+    "execute_qsvt_from_spec",
     "qsvt_circuit_truth_contract",
     "qsvt_operator",
     "qsvt_unitary",

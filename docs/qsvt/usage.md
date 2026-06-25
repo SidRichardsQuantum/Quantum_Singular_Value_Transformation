@@ -132,6 +132,50 @@ coeffs = result.coeffs
 report = result.as_report()
 ```
 
+### Execute From A Block-Encoding Specification
+
+```python
+import pennylane as qml
+from qsvt import (
+    execute_qsvt_from_spec,
+    pennylane_operator_block_encoding_spec,
+)
+
+operator = qml.dot([0.3, 0.7], [qml.Z(1), qml.X(1)])
+spec = pennylane_operator_block_encoding_spec(
+    operator,
+    encoding_wires=[0],
+    block_encoding="prepselprep",
+)
+result = execute_qsvt_from_spec(spec, [0.0, 1.0], [1.0, 0.0])
+
+print(result.succeeded)
+print(result.logical_output_relative_error)
+print(result.resource_summary)
+```
+
+This path uses PennyLane's lower-level `qml.QSVT` operation. It supports
+matrix, PrepSelPrep, qubitization, and custom-circuit specifications.
+Rectangular matrix specifications are checked against a finite SVD reference.
+Pass explicit `projectors` when a custom encoding needs a caller-defined signal
+subspace convention. Backend failures are returned in `error_type` and `error`;
+use `raise_on_failure=True` when exception behavior is preferred.
+
+The equivalent matrix-specification CLI path is:
+
+```bash
+qsvt execute-spec --kind matrix \
+  --matrix "0.2,0;0,0.8" \
+  --poly "0,0,1" \
+  --state "1,0" \
+  --output matrix-execution.json
+```
+
+Execution reports use schema name `block-encoding-qsvt-execution` and schema
+version `1.0`. Diagnostics separate real-output absolute/relative error,
+complex leakage, logical-subspace leakage, probability and statevector
+normalization error, and finite-shot standard errors.
+
 ## Cookbook Scripts
 
 The repository includes short package-client scripts in
@@ -147,6 +191,10 @@ python examples/threshold_filter.py --output /tmp/qsvt-threshold-filter.json
 python examples/block_encoded_workflow.py \
   --output /tmp/qsvt-block-encoded-workflow.json
 python examples/circuit_execution.py --output /tmp/qsvt-circuit-execution.json
+python examples/block_encoding_execution.py \
+  --output /tmp/qsvt-block-encoding-execution.json
+python examples/rectangular_execution.py \
+  --output /tmp/qsvt-rectangular-execution.json
 python examples/compatibility_report.py --output /tmp/qsvt-compatibility.json
 python examples/benchmark_summary.py \
   --output /tmp/qsvt-benchmark-summary.json \
@@ -155,8 +203,8 @@ python examples/benchmark_summary.py \
 
 The scripts cover polynomial design, matrix application, saved diagnostics,
 linear-system comparison, threshold filtering, block-encoded QSVT checks,
-PennyLane circuit execution, compatibility reports, and benchmark summary
-export.
+PennyLane circuit execution, specification-based block-encoding execution,
+compatibility reports, and benchmark summary export.
 
 ## Common Tasks
 

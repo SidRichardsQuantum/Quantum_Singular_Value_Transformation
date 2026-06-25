@@ -111,6 +111,43 @@ def test_circuit_execution_example_writes_json(tmp_path):
 
 
 @pytest.mark.integration
+def test_block_encoding_execution_example_writes_json(tmp_path):
+    output = tmp_path / "block-encoding-execution.json"
+
+    completed = run_example(
+        "block_encoding_execution.py",
+        "--output",
+        str(output),
+    )
+    payload = json.loads(output.read_text(encoding="utf-8"))
+
+    assert str(output) in completed.stdout
+    assert payload["example"] == "block-encoding-execution"
+    assert payload["mode"] == "block-encoding-qsvt-execution-report"
+    assert payload["succeeded"] is True
+    assert payload["block_encoding_spec"]["kind"] == "pennylane-operator"
+    assert payload["resource_summary"]["block_encoding_method"] == "prepselprep"
+
+
+@pytest.mark.integration
+def test_rectangular_execution_example_writes_json(tmp_path):
+    output = tmp_path / "rectangular-execution.json"
+
+    completed = run_example(
+        "rectangular_execution.py",
+        "--output",
+        str(output),
+    )
+    payload = json.loads(output.read_text(encoding="utf-8"))
+
+    assert str(output) in completed.stdout
+    assert payload["example"] == "rectangular-execution"
+    assert payload["succeeded"] is True
+    assert payload["block_encoding_spec"]["logical_shape"] == [2, 3]
+    assert payload["logical_output_relative_error"] < 1e-9
+
+
+@pytest.mark.integration
 def test_compatibility_report_example_writes_json(tmp_path):
     output = tmp_path / "compatibility-report.json"
 

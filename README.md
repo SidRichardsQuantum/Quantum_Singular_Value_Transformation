@@ -108,6 +108,8 @@ qsvt design-workflow --kind sign --gamma 0.2 --degree 13
 qsvt design-sweep --kind sign --degrees "5,9,13,17" --gamma 0.2 \
   --no-synthesis --output sign-degree-sweep.json
 qsvt resource-report --poly "0,0,1" --matrix-dimension 4 --no-synthesis
+qsvt execute-spec --kind matrix --matrix "0.2,0;0,0.8" \
+  --poly "0,0,1" --state "1,0"
 qsvt benchmark cg-solve --matrix "4,1;1,3" --rhs "1,2" --qsvt-poly "0,1"
 qsvt examples
 ```
@@ -123,6 +125,10 @@ python examples/threshold_filter.py --output /tmp/qsvt-threshold-filter.json
 python examples/block_encoded_workflow.py \
   --output /tmp/qsvt-block-encoded-workflow.json
 python examples/circuit_execution.py --output /tmp/qsvt-circuit-execution.json
+python examples/block_encoding_execution.py \
+  --output /tmp/qsvt-block-encoding-execution.json
+python examples/rectangular_execution.py \
+  --output /tmp/qsvt-rectangular-execution.json
 python examples/compatibility_report.py --output /tmp/qsvt-compatibility.json
 python examples/benchmark_summary.py \
   --output /tmp/qsvt-benchmark-summary.json \
@@ -142,6 +148,7 @@ The public package lives under `src/qsvt`.
 | `qsvt.design` | task-oriented polynomial builders |
 | `qsvt.algorithms` | end-to-end simulator-scale algorithm workflows |
 | `qsvt.block_encoding` | finite dense block-encoding construction and verification |
+| `qsvt.execution` | QNode execution for matrices and block-encoding specifications |
 | `qsvt.synthesis` | realizability classification, parity decomposition, and phase synthesis |
 | `qsvt.templates` | ready-made bounded polynomial families |
 | `qsvt.workflow` | combined coefficient, diagnostic, and compatibility workflows |
@@ -210,7 +217,7 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.2.8`
+Current release: `0.2.9`
 
 ## Notebooks
 
@@ -276,6 +283,9 @@ Implemented and tested:
 - PennyLane QNode execution for finite QSVT circuits with state preparation,
   queued `qml.qsvt`, statevector/probability measurement, and circuit resource
   metadata,
+- lower-level QSVT execution from dense, rectangular, PennyLane-operator, and
+  custom-circuit block-encoding specifications, including caller-supplied
+  signal projectors and structured backend failures,
 - classical benchmark baselines plus QSVT-oriented proxy metadata.
 
 Reported as assumptions or proxies:
@@ -285,6 +295,13 @@ Reported as assumptions or proxies:
 - measurement/readout and amplitude amplification,
 - fault-tolerant synthesis, error correction, and hardware compilation,
 - end-to-end runtime or quantum advantage claims.
+
+Hardware execution is not yet a package implementation layer. The roadmap
+includes small hardware-executable QSVT demonstrations using decomposable
+FABLE, PrepSelPrep, qubitization, or custom block encodings; caller-supplied
+preparation circuits; finite-shot measurements; and device-native compilation.
+Such demonstrations would establish genuine execution of the selected finite
+QSVT circuit, not scalability, fault tolerance, or quantum advantage.
 
 Every high-level algorithm, direct QSVT comparison, resource, and benchmark
 report includes a `truth_contract` field. Circuit execution reports separately
@@ -297,8 +314,9 @@ timing snapshots.
 
 ## Scope
 
-This project is intentionally educational, explicit, simulator-friendly, and
-polynomial-focused.
+This project is intentionally educational, explicit, research-oriented, and
+polynomial-focused. Its current execution layer is simulator-first, while
+small auditable hardware experiments are a planned extension.
 
 It does not aim to provide production-scale circuit optimization,
 fault-tolerant constructions, amplitude amplification, or problem-specific

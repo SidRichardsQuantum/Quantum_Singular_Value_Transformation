@@ -5,7 +5,16 @@ import pennylane as qml
 import pytest
 
 import qsvt.execution as execution_module
-from qsvt.execution import execute_qsvt_circuit, qsvt_circuit_truth_contract
+from qsvt.block_encoding import (
+    circuit_block_encoding_spec,
+    matrix_block_encoding_spec,
+    pennylane_operator_block_encoding_spec,
+)
+from qsvt.execution import (
+    execute_qsvt_circuit,
+    execute_qsvt_from_spec,
+    qsvt_circuit_truth_contract,
+)
 from qsvt.reports import report_to_jsonable
 
 
@@ -180,3 +189,171 @@ def test_qsvt_circuit_truth_contract_marks_missing_algorithm_layers():
         "scalable_problem_oracle_or_block_encoding"
         in contract["omitted_quantum_components"]
     )
+
+
+def test_execute_qsvt_from_matrix_spec_matches_dense_reference():
+    spec = matrix_block_encoding_spec(np.diag([0.2, 0.8]), alpha=1.0)
+
+    result = execute_qsvt_from_spec(spec, [0.0, 0.0, 1.0], [1.0, 0.0])
+    report = report_to_jsonable(result.as_report())
+
+    assert result.succeeded is True
+    assert result.projector_source == "pennylane-poly-to-angles"
+    assert result.logical_output_absolute_error is not None
+    assert result.logical_output_absolute_error < 1e-9
+    assert result.logical_output_relative_error is not None
+    assert result.logical_output_relative_error < 1e-9
+    assert result.complex_leakage_norm is not None
+    assert np.isfinite(result.complex_leakage_norm)
+    assert result.complex_leakage_norm > 0.0
+    assert result.logical_subspace_leakage_probability is not None
+    assert result.probability_normalization_error is not None
+    assert result.probability_normalization_error < 1e-12
+    assert result.statevector_normalization_error is not None
+    assert result.statevector_normalization_error < 1e-12
+    assert result.logical_success_standard_error is None
+    assert result.resource_summary["block_encoding_kind"] == "dense-matrix"
+    assert result.resource_summary["normalization_alpha"] == pytest.approx(1.0)
+    assert result.resource_summary["phase_count"] == 3
+    assert result.resource_summary["signal_operator_calls"] == 2
+    assert result.resource_summary["gate_types"]["QSVT"] == 1
+    assert report["truth_contract"]["reference_components"] == [
+        "finite_dense_polynomial_reference"
+    ]
+    assert report["schema_name"] == "block-encoding-qsvt-execution"
+    assert report["schema_version"] == "1.0"
+
+
+def test_execute_qsvt_from_rectangular_spec_uses_singular_value_reference():
+    matrix = np.array([[0.2, 0.1, 0.0], [0.0, 0.3, 0.1]])
+    spec = matrix_block_encoding_spec(matrix, alpha=1.0)
+
+    result = execute_qsvt_from_spec(spec, [0.0, 1.0], [1.0, 0.0, 0.0])
+
+    assert result.succeeded is True
+    assert result.logical_output is not None
+    assert result.logical_output.shape == (2,)
+    assert result.classical_reference_output is not None
+    assert result.logical_output_relative_error is not None
+    assert result.logical_output_relative_error < 1e-9
+
+
+def test_execute_qsvt_from_fable_spec_matches_dense_reference():
+    spec = matrix_block_encoding_spec(
+        np.diag([0.1, 0.2]),
+        alpha=1.0,
+        block_encoding="fable",
+    )
+
+    result = execute_qsvt_from_spec(spec, [0.0, 1.0], [1.0, 0.0])
+
+    assert spec.metadata["fable_compatible"] is True
+    assert result.succeeded is True
+    assert result.logical_output_relative_error is not None
+    assert result.logical_output_relative_error < 1e-9
+    assert result.resource_summary["block_encoding_method"] == "fable"
+
+
+def test_execute_qsvt_from_incompatible_fable_spec_returns_structured_failure():
+    spec = matrix_block_encoding_spec(
+        np.eye(2),
+        alpha=1.0,
+        block_encoding="fable",
+    )
+
+    result = execute_qsvt_from_spec(spec, [0.0, 1.0], [1.0, 0.0])
+
+    assert result.succeeded is False
+    assert result.error_type == "ValueError"
+    assert result.error is not None
+    assert "FABLE normalization" in result.error
+
+
+@pytest.mark.parametrize("block_encoding", ["prepselprep", "qubitization"])
+def test_execute_qsvt_from_pennylane_operator_spec(block_encoding):
+    operator = qml.dot([0.3, 0.7], [qml.Z(1), qml.X(1)])
+    spec = pennylane_operator_block_encoding_spec(
+        operator,
+        encoding_wires=[0],
+        block_encoding=block_encoding,
+    )
+
+    result = execute_qsvt_from_spec(spec, [0.0, 1.0], [1.0, 0.0])
+
+    assert result.succeeded is True
+    assert result.wire_order == (0, 1)
+    assert result.logical_output_relative_error is not None
+    assert result.logical_output_relative_error < 1e-9
+    assert result.resource_summary["block_encoding_method"] == block_encoding
+
+
+def test_execute_qsvt_from_custom_spec_accepts_explicit_projectors():
+    spec = circuit_block_encoding_spec(
+        lambda: qml.Hadamard(0),
+        logical_shape=(1, 1),
+        encoding_wires=[0],
+    )
+    angles = qml.poly_to_angles([0.0, 1.0], "QSVT")
+    projectors = [qml.PCPhase(float(angle), dim=1, wires=[0]) for angle in angles]
+
+    result = execute_qsvt_from_spec(
+        spec,
+        [0.0, 1.0],
+        [1.0],
+        projectors=projectors,
+    )
+
+    assert result.succeeded is True
+    assert result.projector_source == "caller-supplied-projectors"
+    assert result.classical_reference_output is None
+    assert result.logical_output is not None
+
+
+def test_execute_qsvt_from_spec_returns_structured_backend_failure():
+    spec = matrix_block_encoding_spec(np.diag([0.2, 0.8]), alpha=1.0)
+
+    result = execute_qsvt_from_spec(
+        spec,
+        [0.0, 1.0],
+        [1.0, 0.0],
+        device_name="missing.device",
+    )
+
+    assert result.succeeded is False
+    assert result.error_type == "DeviceError"
+    assert result.error is not None
+    assert result.probabilities is None
+    assert result.resource_summary["num_gates"] is None
+
+
+def test_execute_qsvt_from_spec_reports_finite_shot_uncertainty():
+    spec = matrix_block_encoding_spec(np.diag([0.2, 0.8]), alpha=1.0)
+
+    result = execute_qsvt_from_spec(
+        spec,
+        [0.0, 1.0],
+        [1.0, 0.0],
+        shots=200,
+    )
+
+    assert result.succeeded is True
+    assert result.final_state is None
+    assert result.statevector_normalization_error is None
+    assert result.complex_leakage_norm is None
+    assert result.logical_success_standard_error is not None
+    assert result.maximum_probability_standard_error is not None
+    assert result.probability_normalization_error is not None
+    assert result.probability_normalization_error < 1e-12
+
+
+def test_execute_qsvt_from_spec_can_raise_backend_failure():
+    spec = matrix_block_encoding_spec(np.diag([0.2, 0.8]), alpha=1.0)
+
+    with pytest.raises(Exception, match="missing.device"):
+        execute_qsvt_from_spec(
+            spec,
+            [0.0, 1.0],
+            [1.0, 0.0],
+            device_name="missing.device",
+            raise_on_failure=True,
+        )

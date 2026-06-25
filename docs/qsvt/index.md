@@ -322,7 +322,10 @@ This project focuses on:
 - polynomial mechanism understanding
 - reproducible notebook workflows
 
-It does not aim to implement production-scale quantum linear solvers or hardware-optimised circuits.
+It does not aim to implement production-scale quantum linear solvers or claim
+hardware advantage. The roadmap does include small hardware-executable QSVT
+experiments with decomposable encodings, finite-shot measurements, and explicit
+compilation and device metadata.
 
 ---
 

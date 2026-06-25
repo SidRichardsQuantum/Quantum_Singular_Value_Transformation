@@ -72,6 +72,7 @@ def test_top_level_public_api_exports_are_resolvable():
     assert expected_stable_surface <= exported
     assert qsvt.api_status("design_workflow") == qsvt.API_STATUS_STABLE
     assert qsvt.api_status("execute_qsvt_circuit") == qsvt.API_STATUS_EXPERIMENTAL
+    assert qsvt.api_status("execute_qsvt_from_spec") == qsvt.API_STATUS_EXPERIMENTAL
     assert qsvt.api_status("unknown_future_name") == qsvt.API_STATUS_EXPERIMENTAL
     assert set(qsvt.__api_statuses__.values()) <= {
         qsvt.API_STATUS_STABLE,
@@ -762,6 +763,59 @@ def test_cli_matrix_report_writes_output(tmp_path, capsys):
     assert written["max_error"] < 1e-10
     assert len(written["qsvt"]) == len(written["classical"])
     assert len(written["qsvt_imag"]) == len(written["classical"])
+
+
+def test_cli_execute_spec_emits_versioned_diagnostics(capsys):
+    main(
+        [
+            "execute-spec",
+            "--kind",
+            "matrix",
+            "--matrix",
+            "0.2,0;0,0.8",
+            "--poly",
+            "0,0,1",
+            "--state",
+            "1,0",
+        ]
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["mode"] == "block-encoding-qsvt-execution-report"
+    assert payload["schema_name"] == "block-encoding-qsvt-execution"
+    assert payload["schema_version"] == "1.0"
+    assert payload["succeeded"] is True
+    assert payload["logical_output_relative_error"] < 1e-9
+    assert payload["probability_normalization_error"] < 1e-12
+
+
+def test_cli_execute_spec_writes_report(tmp_path, capsys):
+    output = tmp_path / "execute-spec.json"
+
+    main(
+        [
+            "execute-spec",
+            "--matrix",
+            "0.2,0;0,0.8",
+            "--poly",
+            "0,1",
+            "--state",
+            "2,0",
+            "--normalize-state",
+            "--shots",
+            "100",
+            "--output",
+            str(output),
+        ]
+    )
+
+    summary = json.loads(capsys.readouterr().out)
+    payload = json.loads(output.read_text(encoding="utf-8"))
+
+    assert summary["report_written"] is True
+    assert payload["shots"] == 100
+    assert payload["logical_success_standard_error"] is not None
 
 
 def test_cli_report_can_still_print_full_payload_with_output(tmp_path, capsys):

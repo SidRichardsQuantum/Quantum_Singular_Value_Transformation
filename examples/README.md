@@ -15,6 +15,10 @@ python examples/threshold_filter.py --output /tmp/qsvt-threshold-filter.json
 python examples/block_encoded_workflow.py \
   --output /tmp/qsvt-block-encoded-workflow.json
 python examples/circuit_execution.py --output /tmp/qsvt-circuit-execution.json
+python examples/block_encoding_execution.py \
+  --output /tmp/qsvt-block-encoding-execution.json
+python examples/rectangular_execution.py \
+  --output /tmp/qsvt-rectangular-execution.json
 python examples/compatibility_report.py --output /tmp/qsvt-compatibility.json
 python examples/benchmark_summary.py \
   --output /tmp/qsvt-benchmark-summary.json \
@@ -26,5 +30,6 @@ linear-system and benchmark-summary examples also write compact CSV summary
 tables.
 
 The examples cover design/report basics, linear systems, spectral filtering,
-finite block encodings, PennyLane circuit execution, compatibility checks, and
-benchmark table export.
+finite block encodings, PennyLane circuit execution, specification-based
+block-encoding execution, rectangular singular-value execution, compatibility
+checks, and benchmark table export.
