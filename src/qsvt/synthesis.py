@@ -23,6 +23,7 @@ RealizabilityKind = Literal[
     "multiple-parity-sequences-or-lcu",
 ]
 SynthesisRoutine = Literal["QSP", "QSVT"]
+_SUPPORTED_ANGLE_SOLVERS = ("root-finding", "iterative", "iterative-optax")
 
 
 @dataclass(frozen=True)
@@ -489,6 +490,11 @@ def synthesize_phases(
         error = _realizability_interpretation(realizability.kind)
     else:
         try:
+            if angle_solver not in _SUPPORTED_ANGLE_SOLVERS:
+                raise ValueError(
+                    f"Invalid angle solver method: {angle_solver!r}. "
+                    f"Supported solvers: {list(_SUPPORTED_ANGLE_SOLVERS)}"
+                )
             angles = np.asarray(
                 qml.poly_to_angles(
                     realizability.coeffs,
