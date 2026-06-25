@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 import tempfile
 from pathlib import Path
 
@@ -57,7 +58,10 @@ def _execute_notebooks(notebooks):
         os.environ["MPLCONFIGDIR"] = mpl_config_dir
         try:
             for path in notebooks:
-                namespace = {"__name__": "__notebook_test__"}
+                namespace = {
+                    "__name__": "__notebook_test__",
+                    "__notebook_python__": sys.executable,
+                }
 
                 notebook = json.loads(path.read_text())
                 for cell in notebook["cells"]:
@@ -66,6 +70,14 @@ def _execute_notebooks(notebooks):
                             "".join(cell["source"]),
                             path,
                             artifact_root,
+                        )
+                        source = source.replace(
+                            '"python",\n            "-m",\n            "qsvt",',
+                            (
+                                "__notebook_python__,\n"
+                                '            "-m",\n'
+                                '            "qsvt",'
+                            ),
                         )
                         exec(source, namespace)
                 plt.close("all")

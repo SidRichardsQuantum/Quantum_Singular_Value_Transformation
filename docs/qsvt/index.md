@@ -36,6 +36,7 @@ The repository also includes a sequence of notebooks that introduce QSVT concept
 | Understand filtering and projector workflows | [Spectral filters](spectral_filters.md) |
 | Understand time-evolution and response workflows | [Time evolution and response](time_evolution_and_response.md) |
 | Understand finite block encodings | [Block encodings](block_encoding.md) |
+| Classify polynomials and synthesize phases | [Phase synthesis](synthesis.md) |
 | Interpret QSVT compatibility failures | [QSVT compatibility](compatibility.md) |
 | Explore executable examples | [Notebooks](notebooks.md) |
 | Inspect notebook-generated outputs | [Results](results.md) |
@@ -68,7 +69,8 @@ General QSVT/QSP background belongs in [Theory](theory.md), which is rendered
 from the repository root `THEORY.md`. Focused implementation theory belongs in
 dedicated pages: [Linear systems](linear_systems.md), [Spectral filters](spectral_filters.md),
 [Time evolution and response](time_evolution_and_response.md),
-[Block encodings](block_encoding.md), [QSVT compatibility](compatibility.md),
+[Block encodings](block_encoding.md), [Phase synthesis](synthesis.md),
+[QSVT compatibility](compatibility.md),
 [QSVT resource model](qsvt_resource_model.md), and [Algorithm notes](algorithms.md).
 
 ---

@@ -36,6 +36,7 @@ class QSVTCircuitExecutionResult:
     encoding_wires: tuple[int, ...]
     wire_order: tuple[int, ...]
     block_encoding: str
+    angle_solver: str
     device_name: str
     shots: int | None
     final_state: np.ndarray | None
@@ -77,6 +78,7 @@ class QSVTCircuitExecutionResult:
             "encoding_wires": self.encoding_wires,
             "wire_order": self.wire_order,
             "block_encoding": self.block_encoding,
+            "angle_solver": self.angle_solver,
             "device_name": self.device_name,
             "shots": self.shots,
             "final_state": self.final_state,
@@ -97,6 +99,7 @@ def execute_qsvt_circuit(
     encoding_wires: Iterable[int] | None = None,
     wire_order: Iterable[int] | None = None,
     block_encoding: str = "embedding",
+    angle_solver: str = "root-finding",
     device_name: str = "default.qubit",
     shots: int | None = None,
     normalize_state: bool = False,
@@ -146,6 +149,7 @@ def execute_qsvt_circuit(
         enc,
         order,
         block_encoding=block_encoding,
+        angle_solver=angle_solver,
         device_name=device_name,
         shots=shots,
     )
@@ -160,6 +164,7 @@ def execute_qsvt_circuit(
             enc,
             order,
             block_encoding=block_encoding,
+            angle_solver=angle_solver,
             device_name=device_name,
         )
         logical_output = final_state[: A.shape[0]]
@@ -179,6 +184,7 @@ def execute_qsvt_circuit(
         encoding_wires=tuple(enc),
         wire_order=tuple(order),
         block_encoding=block_encoding,
+        angle_solver=angle_solver,
         device_name=device_name,
         shots=shots,
         final_state=final_state,
@@ -195,6 +201,7 @@ def execute_qsvt_circuit(
             enc,
             order,
             block_encoding=block_encoding,
+            angle_solver=angle_solver,
             device_name=device_name,
             shots=shots,
         ),
@@ -237,6 +244,7 @@ def _execute_state_qnode(
     wire_order: list[int],
     *,
     block_encoding: str,
+    angle_solver: str,
     device_name: str,
 ) -> np.ndarray:
     dev = qml.device(device_name, wires=wire_order)
@@ -249,6 +257,7 @@ def _execute_state_qnode(
             coeffs,
             encoding_wires=encoding_wires,
             block_encoding=block_encoding,
+            angle_solver=angle_solver,
         )
         return qml.state()
 
@@ -263,6 +272,7 @@ def _execute_probability_qnode(
     wire_order: list[int],
     *,
     block_encoding: str,
+    angle_solver: str,
     device_name: str,
     shots: int | None,
 ) -> np.ndarray:
@@ -276,6 +286,7 @@ def _execute_probability_qnode(
             coeffs,
             encoding_wires=encoding_wires,
             block_encoding=block_encoding,
+            angle_solver=angle_solver,
         )
         return qml.probs(wires=wire_order)
 
@@ -291,6 +302,7 @@ def _qsvt_circuit_resource_summary(
     wire_order: list[int],
     *,
     block_encoding: str,
+    angle_solver: str,
     device_name: str,
     shots: int | None,
 ) -> dict[str, object]:
@@ -304,6 +316,7 @@ def _qsvt_circuit_resource_summary(
             coeffs,
             encoding_wires=encoding_wires,
             block_encoding=block_encoding,
+            angle_solver=angle_solver,
         )
         return qml.probs(wires=wire_order)
 

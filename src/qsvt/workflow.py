@@ -9,7 +9,7 @@ single operation.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Literal
+from typing import Any, Literal
 
 import numpy as np
 
@@ -31,6 +31,7 @@ from .design import (
     design_sqrt_polynomial,
 )
 from .resources import qsvt_resource_report
+from .synthesis import PhaseSynthesisResult, SynthesisRoutine, synthesize_phases
 
 DesignKind = Literal[
     "inverse",
@@ -94,6 +95,23 @@ class DesignWorkflowResult:
             }
         )
         return report
+
+    def synthesize(
+        self,
+        *,
+        routine: SynthesisRoutine = "QSVT",
+        angle_solver: str = "root-finding",
+        reconstruction_num_points: int = 257,
+        **solver_kwargs: Any,
+    ) -> PhaseSynthesisResult:
+        """Synthesize and validate phases for this designed polynomial."""
+        return synthesize_phases(
+            self.coeffs,
+            routine=routine,
+            angle_solver=angle_solver,
+            reconstruction_num_points=reconstruction_num_points,
+            **solver_kwargs,
+        )
 
 
 def design_workflow(

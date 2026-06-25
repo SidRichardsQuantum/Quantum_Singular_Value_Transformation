@@ -83,11 +83,32 @@ def test_release_check_build_command_supports_local_no_isolation_mode():
     ]
 
 
+def test_release_preflight_exposes_full_notebook_gate():
+    source = _read_text("scripts/release_check.py")
+
+    assert '"--include-notebooks"' in source
+    assert '"tests/test_real_example_notebooks.py"' in source
+
+
 def test_release_extra_includes_no_isolation_build_requirements():
     project = tomllib.loads(_read_text("pyproject.toml"))["project"]
     release_deps = set(project["optional-dependencies"]["release"])
 
     assert {"build", "twine", "wheel"} <= release_deps
+
+
+def test_mypy_uses_runtime_python_for_current_dependency_stubs():
+    config = tomllib.loads(_read_text("pyproject.toml"))["tool"]["mypy"]
+
+    assert "python_version" not in config
+
+
+def test_cli_tutorial_uses_active_python_interpreter():
+    notebook = _read_text("notebooks/tutorials/10_QSVT_Reports_CLI_and_Artifacts.ipynb")
+
+    assert '"import sys\\n"' in notebook
+    assert '"            sys.executable,\\n"' in notebook
+    assert '"            \\"python\\",\\n"' not in notebook
 
 
 def test_sdist_manifest_keeps_large_repo_artifacts_out_of_package():

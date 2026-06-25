@@ -27,6 +27,7 @@ The package is organised into the following modules:
 - `qsvt.approximation`
 - `qsvt.algorithms`
 - `qsvt.block_encoding`
+- `qsvt.synthesis`
 - `qsvt.matrices`
 - `qsvt.hamiltonians`
 - `qsvt.pde`
@@ -107,6 +108,28 @@ The same combined workflow report is available from the CLI:
 qsvt design-workflow --kind sign --gamma 0.25 --degree 13 \
   --output sign-workflow.json
 ```
+
+### `qsvt.synthesis`
+
+Use `classify_polynomial_realizability` to distinguish classical-only,
+single-sequence, and mixed-parity multi-sequence cases. Use `synthesize` or
+`synthesize_phases` to obtain PennyLane phase angles and reconstruction
+diagnostics:
+
+```python
+from qsvt import classify_polynomial_realizability, synthesize
+
+classification = classify_polynomial_realizability([0.5, 0.5])
+result = synthesize([0.0, 1.0])
+```
+
+Related workflow-level helpers are:
+
+- `certify_polynomial_boundedness`
+- `benchmark_phase_solvers`
+- `synthesize_mixed_parity`
+
+See [Phase synthesis](synthesis.md).
 
 ### `qsvt.algorithms`
 
@@ -253,6 +276,17 @@ print(verification["unitary_verified"])
 
 The higher-level `block_encoded_qsvt_workflow` combines this encoding check
 with a small PennyLane QSVT transform for positive Hermitian signal operators.
+
+Research-facing block-encoding specifications cover more access models:
+
+- `matrix_block_encoding_spec`
+- `pennylane_operator_block_encoding_spec`
+- `circuit_block_encoding_spec`
+- `build_block_encoding_operator`
+- `qsvt_operator_from_block_encoding`
+
+Rectangular matrix and custom-circuit specifications are retained even when
+the package's high-level PennyLane QSVT adapter cannot execute them directly.
 
 ---
 
@@ -1030,7 +1064,7 @@ The report includes:
 
 - coefficient finiteness
 - parity classification
-- sampled boundedness on `[-1, 1]`
+- extrema-based boundedness on `[-1, 1]`
 - optional PennyLane synthesis status
 - structured failure reasons such as `mixed_parity`, `out_of_bounds`, and
   `synthesis_failed`

@@ -1,5 +1,5 @@
 solver,implementation_kind,matrix_dimension,degree,gamma,condition_number_2,iterations,converged,residual_norm,relative_residual_norm,relative_solution_error,success_probability,fidelity,state_error,phase_qubits,total_wires,num_gates,circuit_depth,uses_dense_time_evolution,status
 dense_solve,classical-dense-reference,2,4,0.5,2.0,,,0.0,,0.0,,,,,,,,,ok
 conjugate_gradient,classical-iterative-reference,2,4,0.5,2.0,2,True,0.0,0.0,0.0,,,,,,,,,ok
-qsvt_style_polynomial_inverse,dense-spectral-polynomial-workflow,2,4,0.5,2.0,,,0.15709657319471682,,0.1314832263579427,,,,,,,,,ok
+qsvt_style_polynomial_inverse,dense-spectral-polynomial-workflow,2,4,0.5,2.0,,,0.15709657319552597,,0.13148322635878093,,,,,,,,,ok
 hhl_circuit_execution,pennylane-qnode-statevector-hhl-execution,2,4,0.5,2.0,,,,,,0.6249999999999998,1.0,1.2412670766236366e-16,2,4,14,11,True,ok

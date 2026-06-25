@@ -132,6 +132,81 @@ coeffs = result.coeffs
 report = result.as_report()
 ```
 
+### Classify Realizability And Synthesize Phases
+
+Classical polynomial evaluation, structural QSP/QSVT compatibility, and
+numerical phase synthesis are separate layers:
+
+```python
+from qsvt import classify_polynomial_realizability, synthesize
+
+classification = classify_polynomial_realizability([0.5, 0.5])
+assert classification.requires_parity_decomposition
+
+result = synthesize(
+    [0.0, 1.0, 0.0, -0.5, 0.0, 1.0 / 3.0],
+    routine="QSVT",
+    angle_solver="root-finding",
+)
+```
+
+Mixed-parity bounded polynomials are reported as requiring separate even and
+odd sequences plus a combination mechanism such as LCU. Synthesis results keep
+the generated phases, convention, solver, timing, reconstruction error, and
+structured failure metadata.
+
+```bash
+qsvt phase-synthesis --poly "0,1,0,-0.5,0,0.333333"
+```
+
+See [docs/qsvt/synthesis.md](docs/qsvt/synthesis.md) for the full contract.
+
+Use extrema-based boundedness checks when a sampled grid is not sufficient:
+
+```python
+from qsvt import certify_polynomial_boundedness
+
+certificate = certify_polynomial_boundedness([0.996, 0.1, -0.5])
+```
+
+Compare angle solvers and synthesize mixed-parity components:
+
+```python
+from qsvt import benchmark_phase_solvers, synthesize_mixed_parity
+
+benchmark = benchmark_phase_solvers(
+    [0.0, 1.0],
+    solvers=["root-finding", "iterative"],
+)
+mixed = synthesize_mixed_parity([0.5, 0.5])
+```
+
+```bash
+qsvt boundedness-certificate --poly "0.996,0.1,-0.5"
+qsvt phase-solver-benchmark --poly "0,1" --solvers root-finding --repeats 3
+qsvt mixed-parity-synthesis --poly "0.5,0.5"
+```
+
+### Describe A Block-Encoding Access Model
+
+```python
+import numpy as np
+from qsvt import matrix_block_encoding_spec
+
+spec = matrix_block_encoding_spec(
+    np.array([[0.2, 0.1, 0.0], [0.0, 0.3, 0.1]]),
+    alpha=0.5,
+)
+
+print(spec.logical_shape)
+print(spec.execution_supported)
+```
+
+Rectangular matrices, sparse-like objects exposing `toarray()`, PennyLane
+operators, and custom operation factories can be represented. The specification
+reports whether the package can pass that source through PennyLane's high-level
+QSVT helper; representation does not imply direct backend support.
+
 ## Cookbook Scripts
 
 The repository includes short package-client scripts in

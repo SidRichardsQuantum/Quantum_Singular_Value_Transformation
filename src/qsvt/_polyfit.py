@@ -63,12 +63,26 @@ def enforce_boundedness(
     num_points: int = 4001,
 ) -> np.ndarray:
     """
-    Rescale coefficients when sampled values exceed unit magnitude.
+    Rescale coefficients when polynomial extrema exceed unit magnitude.
     """
     coeffs = np.asarray(coeffs, dtype=float)
+    # Keep the grid calculation for compatibility with the public tuning
+    # parameter, then include every numerically real derivative root so narrow
+    # peaks between grid points cannot survive the normalization step.
     max_abs = grid_max_abs(coeffs, num_points=num_points)
+    derivative = np.polynomial.polynomial.polyder(coeffs)
+    if derivative.size > 1 or np.any(np.abs(derivative) > 0.0):
+        roots = np.polynomial.polynomial.polyroots(derivative)
+        critical = [
+            float(np.real(root))
+            for root in roots
+            if abs(float(np.imag(root))) <= 1e-9 and -1.0 <= float(np.real(root)) <= 1.0
+        ]
+        if critical:
+            values = np.polynomial.polynomial.polyval(critical, coeffs)
+            max_abs = max(max_abs, float(np.max(np.abs(values))))
     if max_abs > 1.0:
-        coeffs = coeffs / max_abs
+        coeffs = coeffs / (max_abs * (1.0 + 1e-12))
     return normalize_coefficients(coeffs)
 
 

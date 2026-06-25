@@ -23,6 +23,9 @@ This repository combines:
 - a notebook-first introduction to QSVT and QSP
 - a reusable Python package for polynomial design, spectral transforms, and
   small PennyLane QSVT checks where the backend can synthesize the transform
+- explicit polynomial realizability classification and phase-synthesis reports
+- block-encoding specifications for matrices, PennyLane operators, and
+  user-provided circuit factories
 - reproducible examples for scalar, matrix, PDE, and small physics workflows
 
 The focus is spectral intuition and reproducible validation: how bounded
@@ -97,6 +100,10 @@ Use the command line interface:
 
 ```bash
 qsvt scalar --x 0.5 --poly "0,0,1"
+qsvt phase-synthesis --poly "0,1,0,-0.5,0,0.333333"
+qsvt boundedness-certificate --poly "0.996,0.1,-0.5"
+qsvt phase-solver-benchmark --poly "0,1" --solvers root-finding --repeats 3
+qsvt mixed-parity-synthesis --poly "0.5,0.5"
 qsvt design-workflow --kind sign --gamma 0.2 --degree 13
 qsvt design-sweep --kind sign --degrees "5,9,13,17" --gamma 0.2 \
   --no-synthesis --output sign-degree-sweep.json
@@ -135,6 +142,7 @@ The public package lives under `src/qsvt`.
 | `qsvt.design` | task-oriented polynomial builders |
 | `qsvt.algorithms` | end-to-end simulator-scale algorithm workflows |
 | `qsvt.block_encoding` | finite dense block-encoding construction and verification |
+| `qsvt.synthesis` | realizability classification, parity decomposition, and phase synthesis |
 | `qsvt.templates` | ready-made bounded polynomial families |
 | `qsvt.workflow` | combined coefficient, diagnostic, and compatibility workflows |
 | `qsvt.reports` | JSON-safe reports and plot helpers |
@@ -202,7 +210,7 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.2.7`
+Current release: `0.2.8`
 
 ## Notebooks
 

@@ -35,7 +35,7 @@ Compatibility reports check:
 
 - coefficient finiteness
 - definite parity (`even`, `odd`, or `zero`)
-- sampled boundedness on `[-1, 1]`
+- extrema-based boundedness on `[-1, 1]`
 - optional PennyLane QSVT synthesis on a scalar input
 
 A polynomial can be bounded and still fail synthesis. This commonly happens

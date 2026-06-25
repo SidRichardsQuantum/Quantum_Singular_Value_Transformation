@@ -91,6 +91,11 @@ def main(argv: Sequence[str] | None = None) -> None:
         action="store_true",
         help="Skip mypy type checking.",
     )
+    parser.add_argument(
+        "--include-notebooks",
+        action="store_true",
+        help="Execute the full tutorial, real-example, and benchmark notebook suite.",
+    )
     args = parser.parse_args(argv)
 
     _check_git_hygiene()
@@ -110,6 +115,15 @@ def main(argv: Sequence[str] | None = None) -> None:
             "--cov-report=xml",
         )
     )
+    if args.include_notebooks:
+        _run(
+            _python_module(
+                "pytest",
+                "-m",
+                "notebook",
+                "tests/test_real_example_notebooks.py",
+            )
+        )
     if not args.skip_docs:
         _run(_python_module("sphinx", "-W", "-b", "html", "docs", "docs/_build/html"))
     if not args.skip_build:

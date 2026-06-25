@@ -36,9 +36,27 @@ from .operators import (
     qsvt_top_left_block,
     qsvt_unitary,
 )
+from .synthesis import (
+    BoundednessCertificate,
+    MixedParitySynthesisResult,
+    PhaseSolverBenchmarkResult,
+    PhaseSynthesisResult,
+    PolynomialRealizability,
+    benchmark_phase_solvers,
+    certify_polynomial_boundedness,
+    classify_polynomial_realizability,
+    synthesize,
+    synthesize_mixed_parity,
+    synthesize_phases,
+)
 
 __all__ = [
     "QSVTCircuitExecutionResult",
+    "BoundednessCertificate",
+    "MixedParitySynthesisResult",
+    "PhaseSynthesisResult",
+    "PhaseSolverBenchmarkResult",
+    "PolynomialRealizability",
     "execute_qsvt_circuit",
     "qsvt_circuit_truth_contract",
     "qsvt_operator",
@@ -55,4 +73,10 @@ __all__ = [
     "qsvt_compatibility_report",
     "qsvt_transform_report",
     "qsvt_matrix_transform_report",
+    "benchmark_phase_solvers",
+    "certify_polynomial_boundedness",
+    "classify_polynomial_realizability",
+    "synthesize",
+    "synthesize_mixed_parity",
+    "synthesize_phases",
 ]

@@ -109,6 +109,7 @@ def qsvt_operator(
     *,
     encoding_wires: Iterable[int] | None = None,
     block_encoding: str = "embedding",
+    angle_solver: str = "root-finding",
 ):
     """
     Build a PennyLane QSVT operator.
@@ -146,6 +147,7 @@ def qsvt_operator(
         coeffs,
         encoding_wires=enc,
         block_encoding=block_encoding,
+        angle_solver=angle_solver,
     )
 
 
@@ -156,6 +158,7 @@ def qsvt_unitary(
     encoding_wires: Iterable[int] | None = None,
     wire_order: Iterable[int] | None = None,
     block_encoding: str = "embedding",
+    angle_solver: str = "root-finding",
 ) -> np.ndarray:
     """
     Compute the explicit matrix of a QSVT transform.
@@ -200,6 +203,7 @@ def qsvt_unitary(
                 coeffs,
                 encoding_wires=enc,
                 block_encoding=block_encoding,
+                angle_solver=angle_solver,
             ),
             wire_order=order,
         ),

@@ -15,6 +15,7 @@ and demonstration of core functionality:
         --output sign.json
     python -m qsvt template-report --kind inverse --degree 7 --mu 0.3
     python -m qsvt compatibility-report --poly "0,0,1"
+    python -m qsvt phase-synthesis --poly "0,1,0,-0.5,0,0.333333"
     python -m qsvt design-compatibility --kind sign --degree 13 --gamma 0.2
     python -m qsvt compare-report --values "1.0,0.7,0.3,0.1" --poly "0,0,1"
     python -m qsvt matrix-report --matrix "0.3135,-0.235;-0.235,0.6865" \
@@ -83,6 +84,12 @@ from .qsvt import (
     qsvt_transform_report,
 )
 from .resources import qsvt_resource_report
+from .synthesis import (
+    benchmark_phase_solvers,
+    certify_polynomial_boundedness,
+    synthesize_mixed_parity,
+    synthesize_phases,
+)
 from .templates import (
     exponential_approximation_diagnostics,
     inverse_like_diagnostics,
@@ -413,6 +420,51 @@ def cmd_compatibility_report(args: argparse.Namespace) -> dict:
         bounded_num_points=args.bounded_num_points,
         attempt_synthesis=args.attempt_synthesis,
     )
+
+
+def cmd_phase_synthesis(args: argparse.Namespace) -> dict:
+    """Synthesize QSP/QSVT phases for explicit polynomial coefficients."""
+    result = synthesize_phases(
+        parse_poly(args.poly),
+        routine=args.routine,
+        angle_solver=args.angle_solver,
+        bounded_num_points=args.bounded_num_points,
+        reconstruction_num_points=args.reconstruction_num_points,
+    )
+    return result.as_report()
+
+
+def cmd_boundedness_certificate(args: argparse.Namespace) -> dict:
+    """Certify polynomial boundedness from endpoints and derivative roots."""
+    return certify_polynomial_boundedness(
+        parse_poly(args.poly),
+        domain=(args.lower, args.upper),
+        bound=args.bound,
+        tolerance=args.tolerance,
+    ).as_report()
+
+
+def cmd_phase_solver_benchmark(args: argparse.Namespace) -> dict:
+    """Benchmark one or more PennyLane phase solvers."""
+    solvers = tuple(
+        solver.strip() for solver in args.solvers.split(",") if solver.strip()
+    )
+    return benchmark_phase_solvers(
+        parse_poly(args.poly),
+        solvers=solvers,
+        routine=args.routine,
+        repeats=args.repeats,
+        reconstruction_num_points=args.reconstruction_num_points,
+    ).as_report()
+
+
+def cmd_mixed_parity_synthesis(args: argparse.Namespace) -> dict:
+    """Synthesize separate parity components and report an LCU model."""
+    return synthesize_mixed_parity(
+        parse_poly(args.poly),
+        angle_solver=args.angle_solver,
+        reconstruction_num_points=args.reconstruction_num_points,
+    ).as_report()
 
 
 def cmd_resource_report(args: argparse.Namespace) -> dict:
@@ -967,6 +1019,82 @@ def build_parser() -> argparse.ArgumentParser:
     )
     add_report_output_args(p_compatibility)
     p_compatibility.set_defaults(func=cmd_compatibility_report)
+
+    p_synthesis = sub.add_parser(
+        "phase-synthesis",
+        help="Classify a polynomial and synthesize QSP/QSVT phase angles",
+    )
+    p_synthesis.add_argument(
+        "--poly",
+        type=str,
+        required=True,
+        help='Polynomial coefficients, e.g. "0,1,0,-0.5,0,0.333333"',
+    )
+    p_synthesis.add_argument(
+        "--routine",
+        choices=["QSP", "QSVT"],
+        default="QSVT",
+    )
+    p_synthesis.add_argument(
+        "--angle-solver",
+        choices=["root-finding", "iterative", "iterative-optax"],
+        default="root-finding",
+    )
+    p_synthesis.add_argument("--bounded-num-points", type=int, default=4001)
+    p_synthesis.add_argument("--reconstruction-num-points", type=int, default=257)
+    add_report_output_args(p_synthesis, include_plot=False)
+    p_synthesis.set_defaults(func=cmd_phase_synthesis)
+
+    p_certificate = sub.add_parser(
+        "boundedness-certificate",
+        help="Check polynomial extrema at endpoints and derivative roots",
+    )
+    p_certificate.add_argument("--poly", type=str, required=True)
+    p_certificate.add_argument("--lower", type=float, default=-1.0)
+    p_certificate.add_argument("--upper", type=float, default=1.0)
+    p_certificate.add_argument("--bound", type=float, default=1.0)
+    p_certificate.add_argument("--tolerance", type=float, default=1e-10)
+    add_report_output_args(p_certificate, include_plot=False)
+    p_certificate.set_defaults(func=cmd_boundedness_certificate)
+
+    p_solver_benchmark = sub.add_parser(
+        "phase-solver-benchmark",
+        help="Compare phase-synthesis solvers for one polynomial",
+    )
+    p_solver_benchmark.add_argument("--poly", type=str, required=True)
+    p_solver_benchmark.add_argument(
+        "--solvers",
+        type=str,
+        default="root-finding,iterative",
+        help="Comma-separated PennyLane angle solvers.",
+    )
+    p_solver_benchmark.add_argument(
+        "--routine",
+        choices=["QSP", "QSVT"],
+        default="QSVT",
+    )
+    p_solver_benchmark.add_argument("--repeats", type=int, default=3)
+    p_solver_benchmark.add_argument(
+        "--reconstruction-num-points",
+        type=int,
+        default=65,
+    )
+    add_report_output_args(p_solver_benchmark, include_plot=False)
+    p_solver_benchmark.set_defaults(func=cmd_phase_solver_benchmark)
+
+    p_mixed = sub.add_parser(
+        "mixed-parity-synthesis",
+        help="Synthesize even and odd sequences with an LCU cost model",
+    )
+    p_mixed.add_argument("--poly", type=str, required=True)
+    p_mixed.add_argument(
+        "--angle-solver",
+        choices=["root-finding", "iterative", "iterative-optax"],
+        default="root-finding",
+    )
+    p_mixed.add_argument("--reconstruction-num-points", type=int, default=257)
+    add_report_output_args(p_mixed, include_plot=False)
+    p_mixed.set_defaults(func=cmd_mixed_parity_synthesis)
 
     p_resource = sub.add_parser(
         "resource-report",

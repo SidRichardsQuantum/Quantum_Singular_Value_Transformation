@@ -14,7 +14,7 @@ specific quantum data-access and hardware model.
 | phase-count proxy | approximate number of QSP/QSVT phase parameters |
 | signal-operator calls | proxy for uses of the block-encoded signal operator |
 | matrix-register width | `ceil(log2(matrix_dimension))` when a dimension is supplied |
-| compatibility fields | sampled boundedness, parity, and optional PennyLane synthesis status |
+| compatibility fields | extrema boundedness, parity, and optional PennyLane synthesis status |
 
 These quantities are useful because degree usually dominates the number of
 signal uses in an idealized QSVT sequence. They are not enough to determine
@@ -24,7 +24,7 @@ Every resource report includes a `truth_contract` field with
 `implementation_kind = "polynomial-resource-proxy"` and
 `is_end_to_end_quantum_resource_estimate = false`. The report is truthful only
 as a polynomial-level proxy: it can compare degrees, phase-count proxies,
-signal-call proxies, widths, and sampled compatibility checks. It cannot by
+signal-call proxies, widths, and compatibility checks. It cannot by
 itself justify a runtime, hardware, or quantum-advantage claim.
 
 Notation used in resource discussions:

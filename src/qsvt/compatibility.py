@@ -12,7 +12,11 @@ from collections.abc import Iterable
 import numpy as np
 import pennylane as qml
 
-from .polynomials import eval_polynomial, polynomial_parity
+from .polynomials import polynomial_parity
+from .synthesis import (
+    certify_polynomial_boundedness,
+    classify_polynomial_realizability,
+)
 
 
 def qsvt_compatibility_report(
@@ -24,6 +28,7 @@ def qsvt_compatibility_report(
     parity_tol: float = 1e-10,
     attempt_synthesis: bool = True,
     block_encoding: str = "embedding",
+    angle_solver: str = "root-finding",
 ) -> dict[str, object]:
     """
     Check whether polynomial coefficients are suitable for PennyLane QSVT.
@@ -37,9 +42,9 @@ def qsvt_compatibility_report(
     poly
         Polynomial coefficients in ascending degree order.
     bounded_domain
-        Domain used for sampled boundedness checks.
+        Domain used for extrema-based boundedness checks.
     bounded_num_points
-        Number of grid points used for sampled boundedness checks.
+        Retained for report-schema compatibility; extrema checks do not use a grid.
     bound
         Absolute-value bound expected by QSVT.
     parity_tol
@@ -75,12 +80,16 @@ def qsvt_compatibility_report(
         reasons.append("mixed_parity")
 
     if coeffs_finite:
-        xs = np.linspace(lower, upper, int(bounded_num_points))
-        values = np.asarray(eval_polynomial(coeffs, xs), dtype=float)
-        max_abs_value = float(np.max(np.abs(values)))
+        certificate = certify_polynomial_boundedness(
+            coeffs,
+            domain=(lower, upper),
+            bound=bound,
+        )
+        max_abs_value = certificate.max_abs_value
         bounded_margin = float(bound - max_abs_value)
-        is_bounded = bool(max_abs_value <= float(bound) + 1e-12)
+        is_bounded = certificate.is_bounded
     else:
+        certificate = None
         max_abs_value = None
         bounded_margin = None
         is_bounded = False
@@ -101,8 +110,23 @@ def qsvt_compatibility_report(
         "max_abs_value": max_abs_value,
         "bounded_margin": bounded_margin,
         "is_bounded": is_bounded,
+        "boundedness_check": (None if certificate is None else certificate.as_report()),
         "attempted_pennylane_synthesis": bool(attempt_synthesis),
+        "angle_solver": angle_solver,
     }
+    realizability = classify_polynomial_realizability(
+        coeffs,
+        bounded_domain=(lower, upper),
+        bounded_num_points=bounded_num_points,
+        bound=bound,
+        parity_tol=parity_tol,
+    )
+    report["realizability"] = realizability.as_report()
+    report["realizability_kind"] = realizability.kind
+    report["single_sequence_realizable"] = realizability.single_sequence_realizable
+    report["requires_parity_decomposition"] = (
+        realizability.requires_parity_decomposition
+    )
 
     synthesis_succeeded: bool | None = None
     if attempt_synthesis and coeffs_finite:
@@ -112,6 +136,7 @@ def qsvt_compatibility_report(
                 coeffs,
                 encoding_wires=[0],
                 block_encoding=block_encoding,
+                angle_solver=angle_solver,
             )
         except Exception as exc:
             synthesis_succeeded = False

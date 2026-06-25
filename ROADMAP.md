@@ -16,21 +16,47 @@ The package direction is:
   classical algorithms and implementations,
 - keep artifacts reproducible and clearly separated from release validation.
 
-## Near-Term Priorities
+## Current Milestones
 
-### 1. User-Facing Workflow Polish
+### 0.2.8: Realizability, Synthesis, And Block-Encoding Interfaces
 
-The next package work should make the common user paths easier to discover and
-reuse:
+Version 0.2.8 establishes the research-facing boundary between polynomial
+functional calculus and executable QSP/QSVT constructions:
 
-- tighten the public API around polynomial design, compatibility checks,
-  block-encoded workflows, circuit execution, reports, and benchmarks,
-- maintain small cookbook examples for "choose a polynomial, apply it, inspect
-  the diagnostics, save the report" in `examples/`,
-- keep tutorial notebooks short enough that users can copy the package usage
-  pattern without reading a paper-length example,
-- keep CLI and Python examples aligned so users can move between scripts,
-  notebooks, and shell commands without changing concepts.
+- classify finite polynomials as classical-only, one-sequence QSP/QSVT, or
+  mixed-parity transforms requiring multiple sequences or LCU,
+- expose phase synthesis with solver, convention, timing, reconstruction
+  diagnostics, and structured failures,
+- describe dense, rectangular, sparse-like, PennyLane-operator, and custom
+  circuit block-encoding access models without implying backend support.
+
+### 0.3: Synthesis Robustness And Certification
+
+- implemented extrema-based boundedness certificates using interval endpoints
+  and derivative roots,
+- implemented root-finding and iterative phase-solver benchmarks with degree,
+  coefficient dynamic range, margin, convergence, timing, and error fields,
+- implemented even/odd multi-sequence synthesis with explicit LCU assumptions,
+  normalization, and postselection-cost proxies,
+- version report schemas and record dependency, tolerance, and solver metadata.
+
+### 0.4: Executable Access Models
+
+- add lower-level execution support for caller-supplied block encodings and
+  signal projectors,
+- expand rectangular singular-value transformation examples beyond dense
+  classical references,
+- add encoding-specific resource reports for embedding, FABLE, PrepSelPrep,
+  and qubitization.
+
+### 0.5: Stable Research API
+
+- define a compact stable facade around design, synthesis, execution,
+  verification, and resource estimation,
+- split the large algorithm and CLI modules by workflow family,
+- add deprecation policy and migration tests before the `1.0` API.
+
+## Ongoing Project Policies
 
 ### 2. Notebook Roles
 

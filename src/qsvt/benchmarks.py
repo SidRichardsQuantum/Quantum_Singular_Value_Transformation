@@ -74,7 +74,7 @@ def dense_eigendecomposition_benchmark(
     """
     hermitian = _validate_hermitian_matrix(matrix)
 
-    def run() -> tuple[np.ndarray, np.ndarray]:
+    def run() -> Any:
         return np.linalg.eigh(hermitian)
 
     (eigenvalues, eigenvectors), timings = _time_repeated(run, repeats)

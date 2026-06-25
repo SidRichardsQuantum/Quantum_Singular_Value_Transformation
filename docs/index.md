@@ -434,6 +434,7 @@ Roadmap <qsvt/roadmap>
 :caption: Guides
 
 Polynomial Design <qsvt/design>
+Phase Synthesis <qsvt/synthesis>
 Algorithm Notes <qsvt/algorithms>
 Linear Systems <qsvt/linear_systems>
 Spectral Filters <qsvt/spectral_filters>

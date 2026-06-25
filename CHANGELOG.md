@@ -2,6 +2,73 @@
 
 ---
 
+## [0.2.8] – 25th June 2026
+
+### Added
+
+- added `qsvt.synthesis` with explicit polynomial realizability
+  classification for classical-only, single-sequence QSP/QSVT, and
+  mixed-parity multi-sequence or LCU cases
+- added `PolynomialRealizability` reports with sampled boundedness, parity,
+  reasons, and separated even/odd coefficient components
+- added `PhaseSynthesisResult`, `synthesize`, `synthesize_phases`, and
+  `synthesis_workflow` for PennyLane QSP/QSVT angle synthesis with solver,
+  convention, timing, structured failure, and QSVT scalar reconstruction
+  diagnostics
+- added `DesignWorkflowResult.synthesize()` and the `qsvt phase-synthesis`
+  command so designed or explicit polynomials use the same synthesis contract
+- added `BlockEncodingSpec` and adapters for dense or sparse-like matrices,
+  rectangular matrices, PennyLane operators using PrepSelPrep or
+  qubitization, and user-provided PennyLane operation factories
+- added block-encoding operation builders and a high-level QSVT adapter that
+  reports unsupported rectangular or custom-circuit execution boundaries
+- added focused tests for realizability classes, phase reconstruction,
+  structured synthesis failures, rectangular and sparse-like specifications,
+  PennyLane operator adapters, and custom circuit factories
+- added extrema-based boundedness certificates that evaluate interval endpoints
+  and derivative roots instead of relying on grid sampling alone
+- added phase-solver benchmarks with convergence counts, timing,
+  reconstruction errors, phase counts, and conditioning proxies
+- added mixed-parity synthesis that normalizes and synthesizes even and odd
+  components separately and reports conditional LCU normalization,
+  postselection, and omitted-cost assumptions
+- added release-preflight support for explicitly running the complete notebook
+  suite with `--include-notebooks`
+
+### Changed
+
+- expanded compatibility reports with machine-readable realizability kind,
+  one-sequence eligibility, parity-decomposition requirements, and selected
+  angle solver
+- added angle-solver selection to core operator construction and finite QNode
+  execution helpers
+- changed compatibility and realizability boundedness fields to use the
+  numerical extrema certificate while retaining existing report keys
+- changed the CLI tutorial subprocess to use the active Python interpreter
+  rather than assuming `python` resolves to the package environment
+- changed mypy configuration to use its runtime Python version so current
+  NumPy stubs remain parseable while Python 3.10 runtime compatibility stays
+  covered by CI and Ruff
+- updated the roadmap from open-ended notebook expansion toward milestones for
+  synthesis certification, executable access models, and a compact stable
+  research API
+- documented phase synthesis, block-encoding access models, mixed-parity
+  interpretation, CLI usage, and the new public package exports
+- updated release markers and package metadata for `0.2.8`
+
+### Fixed
+
+- made mixed-parity projector-style polynomials explicitly report that one
+  standard QSP/QSVT sequence is insufficient instead of presenting sampled
+  boundedness as complete realizability
+- preserved numerical phase-solver failures as report data so structurally
+  realizable polynomials are not incorrectly reported as successfully
+  synthesized
+- fixed release-preflight type checking with NumPy versions whose stubs use
+  Python 3.12 type-alias syntax
+
+---
+
 ## [0.2.7] – 16th June 2026
 
 ### Added

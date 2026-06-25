@@ -16,13 +16,13 @@
   "problem": "polynomial-matrix-function",
   "matrix_dimension": 10,
   "repeats": 3,
-  "best_time_seconds": 0.00014272599992182222,
-  "mean_time_seconds": 0.00015335966675896392,
+  "best_time_seconds": 0.00015330599944718415,
+  "mean_time_seconds": 0.000175353666539498,
   "benchmark_environment": {
     "timing_kind": "python_wall_clock_microbenchmark",
     "timer": "time.perf_counter",
-    "python_version": "3.13.12",
-    "numpy_version": "2.4.5",
+    "python_version": "3.12.1",
+    "numpy_version": "2.5.0",
     "platform_system": "Linux",
     "platform_release": "6.8.0-1052-azure",
     "platform_machine": "x86_64",
@@ -32,7 +32,7 @@
   "metrics": {
     "polynomial_degree": 10,
     "coefficient_count": 11,
-    "output_frobenius_norm": 0.7804344792246252
+    "output_frobenius_norm": 0.7804344792246231
   },
   "qsvt_proxy": {
     "mode": "resource-report",
@@ -53,17 +53,17 @@
       "validation_scope": "The report compares polynomial-level quantities and sampled compatibility checks; it does not estimate wall-clock runtime."
     },
     "coeffs": [
-      0.3678794411711741,
-      -0.36787944124556154,
-      0.18393972060662575,
-      -0.06131323859205821,
-      0.015328309787894954,
-      -0.003065671608984154,
-      0.0005109448489368964,
-      -7.296870527160152e-05,
-      9.121596704634384e-06,
-      -1.0382032176725662e-06,
-      1.036058209494733e-07
+      0.3678794411711717,
+      -0.36787944124556377,
+      0.18393972060665628,
+      -0.06131323859202853,
+      0.015328309787737781,
+      -0.0030656716090661784,
+      0.0005109448493198044,
+      -7.296870518253207e-05,
+      9.121596277857147e-06,
+      -1.0382032512193908e-06,
+      1.0360599454062495e-07
     ],
     "resources": {
       "estimate_kind": "proxy",
@@ -95,17 +95,17 @@
     "compatibility": {
       "mode": "qsvt-compatibility-report",
       "poly": [
-        0.3678794411711741,
-        -0.36787944124556154,
-        0.18393972060662575,
-        -0.06131323859205821,
-        0.015328309787894954,
-        -0.003065671608984154,
-        0.0005109448489368964,
-        -7.296870527160152e-05,
-        9.121596704634384e-06,
-        -1.0382032176725662e-06,
-        1.036058209494733e-07
+        0.3678794411711717,
+        -0.36787944124556377,
+        0.18393972060665628,
+        -0.06131323859202853,
+        0.015328309787737781,
+        -0.0030656716090661784,
+        0.0005109448493198044,
+        -7.296870518253207e-05,
+        9.121596277857147e-06,
+        -1.0382032512193908e-06,
+        1.0360599454062495e-07
       ],
       "polynomial_degree": 10,
       "coefficients_finite": true,
@@ -120,7 +120,145 @@
       "max_abs_value": 0.9999999999722503,
       "bounded_margin": 2.77496914335984e-11,
       "is_bounded": true,
+      "boundedness_check": {
+        "mode": "polynomial-boundedness-certificate",
+        "certification_kind": "numerical-polynomial-extrema",
+        "coeffs": [
+          0.3678794411711717,
+          -0.36787944124556377,
+          0.18393972060665628,
+          -0.06131323859202853,
+          0.015328309787737781,
+          -0.0030656716090661784,
+          0.0005109448493198044,
+          -7.296870518253207e-05,
+          9.121596277857147e-06,
+          -1.0382032512193908e-06,
+          1.0360599454062495e-07
+        ],
+        "domain": [
+          -1.0,
+          1.0
+        ],
+        "bound": 1.0,
+        "tolerance": 1e-10,
+        "critical_points": [],
+        "evaluated_points": [
+          -1.0,
+          1.0
+        ],
+        "values": [
+          0.9999999999722503,
+          0.13533528326206573
+        ],
+        "max_abs_value": 0.9999999999722503,
+        "maximizing_point": -1.0,
+        "margin": 2.77496914335984e-11,
+        "is_bounded": true,
+        "derivative_root_residual": 0.0,
+        "interpretation": "All interval endpoints and numerically real derivative roots were evaluated. This is a floating-point extrema certificate, not an interval-arithmetic proof."
+      },
       "attempted_pennylane_synthesis": false,
+      "angle_solver": "root-finding",
+      "realizability": {
+        "mode": "polynomial-realizability-report",
+        "coeffs": [
+          0.3678794411711717,
+          -0.36787944124556377,
+          0.18393972060665628,
+          -0.06131323859202853,
+          0.015328309787737781,
+          -0.0030656716090661784,
+          0.0005109448493198044,
+          -7.296870518253207e-05,
+          9.121596277857147e-06,
+          -1.0382032512193908e-06,
+          1.0360599454062495e-07
+        ],
+        "degree": 10,
+        "parity": "mixed",
+        "bounded": true,
+        "max_abs_value": 0.9999999999722503,
+        "bounded_domain": [
+          -1.0,
+          1.0
+        ],
+        "bounded_num_points": 4001,
+        "realizability_kind": "multiple-parity-sequences-or-lcu",
+        "single_sequence_realizable": false,
+        "requires_parity_decomposition": true,
+        "even_coeffs": [
+          0.3678794411711717,
+          0.0,
+          0.18393972060665628,
+          0.0,
+          0.015328309787737781,
+          0.0,
+          0.0005109448493198044,
+          0.0,
+          9.121596277857147e-06,
+          0.0,
+          1.0360599454062495e-07
+        ],
+        "odd_coeffs": [
+          0.0,
+          -0.36787944124556377,
+          0.0,
+          -0.06131323859202853,
+          0.0,
+          -0.0030656716090661784,
+          0.0,
+          -7.296870518253207e-05,
+          0.0,
+          -1.0382032512193908e-06,
+          0.0
+        ],
+        "reasons": [
+          "mixed_parity"
+        ],
+        "boundedness_certificate": {
+          "mode": "polynomial-boundedness-certificate",
+          "certification_kind": "numerical-polynomial-extrema",
+          "coeffs": [
+            0.3678794411711717,
+            -0.36787944124556377,
+            0.18393972060665628,
+            -0.06131323859202853,
+            0.015328309787737781,
+            -0.0030656716090661784,
+            0.0005109448493198044,
+            -7.296870518253207e-05,
+            9.121596277857147e-06,
+            -1.0382032512193908e-06,
+            1.0360599454062495e-07
+          ],
+          "domain": [
+            -1.0,
+            1.0
+          ],
+          "bound": 1.0,
+          "tolerance": 1e-10,
+          "critical_points": [],
+          "evaluated_points": [
+            -1.0,
+            1.0
+          ],
+          "values": [
+            0.9999999999722503,
+            0.13533528326206573
+          ],
+          "max_abs_value": 0.9999999999722503,
+          "maximizing_point": -1.0,
+          "margin": 2.77496914335984e-11,
+          "is_bounded": true,
+          "derivative_root_residual": 0.0,
+          "interpretation": "All interval endpoints and numerically real derivative roots were evaluated. This is a floating-point extrema certificate, not an interval-arithmetic proof."
+        },
+        "interpretation": "The polynomial is extrema-bounded but has mixed parity. Realize its even and odd components separately and combine them, for example with an LCU-style construction."
+      },
+      "realizability_kind": "multiple-parity-sequences-or-lcu",
+      "single_sequence_realizable": false,
+      "requires_parity_decomposition": true,
       "pennylane_synthesis_succeeded": null,
       "reasons": [
         "mixed_parity"

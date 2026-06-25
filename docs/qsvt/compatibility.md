@@ -4,6 +4,17 @@ QSVT can implement only polynomials that satisfy structural constraints. This
 page summarizes the compatibility checks used by `qsvt-pennylane` and explains
 how to read failures without overclaiming.
 
+Reports include a `realizability` payload that distinguishes ordinary
+classical polynomial evaluation from one-sequence QSP/QSVT realizability and
+mixed-parity multi-sequence requirements. For phase angles, solver metadata,
+and numerical reconstruction checks, see [Phase synthesis](synthesis.md).
+
+Boundedness is checked from polynomial extrema: both endpoints and every
+numerically real derivative root in the requested interval. Reports retain the
+extrema certificate and tolerance. `bounded_num_points` remains in the schema
+for compatibility with existing callers, but realizability no longer relies on
+a grid that can miss an internal peak.
+
 ## Core Conditions
 
 A real polynomial intended for direct QSVT synthesis should satisfy:
@@ -47,7 +58,7 @@ Typical report fields include:
 | --- | --- |
 | `polynomial_degree` | highest nonzero coefficient degree |
 | `parity` | `even`, `odd`, or `mixed` |
-| `is_bounded` | sampled boundedness result |
+| `is_bounded` | extrema-based boundedness result |
 | `max_abs_value` | sampled maximum absolute value |
 | `attempted_pennylane_synthesis` | whether backend synthesis was tried |
 | `pennylane_synthesis_succeeded` | synthesis result when attempted |
@@ -92,7 +103,7 @@ Expected reasons include `mixed_parity`, while `is_bounded` remains true.
 
 ### Backend Synthesis Failure
 
-Some polynomials satisfy sampled boundedness and parity checks but still fail a
+Some polynomials satisfy boundedness and parity checks but still fail a
 specific backend synthesis path. In that case the polynomial may be
 mathematically admissible, while the current implementation path cannot produce
 or verify the corresponding QSVT operator.

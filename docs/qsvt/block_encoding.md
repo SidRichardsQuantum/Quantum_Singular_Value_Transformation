@@ -75,6 +75,23 @@ print(verification["block_encoding_verified"])
 print(verification["unitary_verified"])
 ```
 
+## Access-Model Specifications
+
+`BlockEncodingSpec` describes how a caller intends to supply a signal operator
+without claiming that every source is directly executable by one backend.
+
+Supported specification constructors are:
+
+- `matrix_block_encoding_spec` for dense, rectangular, or sparse-like matrices,
+- `pennylane_operator_block_encoding_spec` for PrepSelPrep or qubitization,
+- `circuit_block_encoding_spec` for user-provided PennyLane operation factories.
+
+`build_block_encoding_operator` constructs the corresponding PennyLane
+block-encoding operation. `qsvt_operator_from_block_encoding` supports sources
+accepted by PennyLane's high-level QSVT path. Rectangular matrices and custom
+circuits remain representable, but their reports explain why caller-supplied
+signal projectors or a lower-level construction are required.
+
 ## What Is Verified
 
 The finite helper verifies:

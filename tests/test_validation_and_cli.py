@@ -793,6 +793,69 @@ def test_cli_compatibility_report_emits_json(capsys):
     assert payload["pennylane_synthesis_succeeded"] is True
 
 
+def test_cli_phase_synthesis_report(capsys):
+    main(
+        [
+            "phase-synthesis",
+            "--poly",
+            "0,1",
+            "--reconstruction-num-points",
+            "17",
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["mode"] == "phase-synthesis-report"
+    assert payload["succeeded"] is True
+    assert payload["phase_count"] == 2
+
+
+def test_cli_boundedness_certificate_detects_internal_peak(capsys):
+    main(["boundedness-certificate", "--poly", "0.996,0.1,-0.5"])
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["mode"] == "polynomial-boundedness-certificate"
+    assert payload["is_bounded"] is False
+    assert payload["maximizing_point"] == pytest.approx(0.1)
+
+
+def test_cli_phase_solver_benchmark(capsys):
+    main(
+        [
+            "phase-solver-benchmark",
+            "--poly",
+            "0,1",
+            "--solvers",
+            "root-finding",
+            "--repeats",
+            "1",
+            "--reconstruction-num-points",
+            "9",
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["mode"] == "phase-solver-benchmark"
+    assert payload["rows"][0]["converged"] is True
+
+
+def test_cli_mixed_parity_synthesis(capsys):
+    main(
+        [
+            "mixed-parity-synthesis",
+            "--poly",
+            "0.5,0.5",
+            "--reconstruction-num-points",
+            "9",
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["mode"] == "mixed-parity-synthesis-report"
+    assert payload["succeeded"] is True
+    assert payload["truth_contract"]["lcu_circuit_implemented"] is False
+
+
 def test_cli_design_compatibility_reports_synthesis_failure(capsys):
     main(
         [
