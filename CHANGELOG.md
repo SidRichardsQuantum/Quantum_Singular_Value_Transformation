@@ -2,6 +2,45 @@
 
 ---
 
+## [0.2.11] – 3rd July 2026
+
+### Added
+
+- added `qsvt.hardware` with `execute_qsvt_on_device`,
+  `qsvt_hardware_preflight`, and report dataclasses for finite-shot QSVT
+  execution on caller-supplied PennyLane devices
+- added hardware preflight checks for finite positive shots, device wire
+  coverage, advertised operation and measurement support, and default
+  rejection of simulator-only `StatePrep` preparation
+- added hardware execution reports with schema name `hardware-qsvt-execution`,
+  schema version `1.0`, finite-shot uncertainty fields, logical resource
+  summaries, compilation metadata placeholders, and explicit omitted provider
+  layers
+- added `qsvt_provider_plugin_report` and `ProviderPluginReport` for
+  credential-free provider, backend, plugin, native-gate, fake-backend, and
+  shot-limit metadata capture
+- added fake-backend style preflight checks for native operation support and
+  provider-advertised shot limits without requiring live credentials or paid
+  backend access
+- added `qsvt_hardware_circuit_report` and `HardwareQSVTCircuitReport` for
+  non-executing hardware circuit audits with logical and decomposed operation
+  sequences, unsupported-operation reports, resource summaries, wire metadata,
+  and provider/fake-backend metadata
+- added tests covering the hardware execution path, preflight failures,
+  provider/fake-backend metadata, circuit audit reports, truth-contract
+  metadata, and hardware report serialization
+
+### Changed
+
+- exported the new hardware helpers from the package root as experimental API
+- updated README, usage, implementation, API reference, roadmap, result marker,
+  and release metadata for `0.2.11`
+- pruned local generated build, coverage, cache, and rendered-documentation
+  artifacts while keeping repository notebooks, results, and source
+  documentation intact
+
+---
+
 ## [0.2.10] – 3rd July 2026
 
 ### Added

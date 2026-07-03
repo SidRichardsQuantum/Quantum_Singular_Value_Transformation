@@ -176,6 +176,86 @@ version `1.0`. Diagnostics separate real-output absolute/relative error,
 complex leakage, logical-subspace leakage, probability and statevector
 normalization error, and finite-shot standard errors.
 
+### Hardware-Oriented Device Execution
+
+Use `execute_qsvt_on_device` when you already have a PennyLane device and want
+a finite-shot probability run with local preflight checks:
+
+```python
+import numpy as np
+import pennylane as qml
+from qsvt import execute_qsvt_on_device, matrix_block_encoding_spec
+
+spec = matrix_block_encoding_spec(np.diag([0.2, 0.8]), alpha=1.0)
+device = qml.device("default.qubit", wires=spec.encoding_wires)
+
+def prepare_zero():
+    return None
+
+result = execute_qsvt_on_device(
+    spec,
+    [0.0, 0.0, 1.0],
+    prepare_zero,
+    device,
+    shots=200,
+)
+
+print(result.preflight.passed)
+print(result.logical_success_probability)
+print(result.resource_summary["compilation_status"])
+```
+
+The hardware path accepts caller-supplied preparation circuits, requires a
+positive finite shot count, rejects `StatePrep` by default, checks advertised
+device operation and measurement support when available, and reports schema
+name `hardware-qsvt-execution` with schema version `1.0`. Provider credentials,
+paid job submission, native compilation, calibration capture, and mitigation
+remain outside the portable report.
+
+Provider-style fake backends can expose metadata through device attributes or
+`capabilities()` without requiring live credentials:
+
+```python
+from qsvt import qsvt_provider_plugin_report
+
+device.provider_name = "ExampleProvider"
+device.backend_name = "fake_two_qubit_backend"
+device.plugin_name = "example-pennylane-plugin"
+device.native_gate_set = ("QSVT",)
+device.max_shots = 500
+device.is_fake_backend = True
+
+provider = qsvt_provider_plugin_report(device)
+print(provider.as_report())
+```
+
+The same provider/fake-backend report is embedded in hardware preflight and
+execution reports. If a fake backend advertises native operations or shot
+limits, preflight rejects incompatible circuits before execution.
+
+Use `qsvt_hardware_circuit_report` to audit the logical and decomposed circuit
+without executing it:
+
+```python
+from qsvt import qsvt_hardware_circuit_report
+
+circuit = qsvt_hardware_circuit_report(
+    spec,
+    [0.0, 1.0],
+    prepare_zero,
+    device,
+    shots=200,
+)
+
+print(circuit.logical_operations)
+print(circuit.decomposed_operations)
+print(circuit.unsupported_logical_operations)
+print(circuit.unsupported_decomposed_operations)
+```
+
+This report uses schema name `hardware-qsvt-circuit` and records that no
+execution or provider job submission occurred.
+
 ## Cookbook Scripts
 
 The repository includes short package-client scripts in

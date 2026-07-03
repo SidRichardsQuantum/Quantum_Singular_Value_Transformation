@@ -44,6 +44,7 @@ The package is organised into the following modules:
 - `qsvt.api`
 - `qsvt.operators`
 - `qsvt.execution`
+- `qsvt.hardware`
 - `qsvt.diagonal`
 - `qsvt.matrix`
 - `qsvt.compatibility`
@@ -83,6 +84,9 @@ import qsvt
 qsvt.api_status("design_workflow")
 qsvt.api_status("execute_qsvt_circuit")
 qsvt.api_status("execute_qsvt_from_spec")
+qsvt.api_status("execute_qsvt_on_device")
+qsvt.api_status("qsvt_hardware_circuit_report")
+qsvt.api_status("qsvt_provider_plugin_report")
 ```
 
 Workflow-level helpers, report/export utilities, and benchmark baselines are
@@ -1064,6 +1068,114 @@ The matrix-specification CLI equivalent is:
 qsvt execute-spec --kind matrix --matrix "0.2,0;0,0.8" \
   --poly "0,0,1" --state "1,0"
 ```
+
+---
+
+### `execute_qsvt_on_device(spec, poly, preparation, device, ...)`
+
+Execute finite-shot QSVT on a caller-supplied PennyLane device.
+
+This experimental hardware-oriented path accepts an existing device and a
+caller-supplied preparation function. It runs `qsvt_hardware_preflight` before
+execution, requires a positive finite shot count, queues lower-level `qml.QSVT`,
+and returns probabilities only. It never requests device statevectors.
+
+By default, preflight rejects `StatePrep`-style preparation so hardware examples
+use explicit preparation circuits. Reports use schema name
+`hardware-qsvt-execution`, schema version `1.0`, and include logical resource
+fields, finite-shot uncertainty, preflight details, and explicit placeholders
+for provider-native compilation metadata.
+
+```python
+import numpy as np
+import pennylane as qml
+from qsvt import execute_qsvt_on_device, matrix_block_encoding_spec
+
+spec = matrix_block_encoding_spec(np.diag([0.2, 0.8]), alpha=1.0)
+device = qml.device("default.qubit", wires=spec.encoding_wires)
+
+def prepare_zero():
+    return None
+
+result = execute_qsvt_on_device(
+    spec,
+    [0.0, 0.0, 1.0],
+    prepare_zero,
+    device,
+    shots=200,
+)
+
+print(result.preflight.passed)
+print(result.logical_success_probability)
+print(result.resource_summary["compilation_status"])
+```
+
+Provider credentials, paid submission limits, job persistence, calibration
+capture, mitigation, and native provider compilation remain outside this
+portable helper.
+
+---
+
+### `qsvt_hardware_circuit_report(spec, poly, preparation, device, ...)`
+
+Build a non-executing hardware circuit audit report.
+
+The report constructs the same logical QSVT tape used by
+`execute_qsvt_on_device`, attempts PennyLane decomposition, and compares both
+logical and decomposed operation sequences with the device's advertised native
+operations. It does not execute a QNode and does not submit a provider job.
+
+```python
+from qsvt import qsvt_hardware_circuit_report
+
+circuit = qsvt_hardware_circuit_report(
+    spec,
+    [0.0, 1.0],
+    prepare_zero,
+    device,
+    shots=200,
+)
+
+print(circuit.logical_operations)
+print(circuit.decomposed_operations)
+print(circuit.unsupported_logical_operations)
+print(circuit.unsupported_decomposed_operations)
+```
+
+Reports use schema name `hardware-qsvt-circuit`, schema version `1.0`, and
+include provider/fake-backend metadata, preflight data, wire order, operation
+sequences, resource summaries, and decomposition status.
+
+---
+
+### `qsvt_provider_plugin_report(device, ...)`
+
+Collect credential-free provider, backend, plugin, native-gate, fake-backend,
+and shot-limit metadata from a PennyLane device.
+
+The helper is duck-typed: it reads device attributes and `capabilities()`
+mappings when available, and it records optional package versions only if those
+packages are installed. This lets users validate provider-shaped fake backends
+in local tests and CI without adding live credentials.
+
+```python
+import pennylane as qml
+from qsvt import qsvt_provider_plugin_report
+
+device = qml.device("default.qubit", wires=[0, 1])
+device.provider_name = "ExampleProvider"
+device.backend_name = "fake_two_qubit_backend"
+device.native_gate_set = ("QSVT",)
+device.max_shots = 500
+device.is_fake_backend = True
+
+report = qsvt_provider_plugin_report(device)
+print(report.as_report())
+```
+
+The same provider report is embedded in hardware preflight and execution
+reports. If native operations or shot limits are advertised, preflight uses
+them to reject incompatible circuits before execution.
 
 ---
 

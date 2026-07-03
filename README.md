@@ -145,6 +145,7 @@ The public package lives under `src/qsvt`.
 | `qsvt.algorithms` | end-to-end simulator-scale algorithm workflows |
 | `qsvt.block_encoding` | finite dense block-encoding construction and verification |
 | `qsvt.execution` | QNode execution for matrices and block-encoding specifications |
+| `qsvt.hardware` | finite-shot execution on caller-supplied PennyLane devices with preflight and provider/fake-backend metadata reports |
 | `qsvt.synthesis` | realizability classification, parity decomposition, and phase synthesis |
 | `qsvt.templates` | ready-made bounded polynomial families |
 | `qsvt.workflow` | combined coefficient, diagnostic, and compatibility workflows |
@@ -213,7 +214,7 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.2.10`
+Current release: `0.2.11`
 
 ## Notebooks
 
@@ -282,6 +283,13 @@ Implemented and tested:
 - lower-level QSVT execution from dense, rectangular, PennyLane-operator, and
   custom-circuit block-encoding specifications, including caller-supplied
   signal projectors and structured backend failures,
+- finite-shot QSVT execution on caller-supplied PennyLane devices with
+  caller-supplied preparation circuits, local preflight checks, probability
+  measurements, shot-noise uncertainty fields, logical resource summaries, and
+  credential-free provider/fake-backend metadata capture,
+- non-executing hardware circuit audit reports that expose logical and
+  decomposed operation sequences plus unsupported-operation checks before
+  spending shots,
 - classical benchmark baselines plus QSVT-oriented proxy metadata.
 
 Reported as assumptions or proxies:
@@ -289,15 +297,17 @@ Reported as assumptions or proxies:
 - block-encoding availability and query cost,
 - input-state preparation and data loading,
 - measurement/readout and amplitude amplification,
-- fault-tolerant synthesis, error correction, and hardware compilation,
+- fault-tolerant synthesis, error correction, provider-native hardware
+  compilation, and provider job management,
 - end-to-end runtime or quantum advantage claims.
 
-Hardware execution is not yet a package implementation layer. The roadmap
-includes small hardware-executable QSVT demonstrations using decomposable
-FABLE, PrepSelPrep, qubitization, or custom block encodings; caller-supplied
-preparation circuits; finite-shot measurements; and device-native compilation.
-Such demonstrations would establish genuine execution of the selected finite
-QSVT circuit, not scalability, fault tolerance, or quantum advantage.
+Hardware-oriented execution is now an experimental package layer for small
+finite-shot circuits on caller-created PennyLane devices. It performs local
+preflight checks before execution, records provider/fake-backend metadata when
+devices expose it, checks advertised native operations and shot limits, and
+records compilation fields explicitly. Provider credential management, paid
+submission, native compilation, job persistence, calibration capture, and
+mitigation remain outside the portable report schema.
 
 Every high-level algorithm, direct QSVT comparison, resource, and benchmark
 report includes a `truth_contract` field. Circuit execution reports separately
@@ -311,14 +321,14 @@ timing snapshots.
 ## Scope
 
 This project is intentionally educational, explicit, research-oriented, and
-polynomial-focused. Its current execution layer is simulator-first, while
-small auditable hardware experiments are a planned extension.
+polynomial-focused. Its hardware-oriented execution layer is for small
+auditable finite-shot experiments, not production hardware optimization.
 
 It does not aim to provide production-scale circuit optimization,
 fault-tolerant constructions, amplitude amplification, or problem-specific
 scalable state preparation methods. The emphasis is understanding how
 polynomial transforms act on spectra and how finite QSVT circuits behave under
-explicit simulator execution.
+explicit simulator or caller-supplied device execution.
 
 ## Support
 

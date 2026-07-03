@@ -76,31 +76,35 @@ and user-facing workflows.
 
 ### Hardware-Executable QSVT
 
+- maintain the experimental `qsvt.hardware` layer for finite-shot execution on
+  caller-supplied PennyLane devices, including caller-supplied preparation
+  circuits, local preflight checks, probability measurements, shot-noise
+  uncertainty, logical resource summaries, credential-free provider/fake-backend
+  metadata capture, advertised native-operation checks, advertised shot-limit
+  checks, non-executing logical/decomposed circuit audit reports, and explicit
+  provider-omission metadata,
 - document and test provider-plugin setup, beginning with
   `pennylane-qiskit`/`qiskit.remote`, including compatible dependency versions,
   credential configuration, backend selection, and a minimal finite-shot
   connectivity smoke test,
 - keep provider credentials outside package configuration and reports, while
   recording non-sensitive provider, backend, and plugin-version metadata,
-- add a separate hardware-oriented execution API that accepts an existing
-  PennyLane device instead of constructing a simulator internally,
-- inspect device capabilities before submission and report incompatible wire
-  counts, operations, measurements, shot modes, or unsupported analytic
-  execution without consuming hardware resources,
-- require finite-shot measurements and support observables, marginal
-  probabilities, and postselected probabilities without depending on
-  statevector access,
-- support preparation circuits supplied by the caller so hardware examples do
-  not rely on arbitrary amplitude-vector `StatePrep` as an uncosted primitive,
+- extend hardware preflight beyond the current metadata-driven checks to cover
+  provider shot-mode metadata, queue/submission constraints, and richer
+  plugin-specific capability reports before any live backend is used,
+- extend finite-shot hardware measurements beyond full-register probabilities
+  to support observables, marginal probabilities, and postselected
+  probabilities without depending on statevector access,
 - target decomposable block encodings such as FABLE, PrepSelPrep, qubitization,
   and explicitly supplied hardware-compatible custom circuits,
 - reject simulator-only constructions such as undecomposed `BlockEncode` when
   a target device cannot execute them,
-- decompose and compile QSVT circuits to a requested or device-native gate set,
-  with validation that no unsupported operations remain,
-- support export of logical, decomposed, and provider-compiled circuits so
-  researchers can audit phase ordering, block-encoding calls, wire mapping,
-  native gates, and compilation changes,
+- extend the current PennyLane decomposition audit into provider-native
+  compilation to a requested or device-native gate set, with validation that no
+  unsupported operations remain,
+- extend logical and decomposed circuit reports with provider-compiled circuit
+  exports so researchers can audit phase ordering, block-encoding calls, wire
+  mapping, native gates, and compilation changes,
 - report pre- and post-compilation depth, total gates, two-qubit gates, wire
   mapping, shots, device metadata, job metadata, and statistical uncertainty,
 - support hardware job submission and result retrieval with persistent job
@@ -113,9 +117,9 @@ and user-facing workflows.
   separately rather than replacing raw measurements,
 - compare identical small circuits across an ideal simulator, a noisy
   simulator, and available real hardware,
-- add credential-free plugin integration tests using local or fake backends,
-  with separately marked opt-in tests for live provider connectivity and
-  hardware execution,
+- keep credential-free provider/fake-backend integration tests in the default
+  suite, and add separately marked opt-in tests for live provider connectivity
+  and hardware execution,
 - add end-to-end hardware demonstrations beginning with one- or two-qubit
   logical Hamiltonians, low-degree polynomials, simple basis-state
   preparation, and narrowly defined measurements,

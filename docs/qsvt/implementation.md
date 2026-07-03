@@ -103,6 +103,47 @@ because scalable block-encoding construction, problem-specific state
 preparation cost, postselection/amplitude amplification, readout/tomography,
 and hardware compilation are separate layers.
 
+## Hardware-Oriented Device Execution
+
+`qsvt.hardware.execute_qsvt_on_device` is the finite-shot device-facing path.
+It accepts a caller-created PennyLane device and a caller-supplied preparation
+function, performs `qsvt_hardware_preflight`, queues lower-level `qml.QSVT`,
+and returns probabilities only.
+
+The helper requires a positive finite shot count and does not request
+statevectors. Preflight checks verify wire coverage, advertised operation and
+measurement support when a device exposes those capabilities, and reject
+`StatePrep` by default so hardware examples use explicit preparation circuits.
+
+Hardware execution payloads use schema name `hardware-qsvt-execution`, schema
+version `1.0`, and record:
+
+- preflight pass/fail details,
+- provider, backend, plugin, fake-backend, native-gate, and shot-limit metadata
+  when exposed by device attributes or `capabilities()`,
+- logical gate, depth, phase, signal-call, wire, and shot metadata,
+- finite-shot success-probability standard errors,
+- provider-native compilation fields as explicit `None`/`not_requested`
+  placeholders.
+
+`qsvt_provider_plugin_report` is the credential-free metadata extractor used by
+preflight and execution reports. It can inspect local fake backends in tests and
+CI without importing provider plugins as required dependencies. If a fake or
+provider-backed device advertises native operations or shot limits, preflight
+uses that information to reject incompatible circuits before execution.
+
+`qsvt_hardware_circuit_report` is the non-executing audit path. It constructs
+the logical hardware QSVT tape, attempts PennyLane decomposition, records
+logical and decomposed operation sequences, compares both against advertised
+native operations, and reports schema name `hardware-qsvt-circuit`. This is the
+recommended pre-live-backend workflow for checking whether unsupported logical
+operations such as `QSVT` decompose into operations accepted by a fake or
+provider-shaped backend.
+
+Provider credentials, paid job submission, native compilation, job persistence,
+calibration capture, mitigation, and provider-specific result objects remain
+outside the portable package report.
+
 ## Reports And JSON
 
 Diagnostics often contain NumPy arrays, complex numbers, and NumPy scalars.
@@ -140,6 +181,10 @@ an explicit small QSVT block against a classical polynomial reference.
 Circuit execution payloads use an implementation kind beginning with
 `pennylane-qnode-...` and mean that a QNode was executed, not that a scalable
 problem oracle or hardware deployment was supplied.
+Hardware execution payloads use
+`pennylane-device-finite-shot-qsvt-execution` and mean that a finite-shot
+probability circuit was submitted to the caller-supplied PennyLane device after
+local preflight checks.
 Classical benchmark payloads use
 `implementation_kind = "classical-baseline-with-optional-qsvt-proxy"` and mark
 `is_quantum_runtime_benchmark = false`.
@@ -208,6 +253,7 @@ The package root exposes `__api_status__ = "alpha"`, a
 - `stable` for workflow-level helpers, report/export utilities, and benchmark
   baselines that are intended as the primary user-facing surface,
 - `experimental` for lower-level circuit execution, backend-adapter helpers,
+  hardware-oriented device helpers,
   and any exported name that has not yet been explicitly promoted.
 
 Notebook presentation helpers live in the `qsvt.notebook` submodule. They are
@@ -239,8 +285,9 @@ The implementation intentionally does not provide:
 
 Those are separate engineering layers. The package now provides circuit-level
 QNode execution for finite instances plus the polynomial and spectral mechanics
-that larger systems would use. The roadmap includes a distinct hardware-facing
-execution layer for small circuits: caller-provided devices and preparation
-circuits, finite-shot measurements, decomposable encodings, native-gate
-compilation checks, and hardware job metadata. That work will not change the
-scope boundary around scalability, fault tolerance, or quantum advantage.
+that larger systems would use. The hardware-facing layer supports small
+finite-shot circuits on caller-provided devices with caller-provided
+preparation circuits, local preflight checks, and provider-shaped fake-backend
+metadata capture. Native provider compilation, live hardware job metadata,
+scalability, fault tolerance, and quantum advantage claims remain outside the
+implemented scope.
