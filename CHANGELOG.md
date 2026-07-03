@@ -2,6 +2,36 @@
 
 ---
 
+## [0.2.10] – 3rd July 2026
+
+### Added
+
+- added dedicated GitHub Actions integration jobs for cookbook examples, and
+  made the ordered workflow require integration success before publishing pages
+- added CI and test coverage that verifies notebook execution preserves
+  committed benchmark and table artifacts
+
+### Changed
+
+- moved cookbook example subprocess coverage behind the `integration` pytest
+  marker while keeping the default test command focused on fast, non-notebook
+  checks
+- removed the standalone compatibility-report and benchmark-summary example
+  scripts from the cookbook path in favor of the direct
+  `qsvt compatibility-report` and `qsvt benchmark` CLI commands
+- updated README, usage, examples, and roadmap documentation to reflect the
+  smaller cookbook script set, CLI-first reporting workflows, and expanded
+  hardware/provider planning notes
+- updated release markers and package metadata for `0.2.10`
+
+### Fixed
+
+- hardened notebook validation so benchmark notebooks write artifacts through
+  sandboxed output directories and leave committed benchmark/table artifacts
+  unchanged
+
+---
+
 ## [0.2.9] – 25th June 2026
 
 ### Added

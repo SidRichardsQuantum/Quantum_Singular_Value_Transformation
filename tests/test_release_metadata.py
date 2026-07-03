@@ -90,6 +90,13 @@ def test_release_preflight_exposes_full_notebook_gate():
     assert '"tests/test_real_example_notebooks.py"' in source
 
 
+def test_release_preflight_always_runs_cookbook_integration_tests():
+    source = _read_text("scripts/release_check.py")
+
+    assert '"integration"' in source
+    assert '"tests/test_cookbook_examples.py"' in source
+
+
 def test_release_extra_includes_no_isolation_build_requirements():
     project = tomllib.loads(_read_text("pyproject.toml"))["project"]
     release_deps = set(project["optional-dependencies"]["release"])

@@ -19,17 +19,18 @@ python examples/block_encoding_execution.py \
   --output /tmp/qsvt-block-encoding-execution.json
 python examples/rectangular_execution.py \
   --output /tmp/qsvt-rectangular-execution.json
-python examples/compatibility_report.py --output /tmp/qsvt-compatibility.json
-python examples/benchmark_summary.py \
-  --output /tmp/qsvt-benchmark-summary.json \
-  --rows-output /tmp/qsvt-benchmark-summary.csv
 ```
 
 Each script writes a JSON report with machine-readable diagnostics. The
-linear-system and benchmark-summary examples also write compact CSV summary
-tables.
+linear-system example also writes a compact CSV summary table.
 
 The examples cover design/report basics, linear systems, spectral filtering,
 finite block encodings, PennyLane circuit execution, specification-based
-block-encoding execution, rectangular singular-value execution, compatibility
-checks, and benchmark table export.
+block-encoding execution, and rectangular singular-value execution.
+
+Compatibility and benchmark reporting already have direct CLI commands:
+
+```bash
+qsvt compatibility-report --poly "0.25,0.25"
+qsvt benchmark cg-solve --matrix "4,1;1,3" --rhs "1,2"
+```

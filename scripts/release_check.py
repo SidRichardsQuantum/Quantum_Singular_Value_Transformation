@@ -115,6 +115,14 @@ def main(argv: Sequence[str] | None = None) -> None:
             "--cov-report=xml",
         )
     )
+    _run(
+        _python_module(
+            "pytest",
+            "-m",
+            "integration",
+            "tests/test_cookbook_examples.py",
+        )
+    )
     if args.include_notebooks:
         _run(
             _python_module(

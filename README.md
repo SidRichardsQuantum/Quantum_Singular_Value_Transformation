@@ -129,10 +129,6 @@ python examples/block_encoding_execution.py \
   --output /tmp/qsvt-block-encoding-execution.json
 python examples/rectangular_execution.py \
   --output /tmp/qsvt-rectangular-execution.json
-python examples/compatibility_report.py --output /tmp/qsvt-compatibility.json
-python examples/benchmark_summary.py \
-  --output /tmp/qsvt-benchmark-summary.json \
-  --rows-output /tmp/qsvt-benchmark-summary.csv
 ```
 
 See [USAGE.md](USAGE.md) for full Python and CLI workflows.
@@ -217,7 +213,7 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.2.9`
+Current release: `0.2.10`
 
 ## Notebooks
 

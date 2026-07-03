@@ -42,6 +42,9 @@ jobs:
       - name: Execute notebooks
         run: pytest -m notebook tests/test_real_example_notebooks.py
 
+      - name: Verify notebook execution preserved committed artifacts
+        run: git diff --exit-code -- results/benchmarks results/tables
+
       - name: Check generated notebook result pages
         run: |
           python scripts/extract_notebook_plots.py --preset all --write-docs

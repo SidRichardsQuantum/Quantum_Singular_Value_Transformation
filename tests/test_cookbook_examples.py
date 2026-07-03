@@ -1,4 +1,3 @@
-import csv
 import json
 import os
 import subprocess
@@ -10,176 +9,134 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
-def run_example(script: str, *args: str) -> subprocess.CompletedProcess[str]:
+def _example_environment():
     env = os.environ.copy()
-    pythonpath = str(REPO_ROOT / "src")
+    pythonpath = os.pathsep.join([str(REPO_ROOT), str(REPO_ROOT / "src")])
     if env.get("PYTHONPATH"):
         pythonpath = pythonpath + os.pathsep + env["PYTHONPATH"]
     env["PYTHONPATH"] = pythonpath
+    return env
 
+
+def _run_python(*args: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        [sys.executable, str(REPO_ROOT / "examples" / script), *args],
+        [sys.executable, *args],
         cwd=REPO_ROOT,
-        env=env,
+        env=_example_environment(),
         check=True,
         text=True,
         capture_output=True,
     )
 
 
-def test_design_apply_report_example_writes_json(tmp_path):
-    output = tmp_path / "design-apply.json"
-
-    completed = run_example("design_apply_report.py", "--output", str(output))
-    payload = json.loads(output.read_text(encoding="utf-8"))
-
-    assert str(output) in completed.stdout
-    assert payload["example"] == "design-apply-report"
-    assert payload["mode"] == "design-workflow"
-    assert payload["kind"] == "sign"
-    assert payload["compatibility"]["attempted_pennylane_synthesis"] is False
-    assert len(payload["transformed_diagonal"]) == 4
-
-
 @pytest.mark.integration
-def test_linear_system_compare_example_writes_json_and_csv(tmp_path):
-    output = tmp_path / "linear-system.json"
-    rows_output = tmp_path / "linear-system.csv"
+def test_cookbook_examples_write_expected_artifacts(tmp_path):
+    runner = """
+from pathlib import Path
+import runpy
+import sys
 
-    completed = run_example(
-        "linear_system_compare.py",
-        "--output",
-        str(output),
-        "--rows-output",
-        str(rows_output),
+from examples import (
+    block_encoded_workflow,
+    block_encoding_execution,
+    circuit_execution,
+    linear_system_compare,
+    rectangular_execution,
+    threshold_filter,
+)
+
+output_dir = Path(sys.argv[1])
+script = Path(sys.argv[2])
+sys.argv = [
+    str(script),
+    "--output", str(output_dir / "design-apply.json"),
+]
+runpy.run_path(script, run_name="__main__")
+linear_system_compare.main([
+    "--output", str(output_dir / "linear-system.json"),
+    "--rows-output", str(output_dir / "linear-system.csv"),
+])
+threshold_filter.main(["--output", str(output_dir / "threshold-filter.json")])
+block_encoded_workflow.main([
+    "--output", str(output_dir / "block-encoded-workflow.json"),
+])
+circuit_execution.main(["--output", str(output_dir / "circuit-execution.json")])
+block_encoding_execution.main([
+    "--output", str(output_dir / "block-encoding-execution.json"),
+])
+rectangular_execution.main([
+    "--output", str(output_dir / "rectangular-execution.json"),
+])
+"""
+    completed = _run_python(
+        "-c",
+        runner,
+        str(tmp_path),
+        str(REPO_ROOT / "examples" / "design_apply_report.py"),
     )
-    payload = json.loads(output.read_text(encoding="utf-8"))
-    rows = list(csv.DictReader(rows_output.read_text(encoding="utf-8").splitlines()))
-    solvers = {row["solver"] for row in rows}
 
-    assert str(output) in completed.stdout
-    assert str(rows_output) in completed.stdout
-    assert payload["example"] == "linear-system-compare"
-    assert payload["mode"] == "linear-system-comparison-workflow"
-    assert "dense_solve" in solvers
-    assert "conjugate_gradient" in solvers
-    assert "qsvt_style_polynomial_inverse" in solvers
+    design_apply = json.loads(
+        (tmp_path / "design-apply.json").read_text(encoding="utf-8")
+    )
+    linear_system = json.loads(
+        (tmp_path / "linear-system.json").read_text(encoding="utf-8")
+    )
+    linear_csv = (tmp_path / "linear-system.csv").read_text(encoding="utf-8")
+    threshold = json.loads(
+        (tmp_path / "threshold-filter.json").read_text(encoding="utf-8")
+    )
+    block_encoded = json.loads(
+        (tmp_path / "block-encoded-workflow.json").read_text(encoding="utf-8")
+    )
+    circuit = json.loads(
+        (tmp_path / "circuit-execution.json").read_text(encoding="utf-8")
+    )
+    block_execution = json.loads(
+        (tmp_path / "block-encoding-execution.json").read_text(encoding="utf-8")
+    )
+    rectangular = json.loads(
+        (tmp_path / "rectangular-execution.json").read_text(encoding="utf-8")
+    )
+    assert str(tmp_path / "design-apply.json") in completed.stdout
+    assert design_apply["example"] == "design-apply-report"
+    assert design_apply["mode"] == "design-workflow"
+    assert design_apply["kind"] == "sign"
+    assert design_apply["compatibility"]["attempted_pennylane_synthesis"] is False
+    assert len(design_apply["transformed_diagonal"]) == 4
 
+    assert str(tmp_path / "linear-system.json") in completed.stdout
+    assert linear_system["example"] == "linear-system-compare"
+    assert linear_system["mode"] == "linear-system-comparison-workflow"
+    assert "dense_solve" in linear_csv
+    assert "conjugate_gradient" in linear_csv
+    assert "qsvt_style_polynomial_inverse" in linear_csv
 
-@pytest.mark.integration
-def test_threshold_filter_example_writes_json(tmp_path):
-    output = tmp_path / "threshold-filter.json"
+    assert threshold["example"] == "threshold-filter"
+    assert threshold["mode"] == "spectral-thresholding-workflow"
+    assert threshold["exact_rank"] == 2
+    assert threshold["state_weight_error"] is not None
 
-    completed = run_example("threshold_filter.py", "--output", str(output))
-    payload = json.loads(output.read_text(encoding="utf-8"))
+    assert block_encoded["example"] == "block-encoded-workflow"
+    assert block_encoded["mode"] == "block-encoded-qsvt-workflow"
+    assert block_encoded["verification"]["block_encoding_verified"] is True
+    assert block_encoded["operator_relative_error"] is not None
 
-    assert str(output) in completed.stdout
-    assert payload["example"] == "threshold-filter"
-    assert payload["mode"] == "spectral-thresholding-workflow"
-    assert payload["exact_rank"] == 2
-    assert payload["state_weight_error"] is not None
-
-
-@pytest.mark.integration
-def test_block_encoded_workflow_example_writes_json(tmp_path):
-    output = tmp_path / "block-encoded-workflow.json"
-
-    completed = run_example("block_encoded_workflow.py", "--output", str(output))
-    payload = json.loads(output.read_text(encoding="utf-8"))
-
-    assert str(output) in completed.stdout
-    assert payload["example"] == "block-encoded-workflow"
-    assert payload["mode"] == "block-encoded-qsvt-workflow"
-    assert payload["verification"]["block_encoding_verified"] is True
-    assert payload["operator_relative_error"] is not None
-
-
-@pytest.mark.integration
-def test_circuit_execution_example_writes_json(tmp_path):
-    output = tmp_path / "circuit-execution.json"
-
-    completed = run_example("circuit_execution.py", "--output", str(output))
-    payload = json.loads(output.read_text(encoding="utf-8"))
-
-    assert str(output) in completed.stdout
-    assert payload["example"] == "circuit-execution"
-    assert payload["mode"] == "qsvt-circuit-execution-report"
-    assert payload["implementation_kind"] == (
+    assert circuit["example"] == "circuit-execution"
+    assert circuit["mode"] == "qsvt-circuit-execution-report"
+    assert circuit["implementation_kind"] == (
         "pennylane-qnode-statevector-qsvt-execution"
     )
-    assert payload["is_end_to_end_quantum_algorithm"] is False
+    assert circuit["is_end_to_end_quantum_algorithm"] is False
 
-
-@pytest.mark.integration
-def test_block_encoding_execution_example_writes_json(tmp_path):
-    output = tmp_path / "block-encoding-execution.json"
-
-    completed = run_example(
-        "block_encoding_execution.py",
-        "--output",
-        str(output),
+    assert block_execution["example"] == "block-encoding-execution"
+    assert block_execution["mode"] == "block-encoding-qsvt-execution-report"
+    assert block_execution["succeeded"] is True
+    assert block_execution["block_encoding_spec"]["kind"] == "pennylane-operator"
+    assert block_execution["resource_summary"]["block_encoding_method"] == (
+        "prepselprep"
     )
-    payload = json.loads(output.read_text(encoding="utf-8"))
 
-    assert str(output) in completed.stdout
-    assert payload["example"] == "block-encoding-execution"
-    assert payload["mode"] == "block-encoding-qsvt-execution-report"
-    assert payload["succeeded"] is True
-    assert payload["block_encoding_spec"]["kind"] == "pennylane-operator"
-    assert payload["resource_summary"]["block_encoding_method"] == "prepselprep"
-
-
-@pytest.mark.integration
-def test_rectangular_execution_example_writes_json(tmp_path):
-    output = tmp_path / "rectangular-execution.json"
-
-    completed = run_example(
-        "rectangular_execution.py",
-        "--output",
-        str(output),
-    )
-    payload = json.loads(output.read_text(encoding="utf-8"))
-
-    assert str(output) in completed.stdout
-    assert payload["example"] == "rectangular-execution"
-    assert payload["succeeded"] is True
-    assert payload["block_encoding_spec"]["logical_shape"] == [2, 3]
-    assert payload["logical_output_relative_error"] < 1e-9
-
-
-@pytest.mark.integration
-def test_compatibility_report_example_writes_json(tmp_path):
-    output = tmp_path / "compatibility-report.json"
-
-    completed = run_example("compatibility_report.py", "--output", str(output))
-    payload = json.loads(output.read_text(encoding="utf-8"))
-
-    assert str(output) in completed.stdout
-    assert payload["example"] == "compatibility-report"
-    assert payload["mode"] == "qsvt-compatibility-report"
-    assert payload["compatible"] is False
-    assert "mixed_parity" in payload["reasons"]
-
-
-@pytest.mark.integration
-def test_benchmark_summary_example_writes_json_and_csv(tmp_path):
-    output = tmp_path / "benchmark-summary.json"
-    rows_output = tmp_path / "benchmark-summary.csv"
-
-    completed = run_example(
-        "benchmark_summary.py",
-        "--output",
-        str(output),
-        "--rows-output",
-        str(rows_output),
-    )
-    payload = json.loads(output.read_text(encoding="utf-8"))
-    rows = list(csv.DictReader(rows_output.read_text(encoding="utf-8").splitlines()))
-    algorithms = {row["algorithm"] for row in rows}
-
-    assert str(output) in completed.stdout
-    assert str(rows_output) in completed.stdout
-    assert payload["example"] == "benchmark-summary"
-    assert payload["mode"] == "benchmark-summary-bundle"
-    assert "numpy.linalg.solve" in algorithms
-    assert "qsvt.benchmarks.conjugate_gradient_solve" in algorithms
+    assert rectangular["example"] == "rectangular-execution"
+    assert rectangular["succeeded"] is True
+    assert rectangular["block_encoding_spec"]["logical_shape"] == [2, 3]
+    assert rectangular["logical_output_relative_error"] < 1e-9

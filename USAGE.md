@@ -272,16 +272,13 @@ python examples/block_encoding_execution.py \
   --output /tmp/qsvt-block-encoding-execution.json
 python examples/rectangular_execution.py \
   --output /tmp/qsvt-rectangular-execution.json
-python examples/compatibility_report.py --output /tmp/qsvt-compatibility.json
-python examples/benchmark_summary.py \
-  --output /tmp/qsvt-benchmark-summary.json \
-  --rows-output /tmp/qsvt-benchmark-summary.csv
 ```
 
 The scripts cover polynomial design, matrix application, saved diagnostics,
 linear-system comparison, threshold filtering, block-encoded QSVT checks,
 PennyLane circuit execution, specification-based block-encoding execution,
-compatibility reports, and benchmark summary export.
+and rectangular singular-value execution. Use the dedicated
+`compatibility-report` and `benchmark` CLI commands for those report families.
 
 ## Common Tasks
 
@@ -586,10 +583,9 @@ artifact to disk and prints a compact summary to stdout. Add `--print-report`
 to also emit the full JSON payload on stdout.
 
 Compatibility reports distinguish bounded polynomial approximation from
-PennyLane QSVT synthesis compatibility. Use
-`python examples/compatibility_report.py --output /tmp/qsvt-compatibility.json`
-for the shortest Python workflow, or use `qsvt design-workflow` and inspect the
-compatibility payload in the generated report.
+PennyLane QSVT synthesis compatibility. Use `qsvt compatibility-report` for a
+direct report, or use `qsvt design-workflow` and inspect the compatibility
+payload in the generated report.
 
 For release validation from a local checkout, run
 `python scripts/release_check.py` to execute lint, formatting, type, fast test,

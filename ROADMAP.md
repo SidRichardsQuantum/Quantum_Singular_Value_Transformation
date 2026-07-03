@@ -26,43 +26,9 @@ capabilities and upgrades the repository should continue to pursue.
 
 ## Implementation Priorities
 
-### Executable QSVT Interfaces
-
-- maintain and extend lower-level execution from `BlockEncodingSpec` inputs,
-  including caller-supplied block encodings and signal projectors,
-- broaden backend coverage for the implemented dense, rectangular,
-  PrepSelPrep, qubitization, and custom-circuit execution paths,
-- strengthen explicit wire, projector, normalization, and convention contracts
-  for custom circuits,
-- expand rectangular singular-value transformation beyond dense classical
-  references and small embedding demonstrations,
-- expose statevector and finite-shot execution with consistent validation and
-  report schemas.
-
-### Hardware-Executable QSVT
-
-- add a separate hardware-oriented execution API that accepts an existing
-  PennyLane device instead of constructing a simulator internally,
-- require finite-shot measurements and support observables, marginal
-  probabilities, and postselected probabilities without depending on
-  statevector access,
-- support preparation circuits supplied by the caller so hardware examples do
-  not rely on arbitrary amplitude-vector `StatePrep` as an uncosted primitive,
-- target decomposable block encodings such as FABLE, PrepSelPrep, qubitization,
-  and explicitly supplied hardware-compatible custom circuits,
-- reject simulator-only constructions such as undecomposed `BlockEncode` when
-  a target device cannot execute them,
-- decompose and compile QSVT circuits to a requested or device-native gate set,
-  with validation that no unsupported operations remain,
-- report pre- and post-compilation depth, total gates, two-qubit gates, wire
-  mapping, shots, device metadata, job metadata, and statistical uncertainty,
-- compare identical small circuits across an ideal simulator, a noisy
-  simulator, and available real hardware,
-- add end-to-end hardware demonstrations beginning with one- or two-qubit
-  logical Hamiltonians, low-degree polynomials, simple basis-state
-  preparation, and narrowly defined measurements,
-- keep hardware execution claims separate from scalability, fault tolerance,
-  practical advantage, and complete application-algorithm claims.
+The sections below are ordered approximately by implementation dependency:
+polynomial construction, block encoding, execution, verification, reporting,
+and user-facing workflows.
 
 ### Polynomial Design, Realizability, and Phase Synthesis
 
@@ -95,6 +61,70 @@ capabilities and upgrades the repository should continue to pursue.
 - add examples that compare multiple valid encodings of the same logical
   operator.
 
+### Executable QSVT Interfaces
+
+- maintain and extend lower-level execution from `BlockEncodingSpec` inputs,
+  including caller-supplied block encodings and signal projectors,
+- broaden backend coverage for the implemented dense, rectangular,
+  PrepSelPrep, qubitization, and custom-circuit execution paths,
+- strengthen explicit wire, projector, normalization, and convention contracts
+  for custom circuits,
+- expand rectangular singular-value transformation beyond dense classical
+  references and small embedding demonstrations,
+- expose statevector and finite-shot execution with consistent validation and
+  report schemas.
+
+### Hardware-Executable QSVT
+
+- document and test provider-plugin setup, beginning with
+  `pennylane-qiskit`/`qiskit.remote`, including compatible dependency versions,
+  credential configuration, backend selection, and a minimal finite-shot
+  connectivity smoke test,
+- keep provider credentials outside package configuration and reports, while
+  recording non-sensitive provider, backend, and plugin-version metadata,
+- add a separate hardware-oriented execution API that accepts an existing
+  PennyLane device instead of constructing a simulator internally,
+- inspect device capabilities before submission and report incompatible wire
+  counts, operations, measurements, shot modes, or unsupported analytic
+  execution without consuming hardware resources,
+- require finite-shot measurements and support observables, marginal
+  probabilities, and postselected probabilities without depending on
+  statevector access,
+- support preparation circuits supplied by the caller so hardware examples do
+  not rely on arbitrary amplitude-vector `StatePrep` as an uncosted primitive,
+- target decomposable block encodings such as FABLE, PrepSelPrep, qubitization,
+  and explicitly supplied hardware-compatible custom circuits,
+- reject simulator-only constructions such as undecomposed `BlockEncode` when
+  a target device cannot execute them,
+- decompose and compile QSVT circuits to a requested or device-native gate set,
+  with validation that no unsupported operations remain,
+- support export of logical, decomposed, and provider-compiled circuits so
+  researchers can audit phase ordering, block-encoding calls, wire mapping,
+  native gates, and compilation changes,
+- report pre- and post-compilation depth, total gates, two-qubit gates, wire
+  mapping, shots, device metadata, job metadata, and statistical uncertainty,
+- support hardware job submission and result retrieval with persistent job
+  identifiers, status reporting, bounded retries, timeouts, and cancellation,
+  without embedding provider-specific objects in portable result schemas,
+- require explicit shot and submission limits, expose provider cost estimates
+  when available, and make paid execution an intentional opt-in action,
+- preserve raw hardware results and record calibration timestamps, transpiler
+  settings, and optional mitigation configuration; report mitigated results
+  separately rather than replacing raw measurements,
+- compare identical small circuits across an ideal simulator, a noisy
+  simulator, and available real hardware,
+- add credential-free plugin integration tests using local or fake backends,
+  with separately marked opt-in tests for live provider connectivity and
+  hardware execution,
+- add end-to-end hardware demonstrations beginning with one- or two-qubit
+  logical Hamiltonians, low-degree polynomials, simple basis-state
+  preparation, and narrowly defined measurements,
+- define acceptance criteria for each supported hardware path, including
+  successful native-gate compilation, finite-shot execution, reproducible
+  metadata capture, and comparison against an ideal finite reference,
+- keep hardware execution claims separate from scalability, fault tolerance,
+  practical advantage, and complete application-algorithm claims.
+
 ### Verification and Numerical Reliability
 
 - provide dense spectral and singular-value references for every finite
@@ -107,6 +137,8 @@ capabilities and upgrades the repository should continue to pursue.
   and optional solver versions,
 - record tolerances, dependency versions, solver configuration, random seeds,
   and report-schema versions in generated research artifacts,
+- add report-schema compatibility fixtures and migration tests before changing
+  versioned execution or benchmark report formats,
 - maintain regression cases for known synthesis and backend failure modes.
 
 ### Resource Estimation and Claim Boundaries
