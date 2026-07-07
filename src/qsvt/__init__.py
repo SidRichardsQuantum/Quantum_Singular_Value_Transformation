@@ -272,7 +272,12 @@ from .templates import (
     sqrt_approximation_diagnostics,
     sqrt_approximation_polynomial,
 )
-from .workflow import DesignWorkflowResult, design_workflow
+from .workflow import (
+    DesignWorkflowResult,
+    QSVTProblemWorkflowResult,
+    design_workflow,
+    qsvt_problem_workflow,
+)
 
 # Version ----------------------------------------------------------------------
 try:
@@ -341,6 +346,7 @@ __all__ = [
     "sqrt_approximation_polynomial",
     "sqrt_approximation_diagnostics",
     "DesignWorkflowResult",
+    "QSVTProblemWorkflowResult",
     "BlockEncoding",
     "BlockEncodingSpec",
     "BoundednessCertificate",
@@ -355,6 +361,7 @@ __all__ = [
     "SingularValuePseudoinverseWorkflowResult",
     "SpectralCountingWorkflowResult",
     "design_workflow",
+    "qsvt_problem_workflow",
     "block_encoded_qsvt_workflow",
     "fermi_dirac_occupation_workflow",
     "fixed_point_amplification_workflow",

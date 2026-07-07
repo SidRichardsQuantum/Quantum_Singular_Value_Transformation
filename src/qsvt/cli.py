@@ -26,6 +26,8 @@ and demonstration of core functionality:
         --degree 13
     python -m qsvt threshold-workflow --matrix="-1,0,0;0,0,0;0,0,1" \
         --lower -0.25 --upper 0.25 --degree 24
+    python -m qsvt problem-workflow --target linear_system \
+        --matrix "2,0;0,1" --rhs "1,1" --degree 8
     python -m qsvt design-sweep --kind sign --degrees "5,9,13" \
         --gamma 0.2 --output sweep.json
 
@@ -101,7 +103,7 @@ from .templates import (
     soft_threshold_filter_diagnostics,
     sqrt_approximation_diagnostics,
 )
-from .workflow import design_workflow
+from .workflow import design_workflow, qsvt_problem_workflow
 
 DESIGN_KINDS = [
     "inverse",
@@ -121,6 +123,16 @@ BENCHMARK_COMMANDS = [
     "cg-solve",
     "polynomial",
     "spectral-function",
+]
+
+PROBLEM_WORKFLOW_TARGETS = [
+    "linear_system",
+    "spectral_projector",
+    "ground_state_filter",
+    "hamiltonian_simulation",
+    "resolvent",
+    "singular_value_filter",
+    "singular_value_pseudoinverse",
 ]
 
 
@@ -665,6 +677,38 @@ def cmd_linear_system_compare(args: argparse.Namespace) -> dict:
     return report
 
 
+def cmd_problem_workflow(args: argparse.Namespace) -> dict:
+    """
+    Build a high-level finite problem workflow report.
+    """
+    state = np.asarray(parse_complex_list(args.state)) if args.state else None
+    rhs = np.asarray(parse_complex_list(args.rhs)) if args.rhs else None
+    source = np.asarray(parse_complex_list(args.source)) if args.source else None
+    result = qsvt_problem_workflow(
+        args.target,
+        np.asarray(parse_matrix(args.matrix)),
+        rhs=rhs,
+        state=state,
+        source=source,
+        degree=args.degree,
+        gamma=args.gamma,
+        lower=args.lower,
+        upper=args.upper,
+        cutoff=args.cutoff,
+        sharpness=args.sharpness,
+        width=args.width,
+        center=args.center,
+        time=args.time,
+        omega=args.omega,
+        eta=args.eta,
+        num_points=args.num_points,
+        bounded_num_points=args.bounded_num_points,
+        attempt_synthesis=args.attempt_synthesis,
+        apply_qsvt=args.apply_qsvt,
+    )
+    return result.as_report()
+
+
 def cmd_benchmark_eigh(args: argparse.Namespace) -> dict:
     """
     Benchmark dense Hermitian eigendecomposition.
@@ -740,6 +784,7 @@ def cmd_examples(args: argparse.Namespace) -> dict:
         "workflow_commands": [
             "design-workflow",
             "design-sweep",
+            "problem-workflow",
             "linear-system-compare",
             "threshold-workflow",
             "resource-report",
@@ -758,6 +803,8 @@ def cmd_examples(args: argparse.Namespace) -> dict:
             'qsvt benchmark cg-solve --matrix "4,1;1,3" --rhs "1,2" --qsvt-poly "0,1"',
             'qsvt threshold-workflow --matrix "-1,0,0;0,0,0;0,0,1" '
             "--lower -0.25 --upper 0.25 --degree 24",
+            'qsvt problem-workflow --target linear_system --matrix "2,0;0,1" '
+            '--rhs "1,1" --degree 8 --no-synthesis --no-qsvt',
         ],
     }
 
@@ -1341,6 +1388,85 @@ def build_parser() -> argparse.ArgumentParser:
     )
     add_report_output_args(p_linear_compare)
     p_linear_compare.set_defaults(func=cmd_linear_system_compare)
+
+    p_problem_workflow = sub.add_parser(
+        "problem-workflow",
+        help="Run a high-level finite QSVT problem workflow",
+    )
+    p_problem_workflow.add_argument(
+        "--target",
+        choices=PROBLEM_WORKFLOW_TARGETS,
+        required=True,
+        help="Problem workflow target transform.",
+    )
+    p_problem_workflow.add_argument(
+        "--matrix",
+        type=str,
+        required=True,
+        help='Rows separated by semicolons, e.g. "2,0;0,1".',
+    )
+    p_problem_workflow.add_argument(
+        "--rhs",
+        type=str,
+        default=None,
+        help='Optional right-hand side vector, e.g. "1,1".',
+    )
+    p_problem_workflow.add_argument(
+        "--state",
+        type=str,
+        default=None,
+        help='Optional input state vector, e.g. "1,0".',
+    )
+    p_problem_workflow.add_argument(
+        "--source",
+        type=str,
+        default=None,
+        help='Optional source vector for response workflows, e.g. "1,0".',
+    )
+    p_problem_workflow.add_argument("--degree", type=int, required=True)
+    p_problem_workflow.add_argument("--gamma", type=float, default=None)
+    p_problem_workflow.add_argument("--lower", type=float, default=None)
+    p_problem_workflow.add_argument("--upper", type=float, default=None)
+    p_problem_workflow.add_argument("--cutoff", type=float, default=None)
+    p_problem_workflow.add_argument("--sharpness", type=float, default=12.0)
+    p_problem_workflow.add_argument("--width", type=float, default=0.25)
+    p_problem_workflow.add_argument("--center", type=float, default=-1.0)
+    p_problem_workflow.add_argument("--time", type=float, default=None)
+    p_problem_workflow.add_argument("--omega", type=float, default=None)
+    p_problem_workflow.add_argument("--eta", type=float, default=None)
+    p_problem_workflow.add_argument(
+        "--num-points",
+        dest="num_points",
+        type=int,
+        default=2001,
+    )
+    p_problem_workflow.add_argument(
+        "--bounded-num-points",
+        dest="bounded_num_points",
+        type=int,
+        default=4001,
+    )
+    p_problem_workflow.add_argument(
+        "--no-synthesis",
+        dest="attempt_synthesis",
+        action="store_false",
+        help="Skip the PennyLane synthesis attempt where applicable.",
+    )
+    p_problem_workflow.add_argument(
+        "--apply-qsvt",
+        dest="apply_qsvt",
+        action="store_true",
+        help="Attempt the optional PennyLane QSVT matrix check where supported.",
+    )
+    p_problem_workflow.add_argument(
+        "--no-qsvt",
+        dest="apply_qsvt",
+        action="store_false",
+        help="Skip the optional PennyLane QSVT matrix check.",
+    )
+    p_problem_workflow.set_defaults(apply_qsvt=False)
+    add_report_output_args(p_problem_workflow)
+    p_problem_workflow.set_defaults(func=cmd_problem_workflow)
 
     p_threshold = sub.add_parser(
         "threshold-workflow",

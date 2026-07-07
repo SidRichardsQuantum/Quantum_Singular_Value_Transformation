@@ -41,6 +41,7 @@ from examples import (
     block_encoding_execution,
     circuit_execution,
     linear_system_compare,
+    problem_workflow,
     rectangular_execution,
     threshold_filter,
 )
@@ -57,6 +58,7 @@ linear_system_compare.main([
     "--rows-output", str(output_dir / "linear-system.csv"),
 ])
 threshold_filter.main(["--output", str(output_dir / "threshold-filter.json")])
+problem_workflow.main(["--output", str(output_dir / "problem-workflow.json")])
 block_encoded_workflow.main([
     "--output", str(output_dir / "block-encoded-workflow.json"),
 ])
@@ -84,6 +86,9 @@ rectangular_execution.main([
     linear_csv = (tmp_path / "linear-system.csv").read_text(encoding="utf-8")
     threshold = json.loads(
         (tmp_path / "threshold-filter.json").read_text(encoding="utf-8")
+    )
+    problem = json.loads(
+        (tmp_path / "problem-workflow.json").read_text(encoding="utf-8")
     )
     block_encoded = json.loads(
         (tmp_path / "block-encoded-workflow.json").read_text(encoding="utf-8")
@@ -115,6 +120,22 @@ rectangular_execution.main([
     assert threshold["mode"] == "spectral-thresholding-workflow"
     assert threshold["exact_rank"] == 2
     assert threshold["state_weight_error"] is not None
+
+    assert problem["example"] == "problem-workflow"
+    assert problem["mode"] == "problem-workflow-cookbook"
+    assert problem["workflows"]["linear_system"]["schema_name"] == (
+        "qsvt-problem-workflow"
+    )
+    assert problem["workflows"]["linear_system"]["target"] == "linear_system"
+    assert problem["workflows"]["resolvent"]["target"] == "resolvent"
+    resolvent_components = {
+        report["component"]
+        for report in problem["workflows"]["resolvent"]["resource_reports"]
+    }
+    assert resolvent_components == {
+        "real_coeffs",
+        "imag_coeffs",
+    }
 
     assert block_encoded["example"] == "block-encoded-workflow"
     assert block_encoded["mode"] == "block-encoded-qsvt-workflow"

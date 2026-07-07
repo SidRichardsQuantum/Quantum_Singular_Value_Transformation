@@ -3,12 +3,16 @@
 This guide shows how to use `qsvt-pennylane` for practical Quantum Singular
 Value Transformation (QSVT) experiments.
 
-The package is organized around one workflow:
+The package is organized around two related workflows. The lowest-level path is:
 
 1. choose or design a bounded polynomial,
 2. inspect its scalar behavior,
 3. apply it to a matrix spectrum,
 4. compare the classical spectral transform with the QSVT output.
+
+For application-style examples, `qsvt_problem_workflow` wraps the existing
+package workflows around a finite problem, target transform, classical
+reference comparison, and resource proxy report.
 
 ## Installation
 
@@ -131,6 +135,27 @@ result = design_workflow(
 coeffs = result.coeffs
 report = result.as_report()
 ```
+
+For a complete finite problem workflow:
+
+```python
+import numpy as np
+from qsvt import qsvt_problem_workflow
+
+result = qsvt_problem_workflow(
+    "linear_system",
+    np.diag([1.0, 2.0]),
+    rhs=np.array([1.0, 1.0]),
+    degree=12,
+)
+
+report = result.as_report()
+```
+
+Supported targets include linear systems, spectral projectors, ground-state
+filters, Hamiltonian simulation, resolvents, singular-value filters, and
+singular-value pseudoinverses. The report keeps omitted scalable block
+encoding, state-preparation, readout, and hardware layers explicit.
 
 ### Classify Realizability And Synthesize Phases
 
@@ -614,6 +639,27 @@ The resource report combines polynomial degree, coefficient count, QSP
 phase-count proxy, signal-call proxy, optional encoding width, and compatibility
 metadata. It is for comparing small workflows; it is not a hardware runtime or
 fault-tolerant resource estimate.
+
+High-level finite problem workflow:
+
+```bash
+qsvt problem-workflow \
+  --target linear_system \
+  --matrix "2,0;0,1" \
+  --rhs "1,1" \
+  --degree 8 \
+  --no-synthesis \
+  --no-qsvt \
+  --output problem-workflow.json
+```
+
+Use `--target` to select `linear_system`, `spectral_projector`,
+`ground_state_filter`, `hamiltonian_simulation`, `resolvent`,
+`singular_value_filter`, or `singular_value_pseudoinverse`. Target-specific
+inputs are validated by the workflow: for example `linear_system` requires
+`--rhs`, `spectral_projector` requires `--lower` and `--upper`,
+`hamiltonian_simulation` requires `--state` and `--time`, and `resolvent`
+requires `--omega` and `--eta`.
 
 Linear-system comparison report:
 

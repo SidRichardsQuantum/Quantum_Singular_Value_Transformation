@@ -30,6 +30,36 @@ The sections below are ordered approximately by implementation dependency:
 polynomial construction, block encoding, execution, verification, reporting,
 and user-facing workflows.
 
+### Next User-Facing Milestone
+
+The next product-level milestone is a clear package path for users who bring a
+small physics or mathematics problem and want an auditable QSVT workflow:
+
+1. define the finite problem as a matrix, operator, or block-encoding access
+   model,
+2. choose a target transform such as inverse, projector, filter, resolvent,
+   exponential, or singular-value function,
+3. design and validate the bounded polynomial,
+4. classify QSVT compatibility and synthesize phases where applicable,
+5. execute a finite QSVT path when implemented, or emit an explicitly labeled
+   polynomial/resource proxy,
+6. compare against an appropriate classical reference,
+7. export a machine-readable report with assumptions, errors, resources, and
+   omitted quantum layers.
+
+This milestone should be demonstrated by a small set of flagship workflows
+rather than by adding many more notebooks:
+
+- linear systems or Poisson-type PDE solves,
+- ground-state, band, or spectral-projector filtering,
+- Hamiltonian simulation or wave propagation,
+- resolvents, Green's functions, or response functions,
+- singular-value pseudoinverse, deblurring, or inverse problems.
+
+Each flagship workflow should be callable from a short script, reusable from a
+notebook, and backed by tests that verify the package API rather than only the
+notebook narrative.
+
 ### Polynomial Design, Realizability, and Phase Synthesis
 
 - strengthen bounded polynomial design for inverse, sign, threshold, filter,
@@ -67,6 +97,8 @@ and user-facing workflows.
   including caller-supplied block encodings and signal projectors,
 - broaden backend coverage for the implemented dense, rectangular,
   PrepSelPrep, qubitization, and custom-circuit execution paths,
+- prioritize decomposable, auditable QSVT execution paths over additional
+  dense spectral proxy demonstrations,
 - strengthen explicit wire, projector, normalization, and convention contracts
   for custom circuits,
 - expand rectangular singular-value transformation beyond dense classical
@@ -164,6 +196,11 @@ and user-facing workflows.
 
 - define a compact stable facade around design, synthesis, execution,
   verification, reporting, and resource estimation,
+- provide a high-level user journey that connects problem definition, target
+  transform selection, polynomial design, compatibility checks, execution or
+  proxy generation, classical validation, and report export,
+- keep the eventual `1.0` stable API intentionally small, with lower-level
+  research interfaces available but not prematurely stabilized,
 - keep experimental lower-level interfaces clearly labeled and accessible for
   research,
 - split large algorithm and CLI modules by workflow family,
@@ -214,6 +251,12 @@ Each example should state the implemented finite workflow, approximation and
 execution errors, parameter choices, access assumptions, resource model, and
 omitted quantum layers. Reusable constructors, diagnostics, and plots should
 move into `src/qsvt` when they are useful beyond one example.
+
+Real examples should meet a consistent quality bar before new examples are
+added: a clear problem statement, reusable package-level construction, a
+classical reference, QSVT target definition, approximation and execution or
+proxy errors, resource interpretation, and an explicit statement of whether the
+workflow used true finite QSVT execution or a polynomial/resource proxy.
 
 ### Benchmarks and Comparative Evaluation
 

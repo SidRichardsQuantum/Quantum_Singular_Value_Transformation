@@ -307,7 +307,9 @@ def test_cli_examples_command_emits_discovery_payload(capsys):
     assert "exponential" in payload["template_kinds"]
     assert "cg-solve" in payload["benchmark_commands"]
     assert "linear-system-compare" in payload["workflow_commands"]
+    assert "problem-workflow" in payload["workflow_commands"]
     assert any("resource-report" in example for example in payload["examples"])
+    assert any("problem-workflow" in example for example in payload["examples"])
 
 
 def test_cli_cheb_command_emits_json(capsys):
@@ -408,6 +410,67 @@ def test_cli_linear_system_compare_writes_json_and_csv(tmp_path, capsys):
     assert output.exists()
     assert rows_output.exists()
     assert "qsvt_style_polynomial_inverse" in rows_output.read_text(encoding="utf-8")
+
+
+def test_cli_problem_workflow_emits_linear_system_json(capsys):
+    main(
+        [
+            "problem-workflow",
+            "--target",
+            "linear_system",
+            "--matrix",
+            "2,0;0,1",
+            "--rhs",
+            "1,1",
+            "--degree",
+            "8",
+            "--num-points",
+            "201",
+            "--bounded-num-points",
+            "401",
+            "--no-synthesis",
+            "--no-qsvt",
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["schema_name"] == "qsvt-problem-workflow"
+    assert payload["target"] == "linear_system"
+    assert payload["result"]["mode"] == "linear-system-workflow"
+    assert payload["resource_reports"][0]["component"] == "coeffs"
+    assert payload["resource_reports"][0]["resources"]["degree"] == 8
+
+
+def test_cli_problem_workflow_writes_resolvent_report(tmp_path, capsys):
+    output_path = tmp_path / "problem-workflow.json"
+
+    main(
+        [
+            "problem-workflow",
+            "--target",
+            "resolvent",
+            "--matrix=-0.5,0;0,0.5",
+            "--omega",
+            "0.2",
+            "--eta",
+            "0.4",
+            "--degree",
+            "6",
+            "--num-points",
+            "201",
+            "--output",
+            str(output_path),
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+    written = json.loads(output_path.read_text(encoding="utf-8"))
+    components = {report["component"] for report in written["resource_reports"]}
+
+    assert payload["mode"] == "qsvt-problem-workflow"
+    assert payload["report_written"] is True
+    assert written["target"] == "resolvent"
+    assert written["result"]["mode"] == "resolvent-workflow"
+    assert components == {"real_coeffs", "imag_coeffs"}
 
 
 def test_cli_design_workflow_emits_json(capsys):

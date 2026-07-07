@@ -2,6 +2,42 @@
 
 ---
 
+## [0.2.12] – 7th July 2026
+
+### Added
+
+- added `QSVTProblemWorkflowResult` and `qsvt_problem_workflow` as a stable
+  high-level facade for finite problem workflows
+- added supported problem targets for linear systems, spectral projectors,
+  ground-state filtering, Hamiltonian simulation, resolvents, singular-value
+  filtering, and singular-value pseudoinverses
+- added uniform `qsvt-problem-workflow` reports with wrapped workflow output,
+  polynomial resource proxy reports, classical-reference claim boundaries, and
+  explicit omitted quantum layers
+- added the `qsvt problem-workflow` CLI command for running the same high-level
+  finite problem workflow path from shell scripts and release artifacts
+- added a `examples/problem_workflow.py` cookbook script that runs linear-system
+  and resolvent targets through the high-level problem workflow facade
+- added tests covering the new problem workflow facade, multi-component
+  resource reports, required-input validation, stable root API exports, CLI
+  report output, cookbook execution, and problem-workflow report schema fields
+
+### Changed
+
+- documented the roadmap's next user-facing milestone in README, usage, and
+  API reference material with compact finite linear-system Python and CLI
+  examples
+- updated roadmap language around flagship workflows, decomposable QSVT
+  execution paths, the future stable API surface, and real-example quality
+  criteria
+- converted the rendered usage and roadmap documentation pages to include the
+  root `USAGE.md` and `ROADMAP.md` files instead of maintaining copied content
+- simplified `requirements.txt` into a local-development convenience install
+  file that delegates dependency truth to `pyproject.toml`
+- updated release markers and package metadata for `0.2.12`
+
+---
+
 ## [0.2.11] – 3rd July 2026
 
 ### Added

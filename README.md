@@ -96,6 +96,22 @@ coeffs = result.coeffs
 report = result.as_report()
 ```
 
+Run a finite problem workflow with a uniform report:
+
+```python
+import numpy as np
+from qsvt import qsvt_problem_workflow
+
+result = qsvt_problem_workflow(
+    "linear_system",
+    np.diag([1.0, 2.0]),
+    rhs=np.array([1.0, 1.0]),
+    degree=12,
+)
+
+report = result.as_report()
+```
+
 Use the command line interface:
 
 ```bash
@@ -108,6 +124,8 @@ qsvt design-workflow --kind sign --gamma 0.2 --degree 13
 qsvt design-sweep --kind sign --degrees "5,9,13,17" --gamma 0.2 \
   --no-synthesis --output sign-degree-sweep.json
 qsvt resource-report --poly "0,0,1" --matrix-dimension 4 --no-synthesis
+qsvt problem-workflow --target linear_system --matrix "2,0;0,1" \
+  --rhs "1,1" --degree 8 --no-synthesis --no-qsvt
 qsvt execute-spec --kind matrix --matrix "0.2,0;0,0.8" \
   --poly "0,0,1" --state "1,0"
 qsvt benchmark cg-solve --matrix "4,1;1,3" --rhs "1,2" --qsvt-poly "0,1"
@@ -121,6 +139,7 @@ python examples/design_apply_report.py --output /tmp/qsvt-design-apply.json
 python examples/linear_system_compare.py \
   --output /tmp/qsvt-linear-system.json \
   --rows-output /tmp/qsvt-linear-system.csv
+python examples/problem_workflow.py --output /tmp/qsvt-problem-workflow.json
 python examples/threshold_filter.py --output /tmp/qsvt-threshold-filter.json
 python examples/block_encoded_workflow.py \
   --output /tmp/qsvt-block-encoded-workflow.json
@@ -148,7 +167,7 @@ The public package lives under `src/qsvt`.
 | `qsvt.hardware` | finite-shot execution on caller-supplied PennyLane devices with preflight and provider/fake-backend metadata reports |
 | `qsvt.synthesis` | realizability classification, parity decomposition, and phase synthesis |
 | `qsvt.templates` | ready-made bounded polynomial families |
-| `qsvt.workflow` | combined coefficient, diagnostic, and compatibility workflows |
+| `qsvt.workflow` | combined coefficient, diagnostic, compatibility, and high-level problem workflows |
 | `qsvt.reports` | JSON-safe reports and plot helpers |
 | `qsvt.resources` | degree, phase-count, width, and compatibility proxy reports |
 | `qsvt.benchmarks` | classical baselines and QSVT-oriented benchmark summaries |
@@ -214,7 +233,7 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.2.11`
+Current release: `0.2.12`
 
 ## Notebooks
 

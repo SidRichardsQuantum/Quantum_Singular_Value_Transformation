@@ -114,6 +114,45 @@ qsvt design-workflow --kind sign --gamma 0.25 --degree 13 \
   --output sign-workflow.json
 ```
 
+Use `qsvt_problem_workflow` when you want a single high-level path from a
+finite problem definition to a workflow report and resource proxies:
+
+```python
+import numpy as np
+from qsvt import qsvt_problem_workflow
+
+result = qsvt_problem_workflow(
+    "linear_system",
+    np.diag([1.0, 2.0]),
+    rhs=np.array([1.0, 1.0]),
+    degree=12,
+)
+
+report = result.as_report()
+print(report["target"])
+print(report["resource_reports"][0]["resources"]["signal_operator_calls"])
+```
+
+The same high-level path is available from the CLI:
+
+```bash
+qsvt problem-workflow \
+  --target linear_system \
+  --matrix "2,0;0,1" \
+  --rhs "1,1" \
+  --degree 8 \
+  --no-synthesis \
+  --no-qsvt \
+  --output problem-workflow.json
+```
+
+Supported targets are `linear_system`, `spectral_projector`,
+`ground_state_filter`, `hamiltonian_simulation`, `resolvent`,
+`singular_value_filter`, and `singular_value_pseudoinverse`. The report keeps
+the finite classical reference comparison and omitted quantum layers explicit,
+so users can distinguish implemented small workflows from polynomial resource
+proxies and future scalable access models.
+
 ### `qsvt.synthesis`
 
 Use `classify_polynomial_realizability` to distinguish classical-only,
