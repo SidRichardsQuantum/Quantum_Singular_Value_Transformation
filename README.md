@@ -42,6 +42,7 @@ would be needed to turn the polynomial core into a complete algorithm.
 - Theory notes: [THEORY.md](THEORY.md)
 - Results index: [RESULTS.md](RESULTS.md)
 - Roadmap: [ROADMAP.md](ROADMAP.md)
+- Release checklist: [RELEASING.md](RELEASING.md)
 - API reference: [docs/qsvt/api_reference.md](docs/qsvt/api_reference.md)
 
 ## Installation
@@ -233,7 +234,7 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.2.12`
+Current release: `0.2.13`
 
 ## Notebooks
 

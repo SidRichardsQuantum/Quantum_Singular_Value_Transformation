@@ -30,6 +30,46 @@ The sections below are ordered approximately by implementation dependency:
 polynomial construction, block encoding, execution, verification, reporting,
 and user-facing workflows.
 
+### Definite Completion Criteria
+
+Before the project should be described as complete beyond the current alpha
+release state, it should have an explicit definition of done:
+
+- publish a compact `1.0` public API list with stable names, expected input
+  shapes, report schemas, error semantics, and examples for each supported
+  workflow,
+- document a deprecation policy and add migration tests for every public report
+  schema or stable API that may change after `1.0`,
+- choose a small set of flagship workflows and finish them end to end: Python
+  API, CLI command, classical reference, finite QSVT execution or explicitly
+  labeled proxy path, machine-readable report, docs page, cookbook script, and
+  regression tests,
+- define acceptance criteria for each flagship workflow, including numerical
+  tolerances, required diagnostics, supported access models, and the exact
+  quantum layers that are implemented or omitted,
+- run the full release preflight, notebook-marked tests, documentation build,
+  package build, and distribution metadata checks from a clean checkout before
+  each release,
+- verify the package from the built wheel in a fresh environment, including CLI
+  smoke tests and import/API-status checks,
+- keep generated build outputs, coverage files, caches, virtual environments,
+  and rendered documentation out of version control while preserving deliberate
+  research artifacts under `results/`,
+- add report-schema fixture tests so old committed reports remain loadable or
+  fail with an intentional migration message,
+- add stronger adversarial and property-style tests for boundedness, parity,
+  normalization, singular spectra, near-boundary inputs, wire layouts, and
+  synthesis failures,
+- document provider and hardware execution as either supported, experimental,
+  or out of scope for each workflow, with paid/live execution behind explicit
+  opt-in tests,
+- make every benchmark state the access model, classical baseline, environment,
+  random seed, tolerance, and whether the QSVT result is a circuit execution or
+  a resource proxy,
+- ensure the README, usage guide, API reference, changelog, package metadata,
+  and PyPI release notes agree on the current version, stability status, and
+  supported Python/dependency range.
+
 ### Next User-Facing Milestone
 
 The next product-level milestone is a clear package path for users who bring a

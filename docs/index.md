@@ -425,6 +425,7 @@ Usage Guide <qsvt/usage>
 Theory <qsvt/theory>
 Notebooks <qsvt/notebooks>
 Roadmap <qsvt/roadmap>
+Release Checklist <qsvt/releasing>
 ```
 
 ```{toctree}

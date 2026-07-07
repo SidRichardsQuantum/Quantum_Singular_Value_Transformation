@@ -48,6 +48,7 @@ The repository also includes a sequence of notebooks that introduce QSVT concept
 | Browse real-example outputs | [Real-example notebook outputs](real_example_results.md) |
 | Inspect benchmark outputs | [Benchmark notebook outputs](benchmark_results.md) |
 | Use package APIs | [API reference](api_reference.md) |
+| Prepare a package release | [Release checklist](releasing.md) |
 
 ---
 
@@ -127,6 +128,9 @@ near-pure client notebooks for concrete physics and mathematics problems,
 explicit claim boundaries, and package-focused distribution.
 
 See: [Roadmap](roadmap.md)
+
+For release mechanics, wheel smoke checks, and artifact hygiene gates, see
+[Release checklist](releasing.md).
 
 ### Results
 

@@ -2,6 +2,34 @@
 
 ---
 
+## [0.2.13] – 7th July 2026
+
+### Added
+
+- added a `RELEASING.md` checklist covering version markers, full preflight,
+  notebook gates, built-wheel smoke checks, artifact hygiene, CI gates, and
+  live-provider execution boundaries
+- added report-schema fixture coverage for portable workflow reports, beginning
+  with a `qsvt-problem-workflow` v1 fixture that records truth-contract and
+  omitted-layer fields
+- added adversarial numerical regression tests for near-boundary polynomial
+  boundedness, parity tolerance, degenerate spectra, and near-zero spectral
+  projector behavior
+- added built-wheel smoke testing to the local release preflight, including
+  fresh virtual-environment installation, import checks, `py.typed` validation,
+  API-status checks, CLI help, and a minimal scalar CLI command
+
+### Changed
+
+- strengthened release artifact hygiene checks so tracked virtual environments,
+  caches, bytecode, coverage files, build outputs, and rendered documentation
+  are rejected before release
+- documented definite completion criteria in the roadmap for the path from the
+  current alpha package to a stable, auditable release process
+- updated release markers and package metadata for `0.2.13`
+
+---
+
 ## [0.2.12] – 7th July 2026
 
 ### Added

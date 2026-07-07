@@ -264,14 +264,21 @@ notebook support rather than stable algorithm APIs.
 Incompatible changes should be documented in the changelog and should use a
 deprecation period when practical.
 
-The local release preflight can include all executable notebooks:
+The local release preflight checks code, types, tests, cookbook integration,
+docs, package build metadata, and a built-wheel smoke test. It can also include
+all executable notebooks:
 
 ```bash
-python scripts/release_check.py --include-notebooks
+python scripts/release_check.py --no-build-isolation --include-notebooks
 ```
 
 Notebook subprocess examples use `sys.executable` so CLI checks run with the
 same environment as the notebook kernel.
+
+The built-wheel smoke step installs the wheel in a temporary virtual
+environment, checks import metadata and `py.typed`, validates representative
+API-status labels, runs `qsvt --help`, and executes a minimal scalar CLI
+command. See [Release checklist](releasing.md) for the full release process.
 
 ## Scope Boundaries
 

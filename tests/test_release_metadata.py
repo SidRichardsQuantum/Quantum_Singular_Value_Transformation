@@ -81,6 +81,37 @@ def test_release_check_build_command_supports_local_no_isolation_mode():
         "build",
         "--no-isolation",
     ]
+    project = tomllib.loads(_read_text("pyproject.toml"))["project"]
+    assert release_check._project_version() == project["version"]
+
+
+def test_release_artifact_selection_uses_current_project_version():
+    source = _read_text("scripts/release_check.py")
+    project = tomllib.loads(_read_text("pyproject.toml"))["project"]
+
+    assert 'glob(f"*{version}*")' in source
+    assert 'glob(f"*{version}*.whl")' in source
+    assert f'version = "{project["version"]}"' in _read_text("pyproject.toml")
+
+
+def test_release_preflight_detects_generated_artifact_patterns():
+    module_path = REPO_ROOT / "scripts" / "release_check.py"
+    spec = importlib.util.spec_from_file_location("release_check", module_path)
+    assert spec is not None
+    assert spec.loader is not None
+    release_check = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(release_check)
+
+    assert release_check._matches_generated_artifact(".venv/bin/python", ".venv/**")
+    assert release_check._matches_generated_artifact(
+        "src/qsvt/__pycache__/api.pyc",
+        "**/__pycache__/**",
+    )
+    assert release_check._matches_generated_artifact("coverage.xml", "coverage.xml")
+    assert release_check._matches_generated_artifact("dist/package.whl", "dist/**")
+    assert not release_check._matches_generated_artifact(
+        "results/report.json", "dist/**"
+    )
 
 
 def test_release_preflight_exposes_full_notebook_gate():
@@ -88,6 +119,17 @@ def test_release_preflight_exposes_full_notebook_gate():
 
     assert '"--include-notebooks"' in source
     assert '"tests/test_real_example_notebooks.py"' in source
+
+
+def test_release_preflight_runs_built_wheel_smoke_by_default():
+    source = _read_text("scripts/release_check.py")
+
+    assert '"--skip-wheel-smoke"' in source
+    assert "def _run_wheel_smoke" in source
+    assert '"--system-site-packages"' in source
+    assert '"--no-deps"' in source
+    assert '"qsvt"' in source
+    assert '"scalar"' in source
 
 
 def test_release_preflight_always_runs_cookbook_integration_tests():
@@ -123,6 +165,7 @@ def test_sdist_manifest_keeps_large_repo_artifacts_out_of_package():
 
     assert "graft src" in manifest
     assert "include ROADMAP.md" in manifest
+    assert "include RELEASING.md" in manifest
     assert "prune notebooks" in manifest
     assert "prune results" in manifest
     assert "prune docs" in manifest

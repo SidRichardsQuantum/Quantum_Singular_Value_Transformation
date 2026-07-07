@@ -33,6 +33,7 @@ from qsvt.matrices import (
 )
 from qsvt.polynomials import (
     chebyshev_t3,
+    eval_polynomial,
     is_bounded_on_interval,
     normalize_coefficients,
     polynomial_degree,
@@ -104,6 +105,17 @@ def test_polynomial_utility_edge_cases_and_validation_paths():
         is_bounded_on_interval([1.0], lower=1.0, upper=-1.0)
     with pytest.raises(ValueError, match="at least 2"):
         is_bounded_on_interval([1.0], num_points=1)
+
+
+def test_polynomial_adversarial_near_boundary_and_parity_cases():
+    xs = np.array([-1.0, -0.5, 0.0, 0.5, 1.0])
+
+    assert polynomial_parity([1e-13, 1.0, 1e-13], tol=1e-12) == "odd"
+    assert polynomial_parity([1e-10, 1.0], tol=1e-12) == "mixed"
+    assert polynomial_degree([0.0, 1.0, 1e-13], tol=1e-12) == 1
+    assert is_bounded_on_interval([0.0, 1.0 + 5e-10], tol=1e-9) is True
+    assert is_bounded_on_interval([0.0, 1.0 + 5e-8], tol=1e-9) is False
+    assert np.all(np.isfinite(eval_polynomial([1.0, -2.0, 1.0], xs)))
 
 
 def test_matrix_constructors_and_validation_paths():
@@ -229,3 +241,16 @@ def test_spectral_helpers_and_validation_paths():
         matrix_fractional_power(B, 0.5)
     with pytest.raises(ValueError, match="same shape"):
         transformed_eigenvalues(A, lambda x: np.array([1.0]))
+
+
+def test_spectral_helpers_handle_degenerate_and_near_zero_spectra():
+    degenerate = np.diag([2.0, 2.0, 2.0])
+    near_zero = np.diag([-1e-14, 0.0, 1e-14])
+
+    assert np.allclose(
+        apply_polynomial_to_hermitian(degenerate, [1.0, -1.0]),
+        -np.eye(3),
+    )
+    assert np.allclose(matrix_sign(near_zero), np.zeros((3, 3)))
+    assert np.allclose(spectral_projector_positive(near_zero), np.zeros((3, 3)))
+    assert np.allclose(spectral_projector_negative(near_zero), np.zeros((3, 3)))

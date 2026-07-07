@@ -1,0 +1,32 @@
+{
+  "schema_name": "qsvt-problem-workflow",
+  "schema_version": "1.0",
+  "package_version": "0.2.12",
+  "target": "linear_system",
+  "workflow_status": "proxy_or_reference_report",
+  "implementation_layer": "analytical_resource_proxy",
+  "inputs": {
+    "matrix_shape": [2, 2],
+    "rhs_shape": [2],
+    "degree": 8
+  },
+  "polynomial_resource_proxy": {
+    "degree": 8,
+    "phase_count": 9,
+    "signal_operator_calls": 8
+  },
+  "classical_reference": {
+    "available": true,
+    "method": "dense_linear_solve"
+  },
+  "truth_contract": {
+    "finite_qsvt_execution": false,
+    "classical_reference_available": true,
+    "omitted_quantum_layers": [
+      "state_preparation",
+      "fault_tolerant_block_encoding",
+      "amplitude_amplification",
+      "readout"
+    ]
+  }
+}

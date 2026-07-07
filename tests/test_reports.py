@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -14,6 +15,8 @@ from qsvt.reports import (
 )
 
 matplotlib.use("Agg")
+
+FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "reports"
 
 
 @pytest.fixture
@@ -170,3 +173,26 @@ def test_save_report_plot_writes_image(tmp_path, approximation_report):
     assert written == path
     assert path.exists()
     assert path.stat().st_size > 0
+
+
+def test_report_schema_fixtures_remain_loadable_and_identifiable():
+    fixtures = sorted(FIXTURE_DIR.glob("*.json"))
+
+    assert fixtures, "expected at least one report schema fixture"
+    for fixture in fixtures:
+        report = load_report(fixture)
+        assert isinstance(report["schema_name"], str)
+        assert isinstance(report["schema_version"], str)
+        assert report["schema_version"]
+        json.dumps(report)
+
+
+def test_qsvt_problem_workflow_v1_fixture_documents_truth_contract():
+    report = load_report(FIXTURE_DIR / "qsvt_problem_workflow_v1.json")
+
+    assert report["schema_name"] == "qsvt-problem-workflow"
+    assert report["schema_version"] == "1.0"
+    assert report["target"] == "linear_system"
+    assert report["truth_contract"]["finite_qsvt_execution"] is False
+    assert report["truth_contract"]["classical_reference_available"] is True
+    assert "omitted_quantum_layers" in report["truth_contract"]
