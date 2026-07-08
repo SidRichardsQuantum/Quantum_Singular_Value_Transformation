@@ -680,7 +680,8 @@ For JSON serialization, saving, loading, and plotting, see `qsvt.reports`.
 
 ## `qsvt.reports`
 
-Helpers for converting diagnostics reports into reusable artifacts.
+Helpers for converting diagnostics reports into reusable artifacts and checking
+versioned report schemas.
 
 ### `report_to_jsonable(report)`
 
@@ -698,6 +699,49 @@ Write a diagnostics report to JSON.
 ### `load_report(path)`
 
 Load a JSON diagnostics report from disk.
+
+---
+
+### `supported_report_schemas()`
+
+Return a copy of the supported versioned report-schema registry as
+`{schema_name: (versions, ...)}`.
+
+---
+
+### `report_schema_manifest(paths)`
+
+Return JSON-safe compatibility rows for multiple report files, including path,
+schema metadata, support status, migration status, and any missing required
+fields. Invalid JSON files are reported as unsupported rows.
+
+The same functionality is available from `qsvt report-schema-manifest`.
+
+---
+
+### `write_report_schema_manifest_csv(rows, path)`
+
+Write compact report-schema manifest rows to CSV. List-valued fields such as
+`missing_fields` and `unknown_fields` are serialized as semicolon-separated
+cells.
+
+---
+
+### `validate_report_schema(report, require_schema=False)`
+
+Return a `ReportSchemaCompatibility` summary for versioned machine-readable
+reports. Missing schema metadata is accepted for unversioned diagnostics
+reports unless `require_schema=True`. Extra top-level fields on a known schema
+are reported in `unknown_fields` without making the report unsupported.
+
+---
+
+### `load_report_with_schema(path, require_schema=True, expected_schema_name=None, expected_schema_version=None)`
+
+Load a JSON report and return `(report, compatibility)`, raising `ValueError`
+with an intentional migration message when the schema name or version is not
+supported by the current package or does not match an expected schema supplied
+by the caller.
 
 ---
 

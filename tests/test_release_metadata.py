@@ -130,6 +130,24 @@ def test_release_preflight_runs_built_wheel_smoke_by_default():
     assert '"--no-deps"' in source
     assert '"qsvt"' in source
     assert '"scalar"' in source
+    assert '"report-schema-manifest"' in source
+
+
+def test_release_preflight_validates_report_schema_fixtures():
+    module_path = REPO_ROOT / "scripts" / "release_check.py"
+    spec = importlib.util.spec_from_file_location("release_check", module_path)
+    assert spec is not None
+    assert spec.loader is not None
+    release_check = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(release_check)
+
+    release_check._check_report_schema_fixtures()
+    source = _read_text("scripts/release_check.py")
+    assert "report_schema_manifest" in source
+    assert '"report-schema-manifest"' in source
+    assert '"--fail-on-unsupported"' in source
+    assert '"PYTHONPATH"' in source
+    assert 'tests" / "fixtures" / "reports' in source
 
 
 def test_release_preflight_always_runs_cookbook_integration_tests():
@@ -170,3 +188,9 @@ def test_sdist_manifest_keeps_large_repo_artifacts_out_of_package():
     assert "prune results" in manifest
     assert "prune docs" in manifest
     assert "prune tests" in manifest
+    assert "prune .mypy_cache" in manifest
+    assert "prune .venv" in manifest
+    assert "prune venv" in manifest
+    assert "prune env" in manifest
+    assert "global-exclude .coverage" in manifest
+    assert "global-exclude coverage.xml" in manifest

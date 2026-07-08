@@ -1,0 +1,20 @@
+{
+  "schema_name": "block-encoding-qsvt-execution",
+  "schema_version": "1.0",
+  "mode": "block-encoding-qsvt-execution",
+  "implementation_kind": "fixture",
+  "truth_contract": {
+    "finite_qsvt_execution": true,
+    "classical_reference_available": true,
+    "omitted_quantum_layers": [
+      "scalable_oracle_construction",
+      "fault_tolerant_synthesis",
+      "hardware_compilation"
+    ]
+  },
+  "resource_summary": {
+    "degree": 2,
+    "phase_count": 3,
+    "signal_operator_calls": 3
+  }
+}

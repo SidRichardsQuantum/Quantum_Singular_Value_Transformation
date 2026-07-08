@@ -169,7 +169,7 @@ The public package lives under `src/qsvt`.
 | `qsvt.synthesis` | realizability classification, parity decomposition, and phase synthesis |
 | `qsvt.templates` | ready-made bounded polynomial families |
 | `qsvt.workflow` | combined coefficient, diagnostic, compatibility, and high-level problem workflows |
-| `qsvt.reports` | JSON-safe reports and plot helpers |
+| `qsvt.reports` | JSON-safe reports, schema checks, and plot helpers |
 | `qsvt.resources` | degree, phase-count, width, and compatibility proxy reports |
 | `qsvt.benchmarks` | classical baselines and QSVT-oriented benchmark summaries |
 | `qsvt.notebook` | experimental notebook presentation and path helpers used by committed notebooks |
@@ -234,7 +234,7 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.2.13`
+Current release: `0.2.14`
 
 ## Notebooks
 

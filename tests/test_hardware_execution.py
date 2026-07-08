@@ -10,7 +10,7 @@ from qsvt.hardware import (
     qsvt_hardware_truth_contract,
     qsvt_provider_plugin_report,
 )
-from qsvt.reports import report_to_jsonable
+from qsvt.reports import report_to_jsonable, validate_report_schema
 
 
 def _basis_zero_preparation():
@@ -45,6 +45,9 @@ def test_execute_qsvt_on_device_runs_finite_shot_probability_path():
     assert result.resource_summary["logical_gate_types"]["QSVT"] == 1
     assert report["schema_name"] == "hardware-qsvt-execution"
     assert report["schema_version"] == "1.0"
+    compatibility = validate_report_schema(report, require_schema=True)
+    assert compatibility.supported is True
+    assert compatibility.missing_fields == ()
     assert report["truth_contract"]["implemented_components"] == [
         "caller_supplied_pennylane_device",
         "caller_supplied_preparation_circuit",
@@ -230,6 +233,9 @@ def test_hardware_circuit_report_audits_decomposition_without_execution():
     }
     assert payload["executed"] is False
     assert payload["schema_name"] == "hardware-qsvt-circuit"
+    compatibility = validate_report_schema(payload, require_schema=True)
+    assert compatibility.supported is True
+    assert compatibility.missing_fields == ()
     assert payload["provider_plugin"]["backend_name"] == "fake_decomposed_backend"
 
 

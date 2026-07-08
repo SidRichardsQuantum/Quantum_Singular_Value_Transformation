@@ -6,7 +6,7 @@ from qsvt.diagonal import qsvt_diagonal_transform
 from qsvt.matrix import qsvt_matrix_transform_report
 from qsvt.operators import qsvt_unitary
 from qsvt.qsvt import qsvt_scalar_output
-from qsvt.reports import report_to_jsonable
+from qsvt.reports import report_to_jsonable, validate_report_schema
 from qsvt.workflow import (
     DesignWorkflowResult,
     QSVTProblemWorkflowResult,
@@ -106,6 +106,9 @@ def test_problem_workflow_wraps_linear_system_user_journey():
     assert result.target == "linear_system"
     assert report["schema_name"] == "qsvt-problem-workflow"
     assert report["schema_version"] == "1.0"
+    compatibility = validate_report_schema(report, require_schema=True)
+    assert compatibility.supported is True
+    assert compatibility.missing_fields == ()
     assert report["target"] == "linear_system"
     assert report["input_kind"] == "finite-square-matrix"
     assert set(report) == {

@@ -661,6 +661,22 @@ inputs are validated by the workflow: for example `linear_system` requires
 `hamiltonian_simulation` requires `--state` and `--time`, and `resolvent`
 requires `--omega` and `--eta`.
 
+Report-schema audit:
+
+```bash
+qsvt report-schema-manifest \
+  --path problem-workflow.json \
+  --csv-output schema-manifest.csv \
+  --fail-on-unsupported \
+  --output schema-manifest.json
+```
+
+The manifest checks saved JSON reports against the package's supported
+versioned schemas and records unsupported versions, invalid JSON, and missing
+required top-level fields without modifying the original reports. Extra
+top-level fields on known schemas are reported as `unknown_fields` but do not
+fail the audit unless another compatibility error is present.
+
 Linear-system comparison report:
 
 ```bash

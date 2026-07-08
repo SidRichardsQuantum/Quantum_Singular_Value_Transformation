@@ -44,6 +44,7 @@ def test_top_level_public_api_exports_are_resolvable():
     expected_stable_surface = {
         "ClassicalBenchmarkResult",
         "LinearSystemComparisonResult",
+        "ReportSchemaCompatibility",
         "ResourceEstimate",
         "benchmark_environment_report",
         "conjugate_gradient_solve",
@@ -53,6 +54,7 @@ def test_top_level_public_api_exports_are_resolvable():
         "linear_system_workflow",
         "linear_system_comparison_summary_table",
         "linear_system_comparison_workflow",
+        "load_report_with_schema",
         "hamiltonian_simulation_workflow",
         "ground_state_filtering_workflow",
         "plot_benchmark_timings",
@@ -64,8 +66,12 @@ def test_top_level_public_api_exports_are_resolvable():
         "thermal_gibbs_workflow",
         "qsvt_transform_report",
         "qsvt_matrix_transform_report",
+        "report_schema_manifest",
         "report_to_jsonable",
         "save_report",
+        "supported_report_schemas",
+        "validate_report_schema",
+        "write_report_schema_manifest_csv",
         "write_benchmark_summary_csv",
         "write_linear_system_comparison_csv",
     }
@@ -826,6 +832,81 @@ def test_cli_matrix_report_writes_output(tmp_path, capsys):
     assert written["max_error"] < 1e-10
     assert len(written["qsvt"]) == len(written["classical"])
     assert len(written["qsvt_imag"]) == len(written["classical"])
+
+
+def test_cli_report_schema_manifest_audits_saved_reports(tmp_path, capsys):
+    report_path = tmp_path / "problem.json"
+    output_path = tmp_path / "manifest.json"
+    csv_path = tmp_path / "manifest.csv"
+
+    main(
+        [
+            "problem-workflow",
+            "--target",
+            "linear_system",
+            "--matrix",
+            "2,0;0,1",
+            "--rhs",
+            "1,1",
+            "--degree",
+            "8",
+            "--num-points",
+            "201",
+            "--bounded-num-points",
+            "401",
+            "--no-synthesis",
+            "--no-qsvt",
+            "--output",
+            str(report_path),
+        ]
+    )
+    capsys.readouterr()
+
+    main(
+        [
+            "report-schema-manifest",
+            "--path",
+            str(report_path),
+            "--output",
+            str(output_path),
+            "--csv-output",
+            str(csv_path),
+            "--print-report",
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+    written = json.loads(output_path.read_text(encoding="utf-8"))
+
+    assert payload["mode"] == "report-schema-manifest"
+    assert payload["all_supported"] is True
+    assert payload["rows"][0]["schema_name"] == "qsvt-problem-workflow"
+    assert payload["rows"][0]["supported"] is True
+    assert payload["rows"][0]["unknown_fields"] == []
+    assert written["checked_paths"] == [str(report_path)]
+    assert "qsvt-problem-workflow" in csv_path.read_text(encoding="utf-8")
+
+
+def test_cli_report_schema_manifest_can_fail_on_unsupported(tmp_path):
+    report_path = tmp_path / "unsupported.json"
+    report_path.write_text(
+        json.dumps(
+            {
+                "schema_name": "qsvt-problem-workflow",
+                "schema_version": "9.0",
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(SystemExit, match="unsupported report schemas"):
+        main(
+            [
+                "report-schema-manifest",
+                "--path",
+                str(report_path),
+                "--fail-on-unsupported",
+            ]
+        )
 
 
 def test_cli_execute_spec_emits_versioned_diagnostics(capsys):

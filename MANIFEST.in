@@ -24,10 +24,16 @@ prune tests
 global-exclude __pycache__
 global-exclude *.py[cod]
 global-exclude .DS_Store
+global-exclude .coverage
+global-exclude coverage.xml
 global-exclude .ipynb_checkpoints
 global-exclude *.nbconvert.ipynb
 prune build
 prune dist
 prune htmlcov
+prune .mypy_cache
 prune .pytest_cache
 prune .ruff_cache
+prune .venv
+prune env
+prune venv

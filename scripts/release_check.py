@@ -10,6 +10,8 @@ from __future__ import annotations
 import argparse
 import fnmatch
 import importlib.util
+import json
+import os
 import re
 import shutil
 import subprocess
@@ -98,6 +100,38 @@ def _check_git_hygiene() -> None:
         raise SystemExit(f"Generated release artifacts are tracked:\n{paths}")
 
 
+def _check_report_schema_fixtures() -> None:
+    fixture_dir = REPO_ROOT / "tests" / "fixtures" / "reports"
+    fixtures = sorted(fixture_dir.glob("*.json"))
+    if not fixtures:
+        raise SystemExit("No report schema fixtures found in tests/fixtures/reports.")
+
+    sys.path.insert(0, str(REPO_ROOT / "src"))
+    from qsvt.reports import report_schema_manifest
+
+    rows = report_schema_manifest(fixtures)
+    failures = [row for row in rows if not row["supported"]]
+    if failures:
+        details = "\n".join(f"  - {row['path']}: {row['message']}" for row in failures)
+        raise SystemExit(f"Report schema fixtures failed validation:\n{details}")
+    command = [
+        sys.executable,
+        "-m",
+        "qsvt",
+        "report-schema-manifest",
+        "--fail-on-unsupported",
+        *[arg for fixture in fixtures for arg in ("--path", str(fixture))],
+    ]
+    env = {
+        **os.environ,
+        "PYTHONPATH": str(REPO_ROOT / "src")
+        + os.pathsep
+        + os.environ.get("PYTHONPATH", ""),
+    }
+    print("+", " ".join(command), flush=True)
+    subprocess.run(command, cwd=REPO_ROOT, check=True, env=env)
+
+
 def _matches_generated_artifact(path: str, pattern: str) -> bool:
     if pattern.startswith("**/"):
         return fnmatch.fnmatch(path, pattern) or fnmatch.fnmatch(
@@ -154,6 +188,28 @@ def _run_wheel_smoke() -> None:
         _run([str(python), "-c", smoke_code])
         _run([str(python), "-m", "qsvt", "--help"])
         _run([str(python), "-m", "qsvt", "scalar", "--x", "0.5", "--poly", "0,0,1"])
+        report_path = Path(tmp) / "schema-report.json"
+        report_path.write_text(
+            json.dumps(
+                {
+                    "schema_name": "qsvt-problem-workflow",
+                    "schema_version": "1.0",
+                    "target": "linear_system",
+                    "truth_contract": {},
+                }
+            ),
+            encoding="utf-8",
+        )
+        _run(
+            [
+                str(python),
+                "-m",
+                "qsvt",
+                "report-schema-manifest",
+                "--path",
+                str(report_path),
+            ]
+        )
         shutil.rmtree(tmp, ignore_errors=True)
 
 
@@ -196,6 +252,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     args = parser.parse_args(argv)
 
     _check_git_hygiene()
+    _check_report_schema_fixtures()
     _require_module("ruff", "lint")
     _run(_python_module("ruff", "check", "."))
     _run(_python_module("ruff", "format", "--check", "src", "tests"))

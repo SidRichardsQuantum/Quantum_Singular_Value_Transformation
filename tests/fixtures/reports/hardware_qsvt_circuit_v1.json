@@ -1,0 +1,25 @@
+{
+  "schema_name": "hardware-qsvt-circuit",
+  "schema_version": "1.0",
+  "mode": "hardware-qsvt-circuit",
+  "implementation_kind": "fixture",
+  "truth_contract": {
+    "finite_qsvt_execution": false,
+    "classical_reference_available": false,
+    "omitted_quantum_layers": [
+      "provider_submission",
+      "hardware_execution",
+      "calibration_capture"
+    ]
+  },
+  "logical_resource_summary": {
+    "logical_depth": 4,
+    "logical_gate_count": 5,
+    "wire_count": 2
+  },
+  "decomposed_resource_summary": {
+    "decomposed_depth": 4,
+    "decomposed_gate_count": 5,
+    "wire_count": 2
+  }
+}

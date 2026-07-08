@@ -15,7 +15,7 @@ from qsvt.execution import (
     execute_qsvt_from_spec,
     qsvt_circuit_truth_contract,
 )
-from qsvt.reports import report_to_jsonable
+from qsvt.reports import report_to_jsonable, validate_report_schema
 
 
 def test_execute_qsvt_circuit_statevector_runs_qnode_without_matrix_extraction(
@@ -222,6 +222,9 @@ def test_execute_qsvt_from_matrix_spec_matches_dense_reference():
     ]
     assert report["schema_name"] == "block-encoding-qsvt-execution"
     assert report["schema_version"] == "1.0"
+    compatibility = validate_report_schema(report, require_schema=True)
+    assert compatibility.supported is True
+    assert compatibility.missing_fields == ()
 
 
 def test_execute_qsvt_from_rectangular_spec_uses_singular_value_reference():

@@ -35,9 +35,15 @@ and user-facing workflows.
 Before the project should be described as complete beyond the current alpha
 release state, it should have an explicit definition of done:
 
+- treat "complete" as a stable educational/research package milestone, not as
+  a claim that QSVT research or all possible application algorithms are
+  exhausted,
 - publish a compact `1.0` public API list with stable names, expected input
   shapes, report schemas, error semantics, and examples for each supported
   workflow,
+- define the main supported user journeys across polynomial design,
+  realizability checks, phase synthesis, block-encoding specifications, finite
+  execution or proxy execution, validation, reporting, and resource estimation,
 - document a deprecation policy and add migration tests for every public report
   schema or stable API that may change after `1.0`,
 - choose a small set of flagship workflows and finish them end to end: Python
@@ -47,28 +53,27 @@ release state, it should have an explicit definition of done:
 - define acceptance criteria for each flagship workflow, including numerical
   tolerances, required diagnostics, supported access models, and the exact
   quantum layers that are implemented or omitted,
-- run the full release preflight, notebook-marked tests, documentation build,
-  package build, and distribution metadata checks from a clean checkout before
-  each release,
+- require the supported CI gates and release preflight to pass from a clean
+  checkout, including linting, formatting, typing, tests across supported Python
+  versions, dependency compatibility, package build, documentation build,
+  notebook checks, distribution metadata checks, and ordered release workflows,
 - verify the package from the built wheel in a fresh environment, including CLI
   smoke tests and import/API-status checks,
 - keep generated build outputs, coverage files, caches, virtual environments,
   and rendered documentation out of version control while preserving deliberate
   research artifacts under `results/`,
-- add report-schema fixture tests so old committed reports remain loadable or
-  fail with an intentional migration message,
 - add stronger adversarial and property-style tests for boundedness, parity,
   normalization, singular spectra, near-boundary inputs, wire layouts, and
   synthesis failures,
 - document provider and hardware execution as either supported, experimental,
   or out of scope for each workflow, with paid/live execution behind explicit
   opt-in tests,
-- make every benchmark state the access model, classical baseline, environment,
-  random seed, tolerance, and whether the QSVT result is a circuit execution or
-  a resource proxy,
 - ensure the README, usage guide, API reference, changelog, package metadata,
   and PyPI release notes agree on the current version, stability status, and
-  supported Python/dependency range.
+  supported Python/dependency range,
+- update the package stability classifier and public wording only when the
+  `1.0` API, flagship workflow acceptance criteria, release checks, and
+  documentation consistency criteria are all satisfied.
 
 ### Next User-Facing Milestone
 
@@ -213,8 +218,10 @@ notebook narrative.
   and optional solver versions,
 - record tolerances, dependency versions, solver configuration, random seeds,
   and report-schema versions in generated research artifacts,
-- add report-schema compatibility fixtures and migration tests before changing
-  versioned execution or benchmark report formats,
+- maintain a report-schema registry, compatibility fixtures, and migration
+  tests before changing versioned execution or benchmark report formats, so old
+  committed reports remain loadable or fail with an intentional migration
+  message,
 - maintain regression cases for known synthesis and backend failure modes.
 
 ### Resource Estimation and Claim Boundaries
@@ -236,9 +243,6 @@ notebook narrative.
 
 - define a compact stable facade around design, synthesis, execution,
   verification, reporting, and resource estimation,
-- provide a high-level user journey that connects problem definition, target
-  transform selection, polynomial design, compatibility checks, execution or
-  proxy generation, classical validation, and report export,
 - keep the eventual `1.0` stable API intentionally small, with lower-level
   research interfaces available but not prematurely stabilized,
 - keep experimental lower-level interfaces clearly labeled and accessible for
@@ -246,8 +250,6 @@ notebook narrative.
 - split large algorithm and CLI modules by workflow family,
 - use shared result and report types across Python, CLI, examples, and
   notebooks,
-- establish a documented deprecation policy and migration tests before a
-  stable major API,
 - keep type annotations, API-status metadata, and generated API documentation
   synchronized with exported behavior.
 

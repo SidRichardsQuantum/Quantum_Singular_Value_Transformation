@@ -1,0 +1,77 @@
+{
+  "mode": "report-schema-manifest-fixture",
+  "manifest_version": "1.0",
+  "rows": [
+    {
+      "path": "tests/fixtures/reports/block_encoding_qsvt_execution_v1.json",
+      "schema_name": "block-encoding-qsvt-execution",
+      "schema_version": "1.0",
+      "supported": true,
+      "migration_required": false,
+      "message": "report schema 'block-encoding-qsvt-execution' version '1.0' is supported",
+      "required_fields": [
+        "implementation_kind",
+        "mode",
+        "resource_summary",
+        "schema_name",
+        "schema_version",
+        "truth_contract"
+      ],
+      "missing_fields": [],
+      "unknown_fields": []
+    },
+    {
+      "path": "tests/fixtures/reports/hardware_qsvt_circuit_v1.json",
+      "schema_name": "hardware-qsvt-circuit",
+      "schema_version": "1.0",
+      "supported": true,
+      "migration_required": false,
+      "message": "report schema 'hardware-qsvt-circuit' version '1.0' is supported",
+      "required_fields": [
+        "decomposed_resource_summary",
+        "implementation_kind",
+        "logical_resource_summary",
+        "mode",
+        "schema_name",
+        "schema_version",
+        "truth_contract"
+      ],
+      "missing_fields": [],
+      "unknown_fields": []
+    },
+    {
+      "path": "tests/fixtures/reports/hardware_qsvt_execution_v1.json",
+      "schema_name": "hardware-qsvt-execution",
+      "schema_version": "1.0",
+      "supported": true,
+      "migration_required": false,
+      "message": "report schema 'hardware-qsvt-execution' version '1.0' is supported",
+      "required_fields": [
+        "implementation_kind",
+        "mode",
+        "resource_summary",
+        "schema_name",
+        "schema_version",
+        "truth_contract"
+      ],
+      "missing_fields": [],
+      "unknown_fields": []
+    },
+    {
+      "path": "tests/fixtures/reports/qsvt_problem_workflow_v1.json",
+      "schema_name": "qsvt-problem-workflow",
+      "schema_version": "1.0",
+      "supported": true,
+      "migration_required": false,
+      "message": "report schema 'qsvt-problem-workflow' version '1.0' is supported",
+      "required_fields": [
+        "schema_name",
+        "schema_version",
+        "target",
+        "truth_contract"
+      ],
+      "missing_fields": [],
+      "unknown_fields": []
+    }
+  ]
+}

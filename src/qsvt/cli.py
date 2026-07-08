@@ -89,6 +89,11 @@ from .qsvt import (
     qsvt_scalar_output,
     qsvt_transform_report,
 )
+from .reports import (
+    report_schema_manifest,
+    supported_report_schemas,
+    write_report_schema_manifest_csv,
+)
 from .resources import qsvt_resource_report
 from .synthesis import (
     benchmark_phase_solvers,
@@ -521,6 +526,28 @@ def cmd_resource_report(args: argparse.Namespace) -> dict:
     )
 
 
+def cmd_report_schema_manifest(args: argparse.Namespace) -> dict:
+    """
+    Build a compatibility manifest for saved JSON report files.
+    """
+    rows = report_schema_manifest(args.paths)
+    if args.csv_output:
+        write_report_schema_manifest_csv(rows, args.csv_output)
+        args.rows_output = args.csv_output
+    all_supported = all(row["supported"] for row in rows)
+    if args.fail_on_unsupported and not all_supported:
+        failed = [row for row in rows if not row["supported"]]
+        details = "; ".join(f"{row['path']}: {row['message']}" for row in failed)
+        raise SystemExit(f"unsupported report schemas: {details}")
+    return {
+        "mode": "report-schema-manifest",
+        "supported_schemas": supported_report_schemas(),
+        "checked_paths": list(args.paths),
+        "all_supported": all_supported,
+        "rows": rows,
+    }
+
+
 def cmd_design_compatibility(args: argparse.Namespace) -> dict:
     """
     Build a design polynomial and check QSVT compatibility.
@@ -788,6 +815,7 @@ def cmd_examples(args: argparse.Namespace) -> dict:
             "linear-system-compare",
             "threshold-workflow",
             "resource-report",
+            "report-schema-manifest",
             "execute-spec",
         ],
         "examples": [
@@ -796,6 +824,8 @@ def cmd_examples(args: argparse.Namespace) -> dict:
             'qsvt design-sweep --kind sign --degrees "5,9,13" --gamma 0.2 '
             "--no-synthesis --output sign-degree-sweep.json",
             'qsvt resource-report --poly "0,0,1" --matrix-dimension 4 --no-synthesis',
+            "qsvt report-schema-manifest --path "
+            "tests/fixtures/reports/qsvt_problem_workflow_v1.json",
             'qsvt execute-spec --kind matrix --matrix "0.2,0;0,0.8" '
             '--poly "0,0,1" --state "1,0"',
             'qsvt linear-system-compare --matrix "2,0.25;0.25,1.25" '
@@ -1267,6 +1297,31 @@ def build_parser() -> argparse.ArgumentParser:
     )
     add_report_output_args(p_resource)
     p_resource.set_defaults(func=cmd_resource_report)
+
+    p_report_schema = sub.add_parser(
+        "report-schema-manifest",
+        help="Audit saved JSON reports against supported schema metadata",
+    )
+    p_report_schema.add_argument(
+        "--path",
+        dest="paths",
+        action="append",
+        required=True,
+        help="Report JSON path to audit. Repeat for multiple reports.",
+    )
+    p_report_schema.add_argument(
+        "--csv-output",
+        type=str,
+        default=None,
+        help="Optional path for writing compact manifest rows as CSV.",
+    )
+    p_report_schema.add_argument(
+        "--fail-on-unsupported",
+        action="store_true",
+        help="Exit nonzero if any report is unsupported or malformed.",
+    )
+    add_report_output_args(p_report_schema, include_plot=False)
+    p_report_schema.set_defaults(func=cmd_report_schema_manifest)
 
     p_design_compatibility = sub.add_parser(
         "design-compatibility",

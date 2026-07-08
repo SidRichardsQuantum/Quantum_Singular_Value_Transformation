@@ -1,0 +1,20 @@
+{
+  "schema_name": "hardware-qsvt-execution",
+  "schema_version": "1.0",
+  "mode": "hardware-qsvt-execution",
+  "implementation_kind": "fixture",
+  "truth_contract": {
+    "finite_qsvt_execution": true,
+    "classical_reference_available": true,
+    "omitted_quantum_layers": [
+      "provider_queue_metadata",
+      "error_mitigation",
+      "fault_tolerant_synthesis"
+    ]
+  },
+  "resource_summary": {
+    "shots": 100,
+    "wire_count": 2,
+    "finite_shot_uncertainty": 0.05
+  }
+}

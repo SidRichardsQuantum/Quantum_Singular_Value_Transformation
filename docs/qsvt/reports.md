@@ -7,7 +7,8 @@ Design and template diagnostics functions return dictionaries that include
 NumPy arrays. Those arrays are convenient for plotting and further numerical
 work, but they are not directly JSON serializable. The reports module converts
 those payloads into plain Python containers, writes JSON files, loads saved
-reports, and plots the sampled approximation curves.
+reports, checks versioned report schemas, and plots the sampled approximation
+curves.
 
 ## Python workflow
 
@@ -60,6 +61,64 @@ Related rendered result pages:
 - [Real-example notebook outputs](real_example_results.md)
 - [QSVT transform reports](qsvt_reports.md)
 
+## Schema compatibility
+
+Versioned workflow and execution reports can be loaded with an explicit schema
+compatibility check:
+
+```python
+from qsvt.reports import load_report_with_schema
+
+report, compatibility = load_report_with_schema(
+    "problem-workflow.json",
+    expected_schema_name="qsvt-problem-workflow",
+)
+assert compatibility.supported
+```
+
+Use `report_schema_manifest(paths)` to audit several saved reports at once,
+including unsupported versions, invalid JSON files, and missing required
+top-level fields. Known-schema reports can also include extra top-level fields;
+those are reported as `unknown_fields` but do not make the report unsupported.
+
+The same audit path is available from the CLI:
+
+```bash
+qsvt report-schema-manifest \
+  --path problem-workflow.json \
+  --path hardware-report.json \
+  --csv-output schema-manifest.csv \
+  --fail-on-unsupported \
+  --output schema-manifest.json
+```
+
+Use `--fail-on-unsupported` in CI when unsupported versions, malformed JSON, or
+missing required fields should fail the command. Use `--csv-output` when you
+want compact rows that are easy to diff in release artifacts.
+
+## Schema policy
+
+- Additive optional top-level fields are allowed for a supported schema version;
+  they are surfaced as `unknown_fields` until documented or added to the known
+  field registry.
+- Removing or renaming required fields requires a schema-version bump.
+- Changing the meaning, type, or units of an existing field requires a
+  schema-version bump unless the old field remains available with its original
+  semantics.
+- Unsupported schema names or versions must fail with an intentional
+  migration-required message rather than with incidental key errors.
+- Historical fixtures for supported versions should remain loadable, even when
+  newer reports add optional fields.
+
+## Versioned schemas
+
+| schema | versions | required top-level fields |
+| --- | --- | --- |
+| `qsvt-problem-workflow` | `1.0` | `schema_name`, `schema_version`, `target`, `truth_contract` |
+| `block-encoding-qsvt-execution` | `1.0` | `schema_name`, `schema_version`, `mode`, `implementation_kind`, `truth_contract`, `resource_summary` |
+| `hardware-qsvt-execution` | `1.0` | `schema_name`, `schema_version`, `mode`, `implementation_kind`, `truth_contract`, `resource_summary` |
+| `hardware-qsvt-circuit` | `1.0` | `schema_name`, `schema_version`, `mode`, `implementation_kind`, `truth_contract`, `logical_resource_summary`, `decomposed_resource_summary` |
+
 ## Report fields
 
 | field | meaning |
@@ -83,5 +142,19 @@ Related rendered result pages:
 - `report_to_jsonable(report)`
 - `save_report(report, path)`
 - `load_report(path)`
+- `supported_report_schemas()`
+- `report_schema_manifest(paths)`
+- `write_report_schema_manifest_csv(rows, path)`
+- `validate_report_schema(report, require_schema=False)`
+- `load_report_with_schema(path, require_schema=True, expected_schema_name=None,
+  expected_schema_version=None)`
 - `plot_approximation_report(report, ax=None)`
 - `save_report_plot(report, path)`
+
+Versioned machine-readable reports currently include
+`qsvt-problem-workflow`, `block-encoding-qsvt-execution`,
+`hardware-qsvt-execution`, and `hardware-qsvt-circuit` at schema version
+`1.0`. Unsupported schema names or versions return an intentional
+migration-required compatibility message before callers rely on stale report
+fields. Unknown fields are reported as warnings in compatibility payloads and
+CSV manifests, but they do not make an otherwise supported report fail.

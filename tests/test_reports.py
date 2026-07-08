@@ -8,15 +8,26 @@ import pytest
 
 from qsvt.reports import (
     load_report,
+    load_report_with_schema,
     plot_approximation_report,
+    report_schema_manifest,
     report_to_jsonable,
     save_report,
     save_report_plot,
+    supported_report_schemas,
+    validate_report_schema,
+    write_report_schema_manifest_csv,
 )
 
 matplotlib.use("Agg")
 
 FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "reports"
+MANIFEST_FIXTURE = (
+    Path(__file__).resolve().parent
+    / "fixtures"
+    / "report_manifests"
+    / "schema_manifest_v1.json"
+)
 
 
 @pytest.fixture
@@ -185,6 +196,217 @@ def test_report_schema_fixtures_remain_loadable_and_identifiable():
         assert isinstance(report["schema_version"], str)
         assert report["schema_version"]
         json.dumps(report)
+
+
+def test_report_schema_fixtures_pass_explicit_compatibility_checks():
+    fixtures = sorted(FIXTURE_DIR.glob("*.json"))
+
+    assert fixtures, "expected at least one report schema fixture"
+    for fixture in fixtures:
+        report, compatibility = load_report_with_schema(fixture)
+
+        assert compatibility.supported is True
+        assert compatibility.migration_required is False
+        assert compatibility.schema_name == report["schema_name"]
+        assert compatibility.schema_version == report["schema_version"]
+        assert compatibility.missing_fields == ()
+        assert "schema_name" in compatibility.required_fields
+        json.dumps(compatibility.as_report())
+
+
+def test_supported_report_schema_registry_matches_fixture_families():
+    registry = supported_report_schemas()
+    fixtures = sorted(FIXTURE_DIR.glob("*.json"))
+    fixture_pairs = {
+        (
+            load_report(fixture)["schema_name"],
+            load_report(fixture)["schema_version"],
+        )
+        for fixture in fixtures
+    }
+
+    assert registry["qsvt-problem-workflow"] == ("1.0",)
+    assert registry["block-encoding-qsvt-execution"] == ("1.0",)
+    assert registry["hardware-qsvt-execution"] == ("1.0",)
+    assert registry["hardware-qsvt-circuit"] == ("1.0",)
+    assert fixture_pairs <= {
+        (schema_name, version)
+        for schema_name, versions in registry.items()
+        for version in versions
+    }
+
+
+def test_load_report_with_schema_can_enforce_expected_schema(tmp_path):
+    path = tmp_path / "hardware.json"
+    save_report(
+        {
+            "schema_name": "hardware-qsvt-execution",
+            "schema_version": "1.0",
+            "mode": "hardware-qsvt-execution",
+            "implementation_kind": "fixture",
+            "truth_contract": {},
+            "resource_summary": {},
+        },
+        path,
+    )
+
+    report, compatibility = load_report_with_schema(
+        path,
+        expected_schema_name="hardware-qsvt-execution",
+        expected_schema_version="1.0",
+    )
+
+    assert report["schema_name"] == "hardware-qsvt-execution"
+    assert compatibility.supported is True
+    with pytest.raises(ValueError, match="does not match expected schema"):
+        load_report_with_schema(
+            path,
+            expected_schema_name="qsvt-problem-workflow",
+        )
+    with pytest.raises(ValueError, match="does not match expected version"):
+        load_report_with_schema(
+            path,
+            expected_schema_version="2.0",
+        )
+
+
+def test_validate_report_schema_reports_missing_required_fields(tmp_path):
+    report = {
+        "schema_name": "qsvt-problem-workflow",
+        "schema_version": "1.0",
+        "mode": "qsvt-problem-workflow",
+    }
+
+    compatibility = validate_report_schema(report, require_schema=True)
+
+    assert compatibility.supported is False
+    assert compatibility.migration_required is False
+    assert "missing required fields" in compatibility.message
+    assert "truth_contract" in compatibility.missing_fields
+    assert "target" in compatibility.required_fields
+
+    path = tmp_path / "incomplete.json"
+    save_report(report, path)
+    with pytest.raises(ValueError, match="missing required fields"):
+        load_report_with_schema(path)
+
+
+def test_validate_report_schema_reports_unknown_fields_without_failing():
+    compatibility = validate_report_schema(
+        {
+            "schema_name": "hardware-qsvt-execution",
+            "schema_version": "1.0",
+            "mode": "hardware-qsvt-execution",
+            "implementation_kind": "fixture",
+            "truth_contract": {},
+            "resource_summary": {},
+            "extra_field": "allowed but reported",
+        },
+        require_schema=True,
+    )
+
+    assert compatibility.supported is True
+    assert compatibility.unknown_fields == ("extra_field",)
+    assert compatibility.as_report()["unknown_fields"] == ["extra_field"]
+
+
+def test_validate_report_schema_reports_intentional_migration_message():
+    compatibility = validate_report_schema(
+        {
+            "schema_name": "qsvt-problem-workflow",
+            "schema_version": "2.0",
+        },
+        require_schema=True,
+    )
+
+    assert compatibility.supported is False
+    assert compatibility.migration_required is True
+    assert "unsupported" in compatibility.message
+    assert "supported versions: 1.0" in compatibility.message
+
+
+def test_report_schema_manifest_summarizes_paths(tmp_path):
+    valid_path = tmp_path / "valid.json"
+    invalid_path = tmp_path / "invalid.json"
+    save_report(
+        {
+            "schema_name": "hardware-qsvt-execution",
+            "schema_version": "1.0",
+            "mode": "hardware-qsvt-execution",
+            "implementation_kind": "fixture",
+            "truth_contract": {},
+            "resource_summary": {},
+        },
+        valid_path,
+    )
+    invalid_path.write_text("{", encoding="utf-8")
+
+    manifest = report_schema_manifest([valid_path, invalid_path])
+
+    assert manifest[0]["path"] == str(valid_path)
+    assert manifest[0]["supported"] is True
+    assert manifest[0]["missing_fields"] == []
+    assert manifest[1]["path"] == str(invalid_path)
+    assert manifest[1]["supported"] is False
+    assert "invalid JSON" in manifest[1]["message"]
+
+
+def test_write_report_schema_manifest_csv_writes_compact_rows(tmp_path):
+    report_path = tmp_path / "valid.json"
+    csv_path = tmp_path / "manifest.csv"
+    save_report(
+        {
+            "schema_name": "hardware-qsvt-execution",
+            "schema_version": "1.0",
+            "mode": "hardware-qsvt-execution",
+            "implementation_kind": "fixture",
+            "truth_contract": {},
+            "resource_summary": {},
+            "extra_field": "reported",
+        },
+        report_path,
+    )
+    rows = report_schema_manifest([report_path])
+
+    written = write_report_schema_manifest_csv(rows, csv_path)
+    text = csv_path.read_text(encoding="utf-8")
+
+    assert written == csv_path
+    assert "path,schema_name,schema_version,supported" in text
+    assert "hardware-qsvt-execution" in text
+    assert "extra_field" in text
+
+
+def test_report_schema_manifest_fixture_matches_committed_report_fixtures():
+    fixture = load_report(MANIFEST_FIXTURE)
+    paths = [
+        Path("tests/fixtures/reports/block_encoding_qsvt_execution_v1.json"),
+        Path("tests/fixtures/reports/hardware_qsvt_circuit_v1.json"),
+        Path("tests/fixtures/reports/hardware_qsvt_execution_v1.json"),
+        Path("tests/fixtures/reports/qsvt_problem_workflow_v1.json"),
+    ]
+
+    manifest = report_schema_manifest(paths)
+
+    assert fixture["mode"] == "report-schema-manifest-fixture"
+    assert fixture["manifest_version"] == "1.0"
+    assert fixture["rows"] == manifest
+    assert all(row["supported"] for row in fixture["rows"])
+
+
+def test_load_report_with_schema_rejects_unversioned_reports_when_required(
+    tmp_path,
+):
+    path = tmp_path / "unversioned.json"
+    save_report({"mode": "design-report"}, path)
+
+    with pytest.raises(ValueError, match="missing required schema_name"):
+        load_report_with_schema(path)
+
+    report, compatibility = load_report_with_schema(path, require_schema=False)
+    assert report["mode"] == "design-report"
+    assert compatibility.supported is True
+    assert compatibility.schema_name is None
 
 
 def test_qsvt_problem_workflow_v1_fixture_documents_truth_contract():
