@@ -4,6 +4,10 @@ Block encodings are the interface between a matrix problem and a QSVT
 polynomial transform. This page describes the finite block-encoding helpers in
 `qsvt-pennylane` and how to interpret their reports.
 
+For the concise algorithm page that combines finite block-encoding
+verification with a QSVT transform, see
+[Block-encoded QSVT workflow](workflow_block_encoded_qsvt.md).
+
 ## Definition
 
 A unitary `U` is a block encoding of a matrix `A` when its logical top-left
@@ -191,6 +195,9 @@ polynomial as part of a larger quantum algorithm.
 verification with a PennyLane QSVT transform. It currently targets positive
 Hermitian signal operators for which the package's matrix-QSVT comparison
 agrees with ordinary spectral polynomial functional calculus.
+
+See [Block-encoded QSVT workflow](workflow_block_encoded_qsvt.md) for the
+target, QSVT idea, implementation summary, diagnostics, scope, and minimal API.
 
 The workflow:
 

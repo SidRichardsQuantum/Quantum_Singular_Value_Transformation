@@ -204,7 +204,7 @@
       <article class="project-card">
         <div>
           <h3>Algorithm Notes</h3>
-          <p>Read concise workflow-level theory for linear systems, filtering, simulation, resolvents, spectral density, and Gibbs weighting.</p>
+          <p>Read concise workflow-level theory and links to one-page notes for the package's main algorithm paths.</p>
         </div>
         <div class="tags">
           <span>Algorithms</span>

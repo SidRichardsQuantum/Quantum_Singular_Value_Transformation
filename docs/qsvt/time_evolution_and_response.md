@@ -21,6 +21,14 @@ these scalar functions once a block encoding of the normalized operator is
 available. The package validates the polynomial matrix functions on small dense
 instances.
 
+Concise per-workflow pages:
+
+- [Hamiltonian simulation workflow](workflow_hamiltonian_simulation.md)
+- [Quantum walk search workflow](workflow_quantum_walk_search.md)
+- [Resolvent workflow](workflow_resolvent.md)
+- [Thermal Gibbs workflow](workflow_thermal_gibbs.md)
+- [Fermi-Dirac occupation workflow](workflow_fermi_dirac.md)
+
 ## Real-time evolution
 
 `qsvt.algorithms.hamiltonian_simulation_workflow` targets
@@ -46,6 +54,8 @@ operator error, scaled time, and norm drift.
 This is a polynomial matrix-function validation path. It is not an optimized
 Hamiltonian-simulation circuit synthesis routine.
 
+See [Hamiltonian simulation workflow](workflow_hamiltonian_simulation.md).
+
 ## Resolvents and Green's functions
 
 `qsvt.algorithms.resolvent_workflow` targets the shifted inverse
@@ -61,6 +71,8 @@ which generally requires higher polynomial degree.
 The complex response is split into real and imaginary scalar functions in the
 scaled coordinate. The workflow reports polynomial and exact resolvent
 operators, operator relative error, and optional source-vector response error.
+
+See [Resolvent workflow](workflow_resolvent.md).
 
 ## Imaginary-time and Gibbs weighting
 
@@ -83,6 +95,8 @@ operator error, density-matrix error, and optional weighted-state error.
 
 This validates Gibbs-style matrix functions on finite dense systems. It does
 not implement a quantum thermal-state preparation algorithm.
+
+See [Thermal Gibbs workflow](workflow_thermal_gibbs.md).
 
 ## Spectral response patterns
 

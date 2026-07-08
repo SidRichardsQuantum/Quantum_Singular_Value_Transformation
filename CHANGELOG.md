@@ -2,6 +2,36 @@
 
 ---
 
+## [0.2.15] – 8th July 2026
+
+### Added
+
+- added concise per-workflow theory pages for the stable
+  `qsvt.algorithms` workflow surface, covering targets, QSVT interpretation,
+  implementation details, diagnostics, scope boundaries, and minimal API usage
+- added standalone workflow pages for linear systems, linear-system
+  comparisons, singular-value filtering and pseudoinverses, block-encoded
+  QSVT, ground-state filtering, Hamiltonian simulation, quantum walk search,
+  fixed-point amplification, resolvents, spectral density, spectral counting,
+  spectral thresholding, Fermi-Dirac occupations, thermal Gibbs weighting, and
+  matrix log/entropy workflows
+- added release-metadata coverage that requires every stable
+  `qsvt.algorithms` workflow to have a matching workflow theory page linked
+  from both the algorithm notes and API reference
+
+### Changed
+
+- refactored the algorithm notes page into a workflow index with shared
+  pattern, truth-contract, family, and degree-guidance sections instead of
+  duplicating every per-workflow explanation
+- linked the new workflow pages from the family guides for linear systems,
+  spectral filters, time evolution and response, and block encodings
+- updated the API reference and documentation landing pages so users can reach
+  workflow-specific theory pages from the public workflow API surface
+- updated release markers for `0.2.15`
+
+---
+
 ## [0.2.14] – 8th July 2026
 
 ### Added

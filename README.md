@@ -234,7 +234,7 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.2.14`
+Current release: `0.2.15`
 
 ## Notebooks
 

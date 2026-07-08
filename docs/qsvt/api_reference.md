@@ -226,17 +226,25 @@ write_linear_system_comparison_csv(
 )
 ```
 
-The module also includes simulator-scale physics workflows that wrap existing
-matrix-function polynomial builders with exact spectral references:
+The module also includes simulator-scale workflows that wrap polynomial
+builders with exact dense references. Each workflow has a concise theory page:
 
-- `block_encoded_qsvt_workflow`
-- `ground_state_filtering_workflow`
-- `hamiltonian_simulation_workflow`
-- `quantum_walk_search_workflow`
-- `resolvent_workflow`
-- `spectral_density_workflow`
-- `spectral_thresholding_workflow`
-- `thermal_gibbs_workflow`
+- [`block_encoded_qsvt_workflow`](workflow_block_encoded_qsvt.md)
+- [`linear_system_comparison_workflow`](workflow_linear_system_comparison.md)
+- [`linear_system_workflow`](workflow_linear_system.md)
+- [`ground_state_filtering_workflow`](workflow_ground_state_filtering.md)
+- [`hamiltonian_simulation_workflow`](workflow_hamiltonian_simulation.md)
+- [`quantum_walk_search_workflow`](workflow_quantum_walk_search.md)
+- [`fixed_point_amplification_workflow`](workflow_fixed_point_amplification.md)
+- [`resolvent_workflow`](workflow_resolvent.md)
+- [`spectral_density_workflow`](workflow_spectral_density.md)
+- [`spectral_counting_workflow`](workflow_spectral_counting.md)
+- [`spectral_thresholding_workflow`](workflow_spectral_thresholding.md)
+- [`singular_value_filtering_workflow`](workflow_singular_value_filtering.md)
+- [`singular_value_pseudoinverse_workflow`](workflow_singular_value_pseudoinverse.md)
+- [`fermi_dirac_occupation_workflow`](workflow_fermi_dirac.md)
+- [`thermal_gibbs_workflow`](workflow_thermal_gibbs.md)
+- [`matrix_log_entropy_workflow`](workflow_matrix_log_entropy.md)
 
 Each returns a frozen dataclass with numerical outputs, diagnostics, and an
 `as_report()` helper.
@@ -319,7 +327,8 @@ print(verification["unitary_verified"])
 ```
 
 The higher-level `block_encoded_qsvt_workflow` combines this encoding check
-with a small PennyLane QSVT transform for positive Hermitian signal operators.
+with a small PennyLane QSVT transform for positive Hermitian signal operators;
+see [Block-encoded QSVT workflow](workflow_block_encoded_qsvt.md).
 
 Research-facing block-encoding specifications cover more access models:
 

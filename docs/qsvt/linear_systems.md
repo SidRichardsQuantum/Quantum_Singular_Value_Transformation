@@ -2,7 +2,10 @@
 
 This page summarizes the theory behind the linear-system paths in the package:
 QSVT-style inverse polynomials, small solver comparisons, and finite HHL circuit
-execution.
+execution. For the concise per-workflow page, see
+[Linear system workflow](workflow_linear_system.md). For comparison rows across
+dense, iterative, QSVT-style, and HHL paths, see
+[Linear system comparison workflow](workflow_linear_system_comparison.md).
 
 The common mathematical target is a positive-definite system
 
@@ -35,7 +38,9 @@ $$
 
 After applying \(P(A / \alpha)\) to \(b\), the package rescales by
 \(\gamma \alpha\) to approximate \(A^{-1}b\). This is the core idea behind
-`qsvt.algorithms.linear_system_workflow`.
+`qsvt.algorithms.linear_system_workflow`; see
+[Linear system workflow](workflow_linear_system.md) for the target,
+implementation, diagnostics, and API summary.
 
 The approximation becomes harder as \(\gamma\) gets smaller. Since
 \(\gamma^{-1}\) tracks conditioning after normalization, ill-conditioned
@@ -56,6 +61,8 @@ The comparison rows are numerical diagnostics, not runtime claims about a full
 quantum linear-system solver. They are useful for asking whether the polynomial
 inverse row approximates the dense reference on the finite instance and how the
 degree, conditioning, residual, and optional QSVT check relate.
+
+See [Linear system comparison workflow](workflow_linear_system_comparison.md).
 
 ## HHL circuit execution
 

@@ -154,7 +154,8 @@ Rendered notebook artefacts are kept separately from the root result index.
 Workflow-level theory and implementation conventions:
 
 - [Algorithm notes](algorithms.md): concise descriptions of the high-level
-  algorithm workflows, their mathematical targets, diagnostics, and limits
+  algorithm workflows, their mathematical targets, diagnostics, limits, and
+  links to one-page workflow theory notes
 - [Linear systems](linear_systems.md): QSVT inverse-polynomial workflows,
   solver comparisons, and finite HHL circuit execution
 - [Spectral filters](spectral_filters.md): ground-state filtering, interval

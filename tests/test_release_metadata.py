@@ -194,3 +194,48 @@ def test_sdist_manifest_keeps_large_repo_artifacts_out_of_package():
     assert "prune env" in manifest
     assert "global-exclude .coverage" in manifest
     assert "global-exclude coverage.xml" in manifest
+
+
+def test_stable_algorithm_workflows_have_theory_pages():
+    import qsvt
+    import qsvt.algorithms as algorithms
+
+    expected_pages = {
+        "block_encoded_qsvt_workflow": "workflow_block_encoded_qsvt.md",
+        "fermi_dirac_occupation_workflow": "workflow_fermi_dirac.md",
+        "fixed_point_amplification_workflow": ("workflow_fixed_point_amplification.md"),
+        "ground_state_filtering_workflow": "workflow_ground_state_filtering.md",
+        "hamiltonian_simulation_workflow": "workflow_hamiltonian_simulation.md",
+        "linear_system_comparison_workflow": ("workflow_linear_system_comparison.md"),
+        "linear_system_workflow": "workflow_linear_system.md",
+        "matrix_log_entropy_workflow": "workflow_matrix_log_entropy.md",
+        "quantum_walk_search_workflow": "workflow_quantum_walk_search.md",
+        "resolvent_workflow": "workflow_resolvent.md",
+        "singular_value_filtering_workflow": ("workflow_singular_value_filtering.md"),
+        "singular_value_pseudoinverse_workflow": (
+            "workflow_singular_value_pseudoinverse.md"
+        ),
+        "spectral_counting_workflow": "workflow_spectral_counting.md",
+        "spectral_density_workflow": "workflow_spectral_density.md",
+        "spectral_thresholding_workflow": "workflow_spectral_thresholding.md",
+        "thermal_gibbs_workflow": "workflow_thermal_gibbs.md",
+    }
+    stable_algorithm_workflows = {
+        name
+        for name, status in qsvt.__api_statuses__.items()
+        if status == qsvt.API_STATUS_STABLE
+        and name.endswith("_workflow")
+        and hasattr(algorithms, name)
+    }
+
+    assert stable_algorithm_workflows == set(expected_pages)
+
+    algorithms_doc = _read_text("docs/qsvt/algorithms.md")
+    api_doc = _read_text("docs/qsvt/api_reference.md")
+    for workflow_name, page_name in expected_pages.items():
+        page_path = REPO_ROOT / "docs" / "qsvt" / page_name
+        assert page_path.is_file(), workflow_name
+        page_text = page_path.read_text(encoding="utf-8")
+        assert workflow_name in page_text
+        assert page_name in algorithms_doc
+        assert page_name in api_doc
