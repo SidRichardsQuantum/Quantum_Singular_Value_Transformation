@@ -28,7 +28,7 @@
 - added `setuptools>=68` to the release extra so the documented
   `--no-build-isolation` release preflight has its declared build backend
   available
-- bounded the supported runtime dependency ranges to PennyLane `0.36` through
+- bounded the supported runtime dependency ranges to PennyLane `0.42` through
   `0.45`, NumPy `1.x` and `2.x`, and Matplotlib `3.x`
 - strengthened the publish-gated CI path with minimum/current dependency
   compatibility, full notebook execution, `pip check`, and smoke tests against

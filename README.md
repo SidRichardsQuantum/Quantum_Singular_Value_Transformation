@@ -64,7 +64,7 @@ pip install -e .
 Requirements:
 
 - Python >= 3.10
-- PennyLane >= 0.36, < 0.46
+- PennyLane >= 0.42, < 0.46
 - NumPy >= 1.23, < 3
 - Matplotlib >= 3.7, < 4
 

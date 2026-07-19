@@ -168,9 +168,12 @@ def test_release_extra_includes_no_isolation_build_requirements():
 
 def test_publish_gated_ci_runs_compatibility_notebooks_and_wheel_smoke():
     ordered = _read_text(".github/workflows/ordered-actions.yml")
+    pull_request = _read_text(".github/workflows/tests.yml")
     publish = _read_text(".github/workflows/publish.yml")
 
     assert "dependency-compatibility:" in ordered
+    assert 'pennylane-constraint: "pennylane>=0.42,<0.43"' in ordered
+    assert 'pennylane-constraint: "pennylane>=0.42,<0.43"' in pull_request
     assert "pytest -m notebook tests/test_real_example_notebooks.py" in ordered
     assert "python scripts/release_check.py --wheel-smoke-only" in ordered
     assert 'workflow_id: "ordered-actions.yml"' in publish
@@ -182,7 +185,7 @@ def test_runtime_dependencies_are_bounded_to_supported_major_ranges():
     assert set(project["dependencies"]) == {
         "matplotlib>=3.7,<4",
         "numpy>=1.23,<3",
-        "pennylane>=0.36,<0.46",
+        "pennylane>=0.42,<0.46",
     }
 
 

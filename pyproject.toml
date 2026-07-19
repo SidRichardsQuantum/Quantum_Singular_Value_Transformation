@@ -36,7 +36,7 @@ classifiers = [
 ]
 
 dependencies = [
-  "pennylane>=0.36,<0.46",
+  "pennylane>=0.42,<0.46",
   "numpy>=1.23,<3",
   "matplotlib>=3.7,<4",
 ]
