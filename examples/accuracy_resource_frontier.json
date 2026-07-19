@@ -1,0 +1,81 @@
+{
+  "schema_name": "qsvt-research-sweep-spec",
+  "schema_version": "1.0",
+  "name": "qsvt-accuracy-resource-frontier",
+  "study": "accuracy-resource-frontier",
+  "operators": [
+    {
+      "name": "poisson-1d-4",
+      "kind": "poisson_1d",
+      "parameters": {
+        "size": 4
+      }
+    },
+    {
+      "name": "transverse-field-ising-2",
+      "kind": "ising",
+      "parameters": {
+        "n_spins": 2,
+        "coupling": 1.0,
+        "transverse_field": 0.6
+      }
+    },
+    {
+      "name": "path-graph-laplacian-4",
+      "kind": "graph_laplacian",
+      "parameters": {
+        "size": 4,
+        "topology": "path"
+      }
+    }
+  ],
+  "targets": [
+    {
+      "name": "inverse",
+      "kind": "inverse"
+    },
+    {
+      "name": "projector",
+      "kind": "projector"
+    },
+    {
+      "name": "band-filter",
+      "kind": "band_filter"
+    },
+    {
+      "name": "resolvent",
+      "kind": "resolvent"
+    }
+  ],
+  "access_models": [
+    "embedding",
+    "fable",
+    "prepselprep",
+    "qubitization"
+  ],
+  "degrees": [
+    3,
+    5,
+    7
+  ],
+  "tolerances": [
+    0.2
+  ],
+  "phase_solvers": [
+    "root-finding"
+  ],
+  "shots": [
+    null
+  ],
+  "seeds": [
+    0
+  ],
+  "noise_models": [
+    "ideal"
+  ],
+  "attempt_synthesis": false,
+  "metadata": {
+    "purpose": "Compare finite spectral accuracy and encoding-aware logical resources.",
+    "claim_boundary": "Logical resource study; not a hardware runtime benchmark."
+  }
+}

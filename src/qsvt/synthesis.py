@@ -7,6 +7,7 @@ from polynomials that one standard QSP/QSVT phase sequence can realize.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from time import perf_counter
 from typing import Any, Literal, cast
@@ -132,12 +133,13 @@ class PhaseSynthesisResult:
     convention: str
     error_type: str | None = None
     error: str | None = None
+    implementation_kind: str = "pennylane-poly-to-angles"
 
     def as_report(self) -> dict[str, object]:
         """Return a machine-readable phase-synthesis report."""
         return {
             "mode": "phase-synthesis-report",
-            "implementation_kind": "pennylane-poly-to-angles",
+            "implementation_kind": self.implementation_kind,
             "coeffs": self.coeffs,
             "routine": self.routine,
             "angle_solver": self.angle_solver,
@@ -172,6 +174,22 @@ class PhaseSynthesisResult:
                 ],
             },
         }
+
+
+@dataclass(frozen=True)
+class PhaseSolverAdapter:
+    """Registered external phase solver plus explicit convention conversion."""
+
+    name: str
+    solver: Callable[..., Any]
+    convention: str
+    converter: Callable[[np.ndarray, SynthesisRoutine], np.ndarray] | None = None
+
+
+_PHASE_SOLVER_ADAPTERS: dict[str, PhaseSolverAdapter] = {}
+_PHASE_SYNTHESIS_CACHE: dict[tuple[object, ...], PhaseSynthesisResult] = {}
+_PHASE_SYNTHESIS_CACHE_HITS = 0
+_PHASE_SYNTHESIS_CACHE_MISSES = 0
 
 
 @dataclass(frozen=True)
@@ -558,6 +576,213 @@ def synthesize(poly: Any, **kwargs: Any) -> PhaseSynthesisResult:
     return synthesize_phases(poly, **kwargs)
 
 
+def synthesize_phases_cached(
+    poly: Any,
+    *,
+    routine: SynthesisRoutine = "QSVT",
+    angle_solver: str = "root-finding",
+    bounded_num_points: int = 4001,
+    reconstruction_num_points: int = 257,
+    raise_on_failure: bool = False,
+    **solver_kwargs: Any,
+) -> PhaseSynthesisResult:
+    """Synthesize phases with an in-process cache for repeatable design sweeps."""
+    global _PHASE_SYNTHESIS_CACHE_HITS, _PHASE_SYNTHESIS_CACHE_MISSES
+    coeffs = tuple(float(value) for value in np.asarray(list(poly), dtype=float))
+    key = (
+        coeffs,
+        str(routine).upper(),
+        str(angle_solver),
+        int(bounded_num_points),
+        int(reconstruction_num_points),
+        _freeze_cache_value(solver_kwargs),
+    )
+    cached = _PHASE_SYNTHESIS_CACHE.get(key)
+    if cached is not None:
+        _PHASE_SYNTHESIS_CACHE_HITS += 1
+        if raise_on_failure and not cached.succeeded:
+            raise ValueError(cached.error or "phase synthesis failed")
+        return cached
+    _PHASE_SYNTHESIS_CACHE_MISSES += 1
+    result = synthesize_phases(
+        coeffs,
+        routine=routine,
+        angle_solver=angle_solver,
+        bounded_num_points=bounded_num_points,
+        reconstruction_num_points=reconstruction_num_points,
+        raise_on_failure=False,
+        **solver_kwargs,
+    )
+    _PHASE_SYNTHESIS_CACHE[key] = result
+    if raise_on_failure and not result.succeeded:
+        raise ValueError(result.error or "phase synthesis failed")
+    return result
+
+
+def phase_synthesis_cache_info() -> dict[str, int]:
+    """Return cache size, hit, and miss counts."""
+    return {
+        "size": len(_PHASE_SYNTHESIS_CACHE),
+        "hits": _PHASE_SYNTHESIS_CACHE_HITS,
+        "misses": _PHASE_SYNTHESIS_CACHE_MISSES,
+    }
+
+
+def clear_phase_synthesis_cache() -> None:
+    """Clear cached phase results and reset cache counters."""
+    global _PHASE_SYNTHESIS_CACHE_HITS, _PHASE_SYNTHESIS_CACHE_MISSES
+    _PHASE_SYNTHESIS_CACHE.clear()
+    _PHASE_SYNTHESIS_CACHE_HITS = 0
+    _PHASE_SYNTHESIS_CACHE_MISSES = 0
+
+
+def register_phase_solver_adapter(
+    name: str,
+    solver: Callable[..., Any],
+    *,
+    convention: str,
+    converter: Callable[[np.ndarray, SynthesisRoutine], np.ndarray] | None = None,
+    replace: bool = False,
+) -> PhaseSolverAdapter:
+    """Register an optional solver and its phase-convention conversion.
+
+    Solvers may return an angle array or ``(angles, metadata)``. A converter is
+    mandatory unless the solver already emits PennyLane QSVT projector phases.
+    This prevents external QSP conventions from being used silently as QSVT
+    projector phases.
+    """
+    normalized = str(name).strip()
+    if not normalized:
+        raise ValueError("adapter name must be non-empty.")
+    if not callable(solver):
+        raise TypeError("solver must be callable.")
+    if normalized in _PHASE_SOLVER_ADAPTERS and not replace:
+        raise ValueError(f"phase solver adapter {normalized!r} is already registered.")
+    if convention != "pennylane-qsvt-projector" and converter is None:
+        raise ValueError(
+            "a converter is required for non-PennyLane projector-phase conventions."
+        )
+    adapter = PhaseSolverAdapter(
+        name=normalized,
+        solver=solver,
+        convention=str(convention),
+        converter=converter,
+    )
+    _PHASE_SOLVER_ADAPTERS[normalized] = adapter
+    return adapter
+
+
+def unregister_phase_solver_adapter(name: str) -> None:
+    """Remove a registered optional phase solver."""
+    _PHASE_SOLVER_ADAPTERS.pop(str(name), None)
+
+
+def available_phase_solver_adapters() -> tuple[str, ...]:
+    """Return built-in PennyLane and registered optional solver names."""
+    builtins = tuple(f"pennylane:{name}" for name in _SUPPORTED_ANGLE_SOLVERS)
+    return builtins + tuple(sorted(_PHASE_SOLVER_ADAPTERS))
+
+
+def synthesize_phases_with_adapter(
+    poly: Any,
+    *,
+    adapter: str,
+    routine: SynthesisRoutine = "QSVT",
+    reconstruction_num_points: int = 257,
+    **solver_kwargs: Any,
+) -> PhaseSynthesisResult:
+    """Run a built-in or registered solver and validate its converted phases."""
+    if adapter.startswith("pennylane:"):
+        return synthesize_phases_cached(
+            poly,
+            routine=routine,
+            angle_solver=adapter.split(":", 1)[1],
+            reconstruction_num_points=reconstruction_num_points,
+            **solver_kwargs,
+        )
+    registered = _PHASE_SOLVER_ADAPTERS.get(adapter)
+    if registered is None:
+        choices = ", ".join(available_phase_solver_adapters())
+        raise ValueError(
+            f"unknown phase solver adapter {adapter!r}; choose from {choices}."
+        )
+
+    normalized_routine = str(routine).upper()
+    if normalized_routine not in {"QSP", "QSVT"}:
+        raise ValueError("routine must be 'QSP' or 'QSVT'.")
+    resolved_routine = cast(SynthesisRoutine, normalized_routine)
+    realizability = classify_polynomial_realizability(poly)
+    start = perf_counter()
+    angles: np.ndarray | None = None
+    error_type: str | None = None
+    error: str | None = None
+    metadata: dict[str, object] = {}
+    if not realizability.single_sequence_realizable:
+        error_type = "PolynomialRealizabilityError"
+        error = _realizability_interpretation(realizability.kind)
+    else:
+        try:
+            if resolved_routine == "QSP" and registered.converter is None:
+                raise ValueError(
+                    "an adapter that directly emits PennyLane QSVT projector phases "
+                    "requires a converter before it can be used for QSP."
+                )
+            raw = registered.solver(
+                realizability.coeffs.copy(),
+                resolved_routine,
+                **solver_kwargs,
+            )
+            if isinstance(raw, tuple) and len(raw) == 2 and isinstance(raw[1], dict):
+                raw_angles, metadata = raw
+            else:
+                raw_angles = raw
+            angles = np.asarray(raw_angles, dtype=float)
+            if registered.converter is not None:
+                angles = np.asarray(
+                    registered.converter(angles, resolved_routine),
+                    dtype=float,
+                )
+            if angles.ndim != 1 or angles.size == 0 or not np.all(np.isfinite(angles)):
+                raise ValueError("phase solver adapter returned invalid angles.")
+        except Exception as exc:
+            error_type = type(exc).__name__
+            error = str(exc)
+            angles = None
+
+    elapsed = perf_counter() - start
+    max_error, rms_error = _phase_reconstruction_errors(
+        realizability.coeffs,
+        angles,
+        routine=resolved_routine,
+        num_points=reconstruction_num_points,
+    )
+    return PhaseSynthesisResult(
+        coeffs=realizability.coeffs,
+        routine=resolved_routine,
+        angle_solver=f"adapter:{registered.name}",
+        solver_kwargs={**solver_kwargs, "adapter_metadata": metadata},
+        realizability=realizability,
+        succeeded=angles is not None,
+        angles=angles,
+        synthesis_time_seconds=float(elapsed),
+        reconstruction_max_error=max_error,
+        reconstruction_rms_error=rms_error,
+        reconstruction_num_points=int(reconstruction_num_points),
+        convention=(
+            "PennyLane QSVT projector-phase convention emitted directly by "
+            f"adapter {registered.name}."
+            if registered.converter is None
+            else (
+                "PennyLane QSVT projector-phase convention after explicit adapter "
+                f"conversion from {registered.convention}."
+            )
+        ),
+        error_type=error_type,
+        error=error,
+        implementation_kind=f"external-phase-solver-adapter:{registered.name}",
+    )
+
+
 def benchmark_phase_solvers(
     poly: Any,
     *,
@@ -577,12 +802,22 @@ def benchmark_phase_solvers(
     kwargs_by_solver = solver_kwargs or {}
     for solver in solvers:
         attempts = [
-            synthesize_phases(
-                realizability.coeffs,
-                routine=routine,
-                angle_solver=solver,
-                reconstruction_num_points=reconstruction_num_points,
-                **kwargs_by_solver.get(solver, {}),
+            (
+                synthesize_phases_with_adapter(
+                    realizability.coeffs,
+                    routine=routine,
+                    adapter=solver,
+                    reconstruction_num_points=reconstruction_num_points,
+                    **kwargs_by_solver.get(solver, {}),
+                )
+                if solver in _PHASE_SOLVER_ADAPTERS or solver.startswith("pennylane:")
+                else synthesize_phases(
+                    realizability.coeffs,
+                    routine=routine,
+                    angle_solver=solver,
+                    reconstruction_num_points=reconstruction_num_points,
+                    **kwargs_by_solver.get(solver, {}),
+                )
             )
             for _ in range(int(repeats))
         ]
@@ -703,6 +938,46 @@ def synthesize_mixed_parity(
     )
 
 
+def _freeze_cache_value(value: Any) -> object:
+    if isinstance(value, dict):
+        return tuple(
+            sorted((str(key), _freeze_cache_value(item)) for key, item in value.items())
+        )
+    if isinstance(value, (list, tuple)):
+        return tuple(_freeze_cache_value(item) for item in value)
+    if isinstance(value, np.ndarray):
+        return tuple(_freeze_cache_value(item) for item in value.tolist())
+    try:
+        hash(value)
+    except TypeError:
+        return repr(value)
+    return cast(object, value)
+
+
+def _phase_reconstruction_errors(
+    coeffs: np.ndarray,
+    angles: np.ndarray | None,
+    *,
+    routine: SynthesisRoutine,
+    num_points: int,
+) -> tuple[float | None, float | None]:
+    if angles is None or routine != "QSVT":
+        return None, None
+    if num_points < 2:
+        raise ValueError("reconstruction_num_points must be at least 2.")
+    xs = np.linspace(-1.0, 1.0, int(num_points))
+    reconstructed = np.asarray(
+        [_evaluate_qsvt_phase_sequence(float(x), angles) for x in xs],
+        dtype=float,
+    )
+    target = np.asarray(eval_polynomial(coeffs, xs), dtype=float)
+    errors = reconstructed - target
+    return (
+        float(np.max(np.abs(errors))),
+        float(np.sqrt(np.mean(np.abs(errors) ** 2))),
+    )
+
+
 def _evaluate_qsvt_phase_sequence(x: float, angles: np.ndarray) -> float:
     block_encoding = qml.RX(2.0 * np.arccos(np.clip(x, -1.0, 1.0)), wires=0)
     projectors = [qml.PCPhase(float(phi), dim=1, wires=0) for phi in angles]
@@ -785,16 +1060,24 @@ __all__ = [
     "BoundednessCertificate",
     "MixedParitySynthesisResult",
     "PhaseSynthesisResult",
+    "PhaseSolverAdapter",
     "PhaseSolverBenchmarkResult",
     "PolynomialRealizability",
     "RealizabilityKind",
     "SynthesisRoutine",
+    "available_phase_solver_adapters",
     "benchmark_phase_solvers",
     "certify_polynomial_boundedness",
     "classify_polynomial_realizability",
+    "clear_phase_synthesis_cache",
     "parity_components",
+    "phase_synthesis_cache_info",
+    "register_phase_solver_adapter",
     "synthesize",
     "synthesize_mixed_parity",
     "synthesize_phases",
+    "synthesize_phases_cached",
+    "synthesize_phases_with_adapter",
     "synthesis_workflow",
+    "unregister_phase_solver_adapter",
 ]

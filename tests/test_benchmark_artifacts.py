@@ -12,6 +12,7 @@ BENCHMARK_JSON = [
     Path("results/benchmarks/matrix_function_filter_polynomial.json"),
     Path("results/benchmarks/scaling_sweep_reports.json"),
     Path("results/benchmarks/quantum_walk_search_scaling.json"),
+    Path("results/benchmarks/encoding_aware_resource_sweep.json"),
 ]
 
 BENCHMARK_CSV = [
@@ -19,6 +20,7 @@ BENCHMARK_CSV = [
     Path("results/tables/matrix_function_benchmark_summary.csv"),
     Path("results/tables/benchmark_scaling_summary.csv"),
     Path("results/tables/quantum_walk_search_scaling_summary.csv"),
+    Path("results/tables/encoding_aware_resource_summary.csv"),
 ]
 
 ALGORITHM_JSON = [
@@ -36,6 +38,22 @@ def test_committed_benchmark_json_artifacts_are_well_formed():
     for path in BENCHMARK_JSON:
         assert path.exists(), path
         payload = json.loads(path.read_text(encoding="utf-8"))
+        if path.name == "encoding_aware_resource_sweep.json":
+            assert payload["mode"] == "encoding-aware-resource-sweep"
+            assert payload["truth_contract"]["truth_status"] == (
+                "logical_resource_comparison"
+            )
+            assert payload["truth_contract"]["is_quantum_runtime_benchmark"] is False
+            assert payload["truth_contract"]["is_fault_tolerant_estimate"] is False
+            assert payload["rows"]
+            assert payload["reports"]
+            assert all(row["total_gates"] > 0 for row in payload["rows"])
+            assert all(
+                report["mode"] == "encoding-aware-qsvt-resource-report"
+                for reports in payload["reports"].values()
+                for report in reports
+            )
+            continue
         if path.name == "quantum_walk_search_scaling.json":
             assert payload["mode"] == "quantum-walk-search-scaling-benchmark"
             assert payload["truth_contract"]["truth_status"] == (
@@ -114,6 +132,17 @@ def test_committed_benchmark_csv_artifacts_have_expected_columns():
                 "probability_error",
                 "state_relative_error",
                 "signal_call_proxy",
+            }.issubset(rows[0])
+        elif path.name == "encoding_aware_resource_summary.csv":
+            assert {
+                "access_model",
+                "degree",
+                "normalization_alpha",
+                "signal_operator_calls",
+                "inverse_signal_operator_calls",
+                "total_wires",
+                "total_gates",
+                "estimator_model",
             }.issubset(rows[0])
         else:
             assert required.issubset(rows[0])

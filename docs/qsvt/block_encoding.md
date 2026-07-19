@@ -141,12 +141,13 @@ python examples/rectangular_execution.py \
   --output /tmp/qsvt-rectangular-execution.json
 ```
 
-## Hardware Execution Direction
+## Hardware-Oriented Execution
 
-The current execution helpers are simulator-first and may use statevector
-measurement or arbitrary `StatePrep`. A future hardware API should instead
-accept a caller-provided PennyLane device, preparation circuit, and finite-shot
-measurement contract.
+The experimental `execute_qsvt_on_device` API accepts a caller-provided
+PennyLane device, preparation circuit, and positive finite-shot measurement
+contract. It performs local compatibility preflight, executes full-register
+probabilities, reports sampling uncertainty, and keeps provider submission and
+credential management outside the portable result.
 
 Hardware-facing paths should use block encodings with gate decompositions:
 FABLE for suitable matrix inputs, PrepSelPrep or qubitization for compatible
@@ -155,11 +156,24 @@ LCU operators, or explicitly supplied decomposable custom circuits.
 presented as hardware-executable when it cannot be decomposed for the selected
 device.
 
-The planned hardware reports will include native-gate compilation checks,
-two-qubit gate counts, depth, wire mapping, shots, device/job metadata, and
-statistical uncertainty. These fields will describe genuine execution of a
-small circuit while keeping scalability and quantum-advantage claims out of
-scope.
+The current report includes logical circuit resources, wire mapping, shots,
+device/provider metadata when advertised, and statistical uncertainty. Native
+provider compilation, two-qubit gate counts, persistent jobs, calibration
+capture, and mitigation remain roadmap items.
+
+Two focused cookbook examples make the signal and device contracts explicit:
+
+```bash
+python examples/custom_block_encoding.py \
+  --output /tmp/qsvt-custom-block-encoding.json
+python examples/finite_shot_qsvt.py \
+  --output /tmp/qsvt-finite-shot.json --shots 2000 --seed 12345
+```
+
+The finite-shot example uses a seeded local `default.qubit` device and a
+decomposable FABLE access model. It validates preflight, uncertainty, and
+agreement with an ideal finite reference; it does not submit to real hardware
+or require provider credentials.
 
 ## What Is Verified
 

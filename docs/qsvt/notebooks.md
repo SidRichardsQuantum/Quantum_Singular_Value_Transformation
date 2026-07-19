@@ -70,6 +70,7 @@ domain-specific implementation logic.
 | `tutorials/16_QSVT_Linear_System_Comparisons.ipynb` | dense, CG, and QSVT-style linear-system comparison rows | [Linear systems](linear_systems.md) |
 | `tutorials/17_HHL_Linear_System_Solver.ipynb` | finite simulator-scale HHL linear-system solver | [Linear systems](linear_systems.md) |
 | `tutorials/18_Quantum_Walk_Search_Workflow.ipynb` | continuous-time quantum walk search and polynomial phase approximation | [Time evolution and response](time_evolution_and_response.md) |
+| `tutorials/19_Accuracy_Driven_QSVT_Planning.ipynb` | tolerance-driven degree search, synthesis caching, access models, logical resources, and circuit execution | [Accuracy-driven planning](planning.md) |
 
 ## Benchmark notebooks
 
@@ -86,6 +87,7 @@ or polynomial matrix evaluation.
 | `benchmarks/03_scaling_sweeps.ipynb` | dimension, conditioning, and inverse-degree sweeps for compact benchmark tables | [Linear systems](linear_systems.md) |
 | `benchmarks/04_classical_baseline_assumptions.ipynb` | what classical benchmark helpers time versus what QSVT proxy fields estimate | [Classical baseline details](classical_baselines.md) |
 | `benchmarks/05_quantum_walk_search_scaling.ipynb` | quantum walk search success, polynomial error, and QSVT signal-call proxies | [Time evolution and response](time_evolution_and_response.md) |
+| `benchmarks/06_encoding_aware_resources.ipynb` | embedding, FABLE, PrepSelPrep, and qubitization logical-resource comparison | [QSVT resource model](qsvt_resource_model.md), [Block encodings](block_encoding.md) |
 
 ## Real physics examples
 
@@ -99,7 +101,7 @@ or quantum-relevance context for the toy-scale example.
 | `01_ground_state_filtering.ipynb` | ground-state filtering | [Spectral filters](spectral_filters.md) |
 | `02_tight_binding_band_filter.ipynb` | tight-binding band filters | [Spectral filters](spectral_filters.md) |
 | `03_imaginary_time_filtering.ipynb` | imaginary-time filtering | [Time evolution and response](time_evolution_and_response.md) |
-| `04_poisson_equation_pde.ipynb` | Poisson-equation PDE workflow | [Linear systems](linear_systems.md) |
+| `04_poisson_equation_pde.ipynb` | Poisson PDE polynomial studies plus direct, CG, and executable block-encoded QSVT comparison | [Linear systems](linear_systems.md), [Executable flagship workflows](flagship_workflows.md) |
 | `05_hamiltonian_simulation_schrodinger_dynamics.ipynb` | Hamiltonian simulation | [Time evolution and response](time_evolution_and_response.md) |
 | `06_quantum_chemistry_h2_toy_solver.ipynb` | H2 toy chemistry solver | [Linear systems](linear_systems.md), [Spectral filters](spectral_filters.md) |
 | `07_greens_function_response.ipynb` | Green's-function response | [Time evolution and response](time_evolution_and_response.md) |
@@ -117,7 +119,7 @@ or quantum-relevance context for the toy-scale example.
 | `19_quantum_harmonic_oscillator_grid.ipynb` | harmonic-oscillator grid spectrum | [Spectral filters](spectral_filters.md) |
 | `20_electrostatic_green_function_poisson.ipynb` | electrostatic Green's function | [Linear systems](linear_systems.md), [Time evolution and response](time_evolution_and_response.md) |
 | `21_coupled_oscillator_normal_modes.ipynb` | coupled-oscillator normal modes | [Spectral filters](spectral_filters.md) |
-| `22_ising_phase_transition_filtering.ipynb` | Ising phase-transition filtering | [Spectral filters](spectral_filters.md) |
+| `22_ising_phase_transition_filtering.ipynb` | Ising phase-transition diagnostics plus executable Pauli-LCU ground-band filtering | [Spectral filters](spectral_filters.md), [Executable flagship workflows](flagship_workflows.md) |
 | `23_diffusion_heat_treatment_slab.ipynb` | diffusion-limited heat treatment | [Time evolution and response](time_evolution_and_response.md) |
 | `24_graphene_nanoribbon_density_of_states.ipynb` | graphene nanoribbon density of states | [Spectral filters](spectral_filters.md) |
 | `25_fermi_dirac_electronic_occupations.ipynb` | Fermi-Dirac electronic occupations | [Spectral filters](spectral_filters.md), [Time evolution and response](time_evolution_and_response.md) |

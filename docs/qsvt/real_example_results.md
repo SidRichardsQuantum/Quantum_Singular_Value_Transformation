@@ -9,8 +9,8 @@ This generated page displays embedded setup schematics, diagnostic plots, and te
 
 - Source notebooks: `notebooks/real_examples/`
 - Notebooks displayed: `30`
-- Embedded plot artefacts displayed: `52`
-- Plain-text notebook results displayed: `77`
+- Embedded plot artefacts displayed: `54`
+- Plain-text notebook results displayed: `79`
 - Plot manifest: [`results/tables/real_examples_plot_manifest.csv`](../../results/tables/real_examples_plot_manifest.csv)
 
 ## Related Pages
@@ -152,6 +152,11 @@ Source: [`notebooks/real_examples/04_poisson_equation_pde.ipynb`](../../notebook
 :width: 760px
 ```
 
+```{image} ../../results/plots/real_examples/04_poisson_equation_pde-plot-04.png
+:alt: Solving Real Physics PDEs: 1D and 2D Poisson Equations plot 4
+:width: 760px
+```
+
 Output 1 (cell 6):
 
 ```text
@@ -169,7 +174,7 @@ Condition Number: 19.1956693580892
 Output 3 (cell 12):
 
 ```text
-Relative Error: 0.014150625457763643
+Relative Error: 0.014154496734875139
 ```
 
 Output 4 (cell 15):
@@ -183,16 +188,43 @@ Matrix Shape [rows, cols]: (36, 36)
 Output 5 (cell 17):
 
 ```text
-Relative Error: 0.034962641317254864
+Relative Error: 0.03496500256208569
 ```
 
-Output 6 (cell 21):
+Output 6 (cell 20):
+
+```text
+Poisson solver comparison
+-------------------------
+solver              relative solution error  residual norm
+------------------  -----------------------  -------------
+dense direct        0                        1.29e-15
+conjugate gradient  2.81e-16                 1.04e-15
+QSVT polynomial     0.325                    0.5139
+QSVT circuit        0.325                    0.5139
+Component error ledger
+----------------------
+component                        error
+-------------------------------  --------
+discretization_error             0.03356
+polynomial_approximation_error   0.325
+phase_reconstruction_error       6.95e-13
+circuit_vs_polynomial_error      1.00e-12
+maximum_sampling_standard_error  n/a
+additive_error_proxy             0.3586
+selected degree: 5
+normalization alpha: 100.000000
+resource model: pauli-lcu-qubitization
+```
+
+Output 7 (cell 24):
 
 ```text
 1D condition_number: 19.196
 1D relative_error: 1.415e-02
 2D condition_number: 19.196
-2D relative_error: 3.496e-02
+2D relative_error: 3.497e-02
+QSVT circuit relative_error: 3.250e-01
 validation: passed
 ```
 
@@ -718,6 +750,11 @@ Source: [`notebooks/real_examples/22_ising_phase_transition_filtering.ipynb`](..
 :width: 760px
 ```
 
+```{image} ../../results/plots/real_examples/22_ising_phase_transition_filtering-plot-03.png
+:alt: Transverse-Field Ising Phase Transition Filtering plot 3
+:width: 760px
+```
+
 Output 1 (cell 5):
 
 ```text
@@ -733,15 +770,38 @@ Output 2 (cell 9):
 
 ```text
 Projector eigenweights [probability]: [0.7761 0.2239 0.0087 0.1109 0.1143]
-Projector error: 0.5286773050862152
+Projector error: 0.528681239779227
 ```
 
-Output 3 (cell 11):
+Output 3 (cell 12):
+
+```text
+Two-spin executable filter
+--------------------------
+quantity                        value
+------------------------------  --------
+selected degree                 14
+polynomial operator error       0.3853
+polynomial state error          0.004764
+circuit vs polynomial error     9.98e-13
+reference success probability   0.9615
+polynomial success probability  0.3658
+reference <M_z^2>               0.6923
+polynomial <M_z^2>              0.6967
+circuit <M_z^2>                 0.6967
+normalization alpha: 6.000000
+phase reconstruction error: 8.187e-13
+resource model: pauli-lcu-qubitization
+```
+
+Output 4 (cell 14):
 
 ```text
 minimum_doublet_gap_field [coupling ratio h/J]: 0.600
 magnetization_drop [magnetization squared]: 0.653
 projector_error: 0.529
+executable_filter_degree: 14
+executable_filter_operator_error: 3.853e-01
 validation: passed
 ```
 

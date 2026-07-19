@@ -34,6 +34,18 @@ from ._cli_design_commands import (
     register_design_application_commands,
     register_design_commands,
 )
+from ._cli_flagship_commands import (
+    cmd_degree_search,
+    cmd_plan_qsvt,
+    cmd_poisson_qsvt,
+    cmd_spectral_filter_qsvt,
+    register_flagship_commands,
+)
+from ._cli_research_commands import (
+    cmd_accuracy_resource_frontier,
+    cmd_research_sweep,
+    register_research_commands,
+)
 from ._cli_synthesis_commands import (
     cmd_boundedness_certificate,
     cmd_compatibility_report,
@@ -93,6 +105,7 @@ __all__ = [
     "TEMPLATE_KINDS",
     "build_parser",
     "cmd_apply_design",
+    "cmd_accuracy_resource_frontier",
     "cmd_benchmark_cg_solve",
     "cmd_benchmark_dense_solve",
     "cmd_benchmark_eigh",
@@ -106,6 +119,7 @@ __all__ = [
     "cmd_design_report",
     "cmd_design_sweep",
     "cmd_design_workflow",
+    "cmd_degree_search",
     "cmd_diag",
     "cmd_examples",
     "cmd_execute_spec",
@@ -114,11 +128,15 @@ __all__ = [
     "cmd_mixed_parity_synthesis",
     "cmd_phase_solver_benchmark",
     "cmd_phase_synthesis",
+    "cmd_plan_qsvt",
     "cmd_poly",
+    "cmd_poisson_qsvt",
     "cmd_problem_workflow",
     "cmd_report_schema_manifest",
+    "cmd_research_sweep",
     "cmd_resource_report",
     "cmd_scalar",
+    "cmd_spectral_filter_qsvt",
     "cmd_template_report",
     "cmd_threshold_workflow",
     "main",
@@ -138,6 +156,12 @@ def cmd_examples(args: argparse.Namespace) -> dict:
             "design-workflow",
             "design-sweep",
             "problem-workflow",
+            "plan-workflow",
+            "spectral-filter-qsvt",
+            "poisson-qsvt",
+            "degree-search",
+            "research-sweep",
+            "accuracy-resource-frontier",
             "linear-system-compare",
             "threshold-workflow",
             "resource-report",
@@ -157,10 +181,18 @@ def cmd_examples(args: argparse.Namespace) -> dict:
             'qsvt linear-system-compare --matrix "2,0.25;0.25,1.25" '
             '--rhs "1,-0.5" --degree 8 --no-synthesis --no-qsvt',
             'qsvt benchmark cg-solve --matrix "4,1;1,3" --rhs "1,2" --qsvt-poly "0,1"',
+            "qsvt accuracy-resource-frontier --degrees 3,5 "
+            "--output-dir results/research/frontier",
             'qsvt threshold-workflow --matrix "-1,0,0;0,0,0;0,0,1" '
             "--lower -0.25 --upper 0.25 --degree 24",
             'qsvt problem-workflow --target linear_system --matrix "2,0;0,1" '
             '--rhs "1,1" --degree 8 --no-synthesis --no-qsvt',
+            'qsvt plan-workflow --target linear_system --matrix "2,0;0,1" '
+            '--rhs "1,1" --tolerance 0.2 --no-execute',
+            'qsvt spectral-filter-qsvt --pauli-terms "0.4:ZI,0.3:IZ,0.2:XI" '
+            '--state "0.5,0.5,0.5,0.5" --lower -0.4 --upper 0.4 '
+            "--tolerance 0.16",
+            "qsvt poisson-qsvt --n-points 4 --tolerance 0.4",
         ],
     }
 
@@ -184,7 +216,9 @@ def build_parser() -> argparse.ArgumentParser:
     register_synthesis_commands(sub)
     register_design_application_commands(sub, DESIGN_KINDS)
     register_workflow_commands(sub, PROBLEM_WORKFLOW_TARGETS)
+    register_flagship_commands(sub, PROBLEM_WORKFLOW_TARGETS, DESIGN_KINDS)
     register_benchmark_commands(sub)
+    register_research_commands(sub)
     return parser
 
 

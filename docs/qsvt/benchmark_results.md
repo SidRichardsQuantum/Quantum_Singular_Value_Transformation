@@ -8,9 +8,9 @@ This generated page displays embedded benchmark plots and text outputs from the 
 ## Current Status
 
 - Source notebooks: `notebooks/benchmarks/`
-- Notebooks displayed: `5`
-- Embedded plot artefacts displayed: `13`
-- Plain-text notebook results displayed: `8`
+- Notebooks displayed: `6`
+- Embedded plot artefacts displayed: `14`
+- Plain-text notebook results displayed: `11`
 - Plot manifest: [`results/tables/benchmark_plot_manifest.csv`](../../results/tables/benchmark_plot_manifest.csv)
 
 ## Related Pages
@@ -213,4 +213,55 @@ State error : 3.96e-05 | 3.52e-11 | 2.05e-04 | 1.02e-09 | 9.39e-05 | 1.02e-11
 Signal calls : 8 | 14 | 8 | 14 | 10 | 18
 JSON: /workspaces/Quantum_Singular_Value_Transformation/results/benchmarks/quantum_walk_search_scaling.json
 CSV: /workspaces/Quantum_Singular_Value_Transformation/results/tables/quantum_walk_search_scaling_summary.csv
+```
+
+### `06_encoding_aware_resources.ipynb`
+
+Source: [`notebooks/benchmarks/06_encoding_aware_resources.ipynb`](../../notebooks/benchmarks/06_encoding_aware_resources.ipynb)
+
+```{image} ../../results/plots/benchmarks/06_encoding_aware_resources-plot-01.png
+:alt: Encoding-Aware QSVT Resource Comparison plot 1
+:width: 760px
+```
+
+Output 1 (cell 7):
+
+```text
+Encoding-aware logical resources
+--------------------------------
+access model     degree  alpha   forward calls  inverse calls  logical wires  logical gates  estimator model
+---------------  ------  ------  -------------  -------------  -------------  -------------  --------------------------------
+dense embedding  1       0.7472  1              0              3              3236           arbitrary-unitary-block-encoding
+dense embedding  3       0.7472  2              1              3              9708           arbitrary-unitary-block-encoding
+dense embedding  5       0.7472  3              2              3              16180          arbitrary-unitary-block-encoding
+dense embedding  7       0.7472  4              3              3              22652          arbitrary-unitary-block-encoding
+dense embedding  9       0.7472  5              4              3              29124          arbitrary-unitary-block-encoding
+FABLE            1       2.8     1              0              6              57698          arbitrary-unitary-block-encoding
+FABLE            3       2.8     2              1              6              173094         arbitrary-unitary-block-encoding
+FABLE            5       2.8     3              2              6              288490         arbitrary-unitary-block-encoding
+FABLE            7       2.8     4              3              6              403886         arbitrary-unitary-block-encoding
+FABLE            9       2.8     5              4              6              519282         arbitrary-unitary-block-encoding
+PrepSelPrep      1       0.9     1              0              67             4148           pauli-lcu-qubitization
+PrepSelPrep      3       0.9     2              1              67             12444          pauli-lcu-qubitization
+PrepSelPrep      5       0.9     3              2              67             20740          pauli-lcu-qubitization
+PrepSelPrep      7       0.9     4              3              67             29036          pauli-lcu-qubitization
+PrepSelPrep      9       0.9     5              4              67             37332          pauli-lcu-qubitization
+qubitization     1       0.9     1              0              67             4148           pauli-lcu-qubitization
+qubitization     3       0.9     2              1              67             12444          pauli-lcu-qubitization
+qubitization     5       0.9     3              2              67             20740          pauli-lcu-qubitization
+qubitization     7       0.9     4              3              67             29036          pauli-lcu-qubitization
+qubitization     9       0.9     5              4              67             37332          pauli-lcu-qubitization
+```
+
+Output 2 (cell 10):
+
+```text
+wrote results/benchmarks/encoding_aware_resource_sweep.json
+wrote results/tables/encoding_aware_resource_summary.csv
+```
+
+Output 3 (cell 12):
+
+```text
+validation: passed
 ```

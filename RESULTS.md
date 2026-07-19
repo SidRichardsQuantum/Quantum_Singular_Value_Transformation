@@ -32,6 +32,7 @@ Rendered result pages:
 | `notebooks/tutorials/16_QSVT_Linear_System_Comparisons.ipynb` | embedded plots | dense, CG, and QSVT-style linear-system comparison rows |
 | `notebooks/tutorials/17_HHL_Linear_System_Solver.ipynb` | embedded plots | finite simulator-scale HHL linear-system solver |
 | `notebooks/tutorials/18_Quantum_Walk_Search_Workflow.ipynb` | embedded plots | continuous-time quantum-walk search workflow |
+| `notebooks/tutorials/19_Accuracy_Driven_QSVT_Planning.ipynb` | embedded plots | accuracy-driven degree selection, access models, logical resources, and finite execution |
 
 ## Real-Example Notebook Results
 
@@ -46,7 +47,7 @@ the real-example plot ledger.
 | `notebooks/real_examples/01_ground_state_filtering.ipynb` | committed plots | two-spin schematic, ground-state filtering, and overlap checks |
 | `notebooks/real_examples/02_tight_binding_band_filter.ipynb` | committed plots | chain schematic plus band-pass and band-rejection filters |
 | `notebooks/real_examples/03_imaginary_time_filtering.ipynb` | committed plot | imaginary-time exponential filtering |
-| `notebooks/real_examples/04_poisson_equation_pde.ipynb` | committed plots | Poisson domain schematics and inverse workflow |
+| `notebooks/real_examples/04_poisson_equation_pde.ipynb` | committed plots | Poisson domain schematics, inverse workflow, and executable block-encoded QSVT comparison |
 | `notebooks/real_examples/05_hamiltonian_simulation_schrodinger_dynamics.ipynb` | committed plot | real-time Hamiltonian dynamics |
 | `notebooks/real_examples/06_quantum_chemistry_h2_toy_solver.ipynb` | committed plots | H2 schematic and toy Hamiltonian solver |
 | `notebooks/real_examples/07_greens_function_response.ipynb` | committed plot | resolvent and Green's-function response |
@@ -64,7 +65,7 @@ the real-example plot ledger.
 | `notebooks/real_examples/19_quantum_harmonic_oscillator_grid.ipynb` | committed plot | harmonic-oscillator grid spectrum |
 | `notebooks/real_examples/20_electrostatic_green_function_poisson.ipynb` | committed plot | electrostatic Green's function |
 | `notebooks/real_examples/21_coupled_oscillator_normal_modes.ipynb` | committed plots | mass-spring schematic and coupled-oscillator normal modes |
-| `notebooks/real_examples/22_ising_phase_transition_filtering.ipynb` | committed plots | spin-chain schematic and Ising phase-transition filtering |
+| `notebooks/real_examples/22_ising_phase_transition_filtering.ipynb` | committed plots | spin-chain diagnostics and executable Pauli-LCU ground-band filtering |
 | `notebooks/real_examples/23_diffusion_heat_treatment_slab.ipynb` | committed plots | slab schematic and diffusion-limited heat treatment |
 | `notebooks/real_examples/24_graphene_nanoribbon_density_of_states.ipynb` | committed plots | nanoribbon schematic and graphene density of states |
 | `notebooks/real_examples/25_fermi_dirac_electronic_occupations.ipynb` | committed plot | Fermi-Dirac electronic occupations |
@@ -90,7 +91,7 @@ from the package CLI.
 | `results/tables/design_sweep_summary.csv` | design sweep summary table | n/a | n/a | tabular summary of committed design-sweep JSON reports |
 | `results/tables/qsvt-error-summary.csv` | release summary table | n/a | n/a | compact index over the generated JSON reports |
 
-These snapshots were refreshed for package version `0.2.16`.
+These snapshots were refreshed for package version `0.2.17`.
 
 ## Benchmark Artefacts
 
@@ -107,10 +108,12 @@ baselines with QSVT-oriented resource proxies. The generated output page is
 | `results/benchmarks/matrix_function_filter_polynomial.json` | PME filter baseline |
 | `results/benchmarks/scaling_sweep_reports.json` | combined DLS/CGS scaling-sweep reports |
 | `results/benchmarks/quantum_walk_search_scaling.json` | quantum-walk search success and QSVT proxy scaling |
+| `results/benchmarks/encoding_aware_resource_sweep.json` | embedding, FABLE, PrepSelPrep, and qubitization logical-resource sweep |
 | `results/tables/linear_system_benchmark_summary.csv` | compact linear-system benchmark table |
 | `results/tables/matrix_function_benchmark_summary.csv` | compact matrix-function benchmark table |
 | `results/tables/benchmark_scaling_summary.csv` | compact scaling-sweep benchmark table |
 | `results/tables/quantum_walk_search_scaling_summary.csv` | compact quantum-walk search scaling table |
+| `results/tables/encoding_aware_resource_summary.csv` | compact encoding-aware logical-resource comparison |
 | `results/tables/benchmark_plot_manifest.csv` | manifest for extracted benchmark notebook plots |
 | `results/plots/benchmarks/` | extracted benchmark timing and QSVT-proxy PNG plots |
 
@@ -119,7 +122,7 @@ The benchmark notebook set also includes
 executable assumption-check notebook rather than a committed timing-artifact
 generator.
 
-Benchmark artefacts were refreshed for package version `0.2.16`.
+Benchmark artefacts were refreshed for package version `0.2.17`.
 
 ## Real-Example Artefacts
 
@@ -130,7 +133,7 @@ The complete machine-readable manifest is
 
 | artefact | notebook | result type | notes |
 | --- | --- | --- | --- |
-| `results/tables/real_examples_plot_manifest.csv` | all notebooks with committed PNG outputs | table | manifest for 50 extracted real-example plots |
+| `results/tables/real_examples_plot_manifest.csv` | all notebooks with committed PNG outputs | table | manifest for 54 extracted real-example plots |
 | `results/plots/real_examples/01_ground_state_filtering-plot-01.png` | `01_ground_state_filtering.ipynb` | plot | representative setup schematic output |
 | `results/plots/real_examples/12_heat_equation_2d_pde-plot-01.png` | `12_heat_equation_2d_pde.ipynb` | plot | representative unit-square setup schematic |
 | `results/plots/real_examples/26_photonic_crystal_band_gap_filtering-plot-01.png` | `26_photonic_crystal_band_gap_filtering.ipynb` | plot | representative photonic-crystal setup schematic |

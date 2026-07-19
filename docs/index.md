@@ -436,6 +436,9 @@ Release Checklist <qsvt/releasing>
 
 Polynomial Design <qsvt/design>
 Phase Synthesis <qsvt/synthesis>
+Accuracy-Driven Planning <qsvt/planning>
+Executable Flagship Workflows <qsvt/flagship_workflows>
+Reproducible Research Sweeps <qsvt/research>
 Algorithm Notes <qsvt/algorithms>
 Linear Systems <qsvt/linear_systems>
 Spectral Filters <qsvt/spectral_filters>

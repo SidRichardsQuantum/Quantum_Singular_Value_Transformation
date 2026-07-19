@@ -38,6 +38,11 @@ The package is organised into the following modules:
 - `qsvt.design`
 - `qsvt.templates`
 - `qsvt.workflow`
+- `qsvt.planning`
+- `qsvt.degree`
+- `qsvt.flagship`
+- `qsvt.research`
+- `qsvt.research_frontier`
 - `qsvt.reports`
 - `qsvt.resources`
 - `qsvt.benchmarks`
@@ -69,6 +74,9 @@ For the higher-level polynomial builders and ready-made templates, see:
 - [Polynomial design helpers](design.md)
 - [Polynomial templates](templates.md)
 - [Algorithm notes](algorithms.md)
+- [Accuracy-driven planning](planning.md)
+- [Executable flagship workflows](flagship_workflows.md)
+- [Reproducible research sweeps](research.md)
 - [Physics workflows](physics.md)
 - [Implementation notes](implementation.md)
 - [Diagnostics reports](reports.md)
@@ -153,6 +161,49 @@ the finite classical reference comparison and omitted quantum layers explicit,
 so users can distinguish implemented small workflows from polynomial resource
 proxies and future scalable access models.
 
+### `qsvt.planning` and `qsvt.degree`
+
+Use `QSVTProblemSpec`, `QSVTTransformSpec`, and `QSVTExecutionConfig` to plan
+from a matrix, PennyLane operator, or `BlockEncodingSpec` and a target error:
+
+```python
+import numpy as np
+from qsvt import (
+    QSVTExecutionConfig,
+    QSVTProblemSpec,
+    QSVTTransformSpec,
+    plan_qsvt,
+    run_qsvt_plan,
+)
+
+plan = plan_qsvt(
+    QSVTProblemSpec(np.diag([1.0, 2.0]), rhs=np.ones(2)),
+    QSVTTransformSpec(
+        "linear_system", tolerance=0.4, min_degree=3, max_degree=9
+    ),
+    QSVTExecutionConfig(execute=True),
+)
+execution = run_qsvt_plan(plan)
+```
+
+`search_polynomial_degree` accepts arbitrary builder and evaluator callables;
+`search_design_degree` searches the public design targets. See
+[Accuracy-driven planning](planning.md).
+
+### `qsvt.flagship`
+
+The two finite flagship entry points are:
+
+- `spectral_filter_qsvt_workflow` for a Pauli-Hamiltonian band filter using
+  PrepSelPrep or qubitization,
+- `poisson_qsvt_workflow` for direct, conjugate-gradient, polynomial, and
+  circuit comparisons on a one-dimensional Dirichlet Poisson system.
+
+Both return dataclasses with `as_report()` and include target-error degree
+search, phase reconstruction, an encoding-aware logical resource report,
+classical references, finite QNode results when requested, and component error
+ledgers. See [Executable flagship workflows](flagship_workflows.md).
+
 ### `qsvt.synthesis`
 
 Use `classify_polynomial_realizability` to distinguish classical-only,
@@ -172,6 +223,14 @@ Related workflow-level helpers are:
 - `certify_polynomial_boundedness`
 - `benchmark_phase_solvers`
 - `synthesize_mixed_parity`
+- `synthesize_phases_cached`
+- `phase_synthesis_cache_info`
+- `register_phase_solver_adapter`
+- `synthesize_phases_with_adapter`
+
+External adapters require an explicit converter unless they already emit the
+PennyLane QSVT projector-phase convention. Adapter and cache management
+functions remain experimental during the `0.x` series.
 
 See [Phase synthesis](synthesis.md).
 
@@ -369,6 +428,13 @@ The same report is available from the CLI:
 qsvt resource-report --poly "0,0,1" --matrix-dimension 4 --no-synthesis
 ```
 
+For a concrete `BlockEncodingSpec`, use
+`estimate_encoding_aware_resources(spec, coeffs)`. It reports normalization,
+actual alternating forward/adjoint query counts, and PennyLane logical
+estimator output for the selected matrix or Pauli-LCU model when available.
+It explicitly remains a logical algorithm estimate, not a fault-tolerant
+estimate.
+
 These are proxy reports for simulator-scale comparison. They do not include
 block-encoding construction, state preparation, error correction, compilation,
 or hardware runtime costs.
@@ -440,6 +506,43 @@ quantum speedups.
 
 For per-baseline assumptions and cost-model context, see
 [Classical baseline details](classical_baselines.md).
+
+---
+
+### `qsvt.research` and `qsvt.research_frontier`
+
+Use `ResearchSweepSpec`, `ResearchOperatorSpec`, and `ResearchTargetSpec` to
+define a Cartesian experiment. `run_research_sweep` evaluates deterministic
+trials, persists one versioned JSON report per trial, writes a flat CSV, and
+resumes existing identifiers:
+
+```python
+from qsvt import accuracy_resource_frontier_spec, run_accuracy_resource_frontier
+
+spec = accuracy_resource_frontier_spec(
+    degrees=(3, 5, 7),
+    tolerances=(0.2,),
+)
+result = run_accuracy_resource_frontier(spec, output_dir="study-output")
+print(result.sweep.failed_count, len(result.pareto_rows))
+```
+
+Configuration and reporting helpers include:
+
+- `load_research_sweep_spec`
+- `save_research_sweep_spec`
+- `expand_research_sweep`
+- `research_summary_rows`
+- `write_research_summary_csv`
+- `accuracy_resource_frontier_spec`
+- `accuracy_resource_frontier_rows`
+- `write_accuracy_resource_pareto_csv`
+
+The built-in frontier uses finite eigendecomposition references and
+encoding-aware logical resource estimates. See
+[Reproducible research sweeps](research.md) for the schemas, access-model
+normalization, unsupported finite-shot/noise factors, and omitted physical
+costs.
 
 ---
 

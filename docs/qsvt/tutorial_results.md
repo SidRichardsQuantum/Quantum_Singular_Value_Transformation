@@ -8,9 +8,9 @@ This generated page displays the embedded plots and text outputs from every tuto
 ## Current Status
 
 - Source notebooks: `notebooks/tutorials/`
-- Notebooks displayed: `18`
-- Embedded plot artefacts displayed: `36`
-- Plain-text notebook results displayed: `73`
+- Notebooks displayed: `19`
+- Embedded plot artefacts displayed: `37`
+- Plain-text notebook results displayed: `77`
 
 ## Related Pages
 
@@ -1118,4 +1118,62 @@ omitted layers:
   - QSP_or_QSVT_phase_synthesis
   - success_probability_estimation_or_sampling
   - hardware_noise_and_fault_tolerance
+```
+
+### `19_Accuracy_Driven_QSVT_Planning.ipynb`
+
+Source: [`notebooks/tutorials/19_Accuracy_Driven_QSVT_Planning.ipynb`](../../notebooks/tutorials/19_Accuracy_Driven_QSVT_Planning.ipynb)
+
+```{image} ../../results/plots/notebooks/19_Accuracy_Driven_QSVT_Planning-plot-01.png
+:alt: Accuracy-Driven QSVT Planning plot 1
+:width: 520px
+```
+
+Output 1 (cell 7):
+
+```text
+Accuracy-driven plans
+---------------------
+input               input kind                         degree  polynomial error  access status          resource model                    execution ready
+------------------  ---------------------------------  ------  ----------------  ---------------------  --------------------------------  ---------------
+NumPy matrix        finite-matrix                      7       0.07202           matrix-fallback        arbitrary-unitary-block-encoding  True
+PennyLane operator  pennylane-operator                 7       0.07202           matrix-fallback        arbitrary-unitary-block-encoding  True
+BlockEncodingSpec   block-encoding:pennylane-operator  7       0.07202           provided-access-model  pauli-lcu-qubitization            True
+phase cache: {'size': 2, 'hits': 4, 'misses': 2}
+```
+
+Output 2 (cell 8):
+
+```text
+Degree candidates for the matrix input
+--------------------------------------
+requested degree  error    single sequence  selected
+----------------  -------  ---------------  --------
+3                 0.1335   False            False
+5                 0.1046   False            False
+7                 0.07202  True             True
+```
+
+Output 3 (cell 10):
+
+```text
+Executed error ledger
+---------------------
+component                        error
+-------------------------------  --------
+workflow_approximation_error     0.07202
+phase_reconstruction_error       6.02e-08
+circuit_vs_polynomial_error      3.35e-08
+maximum_sampling_standard_error  n/a
+additive_error_proxy             0.07202
+phase solver: iterative
+phase reconstruction max error: 6.018e-08
+circuit logical-output relative error: 3.351e-08
+population_0 (circuit): 0.745669
+```
+
+Output 4 (cell 12):
+
+```text
+validation: passed
 ```

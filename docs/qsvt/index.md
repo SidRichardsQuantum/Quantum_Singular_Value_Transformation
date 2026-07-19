@@ -20,6 +20,8 @@ The package provides small, explicit utilities for:
 - rescaling Hermitian spectra for QSVT-compatible workflows
 - constructing and verifying finite dense block encodings
 - comparing classical baselines with QSVT-oriented resource proxies
+- running declarative, deterministic, and resumable research sweeps
+- comparing finite accuracy with encoding-aware logical resources
 
 The repository also includes a sequence of notebooks that introduce QSVT concepts step-by-step.
 
@@ -36,6 +38,9 @@ The repository also includes a sequence of notebooks that introduce QSVT concept
 | Understand filtering and projector workflows | [Spectral filters](spectral_filters.md) |
 | Understand time-evolution and response workflows | [Time evolution and response](time_evolution_and_response.md) |
 | Understand finite block encodings | [Block encodings](block_encoding.md) |
+| Plan from a problem and error tolerance | [Accuracy-driven planning](planning.md) |
+| Run the spectral-filter and Poisson flagships | [Executable flagship workflows](flagship_workflows.md) |
+| Run reproducible parameter sweeps and frontiers | [Research sweeps](research.md) |
 | Classify polynomials and synthesize phases | [Phase synthesis](synthesis.md) |
 | Interpret QSVT compatibility failures | [QSVT compatibility](compatibility.md) |
 | Explore executable examples | [Notebooks](notebooks.md) |
@@ -169,6 +174,13 @@ Workflow-level theory and implementation conventions:
   and public API status
 - [Block encodings](block_encoding.md): finite dense unitary block encodings,
   normalization, verification, and omitted scalable-oracle costs
+- [Accuracy-driven planning](planning.md): typed finite problems, target-error
+  degree search, phase fallback, access-model selection, and execution
+- [Executable flagship workflows](flagship_workflows.md): Pauli-LCU spectral
+  filtering and Poisson direct/CG/QSVT comparisons
+- [Reproducible research sweeps](research.md): declarative configurations,
+  deterministic trial artifacts, resume behavior, and the built-in
+  accuracy-resource frontier
 - [QSVT compatibility](compatibility.md): boundedness, parity, synthesis checks,
   common failure modes, and direct-QSVT interpretation
 
@@ -191,6 +203,11 @@ qsvt
 ├── design.py
 ├── templates.py
 ├── workflow.py
+├── planning.py
+├── degree.py
+├── flagship.py
+├── research.py
+├── research_frontier.py
 ├── algorithms.py
 ├── block_encoding.py
 ├── reports.py
@@ -220,6 +237,11 @@ Each module is intentionally small and focused:
 | `design` | task-oriented bounded polynomial builders |
 | `templates` | ready-made bounded polynomial families |
 | `workflow` | combined coefficient, diagnostic, and compatibility workflows |
+| `planning` | typed accuracy-driven problem planning and execution |
+| `degree` | tolerance-driven polynomial degree selection |
+| `flagship` | executable spectral-filter and Poisson workflows |
+| `research` | declarative, deterministic, resumable experiment sweeps |
+| `research_frontier` | finite accuracy and encoding-aware logical-resource comparisons |
 | `algorithms` | end-to-end simulator-scale algorithm workflows |
 | `block_encoding` | finite dense block-encoding construction and verification |
 | `reports` | diagnostics serialization and plotting helpers |

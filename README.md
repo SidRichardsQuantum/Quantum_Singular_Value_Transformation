@@ -97,6 +97,20 @@ coeffs = result.coeffs
 report = result.as_report()
 ```
 
+Plan from a finite problem and a requested error instead of choosing a degree
+manually:
+
+```python
+from qsvt import QSVTProblemSpec, QSVTTransformSpec, plan_qsvt
+
+plan = plan_qsvt(
+    QSVTProblemSpec(np.diag([1.0, 2.0]), rhs=np.ones(2)),
+    QSVTTransformSpec(
+        "linear_system", tolerance=0.4, min_degree=3, max_degree=9
+    ),
+)
+```
+
 Run a finite problem workflow with a uniform report:
 
 ```python
@@ -127,6 +141,16 @@ qsvt design-sweep --kind sign --degrees "5,9,13,17" --gamma 0.2 \
 qsvt resource-report --poly "0,0,1" --matrix-dimension 4 --no-synthesis
 qsvt problem-workflow --target linear_system --matrix "2,0;0,1" \
   --rhs "1,1" --degree 8 --no-synthesis --no-qsvt
+qsvt plan-workflow --target linear_system --matrix "2,0;0,1" \
+  --rhs "1,1" --tolerance 0.2 --no-execute
+qsvt degree-search --kind sign --gamma 0.2 --tolerance 0.05
+qsvt spectral-filter-qsvt --pauli-terms "0.4:ZI,0.3:IZ,0.2:XI" \
+  --state "0.5,0.5,0.5,0.5" --lower -0.4 --upper 0.4 --tolerance 0.16
+qsvt poisson-qsvt --n-points 4 --tolerance 0.4
+qsvt research-sweep --config examples/accuracy_resource_frontier.json \
+  --output-dir /tmp/qsvt-accuracy-resource-frontier
+qsvt accuracy-resource-frontier --degrees 3,5,7 --tolerances 0.2 \
+  --output-dir /tmp/qsvt-accuracy-resource-frontier
 qsvt execute-spec --kind matrix --matrix "0.2,0;0,0.8" \
   --poly "0,0,1" --state "1,0"
 qsvt benchmark cg-solve --matrix "4,1;1,3" --rhs "1,2" --qsvt-poly "0,1"
@@ -149,6 +173,18 @@ python examples/block_encoding_execution.py \
   --output /tmp/qsvt-block-encoding-execution.json
 python examples/rectangular_execution.py \
   --output /tmp/qsvt-rectangular-execution.json
+python examples/spectral_filter_qsvt.py \
+  --output /tmp/qsvt-spectral-filter.json
+python examples/poisson_qsvt.py --output /tmp/qsvt-poisson.json
+python examples/accuracy_driven_plan.py \
+  --output /tmp/qsvt-accuracy-driven-plan.json
+python examples/custom_block_encoding.py \
+  --output /tmp/qsvt-custom-block-encoding.json
+python examples/finite_shot_qsvt.py \
+  --output /tmp/qsvt-finite-shot.json --shots 2000 --seed 12345
+python examples/encoding_aware_resources.py \
+  --output /tmp/qsvt-encoding-aware-resources.json \
+  --rows-output /tmp/qsvt-encoding-aware-resources.csv
 ```
 
 See [USAGE.md](USAGE.md) for full Python and CLI workflows.
@@ -169,8 +205,12 @@ The public package lives under `src/qsvt`.
 | `qsvt.synthesis` | realizability classification, parity decomposition, and phase synthesis |
 | `qsvt.templates` | ready-made bounded polynomial families |
 | `qsvt.workflow` | combined coefficient, diagnostic, compatibility, and high-level problem workflows |
+| `qsvt.planning`, `qsvt.degree` | typed problem planning and target-error degree selection |
+| `qsvt.flagship` | executable Pauli spectral-filter and Poisson workflows |
+| `qsvt.research` | typed declarative, deterministic, and resumable experiment sweeps |
+| `qsvt.research_frontier` | finite accuracy versus encoding-aware logical-resource frontier studies |
 | `qsvt.reports` | JSON-safe reports, schema checks, and plot helpers |
-| `qsvt.resources` | degree, phase-count, width, and compatibility proxy reports |
+| `qsvt.resources` | polynomial proxies and encoding-aware logical resource estimates |
 | `qsvt.benchmarks` | classical baselines and QSVT-oriented benchmark summaries |
 | `qsvt.notebook` | experimental notebook presentation and path helpers used by committed notebooks |
 | `qsvt.matrices` | small Hermitian test matrices |
@@ -221,6 +261,12 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
 - [docs/qsvt/design.md](docs/qsvt/design.md): polynomial design helpers
 - [docs/qsvt/algorithms.md](docs/qsvt/algorithms.md): workflow-level
   algorithm notes, diagnostics, and limitations
+- [docs/qsvt/planning.md](docs/qsvt/planning.md): typed accuracy-driven
+  planning, degree selection, and finite execution
+- [docs/qsvt/flagship_workflows.md](docs/qsvt/flagship_workflows.md): executable
+  Pauli spectral-filter and Poisson workflows
+- [docs/qsvt/research.md](docs/qsvt/research.md): declarative research sweeps,
+  deterministic artifacts, and the accuracy-resource frontier
 - [docs/qsvt/block_encoding.md](docs/qsvt/block_encoding.md): finite dense
   block encodings, normalization, verification, and omitted oracle costs
 - [docs/qsvt/compatibility.md](docs/qsvt/compatibility.md): QSVT boundedness,
@@ -234,7 +280,7 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.2.16`
+Current release: `0.2.17`
 
 ## Notebooks
 
@@ -242,7 +288,9 @@ Tutorial notebooks live in `notebooks/tutorials/` and introduce QSVT as
 polynomial functional calculus, from scalar transforms through sign functions,
 projectors, matrix functions, reusable design workflows, end-to-end algorithm
 workflows, reproducible reports, degree/error tradeoff studies, and
-resource-proxy limitations.
+resource-proxy limitations. The accuracy-driven planning tutorial connects a
+requested error to degree search, phase synthesis, access-model selection,
+logical resources, and finite circuit execution.
 
 Real physics examples live in `notebooks/real_examples/` and cover Hamiltonian
 simulation, ground-state filtering, quantum chemistry, Green's functions,
@@ -255,7 +303,9 @@ QSVT implementation strategy, and quantum relevance.
 
 Benchmark notebooks live in `notebooks/benchmarks/` and compare classical
 linear-system, spectral, and polynomial matrix-function baselines against
-QSVT-oriented resource proxies and their underlying assumptions.
+QSVT-oriented resource proxies and their underlying assumptions. The
+encoding-aware resource benchmark compares embedding, FABLE, PrepSelPrep, and
+qubitization for the same logical operator.
 
 See [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md) for the full notebook map.
 
@@ -296,6 +346,10 @@ Implemented and tested:
 - bounded polynomial design and sampled diagnostics,
 - simulator-scale workflows for linear systems, filters, matrix functions,
   resolvents, Gibbs weights, spectral density, and projectors,
+- tolerance-driven planning from matrices, PennyLane operators, and
+  block-encoding specifications,
+- executable Pauli-LCU spectral filtering and finite-difference Poisson
+  direct/CG/QSVT comparisons with component error ledgers,
 - PennyLane QSVT block checks for supported small compatible polynomials,
 - PennyLane QNode execution for finite QSVT circuits with state preparation,
   queued `qml.qsvt`, statevector/probability measurement, and circuit resource
@@ -314,7 +368,8 @@ Implemented and tested:
 
 Reported as assumptions or proxies:
 
-- block-encoding availability and query cost,
+- scalable block-encoding availability beyond the reported finite or logical
+  access model,
 - input-state preparation and data loading,
 - measurement/readout and amplitude amplification,
 - fault-tolerant synthesis, error correction, provider-native hardware

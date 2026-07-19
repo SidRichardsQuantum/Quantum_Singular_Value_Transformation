@@ -20,8 +20,13 @@ _SUPPORTED_REPORT_SCHEMAS: dict[str, frozenset[str]] = {
     "block-encoding-qsvt-execution": frozenset({"1.0"}),
     "hardware-qsvt-circuit": frozenset({"1.0"}),
     "hardware-qsvt-execution": frozenset({"1.0"}),
+    "qsvt-accuracy-resource-frontier": frozenset({"1.0"}),
+    "qsvt-accuracy-resource-frontier-rows": frozenset({"1.0"}),
     "qsvt-algorithm-workflow": frozenset({"1.0"}),
     "qsvt-problem-workflow": frozenset({"1.0"}),
+    "qsvt-research-sweep-manifest": frozenset({"1.0"}),
+    "qsvt-research-sweep-spec": frozenset({"1.0"}),
+    "qsvt-research-trial": frozenset({"1.0"}),
 }
 
 _REQUIRED_REPORT_SCHEMA_FIELDS: dict[str, frozenset[str]] = {
@@ -70,6 +75,59 @@ _REQUIRED_REPORT_SCHEMA_FIELDS: dict[str, frozenset[str]] = {
             "schema_name",
             "schema_version",
             "target",
+            "truth_contract",
+        }
+    ),
+    "qsvt-research-sweep-spec": frozenset(
+        {
+            "schema_name",
+            "schema_version",
+            "name",
+            "study",
+            "operators",
+            "targets",
+        }
+    ),
+    "qsvt-research-trial": frozenset(
+        {
+            "schema_name",
+            "schema_version",
+            "mode",
+            "trial_id",
+            "status",
+            "factors",
+            "result",
+        }
+    ),
+    "qsvt-research-sweep-manifest": frozenset(
+        {
+            "schema_name",
+            "schema_version",
+            "mode",
+            "study",
+            "name",
+            "trial_count",
+            "artifacts",
+            "truth_contract",
+        }
+    ),
+    "qsvt-accuracy-resource-frontier": frozenset(
+        {
+            "schema_name",
+            "schema_version",
+            "mode",
+            "sweep",
+            "frontier_row_count",
+            "pareto_row_count",
+            "truth_contract",
+        }
+    ),
+    "qsvt-accuracy-resource-frontier-rows": frozenset(
+        {
+            "schema_name",
+            "schema_version",
+            "mode",
+            "rows",
             "truth_contract",
         }
     ),

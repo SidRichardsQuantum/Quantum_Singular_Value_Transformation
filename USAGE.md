@@ -358,6 +358,97 @@ print(circuit.unsupported_decomposed_operations)
 This report uses schema name `hardware-qsvt-circuit` and records that no
 execution or provider job submission occurred.
 
+## Accuracy-Driven Planning and Flagship Workflows
+
+Build a typed plan from a finite operator and target error:
+
+```python
+import numpy as np
+from qsvt import (
+    QSVTExecutionConfig,
+    QSVTProblemSpec,
+    QSVTTransformSpec,
+    plan_qsvt,
+    run_qsvt_plan,
+)
+
+plan = plan_qsvt(
+    QSVTProblemSpec(np.diag([1.0, 2.0]), rhs=np.ones(2)),
+    QSVTTransformSpec(
+        "linear_system", tolerance=0.4, min_degree=3, max_degree=9
+    ),
+    QSVTExecutionConfig(execute=True),
+)
+execution = run_qsvt_plan(plan)
+```
+
+The planner also accepts PennyLane operators and `BlockEncodingSpec` inputs.
+Its report retains the degree sweep, numerical target error, phase
+reconstruction, access-model choice, encoding-aware resources, and omitted
+application layers.
+
+Two flagship workflows provide complete finite examples:
+
+```python
+import pennylane as qml
+from qsvt import poisson_qsvt_workflow, spectral_filter_qsvt_workflow
+
+hamiltonian = qml.dot(
+    [0.4, 0.3, 0.2],
+    [qml.Z(0), qml.Z(1), qml.X(0)],
+)
+filtered = spectral_filter_qsvt_workflow(
+    hamiltonian,
+    np.ones(4) / 2,
+    lower=-0.4,
+    upper=0.4,
+    tolerance=0.16,
+    min_degree=2,
+    max_degree=4,
+)
+poisson = poisson_qsvt_workflow(
+    4, tolerance=0.4, min_degree=5, max_degree=5
+)
+```
+
+See [Accuracy-driven planning](./docs/qsvt/planning.md) and
+[Executable flagship workflows](./docs/qsvt/flagship_workflows.md) for access
+models, resource semantics, and the exact scope boundary.
+
+## Reproducible Research Sweeps
+
+Run the committed accuracy-resource frontier definition as a resumable
+Cartesian sweep:
+
+```bash
+qsvt research-sweep \
+  --config examples/accuracy_resource_frontier.json \
+  --output-dir results/research/accuracy_resource_frontier
+```
+
+The built-in shortcut constructs the same operator, target, access-model, and
+degree families:
+
+```bash
+qsvt accuracy-resource-frontier \
+  --degrees 3,5,7 \
+  --tolerances 0.2 \
+  --output-dir results/research/accuracy_resource_frontier
+```
+
+Each deterministic trial is stored separately, while `summary.csv`,
+`frontier.json`, and `pareto.csv` provide aggregate views. The frontier compares
+finite spectral references with access-model-specific normalization and
+encoding-aware logical gates, wires, and signal calls. It does not execute
+hardware, state preparation, postselection, or amplitude amplification;
+logical depth and success probability are therefore explicit null fields.
+
+JSON sweep definitions work in the base install. YAML requires
+`pip install "qsvt-pennylane[research]"`. See
+[Reproducible research sweeps](./docs/qsvt/research.md) for the schema, Python
+interface, resume rules, supported operator/target families, and claim
+boundaries.
+
 ## Cookbook Scripts
 
 The repository includes short package-client scripts in the
@@ -377,6 +468,18 @@ python examples/block_encoding_execution.py \
   --output /tmp/qsvt-block-encoding-execution.json
 python examples/rectangular_execution.py \
   --output /tmp/qsvt-rectangular-execution.json
+python examples/spectral_filter_qsvt.py \
+  --output /tmp/qsvt-spectral-filter.json
+python examples/poisson_qsvt.py --output /tmp/qsvt-poisson.json
+python examples/accuracy_driven_plan.py \
+  --output /tmp/qsvt-accuracy-driven-plan.json
+python examples/custom_block_encoding.py \
+  --output /tmp/qsvt-custom-block-encoding.json
+python examples/finite_shot_qsvt.py \
+  --output /tmp/qsvt-finite-shot.json --shots 2000 --seed 12345
+python examples/encoding_aware_resources.py \
+  --output /tmp/qsvt-encoding-aware-resources.json \
+  --rows-output /tmp/qsvt-encoding-aware-resources.csv
 ```
 
 The scripts cover polynomial design, matrix application, saved diagnostics,
@@ -384,6 +487,14 @@ linear-system comparison, threshold filtering, block-encoded QSVT checks,
 PennyLane circuit execution, specification-based block-encoding execution,
 and rectangular singular-value execution. Use the dedicated
 `compatibility-report` and `benchmark` CLI commands for those report families.
+The flagship examples additionally search degree from a tolerance, synthesize
+phases with reconstruction validation, execute concrete block encodings, and
+report encoding-aware logical resources.
+The focused additions demonstrate accuracy-driven planning, explicit custom
+block-encoding/projector contracts, seeded finite-shot validation on a local
+FABLE circuit, and an encoding-aware resource sweep across dense embedding,
+FABLE, PrepSelPrep, and qubitization. The finite-shot script requires no
+provider credentials and deliberately makes no real-hardware claim.
 
 ## Common Tasks
 

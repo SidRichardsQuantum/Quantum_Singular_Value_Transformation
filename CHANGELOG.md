@@ -1,5 +1,52 @@
 # Changelog
 
+## [0.2.17] – 19th July 2026
+
+### Added
+
+- added typed accuracy-driven planning from matrices, PennyLane operators, and
+  block-encoding specifications, including degree search, phase fallback,
+  finite execution, observables, and component error ledgers
+- added executable Pauli-LCU spectral-filter and Dirichlet Poisson flagship
+  workflows with CLI commands, cookbook scripts, classical references, and
+  explicit access-model assumptions
+- added encoding-aware PennyLane logical resource estimates for matrix and
+  Pauli-LCU models, tolerance-driven design search, phase-synthesis caching,
+  and convention-safe optional solver adapters
+- added an executable accuracy-driven planning tutorial that compares matrix,
+  PennyLane-operator, and explicit block-encoding inputs through degree search,
+  synthesis caching, access-model selection, resources, and circuit validation
+- added an encoding-aware benchmark notebook and committed JSON/CSV artifacts
+  comparing embedding, FABLE, PrepSelPrep, and qubitization logical costs
+- added focused cookbook scripts for accuracy-driven planning, custom
+  block-encoding circuits with explicit projectors, seeded finite-shot FABLE
+  validation, and encoding-aware JSON/CSV resource sweeps
+- added typed JSON/YAML research sweep specifications with deterministic trial
+  identities, resumable per-trial reports, aggregate CSV output, structured
+  failure capture, CLI execution, and versioned report schemas
+- added a built-in accuracy-resource frontier across Poisson, Ising, and graph-
+  Laplacian operators; inverse, projector, band-filter, and resolvent targets;
+  and embedding, FABLE, PrepSelPrep, and qubitization access models, including
+  access-specific normalization and Pareto JSON/CSV artifacts
+
+### Changed
+
+- expanded the public API, usage guide, API reference, and roadmap around the
+  accuracy-driven planner and flagship workflows
+- upgraded the Poisson and transverse-field Ising physics notebooks with
+  executable block-encoded QSVT paths, classical references, physical
+  observables, component error ledgers, and regenerated plots
+- refreshed notebook indexes, rendered result pages, plot manifests, benchmark
+  artifact coverage, release markers, and package metadata for `0.2.17`
+- expanded cookbook integration coverage and documentation for the four new
+  executable examples, including explicit local-simulator and resource-proxy
+  claim boundaries
+- expanded the experimental public API, CLI, schema registry, usage guide,
+  benchmark guide, and research documentation for reproducible sweeps; updated
+  the roadmap to treat the runner and initial frontier as implemented
+  foundations while retaining compiled depth, executable success probability,
+  noise, and broader operator studies as future work
+
 ## [0.2.16] – 19th July 2026
 
 ### Added

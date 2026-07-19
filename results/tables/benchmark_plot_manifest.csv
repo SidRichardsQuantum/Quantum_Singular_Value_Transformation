@@ -12,3 +12,4 @@ results/plots/benchmarks/04_classical_baseline_assumptions-plot-01.png,notebooks
 results/plots/benchmarks/04_classical_baseline_assumptions-plot-02.png,notebooks/benchmarks/04_classical_baseline_assumptions.ipynb,Classical Baseline Assumptions,2,12,688,370,plot,embedded notebook PNG output
 results/plots/benchmarks/04_classical_baseline_assumptions-plot-03.png,notebooks/benchmarks/04_classical_baseline_assumptions.ipynb,Classical Baseline Assumptions,3,12,1211,371,plot,embedded notebook PNG output
 results/plots/benchmarks/05_quantum_walk_search_scaling-plot-01.png,notebooks/benchmarks/05_quantum_walk_search_scaling.ipynb,Quantum Walk Search Scaling,1,8,1361,391,plot,embedded notebook PNG output
+results/plots/benchmarks/06_encoding_aware_resources-plot-01.png,notebooks/benchmarks/06_encoding_aware_resources.ipynb,Encoding-Aware QSVT Resource Comparison,1,8,1061,391,plot,embedded notebook PNG output

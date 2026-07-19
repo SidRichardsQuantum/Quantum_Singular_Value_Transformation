@@ -6,9 +6,9 @@ experimenting with, or researching Quantum Singular Value Transformation
 auditable polynomial design, phase synthesis, block encodings, finite circuit
 execution, validation, and resource analysis.
 
-The roadmap is organized by implementation area rather than release number.
-Release versions describe shipped snapshots; this document describes the
-capabilities and upgrades the repository should continue to pursue.
+The roadmap is organized by implementation area and describes the capabilities,
+research infrastructure, and implementation upgrades the repository should
+continue to pursue.
 
 ## Project Direction
 
@@ -30,22 +30,21 @@ The sections below are ordered approximately by implementation dependency:
 polynomial construction, block encoding, execution, verification, reporting,
 and user-facing workflows.
 
-### Definite Completion Criteria
+### Completion and Stability Criteria
 
-Before the project should be described as complete beyond the current alpha
-release state, it should have an explicit definition of done:
+Before the project should be described as a stable educational and research
+package, it should have an explicit definition of done:
 
 - treat "complete" as a stable educational/research package milestone, not as
   a claim that QSVT research or all possible application algorithms are
   exhausted,
-- publish a compact `1.0` public API list with stable names, expected input
-  shapes, report schemas, error semantics, and examples for each supported
-  workflow,
+- publish a compact stable public API list with expected input shapes, report
+  schemas, error semantics, and examples for each supported workflow,
 - define the main supported user journeys across polynomial design,
   realizability checks, phase synthesis, block-encoding specifications, finite
   execution or proxy execution, validation, reporting, and resource estimation,
 - document a deprecation policy and add migration tests for every public report
-  schema or stable API that may change after `1.0`,
+  schema or API marked stable,
 - choose a small set of flagship workflows and finish them end to end: Python
   API, CLI command, classical reference, finite QSVT execution or explicitly
   labeled proxy path, machine-readable report, docs page, cookbook script, and
@@ -53,10 +52,11 @@ release state, it should have an explicit definition of done:
 - define acceptance criteria for each flagship workflow, including numerical
   tolerances, required diagnostics, supported access models, and the exact
   quantum layers that are implemented or omitted,
-- require the supported CI gates and release preflight to pass from a clean
+- require the supported CI gates and package preflight to pass from a clean
   checkout, including linting, formatting, typing, tests across supported Python
-  versions, dependency compatibility, package build, documentation build,
-  notebook checks, distribution metadata checks, and ordered release workflows,
+  environments, dependency compatibility, package build, documentation build,
+  notebook checks, distribution metadata checks, and ordered publishing
+  workflows,
 - verify the package from the built wheel in a fresh environment, including CLI
   smoke tests and import/API-status checks,
 - keep generated build outputs, coverage files, caches, virtual environments,
@@ -69,16 +69,16 @@ release state, it should have an explicit definition of done:
   or out of scope for each workflow, with paid/live execution behind explicit
   opt-in tests,
 - ensure the README, usage guide, API reference, changelog, package metadata,
-  and PyPI release notes agree on the current version, stability status, and
-  supported Python/dependency range,
+  and package-index description agree on stability status and the supported
+  Python/dependency range,
 - update the package stability classifier and public wording only when the
-  `1.0` API, flagship workflow acceptance criteria, release checks, and
+  stable API, flagship workflow acceptance criteria, package checks, and
   documentation consistency criteria are all satisfied.
 
-### Next User-Facing Milestone
+### User-Facing Workflow Priorities
 
-The next product-level milestone is a clear package path for users who bring a
-small physics or mathematics problem and want an auditable QSVT workflow:
+Prioritize a clear package path for users who bring a small physics or
+mathematics problem and want an auditable QSVT workflow:
 
 1. define the finite problem as a matrix, operator, or block-encoding access
    model,
@@ -92,7 +92,7 @@ small physics or mathematics problem and want an auditable QSVT workflow:
 7. export a machine-readable report with assumptions, errors, resources, and
    omitted quantum layers.
 
-This milestone should be demonstrated by a small set of flagship workflows
+This path should be demonstrated by a small set of flagship workflows
 rather than by adding many more notebooks:
 
 - linear systems or Poisson-type PDE solves,
@@ -105,6 +105,40 @@ Each flagship workflow should be callable from a short script, reusable from a
 notebook, and backed by tests that verify the package API rather than only the
 notebook narrative.
 
+#### Current foundation
+
+The repository already provides the following foundation:
+
+- `qsvt.planning` accepts finite matrices, PennyLane operators, and
+  `BlockEncodingSpec` inputs, searches degree from an error target, synthesizes
+  phases with validated fallback, selects an access model, estimates logical
+  resources, and can execute the resulting finite plan,
+- `qsvt.flagship.spectral_filter_qsvt_workflow` provides the Pauli-LCU
+  PrepSelPrep/qubitization spectral-filter path,
+- `qsvt.flagship.poisson_qsvt_workflow` compares direct, conjugate-gradient,
+  polynomial, and finite-QSVT paths for a Dirichlet Poisson system,
+- `qsvt.resources.estimate_encoding_aware_resources` uses a concrete matrix or
+  Pauli-LCU logical estimator model while preserving normalization and omitted
+  costs,
+- `qsvt.degree` and the phase-synthesis cache/adapter APIs provide reusable
+  tolerance search and convention-safe optional solver integration.
+- the accuracy-driven planning tutorial and encoding-aware resource benchmark
+  exercise these APIs as thin package clients, while the Poisson and Ising
+  notebooks carry executable circuit validation into concrete physics examples.
+- focused cookbook scripts now cover accuracy-driven planning, caller-supplied
+  custom block encodings and projectors, credential-free finite-shot FABLE
+  validation, and access-model-aware resource comparison.
+- `qsvt.research` now provides versioned JSON/YAML sweep definitions,
+  deterministic trial identities, resumable per-trial reports, aggregate CSV
+  summaries, and JSON manifests,
+- `qsvt.research_frontier` provides the initial Poisson, Ising, and
+  graph-Laplacian accuracy-resource study across inverse, projector,
+  band-filter, and resolvent targets and four access models.
+
+The remaining roadmap work is to broaden numerical regimes, access models,
+hardware compilation, and application-specific state preparation without
+weakening the explicit finite-simulation and logical-resource claim boundary.
+
 ### Polynomial Design, Realizability, and Phase Synthesis
 
 - strengthen bounded polynomial design for inverse, sign, threshold, filter,
@@ -115,6 +149,12 @@ notebook narrative.
   synthesis,
 - compare supported phase solvers across degree, coefficient dynamic range,
   boundedness margin, convergence, runtime, and reconstruction error,
+- implement adapters for modern stable phase-finding methods, including
+  structured-factorization and fast fixed-point approaches, and benchmark them
+  against the existing root-finding and iterative solvers,
+- quantify how phase rounding, synthesis residuals, and coherent phase
+  perturbations propagate into logical states, success probabilities, and
+  application observables,
 - provide actionable diagnostics when a polynomial is bounded but not
   realizable by the requested construction,
 - continue developing certification and reconstruction checks that do not rely
@@ -130,11 +170,17 @@ notebook narrative.
   unitarity wherever finite verification is possible,
 - add encoding-specific diagnostics and resource reports for embedding, FABLE,
   PrepSelPrep, qubitization, and custom encodings,
+- benchmark FABLE compression thresholds against block-encoding error, compiled
+  gates, depth, and final observable error for structured operator families,
+- investigate Hamiltonian-access transformation paths that reduce or avoid
+  conventional block-encoding overhead, while labeling their assumptions and
+  execution support separately from established QSVT paths,
 - make unsupported backend combinations fail with structured, informative
   reports,
 - keep scalable oracle assumptions separate from finite matrix constructions,
-- add examples that compare multiple valid encodings of the same logical
-  operator.
+- continue examples that compare multiple valid encodings of the same logical
+  operator beyond the initial embedding, FABLE, PrepSelPrep, and qubitization
+  resource sweep.
 
 ### Executable QSVT Interfaces
 
@@ -149,7 +195,11 @@ notebook narrative.
 - expand rectangular singular-value transformation beyond dense classical
   references and small embedding demonstrations,
 - expose statevector and finite-shot execution with consistent validation and
-  report schemas.
+  report schemas,
+- add configurable coherent phase, depolarizing, amplitude-damping, and readout
+  noise models to simulator execution,
+- make the planner jointly choose polynomial degree, phase solver, access
+  model, and shot budget under an approximation-and-noise error target.
 
 ### Hardware-Executable QSVT
 
@@ -212,6 +262,8 @@ notebook narrative.
   executable workflow,
 - report approximation, synthesis, block-encoding, state, observable, and
   sampling errors separately,
+- add repeated seeded trials, confidence intervals, and bootstrap summaries for
+  finite-shot and noisy experiments,
 - add property-based and adversarial tests for parity, boundedness,
   normalization, wire layouts, degenerate spectra, and near-boundary inputs,
 - strengthen compatibility tests across supported Python, NumPy, PennyLane,
@@ -237,14 +289,17 @@ notebook narrative.
   dense reference, verified finite block encoding, QNode execution, analytical
   resource proxy, and omitted quantum components,
 - add scaling studies that state the access model and classical baseline
-  required for a meaningful comparison.
+  required for a meaningful comparison,
+- generate multi-objective Pareto fronts across accuracy, normalization,
+  signal-operator calls, wires, compiled gates, depth, shots, and execution
+  success probability.
 
 ### Public API and Package Architecture
 
 - define a compact stable facade around design, synthesis, execution,
   verification, reporting, and resource estimation,
-- keep the eventual `1.0` stable API intentionally small, with lower-level
-  research interfaces available but not prematurely stabilized,
+- keep the stable API intentionally small, with lower-level research
+  interfaces available but not prematurely stabilized,
 - keep experimental lower-level interfaces clearly labeled and accessible for
   research,
 - keep algorithm and CLI implementations split by workflow family as the
@@ -301,8 +356,24 @@ classical reference, QSVT target definition, approximation and execution or
 proxy errors, resource interpretation, and an explicit statement of whether the
 workflow used true finite QSVT execution or a polynomial/resource proxy.
 
+- prioritize physics studies based on narrowly defined observables rather than
+  full-state reconstruction, beginning with Ising spectral filtering, Poisson
+  inversion, and resolvent or Green's-function response,
+- compare direct classical, polynomial, ideal-QSVT, finite-shot, and noisy-QSVT
+  estimates for the same observable and problem instance,
+- study how condition number, spectral gap, normalization, and state overlap
+  affect observable accuracy and postselection or sampling cost.
+
 ### Benchmarks and Comparative Evaluation
 
+- extend the declarative experiment runner with an evaluator registry,
+  controlled parallel execution, environment provenance, aggregate confidence
+  intervals, and standardized plot generation,
+- broaden the initial accuracy-resource frontier to sparse structured and
+  caller-supplied operators, compiled depth, executable success probability,
+  finite-shot/noise studies, and application-level observables,
+- compare embedding, FABLE, PrepSelPrep, qubitization, and supported custom or
+  Hamiltonian-access constructions on the same logical operators,
 - compare QSVT workflows with the relevant classical algorithm for the same
   finite task,
 - use actual finite circuit execution when implemented and explicitly labeled
@@ -311,9 +382,16 @@ workflow used true finite QSVT execution or a polynomial/resource proxy.
   polynomial matrix evaluation, or domain-specific methods as appropriate,
 - separate approximation quality, synthesis cost, circuit resources, sampling
   cost, and wall-clock timing,
+- retain individual seeded trials as well as aggregate confidence intervals so
+  sampling and noisy-circuit conclusions can be independently reproduced,
 - treat benchmark timings as environment-specific snapshots rather than
   portable performance claims,
-- provide machine-readable tables and reports for reproducible comparisons.
+- provide machine-readable tables and reports for reproducible comparisons,
+- generate standardized crossover, scaling, and Pareto-front plots from saved
+  reports rather than notebook-local calculations,
+- capture environment provenance, dependency metadata, random seeds, solver
+  settings, compilation settings, and numerical tolerances in every research
+  benchmark artifact.
 
 ## Repository and Documentation Policies
 

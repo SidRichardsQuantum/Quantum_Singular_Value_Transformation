@@ -1,0 +1,21 @@
+access_model,degree,normalization_alpha,signal_operator_calls,inverse_signal_operator_calls,total_wires,total_gates,estimator_model,estimator_available
+dense embedding,1,0.7472135954999579,1,0,3,3236,arbitrary-unitary-block-encoding,True
+dense embedding,3,0.7472135954999579,2,1,3,9708,arbitrary-unitary-block-encoding,True
+dense embedding,5,0.7472135954999579,3,2,3,16180,arbitrary-unitary-block-encoding,True
+dense embedding,7,0.7472135954999579,4,3,3,22652,arbitrary-unitary-block-encoding,True
+dense embedding,9,0.7472135954999579,5,4,3,29124,arbitrary-unitary-block-encoding,True
+FABLE,1,2.8,1,0,6,57698,arbitrary-unitary-block-encoding,True
+FABLE,3,2.8,2,1,6,173094,arbitrary-unitary-block-encoding,True
+FABLE,5,2.8,3,2,6,288490,arbitrary-unitary-block-encoding,True
+FABLE,7,2.8,4,3,6,403886,arbitrary-unitary-block-encoding,True
+FABLE,9,2.8,5,4,6,519282,arbitrary-unitary-block-encoding,True
+PrepSelPrep,1,0.8999999999999999,1,0,67,4148,pauli-lcu-qubitization,True
+PrepSelPrep,3,0.8999999999999999,2,1,67,12444,pauli-lcu-qubitization,True
+PrepSelPrep,5,0.8999999999999999,3,2,67,20740,pauli-lcu-qubitization,True
+PrepSelPrep,7,0.8999999999999999,4,3,67,29036,pauli-lcu-qubitization,True
+PrepSelPrep,9,0.8999999999999999,5,4,67,37332,pauli-lcu-qubitization,True
+qubitization,1,0.8999999999999999,1,0,67,4148,pauli-lcu-qubitization,True
+qubitization,3,0.8999999999999999,2,1,67,12444,pauli-lcu-qubitization,True
+qubitization,5,0.8999999999999999,3,2,67,20740,pauli-lcu-qubitization,True
+qubitization,7,0.8999999999999999,4,3,67,29036,pauli-lcu-qubitization,True
+qubitization,9,0.8999999999999999,5,4,67,37332,pauli-lcu-qubitization,True

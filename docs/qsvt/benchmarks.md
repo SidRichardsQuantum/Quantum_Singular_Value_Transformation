@@ -117,6 +117,25 @@ amplification, error correction, hardware compilation, or data-loading costs.
 Use these reports to compare regimes and identify where a quantum implementation
 would need favorable block encoding, state preparation, and scaling assumptions.
 
+## Accuracy-Resource Frontier
+
+The research layer adds a multi-factor comparison over Poisson, Ising, and
+graph-Laplacian operators; inverse, projector, band-filter, and resolvent
+targets; and embedding, FABLE, PrepSelPrep, and qubitization access models:
+
+```bash
+qsvt research-sweep \
+  --config examples/accuracy_resource_frontier.json \
+  --output-dir results/research/accuracy_resource_frontier
+```
+
+This is an ideal finite spectral-accuracy and logical-resource study. Its
+Pareto rows minimize relative operator error, logical gates, and logical wires.
+It does not report those estimates as compiled depth, success probability,
+hardware runtime, or end-to-end application cost. See
+[Reproducible research sweeps](research.md) for artifact schemas, normalization
+semantics, and omitted layers.
+
 For per-baseline assumptions, see [Classical baseline details](classical_baselines.md).
 For the proxy quantities attached to QSVT comparisons, see
 [QSVT resource model](qsvt_resource_model.md).
