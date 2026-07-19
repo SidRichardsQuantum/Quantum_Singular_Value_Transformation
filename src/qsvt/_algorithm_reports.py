@@ -6,6 +6,17 @@ from __future__ import annotations
 
 from .rescaling import ScaledOperator
 
+ALGORITHM_WORKFLOW_SCHEMA_NAME = "qsvt-algorithm-workflow"
+ALGORITHM_WORKFLOW_SCHEMA_VERSION = "1.0"
+
+
+def algorithm_workflow_schema_fields() -> dict[str, str]:
+    """Return the versioned envelope shared by stable algorithm reports."""
+    return {
+        "schema_name": ALGORITHM_WORKFLOW_SCHEMA_NAME,
+        "schema_version": ALGORITHM_WORKFLOW_SCHEMA_VERSION,
+    }
+
 
 def scaled_operator_report(scaled: ScaledOperator) -> dict[str, object]:
     """

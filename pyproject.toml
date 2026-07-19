@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qsvt-pennylane"
-version = "0.2.15"
+version = "0.2.16"
 description = "Educational utilities and examples for Quantum Singular Value Transformation (QSVT) using PennyLane."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -36,9 +36,9 @@ classifiers = [
 ]
 
 dependencies = [
-  "pennylane>=0.36",
-  "numpy>=1.23",
-  "matplotlib>=3.7",
+  "pennylane>=0.36,<0.46",
+  "numpy>=1.23,<3",
+  "matplotlib>=3.7,<4",
 ]
 
 
@@ -77,6 +77,7 @@ docs = [
 
 release = [
   "build",
+  "setuptools>=68",
   "twine",
   "wheel",
 ]

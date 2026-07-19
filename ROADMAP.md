@@ -247,7 +247,8 @@ notebook narrative.
   research interfaces available but not prematurely stabilized,
 - keep experimental lower-level interfaces clearly labeled and accessible for
   research,
-- split large algorithm and CLI modules by workflow family,
+- keep algorithm and CLI implementations split by workflow family as the
+  supported surface grows,
 - use shared result and report types across Python, CLI, examples, and
   notebooks,
 - keep type annotations, API-status metadata, and generated API documentation

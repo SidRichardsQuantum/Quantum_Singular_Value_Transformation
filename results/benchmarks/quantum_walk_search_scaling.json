@@ -129,6 +129,8 @@
   ],
   "reports": [
     {
+      "schema_name": "qsvt-algorithm-workflow",
+      "schema_version": "1.0",
       "mode": "quantum-walk-search-workflow",
       "implementation_kind": "dense-spectral-polynomial-workflow",
       "truth_contract": {
@@ -696,6 +698,8 @@
       }
     },
     {
+      "schema_name": "qsvt-algorithm-workflow",
+      "schema_version": "1.0",
       "mode": "quantum-walk-search-workflow",
       "implementation_kind": "dense-spectral-polynomial-workflow",
       "truth_contract": {
@@ -1275,6 +1279,8 @@
       }
     },
     {
+      "schema_name": "qsvt-algorithm-workflow",
+      "schema_version": "1.0",
       "mode": "quantum-walk-search-workflow",
       "implementation_kind": "dense-spectral-polynomial-workflow",
       "truth_contract": {
@@ -2254,6 +2260,8 @@
       }
     },
     {
+      "schema_name": "qsvt-algorithm-workflow",
+      "schema_version": "1.0",
       "mode": "quantum-walk-search-workflow",
       "implementation_kind": "dense-spectral-polynomial-workflow",
       "truth_contract": {
@@ -3245,6 +3253,8 @@
       }
     },
     {
+      "schema_name": "qsvt-algorithm-workflow",
+      "schema_version": "1.0",
       "mode": "quantum-walk-search-workflow",
       "implementation_kind": "dense-spectral-polynomial-workflow",
       "truth_contract": {
@@ -5724,6 +5734,8 @@
       }
     },
     {
+      "schema_name": "qsvt-algorithm-workflow",
+      "schema_version": "1.0",
       "mode": "quantum-walk-search-workflow",
       "implementation_kind": "dense-spectral-polynomial-workflow",
       "truth_contract": {

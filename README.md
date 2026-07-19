@@ -64,9 +64,9 @@ pip install -e .
 Requirements:
 
 - Python >= 3.10
-- PennyLane >= 0.36
-- NumPy >= 1.23
-- Matplotlib >= 3.7
+- PennyLane >= 0.36, < 0.46
+- NumPy >= 1.23, < 3
+- Matplotlib >= 3.7, < 4
 
 ## Quick Example
 
@@ -234,7 +234,7 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.2.15`
+Current release: `0.2.16`
 
 ## Notebooks
 

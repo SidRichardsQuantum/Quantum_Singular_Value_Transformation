@@ -33,11 +33,3 @@ myst_enable_extensions = [
     "dollarmath",
 ]
 myst_heading_anchors = 3
-
-# Existing Markdown files include repository-relative links that are useful in
-# GitHub and PyPI views but not all of them resolve as Sphinx doc references.
-suppress_warnings = [
-    "docutils",
-    "myst.header",
-    "myst.xref_missing",
-]

@@ -3,6 +3,23 @@
   "manifest_version": "1.0",
   "rows": [
     {
+      "path": "tests/fixtures/reports/algorithm_workflow_v1.json",
+      "schema_name": "qsvt-algorithm-workflow",
+      "schema_version": "1.0",
+      "supported": true,
+      "migration_required": false,
+      "message": "report schema 'qsvt-algorithm-workflow' version '1.0' is supported",
+      "required_fields": [
+        "implementation_kind",
+        "mode",
+        "schema_name",
+        "schema_version",
+        "truth_contract"
+      ],
+      "missing_fields": [],
+      "unknown_fields": []
+    },
+    {
       "path": "tests/fixtures/reports/block_encoding_qsvt_execution_v1.json",
       "schema_name": "block-encoding-qsvt-execution",
       "schema_version": "1.0",

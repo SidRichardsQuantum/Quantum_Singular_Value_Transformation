@@ -2,6 +2,8 @@ import csv
 import json
 from pathlib import Path
 
+from qsvt.reports import validate_report_schema
+
 BENCHMARK_JSON = [
     Path("results/benchmarks/linear_system_dense_solve.json"),
     Path("results/benchmarks/linear_system_cg_solve.json"),
@@ -49,6 +51,10 @@ def test_committed_benchmark_json_artifacts_are_well_formed():
             assert all(
                 report["resource_proxy"]["proxy_kind"]
                 == "quantum-walk-search-resource-proxy"
+                for report in payload["reports"]
+            )
+            assert all(
+                validate_report_schema(report, require_schema=True).supported
                 for report in payload["reports"]
             )
             continue
@@ -117,6 +123,10 @@ def test_committed_algorithm_json_artifacts_are_well_formed():
     for path in ALGORITHM_JSON:
         assert path.exists(), path
         payload = json.loads(path.read_text(encoding="utf-8"))
+        assert validate_report_schema(payload, require_schema=True).supported
+        assert validate_report_schema(
+            payload["linear_system_workflow"], require_schema=True
+        ).supported
         assert payload["mode"] == "linear-system-comparison-workflow"
         assert payload["implementation_kind"] == "linear-system-solver-comparison"
         assert payload["resource_proxy"]["proxy_kind"] == (

@@ -1,0 +1,7 @@
+{
+  "schema_name": "qsvt-algorithm-workflow",
+  "schema_version": "0.9",
+  "mode": "linear-system-workflow",
+  "implementation_kind": "legacy-dense-workflow",
+  "truth_contract": {}
+}

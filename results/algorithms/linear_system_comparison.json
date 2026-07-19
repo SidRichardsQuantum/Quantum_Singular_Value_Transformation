@@ -1,4 +1,6 @@
 {
+  "schema_name": "qsvt-algorithm-workflow",
+  "schema_version": "1.0",
   "mode": "linear-system-comparison-workflow",
   "implementation_kind": "linear-system-solver-comparison",
   "truth_contract": {
@@ -93,6 +95,8 @@
     ]
   },
   "linear_system_workflow": {
+    "schema_name": "qsvt-algorithm-workflow",
+    "schema_version": "1.0",
     "mode": "linear-system-workflow",
     "implementation_kind": "dense-spectral-polynomial-workflow",
     "truth_contract": {

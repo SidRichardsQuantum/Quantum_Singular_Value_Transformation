@@ -17,7 +17,7 @@ from qsvt.block_encoding import (
     verify_block_encoding,
 )
 from qsvt.matrices import rotated_diagonal
-from qsvt.reports import report_to_jsonable
+from qsvt.reports import report_to_jsonable, validate_report_schema
 from qsvt.spectral import apply_polynomial_to_hermitian
 
 
@@ -180,6 +180,7 @@ def test_block_encoded_qsvt_workflow_matches_spectral_reference():
     )
     report = report_to_jsonable(result.as_report())
 
+    assert validate_report_schema(report, require_schema=True).supported is True
     assert report["mode"] == "block-encoded-qsvt-workflow"
     assert report["implementation_kind"] == (
         "verified-dense-block-encoded-qsvt-workflow"

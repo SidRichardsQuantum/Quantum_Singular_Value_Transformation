@@ -1,4 +1,4 @@
 ```{include} ../../USAGE.md
-:relative-docs: ../../
+:relative-docs: ./
 :relative-images: ../../
 ```

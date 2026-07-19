@@ -184,7 +184,7 @@ structured failure metadata.
 qsvt phase-synthesis --poly "0,1,0,-0.5,0,0.333333"
 ```
 
-See [docs/qsvt/synthesis.md](docs/qsvt/synthesis.md) for the full contract.
+See [docs/qsvt/synthesis.md](./docs/qsvt/synthesis.md) for the full contract.
 
 Use extrema-based boundedness checks when a sampled grid is not sufficient:
 
@@ -360,9 +360,9 @@ execution or provider job submission occurred.
 
 ## Cookbook Scripts
 
-The repository includes short package-client scripts in
-[`examples/`](examples/). They keep common workflows visible without requiring
-a notebook:
+The repository includes short package-client scripts in the
+[`examples/` directory](https://github.com/SidRichardsQuantum/Quantum_Singular_Value_Transformation/tree/main/examples).
+They keep common workflows visible without requiring a notebook:
 
 ```bash
 python examples/design_apply_report.py --output /tmp/qsvt-design-apply.json
@@ -504,7 +504,7 @@ cos_Ht = apply_polynomial_to_hermitian(scaled.matrix, polys.cos_coeffs)
 sin_Ht = apply_polynomial_to_hermitian(scaled.matrix, polys.sin_coeffs)
 ```
 
-See [docs/qsvt/physics.md](docs/qsvt/physics.md) for the detailed physics API
+See [docs/qsvt/physics.md](./docs/qsvt/physics.md) for the detailed physics API
 map.
 
 ## Real Problem Workflow Example
@@ -673,7 +673,9 @@ qsvt report-schema-manifest \
 
 The manifest checks saved JSON reports against the package's supported
 versioned schemas and records unsupported versions, invalid JSON, and missing
-required top-level fields without modifying the original reports. Extra
+required top-level fields without modifying the original reports. Stable
+algorithm results use schema name `qsvt-algorithm-workflow`, version `1.0`,
+with `mode` identifying the concrete workflow. Extra
 top-level fields on known schemas are reported as `unknown_fields` but do not
 fail the audit unless another compatibility error is present.
 
@@ -735,9 +737,9 @@ documentation, build, and distribution metadata checks.
 
 ## Where To Go Next
 
-- [THEORY.md](THEORY.md): conceptual background
-- [docs/qsvt/api_reference.md](docs/qsvt/api_reference.md): public API details
-- [docs/qsvt/design.md](docs/qsvt/design.md): design helper reference
-- [docs/qsvt/templates.md](docs/qsvt/templates.md): reusable template families
-- [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial and real-example notebooks
-- [RESULTS.md](RESULTS.md): reproducible report and plot conventions
+- [THEORY.md](./docs/qsvt/theory.md): conceptual background
+- [docs/qsvt/api_reference.md](./docs/qsvt/api_reference.md): public API details
+- [docs/qsvt/design.md](./docs/qsvt/design.md): design helper reference
+- [docs/qsvt/templates.md](./docs/qsvt/templates.md): reusable template families
+- [docs/qsvt/notebooks.md](./docs/qsvt/notebooks.md): tutorial and real-example notebooks
+- [RESULTS.md](./docs/qsvt/results.md): reproducible report and plot conventions

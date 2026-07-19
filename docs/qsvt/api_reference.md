@@ -229,6 +229,10 @@ write_linear_system_comparison_csv(
 The module also includes simulator-scale workflows that wrap polynomial
 builders with exact dense references. Each workflow has a concise theory page:
 
+All stable algorithm result reports use schema name
+`qsvt-algorithm-workflow`, schema version `1.0`, with `mode` identifying the
+concrete workflow and a required `truth_contract` preserving its claim boundary.
+
 - [`block_encoded_qsvt_workflow`](workflow_block_encoded_qsvt.md)
 - [`linear_system_comparison_workflow`](workflow_linear_system_comparison.md)
 - [`linear_system_workflow`](workflow_linear_system.md)
@@ -1411,4 +1415,4 @@ print(chebyshev_t(3, 0.5))
 - The package is designed for **educational and small-scale explicit use**.
 - Most QSVT examples use `block_encoding="embedding"`.
 - The API is intentionally lightweight and close to the corresponding notebook logic.
-- For conceptual background, see the notebooks and [THEORY.md](../../THEORY.md).
+- For conceptual background, see the notebooks and [theory notes](theory.md).

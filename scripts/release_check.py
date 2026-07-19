@@ -185,6 +185,7 @@ def _run_wheel_smoke() -> None:
                 str(wheel),
             ]
         )
+        _run([str(python), "-m", "pip", "check"])
         _run([str(python), "-c", smoke_code])
         _run([str(python), "-m", "qsvt", "--help"])
         _run([str(python), "-m", "qsvt", "scalar", "--x", "0.5", "--poly", "0,0,1"])
@@ -249,7 +250,16 @@ def main(argv: Sequence[str] | None = None) -> None:
         action="store_true",
         help="Skip installing and smoke-testing the built wheel in a fresh venv.",
     )
+    parser.add_argument(
+        "--wheel-smoke-only",
+        action="store_true",
+        help="Smoke-test the current-version wheel already present in dist/.",
+    )
     args = parser.parse_args(argv)
+
+    if args.wheel_smoke_only:
+        _run_wheel_smoke()
+        return
 
     _check_git_hygiene()
     _check_report_schema_fixtures()

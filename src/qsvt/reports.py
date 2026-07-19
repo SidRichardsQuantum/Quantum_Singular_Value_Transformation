@@ -20,6 +20,7 @@ _SUPPORTED_REPORT_SCHEMAS: dict[str, frozenset[str]] = {
     "block-encoding-qsvt-execution": frozenset({"1.0"}),
     "hardware-qsvt-circuit": frozenset({"1.0"}),
     "hardware-qsvt-execution": frozenset({"1.0"}),
+    "qsvt-algorithm-workflow": frozenset({"1.0"}),
     "qsvt-problem-workflow": frozenset({"1.0"}),
 }
 
@@ -53,6 +54,15 @@ _REQUIRED_REPORT_SCHEMA_FIELDS: dict[str, frozenset[str]] = {
             "implementation_kind",
             "truth_contract",
             "resource_summary",
+        }
+    ),
+    "qsvt-algorithm-workflow": frozenset(
+        {
+            "schema_name",
+            "schema_version",
+            "mode",
+            "implementation_kind",
+            "truth_contract",
         }
     ),
     "qsvt-problem-workflow": frozenset(

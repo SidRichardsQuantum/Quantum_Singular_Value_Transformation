@@ -30,7 +30,7 @@ The repository also includes a sequence of notebooks that introduce QSVT concept
 | goal | start here |
 | --- | --- |
 | Install the package and run a transform | [Usage guide](usage.md) |
-| Run short cookbook scripts | [Cookbook examples](../../examples/) |
+| Run short cookbook scripts | [Cookbook examples](https://github.com/SidRichardsQuantum/Quantum_Singular_Value_Transformation/tree/main/examples) |
 | Understand the mathematical setup | [Theory](theory.md) |
 | Understand linear-system algorithms | [Linear systems](linear_systems.md) |
 | Understand filtering and projector workflows | [Spectral filters](spectral_filters.md) |

@@ -114,6 +114,7 @@ want compact rows that are easy to diff in release artifacts.
 
 | schema | versions | required top-level fields |
 | --- | --- | --- |
+| `qsvt-algorithm-workflow` | `1.0` | `schema_name`, `schema_version`, `mode`, `implementation_kind`, `truth_contract` |
 | `qsvt-problem-workflow` | `1.0` | `schema_name`, `schema_version`, `target`, `truth_contract` |
 | `block-encoding-qsvt-execution` | `1.0` | `schema_name`, `schema_version`, `mode`, `implementation_kind`, `truth_contract`, `resource_summary` |
 | `hardware-qsvt-execution` | `1.0` | `schema_name`, `schema_version`, `mode`, `implementation_kind`, `truth_contract`, `resource_summary` |
@@ -152,7 +153,7 @@ want compact rows that are easy to diff in release artifacts.
 - `save_report_plot(report, path)`
 
 Versioned machine-readable reports currently include
-`qsvt-problem-workflow`, `block-encoding-qsvt-execution`,
+`qsvt-algorithm-workflow`, `qsvt-problem-workflow`, `block-encoding-qsvt-execution`,
 `hardware-qsvt-execution`, and `hardware-qsvt-circuit` at schema version
 `1.0`. Unsupported schema names or versions return an intentional
 migration-required compatibility message before callers rely on stale report

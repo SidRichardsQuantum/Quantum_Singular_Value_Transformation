@@ -20,7 +20,7 @@ from qsvt.algorithms import (
     thermal_gibbs_workflow,
     write_linear_system_comparison_csv,
 )
-from qsvt.reports import report_to_jsonable
+from qsvt.reports import report_to_jsonable, validate_report_schema
 
 HERMitian_2X2 = np.array(
     [
@@ -29,6 +29,16 @@ HERMitian_2X2 = np.array(
     ],
 )
 STATE_2 = np.array([1.0, 0.3])
+
+
+def _validated_algorithm_report(result):
+    report = report_to_jsonable(result.as_report())
+    compatibility = validate_report_schema(report, require_schema=True)
+
+    assert compatibility.supported is True
+    assert report["schema_name"] == "qsvt-algorithm-workflow"
+    assert report["schema_version"] == "1.0"
+    return report
 
 
 def test_singular_value_filtering_workflow_regression():
@@ -47,7 +57,7 @@ def test_singular_value_filtering_workflow_regression():
         input_vector=np.array([1.0, -0.5]),
         num_points=1001,
     )
-    report = report_to_jsonable(result.as_report())
+    report = _validated_algorithm_report(result)
 
     assert report["mode"] == "singular-value-filtering-workflow"
     assert report["implementation_kind"] == "dense-svd-polynomial-workflow"
@@ -75,7 +85,7 @@ def test_singular_value_pseudoinverse_workflow_regression():
         cutoff=0.45,
         num_points=501,
     )
-    report = report_to_jsonable(result.as_report())
+    report = _validated_algorithm_report(result)
 
     assert report["mode"] == "singular-value-pseudoinverse-workflow"
     assert result.polynomial_solution.shape == (2,)
@@ -95,7 +105,7 @@ def test_fermi_dirac_occupation_workflow_regression():
         state=np.array([1.0, 0.0, 1.0]),
         num_points=1001,
     )
-    report = report_to_jsonable(result.as_report())
+    report = _validated_algorithm_report(result)
 
     assert report["mode"] == "fermi-dirac-occupation-workflow"
     assert result.operator_relative_error < 1e-5
@@ -113,7 +123,7 @@ def test_matrix_log_entropy_workflow_regression():
         epsilon=0.05,
         num_points=1201,
     )
-    report = report_to_jsonable(result.as_report())
+    report = _validated_algorithm_report(result)
 
     assert report["mode"] == "matrix-log-entropy-workflow"
     assert result.log_operator_relative_error < 1e-3
@@ -134,7 +144,7 @@ def test_spectral_counting_workflow_regression():
         probe_count=16,
         random_seed=123,
     )
-    report = report_to_jsonable(result.as_report())
+    report = _validated_algorithm_report(result)
 
     assert report["mode"] == "spectral-counting-workflow"
     assert result.exact_count == 3
@@ -152,7 +162,7 @@ def test_fixed_point_amplification_workflow_regression():
         state,
         rounds=4,
     )
-    report = report_to_jsonable(result.as_report())
+    report = _validated_algorithm_report(result)
 
     assert report["mode"] == "fixed-point-amplification-workflow"
     assert result.degree == 4
@@ -179,7 +189,7 @@ def test_linear_system_workflow_regression():
         attempt_synthesis=False,
         apply_qsvt=False,
     )
-    report = report_to_jsonable(result.as_report())
+    report = _validated_algorithm_report(result)
 
     assert report["mode"] == "linear-system-workflow"
     assert report["truth_contract"]["truth_status"] == "validated_polynomial_core"
@@ -244,7 +254,7 @@ def test_linear_system_comparison_workflow_rows():
         apply_qsvt=False,
         cg_tolerance=1e-12,
     )
-    report = report_to_jsonable(comparison.as_report())
+    report = _validated_algorithm_report(comparison)
     rows = {row["solver"]: row for row in report["rows"]}
 
     assert report["mode"] == "linear-system-comparison-workflow"
@@ -331,7 +341,7 @@ def test_quantum_walk_search_workflow_regression():
         num_points=801,
         num_time_points=121,
     )
-    report = report_to_jsonable(result.as_report())
+    report = _validated_algorithm_report(result)
 
     assert report["mode"] == "quantum-walk-search-workflow"
     assert report["implementation_kind"] == "dense-spectral-polynomial-workflow"
@@ -394,7 +404,7 @@ def test_ground_state_filtering_workflow_regression():
         width=0.45,
         num_points=201,
     )
-    report = report_to_jsonable(result.as_report())
+    report = _validated_algorithm_report(result)
 
     assert report["mode"] == "ground-state-filtering-workflow"
     assert report["implementation_kind"] == "dense-spectral-polynomial-workflow"
@@ -418,6 +428,7 @@ def test_hamiltonian_simulation_workflow_regression():
         degree=9,
         num_points=201,
     )
+    _validated_algorithm_report(result)
 
     assert result.state_relative_error < 1e-12
     assert result.operator_relative_error < 1e-12
@@ -433,6 +444,7 @@ def test_resolvent_workflow_regression():
         source=STATE_2,
         num_points=301,
     )
+    _validated_algorithm_report(result)
 
     assert result.operator_relative_error < 0.013
     assert result.response_relative_error is not None
@@ -448,6 +460,7 @@ def test_spectral_density_workflow_regression():
         state=STATE_2,
         num_points=201,
     )
+    _validated_algorithm_report(result)
 
     assert result.trace_density_error < 1e-4
     assert result.state_weight_error is not None
@@ -468,7 +481,7 @@ def test_spectral_thresholding_workflow_regression():
         num_points=401,
         bounded_num_points=801,
     )
-    report = report_to_jsonable(result.as_report())
+    report = _validated_algorithm_report(result)
 
     assert report["mode"] == "spectral-thresholding-workflow"
     assert report["truth_contract"]["target"] == (
@@ -490,6 +503,7 @@ def test_thermal_gibbs_workflow_regression():
         state=STATE_2,
         num_points=201,
     )
+    _validated_algorithm_report(result)
 
     assert result.operator_relative_error < 1e-10
     assert result.density_matrix_relative_error < 1e-10

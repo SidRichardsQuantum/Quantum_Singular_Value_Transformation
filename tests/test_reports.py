@@ -22,6 +22,9 @@ from qsvt.reports import (
 matplotlib.use("Agg")
 
 FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "reports"
+MIGRATION_FIXTURE_DIR = (
+    Path(__file__).resolve().parent / "fixtures" / "report_migrations"
+)
 MANIFEST_FIXTURE = (
     Path(__file__).resolve().parent
     / "fixtures"
@@ -229,6 +232,7 @@ def test_supported_report_schema_registry_matches_fixture_families():
     assert registry["block-encoding-qsvt-execution"] == ("1.0",)
     assert registry["hardware-qsvt-execution"] == ("1.0",)
     assert registry["hardware-qsvt-circuit"] == ("1.0",)
+    assert registry["qsvt-algorithm-workflow"] == ("1.0",)
     assert fixture_pairs <= {
         (schema_name, version)
         for schema_name, versions in registry.items()
@@ -325,6 +329,20 @@ def test_validate_report_schema_reports_intentional_migration_message():
     assert "supported versions: 1.0" in compatibility.message
 
 
+def test_algorithm_workflow_legacy_fixture_requires_intentional_migration():
+    path = MIGRATION_FIXTURE_DIR / "algorithm_workflow_v0.json"
+    report = load_report(path)
+    compatibility = validate_report_schema(report, require_schema=True)
+
+    assert compatibility.schema_name == "qsvt-algorithm-workflow"
+    assert compatibility.schema_version == "0.9"
+    assert compatibility.supported is False
+    assert compatibility.migration_required is True
+    assert "supported versions: 1.0" in compatibility.message
+    with pytest.raises(ValueError, match="supported versions: 1.0"):
+        load_report_with_schema(path)
+
+
 def test_report_schema_manifest_summarizes_paths(tmp_path):
     valid_path = tmp_path / "valid.json"
     invalid_path = tmp_path / "invalid.json"
@@ -380,6 +398,7 @@ def test_write_report_schema_manifest_csv_writes_compact_rows(tmp_path):
 def test_report_schema_manifest_fixture_matches_committed_report_fixtures():
     fixture = load_report(MANIFEST_FIXTURE)
     paths = [
+        Path("tests/fixtures/reports/algorithm_workflow_v1.json"),
         Path("tests/fixtures/reports/block_encoding_qsvt_execution_v1.json"),
         Path("tests/fixtures/reports/hardware_qsvt_circuit_v1.json"),
         Path("tests/fixtures/reports/hardware_qsvt_execution_v1.json"),

@@ -4,7 +4,7 @@ The results pages collect the current numerical evidence for the package:
 notebook execution, QSVT-vs-classical agreement, polynomial design diagnostics,
 and committed artefacts that can be regenerated from the command line.
 
-The repository root [`RESULTS.md`](../../RESULTS.md) remains the compact
+The repository root [`RESULTS.md`](https://github.com/SidRichardsQuantum/Quantum_Singular_Value_Transformation/blob/main/RESULTS.md) remains the compact
 source-of-truth ledger. This page is the portfolio-style summary for rendered
 documentation.
 
@@ -34,7 +34,7 @@ documentation.
     <span class="metric-label">diagonal QSVT max-error scale</span>
   </div>
   <div class="metric-card">
-    <span class="metric-value">0.2.15</span>
+    <span class="metric-value">0.2.16</span>
     <span class="metric-label">current release marker</span>
   </div>
 </div>

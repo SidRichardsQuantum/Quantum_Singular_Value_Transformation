@@ -1,0 +1,14 @@
+{
+  "schema_name": "qsvt-algorithm-workflow",
+  "schema_version": "1.0",
+  "mode": "linear-system-workflow",
+  "implementation_kind": "dense-spectral-polynomial-workflow",
+  "truth_contract": {
+    "workflow": "linear-system-workflow",
+    "truth_status": "validated_polynomial_core",
+    "is_end_to_end_quantum_algorithm": false
+  },
+  "degree": 8,
+  "polynomial_residual_norm": 0.031,
+  "polynomial_relative_error": 0.028
+}

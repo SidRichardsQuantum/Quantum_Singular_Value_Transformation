@@ -1,5 +1,40 @@
 # Changelog
 
+## [0.2.16] – 19th July 2026
+
+### Added
+
+- added the shared `qsvt-algorithm-workflow` report schema at version `1.0`
+  across all stable algorithm workflow result reports
+- added a committed algorithm-workflow schema fixture, an unsupported legacy
+  migration fixture, and release checks that keep every workflow result on the
+  versioned report envelope
+- added architecture regression checks for the public algorithm and CLI
+  facades and their private workflow-family modules
+
+### Changed
+
+- split the former algorithm monolith into linear-system, dynamics,
+  singular-value, block-encoding, spectral-filter, response, and thermal
+  workflow modules while preserving the `qsvt.algorithms` public facade
+- split CLI command implementations and parser registration into core, design,
+  synthesis/reporting, workflow, and benchmark modules while preserving the
+  existing command names, order, handlers, and `qsvt.cli` imports
+- refreshed committed algorithm and quantum-walk benchmark reports with the
+  shared workflow schema envelope and added runtime schema validation across
+  every stable workflow regression
+- made the Sphinx warnings-as-errors build strict by fixing repository-relative
+  documentation links and removing broad warning suppressions
+- added `setuptools>=68` to the release extra so the documented
+  `--no-build-isolation` release preflight has its declared build backend
+  available
+- bounded the supported runtime dependency ranges to PennyLane `0.36` through
+  `0.45`, NumPy `1.x` and `2.x`, and Matplotlib `3.x`
+- strengthened the publish-gated CI path with minimum/current dependency
+  compatibility, full notebook execution, `pip check`, and smoke tests against
+  the exact wheel artifact uploaded for release
+- updated release markers and package metadata for `0.2.16`
+
 ---
 
 ## [0.2.15] – 8th July 2026

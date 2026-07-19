@@ -125,9 +125,11 @@ def test_release_preflight_runs_built_wheel_smoke_by_default():
     source = _read_text("scripts/release_check.py")
 
     assert '"--skip-wheel-smoke"' in source
+    assert '"--wheel-smoke-only"' in source
     assert "def _run_wheel_smoke" in source
     assert '"--system-site-packages"' in source
     assert '"--no-deps"' in source
+    assert '_run([str(python), "-m", "pip", "check"])' in source
     assert '"qsvt"' in source
     assert '"scalar"' in source
     assert '"report-schema-manifest"' in source
@@ -161,7 +163,27 @@ def test_release_extra_includes_no_isolation_build_requirements():
     project = tomllib.loads(_read_text("pyproject.toml"))["project"]
     release_deps = set(project["optional-dependencies"]["release"])
 
-    assert {"build", "twine", "wheel"} <= release_deps
+    assert {"build", "setuptools>=68", "twine", "wheel"} <= release_deps
+
+
+def test_publish_gated_ci_runs_compatibility_notebooks_and_wheel_smoke():
+    ordered = _read_text(".github/workflows/ordered-actions.yml")
+    publish = _read_text(".github/workflows/publish.yml")
+
+    assert "dependency-compatibility:" in ordered
+    assert "pytest -m notebook tests/test_real_example_notebooks.py" in ordered
+    assert "python scripts/release_check.py --wheel-smoke-only" in ordered
+    assert 'workflow_id: "ordered-actions.yml"' in publish
+
+
+def test_runtime_dependencies_are_bounded_to_supported_major_ranges():
+    project = tomllib.loads(_read_text("pyproject.toml"))["project"]
+
+    assert set(project["dependencies"]) == {
+        "matplotlib>=3.7,<4",
+        "numpy>=1.23,<3",
+        "pennylane>=0.36,<0.46",
+    }
 
 
 def test_mypy_uses_runtime_python_for_current_dependency_stubs():
@@ -239,3 +261,99 @@ def test_stable_algorithm_workflows_have_theory_pages():
         assert workflow_name in page_text
         assert page_name in algorithms_doc
         assert page_name in api_doc
+
+
+def test_algorithm_workflow_result_surface_is_complete():
+    import qsvt.algorithms as algorithms
+
+    result_classes = {
+        name: value
+        for name, value in vars(algorithms).items()
+        if name.endswith("Result")
+        and isinstance(value, type)
+        and value.__module__.startswith("qsvt._algorithm_")
+        and hasattr(value, "as_report")
+    }
+
+    assert set(result_classes) == {
+        "BlockEncodedQSVTWorkflowResult",
+        "FermiDiracWorkflowResult",
+        "FixedPointAmplificationWorkflowResult",
+        "GroundStateFilteringWorkflowResult",
+        "HamiltonianSimulationWorkflowResult",
+        "LinearSystemComparisonResult",
+        "LinearSystemWorkflowResult",
+        "MatrixLogEntropyWorkflowResult",
+        "QuantumWalkSearchWorkflowResult",
+        "ResolventWorkflowResult",
+        "SingularValueFilteringWorkflowResult",
+        "SingularValuePseudoinverseWorkflowResult",
+        "SpectralCountingWorkflowResult",
+        "SpectralDensityWorkflowResult",
+        "SpectralThresholdingWorkflowResult",
+        "ThermalGibbsWorkflowResult",
+    }
+
+
+def test_algorithm_and_cli_facades_delegate_to_family_modules():
+    algorithm_source = _read_text("src/qsvt/algorithms.py")
+    spectral_source = _read_text("src/qsvt/_algorithm_spectral.py")
+    cli_source = _read_text("src/qsvt/cli.py")
+    facade_sources = algorithm_source + spectral_source + cli_source
+
+    assert len(algorithm_source.splitlines()) < 150
+    assert len(cli_source.splitlines()) < 250
+    for module in (
+        "_algorithm_block_encoding",
+        "_algorithm_dynamics",
+        "_algorithm_linear_systems",
+        "_algorithm_response",
+        "_algorithm_singular_values",
+        "_algorithm_spectral_filters",
+        "_algorithm_thermal",
+        "_cli_benchmark_commands",
+        "_cli_core_commands",
+        "_cli_design_commands",
+        "_cli_synthesis_commands",
+        "_cli_workflow_commands",
+    ):
+        assert f"from .{module} import" in facade_sources
+
+
+def test_cli_facade_preserves_public_command_handler_exports():
+    import qsvt.cli as cli
+
+    expected_handlers = {
+        "cmd_apply_design",
+        "cmd_benchmark_cg_solve",
+        "cmd_benchmark_dense_solve",
+        "cmd_benchmark_eigh",
+        "cmd_benchmark_polynomial",
+        "cmd_benchmark_spectral_function",
+        "cmd_boundedness_certificate",
+        "cmd_cheb",
+        "cmd_compare_report",
+        "cmd_compatibility_report",
+        "cmd_design_compatibility",
+        "cmd_design_report",
+        "cmd_design_sweep",
+        "cmd_design_workflow",
+        "cmd_diag",
+        "cmd_examples",
+        "cmd_execute_spec",
+        "cmd_linear_system_compare",
+        "cmd_matrix_report",
+        "cmd_mixed_parity_synthesis",
+        "cmd_phase_solver_benchmark",
+        "cmd_phase_synthesis",
+        "cmd_poly",
+        "cmd_problem_workflow",
+        "cmd_report_schema_manifest",
+        "cmd_resource_report",
+        "cmd_scalar",
+        "cmd_template_report",
+        "cmd_threshold_workflow",
+    }
+
+    assert expected_handlers <= set(cli.__all__)
+    assert all(hasattr(cli, name) for name in expected_handlers)

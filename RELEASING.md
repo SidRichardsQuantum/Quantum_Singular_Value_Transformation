@@ -13,12 +13,14 @@ Use this checklist before publishing a package release.
    ```
 
 5. Confirm the wheel smoke step installs the built wheel in a fresh virtual
-   environment, imports `qsvt`, checks `py.typed`, validates API-status labels,
-   runs `qsvt --help`, and executes a minimal scalar CLI command.
+   environment, runs `pip check`, imports `qsvt`, checks `py.typed`, validates
+   API-status labels, runs `qsvt --help`, and executes minimal scalar and report
+   schema CLI commands.
 6. Confirm generated outputs remain untracked except for deliberate research
    artifacts under `results/`.
-7. Publish only after CI passes for lint, tests, dependency compatibility,
-   package build, docs, notebook checks, and ordered release gates.
+7. Publish only after the tagged commit's Ordered Actions run passes lint,
+   tests, dependency compatibility, integration, docs, notebook execution,
+   package build, metadata validation, and the exact-wheel smoke test.
 
 Live provider or paid hardware execution is not part of the default release
 gate. Keep those checks behind explicit opt-in workflows and document the

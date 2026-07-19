@@ -67,9 +67,42 @@ jobs:
           name: coverage-${{ matrix.python-version }}
           path: coverage.xml
 
+  dependency-compatibility:
+    runs-on: ubuntu-latest
+    needs: lint
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: py310-min-supported
+            python-version: "3.10"
+            numpy-constraint: "numpy>=1.23,<2"
+            pennylane-constraint: "pennylane>=0.36,<0.40"
+          - name: py313-current-supported
+            python-version: "3.13"
+            numpy-constraint: "numpy>=2,<3"
+            pennylane-constraint: "pennylane>=0.45,<0.46"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package and constrained dependencies
+        run: |
+          python -m pip install -e ".[test]"
+          python -m pip install "${{ matrix.numpy-constraint }}" "${{ matrix.pennylane-constraint }}"
+
+      - name: Run compatibility smoke tests
+        run: pytest -m "not notebook" tests/test_qsvt_smoke.py tests/test_execution.py tests/test_hhl_execution.py tests/test_block_encoding.py tests/test_algorithm_workflow_regressions.py tests/test_reports.py
+
   integration:
     runs-on: ubuntu-latest
-    needs: tests
+    needs: [tests, dependency-compatibility]
 
     steps:
       - name: Check out repository
@@ -111,6 +144,9 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e ".[dev,docs]"
 
+      - name: Execute notebooks
+        run: pytest -m notebook tests/test_real_example_notebooks.py
+
       - name: Verify committed notebook result artefacts
         run: |
           python scripts/extract_notebook_plots.py --preset all --write-docs
@@ -141,6 +177,9 @@ jobs:
 
       - name: Check distribution metadata
         run: python -m twine check dist/*
+
+      - name: Smoke-test built wheel
+        run: python scripts/release_check.py --wheel-smoke-only
 
       - name: Upload distribution artifacts
         uses: actions/upload-artifact@v4

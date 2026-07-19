@@ -31,3 +31,6 @@ jobs:
 
       - name: Check distribution metadata
         run: python -m twine check dist/*
+
+      - name: Smoke-test built wheel
+        run: python scripts/release_check.py --wheel-smoke-only

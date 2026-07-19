@@ -175,6 +175,11 @@ and papers can preserve the same claim boundary as the code:
 - `pennylane_qsvt_check` records whether that run attempted and succeeded at a
   small backend QSVT block check.
 
+Stable `qsvt.algorithms` result reports also share the
+`qsvt-algorithm-workflow` schema at version `1.0`. The `mode` field identifies
+the concrete workflow while the common schema envelope guarantees
+`implementation_kind` and `truth_contract` metadata across workflow families.
+
 Direct `qsvt-transform-report` and `qsvt-matrix-transform-report` payloads use
 `implementation_kind = "pennylane-small-qsvt-verification"` when they compare
 an explicit small QSVT block against a classical polynomial reference.
