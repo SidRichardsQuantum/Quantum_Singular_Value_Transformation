@@ -32,8 +32,8 @@ jobs:
       - name: Run Ruff
         run: ruff check .
 
-      - name: Check formatting
-        run: ruff format --check src tests
+      - name: Check Black formatting
+        run: black --check .
 
       - name: Run mypy
         run: mypy src/qsvt

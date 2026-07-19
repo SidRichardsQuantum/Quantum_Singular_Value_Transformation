@@ -265,7 +265,8 @@ def main(argv: Sequence[str] | None = None) -> None:
     _check_report_schema_fixtures()
     _require_module("ruff", "lint")
     _run(_python_module("ruff", "check", "."))
-    _run(_python_module("ruff", "format", "--check", "src", "tests"))
+    _require_module("black", "lint")
+    _run(_python_module("black", "--check", "."))
     if not args.skip_type:
         _require_module("mypy", "type")
         _run(_python_module("mypy", "src/qsvt"))
