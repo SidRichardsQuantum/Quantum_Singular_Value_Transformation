@@ -432,6 +432,9 @@ For a concrete `BlockEncodingSpec`, use
 `estimate_encoding_aware_resources(spec, coeffs)`. It reports normalization,
 actual alternating forward/adjoint query counts, and PennyLane logical
 estimator output for the selected matrix or Pauli-LCU model when available.
+On supported environments without `pennylane.estimator`, it emits an explicitly
+labeled logical-primitive fallback instead of silently dropping gates and
+wires.
 It explicitly remains a logical algorithm estimate, not a fault-tolerant
 estimate.
 

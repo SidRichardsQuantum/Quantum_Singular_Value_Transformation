@@ -20,6 +20,16 @@ These quantities are useful because degree usually dominates the number of
 signal uses in an idealized QSVT sequence. They are not enough to determine
 runtime by themselves.
 
+For a concrete block-encoding specification,
+`estimate_encoding_aware_resources` first uses PennyLane's logical QSVT
+estimator when that module is available. Older supported PennyLane releases do
+not provide it, so the package falls back to version-independent logical
+primitives: block-encoding queries and projector phases for opaque encodings,
+or LCU preparation, SELECT, inverse preparation, and projector phases for
+Pauli-LCU encodings. The report records which estimator was used. Fallback
+primitive counts are not a hardware gate-set decomposition and must not be
+compared directly with provider-compiled gates.
+
 Every resource report includes a `truth_contract` field with
 `implementation_kind = "polynomial-resource-proxy"` and
 `is_end_to_end_quantum_resource_estimate = false`. The report is truthful only

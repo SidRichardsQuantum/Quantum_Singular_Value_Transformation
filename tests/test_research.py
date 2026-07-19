@@ -3,6 +3,7 @@ import json
 import pytest
 
 import qsvt
+import qsvt.resources as resource_module
 from qsvt.__main__ import main
 from qsvt.reports import validate_report_schema
 from qsvt.research import (
@@ -168,6 +169,35 @@ def test_accuracy_resource_frontier_compares_four_access_models(tmp_path):
         (tmp_path / "frontier.json").read_text(encoding="utf-8")
     )
     assert validate_report_schema(frontier_report, require_schema=True).supported
+
+
+def test_accuracy_resource_frontier_remains_pareto_eligible_without_qre(
+    monkeypatch,
+):
+    def unavailable_estimator():
+        raise ModuleNotFoundError("simulated older PennyLane")
+
+    monkeypatch.setattr(
+        resource_module,
+        "_load_pennylane_estimator",
+        unavailable_estimator,
+    )
+    result = run_accuracy_resource_frontier(
+        _small_spec(
+            access_models=("embedding", "fable", "prepselprep", "qubitization"),
+        ),
+        fail_fast=True,
+    )
+
+    assert len(result.pareto_rows) >= 1
+    assert all(row["total_gates"] > 0 for row in result.frontier_rows)
+    assert all(row["total_wires"] > 0 for row in result.frontier_rows)
+    assert all(
+        component["resource_estimate"]["estimator_kind"]
+        == "qsvt.logical-primitive-fallback"
+        for report in result.sweep.trial_reports
+        for component in report["result"]["components"]
+    )
 
 
 def test_accuracy_resource_frontier_supports_all_target_families():

@@ -46,6 +46,9 @@
   the roadmap to treat the runner and initial frontier as implemented
   foundations while retaining compiled depth, executable success probability,
   noise, and broader operator studies as future work
+- added an explicitly labeled logical-primitive resource fallback for supported
+  Python/PennyLane combinations that predate `pennylane.estimator`, preserving
+  encoding-aware gates, wires, flagship reports, and research Pareto rows
 
 ## [0.2.16] – 19th July 2026
 

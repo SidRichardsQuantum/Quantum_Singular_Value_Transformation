@@ -4,6 +4,7 @@ import numpy as np
 import pennylane as qml
 import pytest
 
+import qsvt.resources as resource_module
 from qsvt.__main__ import main
 from qsvt.block_encoding import (
     matrix_block_encoding_spec,
@@ -139,6 +140,36 @@ def test_encoding_aware_resources_cover_matrix_and_pauli_lcu_models():
         pauli_estimate.as_report()["truth_contract"]["is_fault_tolerant_estimate"]
         is False
     )
+
+
+def test_encoding_aware_resources_have_a_version_independent_fallback(monkeypatch):
+    def unavailable_estimator():
+        raise ModuleNotFoundError("simulated older PennyLane")
+
+    monkeypatch.setattr(
+        resource_module,
+        "_load_pennylane_estimator",
+        unavailable_estimator,
+    )
+    operator = qml.dot([0.4, 0.6], [qml.Z(1), qml.X(1)])
+    spec = pennylane_operator_block_encoding_spec(
+        operator,
+        encoding_wires=[0],
+        block_encoding="prepselprep",
+    )
+
+    estimate = estimate_encoding_aware_resources(spec, [0.0, 1.0])
+    truth = estimate.as_report()["truth_contract"]
+
+    assert estimate.estimator_available is True
+    assert estimate.estimator_kind == "qsvt.logical-primitive-fallback"
+    assert estimate.estimator_model == "pauli-lcu-qubitization"
+    assert estimate.total_wires is not None
+    assert estimate.total_gates is not None
+    assert estimate.total_gates > 0
+    assert estimate.error_type == "ModuleNotFoundError"
+    assert truth["uses_logical_primitive_fallback"] is True
+    assert truth["uses_pennylane_logical_estimator"] is False
 
 
 @pytest.mark.parametrize(

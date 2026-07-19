@@ -17,6 +17,14 @@ from .block_encoding import BlockEncodingSpec
 from .compatibility import qsvt_compatibility_report
 from .polynomials import polynomial_degree
 
+_FallbackResourceData = tuple[
+    str,
+    int,
+    int,
+    dict[str, int],
+    tuple[str, ...],
+]
+
 
 @dataclass(frozen=True)
 class ResourceEstimate:
@@ -125,6 +133,12 @@ class EncodingAwareResourceEstimate:
                 ),
                 "includes_encoding_normalization": True,
                 "includes_selected_block_encoding_model": self.total_gates is not None,
+                "uses_pennylane_logical_estimator": (
+                    self.estimator_kind == "pennylane.estimator.QSVT"
+                ),
+                "uses_logical_primitive_fallback": (
+                    self.estimator_kind == "qsvt.logical-primitive-fallback"
+                ),
                 "omitted_costs": list(self.omitted_costs),
             },
         }
@@ -301,6 +315,7 @@ def estimate_encoding_aware_resources(
         "error_correction_cycle_time",
     )
     estimator_available = False
+    estimator_kind = "pennylane.estimator.QSVT"
     estimator_model = "degree-and-access-model-only"
     total_wires: int | None = None
     total_gates: int | None = None
@@ -309,11 +324,10 @@ def estimate_encoding_aware_resources(
     error: str | None = None
 
     try:
-        import pennylane.estimator as qre
+        qre = _load_pennylane_estimator()
 
         if not hasattr(qre, "QSVT") or not hasattr(qre, "estimate"):
             raise AttributeError("PennyLane logical QSVT estimator is unavailable.")
-        estimator_available = True
         resource_block, estimator_model, model_assumptions = (
             _pennylane_resource_block_encoding(spec, qre)
         )
@@ -333,9 +347,24 @@ def estimate_encoding_aware_resources(
             str(getattr(operation, "name", operation)): int(count)
             for operation, count in estimated.gate_types.items()
         }
+        estimator_available = True
     except Exception as exc:
         error_type = type(exc).__name__
         error = str(exc)
+        (
+            estimator_model,
+            total_wires,
+            total_gates,
+            gate_counts,
+            fallback_assumptions,
+        ) = _logical_primitive_fallback(
+            spec,
+            degree,
+            requested_gate_set=normalized_gate_set,
+        )
+        assumptions.extend(fallback_assumptions)
+        estimator_available = True
+        estimator_kind = "qsvt.logical-primitive-fallback"
 
     return EncodingAwareResourceEstimate(
         degree=degree,
@@ -347,7 +376,7 @@ def estimate_encoding_aware_resources(
         signal_operator_calls=(degree + 1) // 2,
         inverse_signal_operator_calls=degree // 2,
         estimator_available=estimator_available,
-        estimator_kind="pennylane.estimator.QSVT",
+        estimator_kind=estimator_kind,
         estimator_model=estimator_model,
         gate_set=normalized_gate_set,
         total_wires=total_wires,
@@ -360,62 +389,140 @@ def estimate_encoding_aware_resources(
     )
 
 
+def _load_pennylane_estimator() -> Any:
+    import pennylane.estimator as qre
+
+    return qre
+
+
+def _logical_primitive_fallback(
+    spec: BlockEncodingSpec,
+    degree: int,
+    *,
+    requested_gate_set: tuple[str, ...] | None,
+) -> _FallbackResourceData:
+    """Count auditable logical primitives when PennyLane's estimator is absent."""
+    query_count = degree
+    projector_phase_count = degree + 1
+    pauli_summary = _pauli_term_summary(spec)
+    assumptions = [
+        (
+            "PennyLane's logical estimator is unavailable; counts use the "
+            "package's version-independent logical-primitive fallback."
+        ),
+        (
+            "Fallback gates are block-encoding or LCU primitives, not a "
+            "hardware gate-set decomposition."
+        ),
+    ]
+    if requested_gate_set is not None:
+        assumptions.append(
+            "The requested gate set is retained as metadata but is not applied "
+            "by the logical-primitive fallback."
+        )
+
+    if pauli_summary is not None:
+        pauli_terms, identity_terms = pauli_summary
+        term_count = sum(pauli_terms.values()) + identity_terms
+        system_qubits = _ceil_log2(spec.logical_shape[0])
+        selection_qubits = max(1, _ceil_log2(term_count))
+        total_wires = system_qubits + max(
+            selection_qubits,
+            len(spec.encoding_wires),
+        )
+        gate_counts = {
+            "LCUStatePreparation": 2 * query_count,
+            "SelectPauli": query_count,
+            "QSVTProjectorPhase": projector_phase_count,
+        }
+        assumptions.append(
+            "Each Pauli-LCU query counts preparation, SELECT, and inverse "
+            "preparation as separate logical primitives."
+        )
+        return (
+            "pauli-lcu-qubitization",
+            total_wires,
+            sum(gate_counts.values()),
+            gate_counts,
+            tuple(assumptions),
+        )
+
+    total_wires = max(1, len(spec.encoding_wires))
+    gate_counts = {
+        "BlockEncodingQuery": query_count,
+        "QSVTProjectorPhase": projector_phase_count,
+    }
+    assumptions.append(
+        "Each opaque block-encoding application counts as one logical query "
+        "primitive."
+    )
+    return (
+        "arbitrary-unitary-block-encoding",
+        total_wires,
+        sum(gate_counts.values()),
+        gate_counts,
+        tuple(assumptions),
+    )
+
+
+def _pauli_term_summary(
+    spec: BlockEncodingSpec,
+) -> tuple[dict[str, int], int] | None:
+    if spec.kind != "pennylane-operator":
+        return None
+    pauli_rep = getattr(spec.source, "pauli_rep", None)
+    if not pauli_rep:
+        return None
+    pauli_terms: dict[str, int] = {}
+    identity_terms = 0
+    for word in pauli_rep:
+        letters = "".join(str(letter) for _, letter in sorted(dict(word).items()))
+        if not letters:
+            identity_terms += 1
+            continue
+        pauli_terms[letters] = pauli_terms.get(letters, 0) + 1
+    if not pauli_terms:
+        return None
+    return pauli_terms, identity_terms
+
+
 def _pennylane_resource_block_encoding(
     spec: BlockEncodingSpec,
     qre: Any,
 ) -> tuple[Any, str, tuple[str, ...]]:
-    if spec.kind == "pennylane-operator":
-        source = spec.source
-        pauli_rep = getattr(source, "pauli_rep", None)
-        if pauli_rep:
-            pauli_terms: dict[str, int] = {}
-            identity_terms = 0
-            for word in pauli_rep:
-                letters = "".join(
-                    str(letter) for _, letter in sorted(dict(word).items())
-                )
-                if not letters:
-                    identity_terms += 1
-                    continue
-                label = letters
-                pauli_terms[label] = pauli_terms.get(label, 0) + 1
-            if pauli_terms:
-                system_qubits = _ceil_log2(spec.logical_shape[0])
-                hamiltonian = qre.PauliHamiltonian(
-                    num_qubits=system_qubits,
-                    pauli_terms=pauli_terms,
-                    one_norm=float(spec.alpha),
-                )
-                select = qre.SelectPauli(hamiltonian)
-                preparation = qre.QROMStatePreparation(
-                    num_state_qubits=max(
-                        1,
-                        _ceil_log2(sum(pauli_terms.values()) + identity_terms),
-                    ),
-                )
-                return (
-                    qre.Qubitization(preparation, select),
-                    "pauli-lcu-qubitization",
-                    (
-                        (
-                            "Pauli terms are grouped by Pauli-word shape for logical "
-                            "costing."
-                        ),
-                        (
-                            f"{identity_terms} identity term(s) add normalization but "
-                            "no SELECT gates."
-                        ),
-                        (
-                            "PrepSelPrep is costed with the available Pauli-LCU "
-                            "qubitization resource model."
-                            if spec.block_encoding == "prepselprep"
-                            else (
-                                "The declared qubitization access model is costed "
-                                "directly."
-                            )
-                        ),
-                    ),
-                )
+    pauli_summary = _pauli_term_summary(spec)
+    if pauli_summary is not None:
+        pauli_terms, identity_terms = pauli_summary
+        system_qubits = _ceil_log2(spec.logical_shape[0])
+        hamiltonian = qre.PauliHamiltonian(
+            num_qubits=system_qubits,
+            pauli_terms=pauli_terms,
+            one_norm=float(spec.alpha),
+        )
+        select = qre.SelectPauli(hamiltonian)
+        preparation = qre.QROMStatePreparation(
+            num_state_qubits=max(
+                1,
+                _ceil_log2(sum(pauli_terms.values()) + identity_terms),
+            ),
+        )
+        return (
+            qre.Qubitization(preparation, select),
+            "pauli-lcu-qubitization",
+            (
+                "Pauli terms are grouped by Pauli-word shape for logical costing.",
+                (
+                    f"{identity_terms} identity term(s) add normalization but "
+                    "no SELECT gates."
+                ),
+                (
+                    "PrepSelPrep is costed with the available Pauli-LCU "
+                    "qubitization resource model."
+                    if spec.block_encoding == "prepselprep"
+                    else "The declared qubitization access model is costed directly."
+                ),
+            ),
+        )
 
     wire_count = max(1, len(spec.encoding_wires))
     return (
