@@ -101,6 +101,11 @@ The contract states that the workflow is a dense spectral-polynomial
 implementation, not an end-to-end quantum algorithm. It records:
 
 - the concrete target being approximated,
+- an artifact-derived `execution_tier`, with separate flags for circuit
+  evaluation, QNode execution, and physical-device execution,
+- per-polynomial design and QSVT certification domains, output prefactors,
+  extrema-based boundedness certificates, parity, realizability class, and
+  parity-decomposition requirements,
 - the implemented pieces: validation, spectral rescaling, polynomial
   construction/application, dense classical reference, and numerical
   diagnostics,
@@ -110,6 +115,14 @@ implementation, not an end-to-end quantum algorithm. It records:
 - omitted quantum layers such as block-encoding cost, state preparation,
   success-probability management, readout, amplitude amplification,
   fault-tolerant synthesis, and hardware compilation.
+
+The `truth_status` is selected from the evidence produced by that run. In
+particular, mixed-parity and out-of-bounds polynomials remain valid dense
+polynomial studies but are not labeled as single-sequence QSVT circuits.
+
+New reports emit `qsvt-algorithm-workflow` schema `1.1`. Schema `1.0` remains
+readable; `migrate_algorithm_workflow_report` upgrades legacy mappings only
+when retained coefficients allow the 1.1 evidence to be derived.
 
 This makes the workflows useful for real physics/math studies: users can plug
 in concrete finite models, measure approximation error and degree requirements,

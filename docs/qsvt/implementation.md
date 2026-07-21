@@ -167,7 +167,16 @@ is intentionally machine-readable so downstream notebooks, benchmark tables,
 and papers can preserve the same claim boundary as the code:
 
 - `implementation_kind` is `dense-spectral-polynomial-workflow`.
-- `truth_status` is `validated_polynomial_core`.
+- `execution_tier` distinguishes a dense `polynomial_core` from a verified
+  finite `qsvt_circuit`; QNode and physical-device execution are recorded
+  separately.
+- `truth_status` is derived from the exact polynomial evidence rather than
+  being a single generic value.
+- `polynomial_evidence` records each component's coefficients, design and QSVT
+  certification domains, output prefactor, boundedness certificate, parity,
+  realizability class, and parity-decomposition requirement.
+- `resource_completeness` remains `partial` while required quantum layers are
+  assumed or omitted.
 - `is_end_to_end_quantum_algorithm` is `false`.
 - `implemented_components` list the dense numerical operations actually run.
 - `assumed_quantum_components` and `omitted_quantum_costs` list the layers that
@@ -175,9 +184,15 @@ and papers can preserve the same claim boundary as the code:
 - `pennylane_qsvt_check` records whether that run attempted and succeeded at a
   small backend QSVT block check.
 
+Truth-contract semantic audits independently recompute the polynomial
+classification and reject circuit or hardware tiers that contradict the
+reported execution and realizability artifacts.
+
 Stable `qsvt.algorithms` result reports also share the
-`qsvt-algorithm-workflow` schema at version `1.0`. The `mode` field identifies
-the concrete workflow while the common schema envelope guarantees
+`qsvt-algorithm-workflow` schema. New reports use version `1.1`, whose truth
+contract guarantees artifact-derived execution-tier and polynomial evidence;
+version `1.0` remains supported for reading. The `mode` field identifies the
+concrete workflow while the common schema envelope guarantees
 `implementation_kind` and `truth_contract` metadata across workflow families.
 
 Direct `qsvt-transform-report` and `qsvt-matrix-transform-report` payloads use

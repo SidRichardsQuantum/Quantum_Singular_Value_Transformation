@@ -69,6 +69,7 @@ _STABLE_NAMES = frozenset(
         "linear_system_workflow",
         "load_report",
         "load_report_with_schema",
+        "migrate_algorithm_workflow_report",
         "matrix_log_entropy_workflow",
         "parity_components",
         "plot_benchmark_timings",

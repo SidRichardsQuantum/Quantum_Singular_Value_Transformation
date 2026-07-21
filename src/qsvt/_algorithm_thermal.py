@@ -64,6 +64,10 @@ class ThermalGibbsWorkflowResult:
             "truth_contract": algorithm_truth_contract(
                 "thermal-gibbs-workflow",
                 target="imaginary-time Boltzmann weighting and Gibbs normalization",
+                polynomials={"boltzmann_weight": self.coeffs},
+                polynomial_output_prefactors={
+                    "boltzmann_weight": self.prefactor,
+                },
             ),
             "beta": self.beta,
             "degree": self.degree,
@@ -114,6 +118,7 @@ class FermiDiracWorkflowResult:
             "truth_contract": algorithm_truth_contract(
                 "fermi-dirac-occupation-workflow",
                 target="finite-temperature Fermi-Dirac spectral occupation",
+                polynomials={"fermi_dirac_occupation": self.coeffs},
             ),
             "chemical_potential": self.chemical_potential,
             "beta": self.beta,
@@ -160,6 +165,14 @@ class MatrixLogEntropyWorkflowResult:
             "truth_contract": algorithm_truth_contract(
                 "matrix-log-entropy-workflow",
                 target="regularized matrix logarithm and x log x entropy density",
+                polynomials={
+                    "matrix_log": self.log_coeffs,
+                    "entropy_density": self.entropy_coeffs,
+                },
+                polynomial_design_domains={
+                    "matrix_log": (0.0, 1.0),
+                    "entropy_density": (0.0, 1.0),
+                },
             ),
             "epsilon": self.epsilon,
             "degree": self.degree,

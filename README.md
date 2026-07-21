@@ -280,7 +280,7 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.2.17`
+Current release: `0.2.18`
 
 ## Notebooks
 
@@ -392,6 +392,18 @@ interpretation, and the omitted quantum components. Resource reports are proxy
 summaries, not hardware estimates; benchmark reports time only the classical
 baseline path and include `benchmark_environment` metadata for interpreting
 timing snapshots.
+
+Stable algorithm reports derive an `execution_tier` and per-polynomial
+`polynomial_evidence` from the artifacts returned by that run. The evidence
+records the design and QSVT certification domains, output prefactor,
+extrema-based boundedness certificate, parity, single-sequence realizability,
+and any parity-decomposition requirement. A successful backend call alone does
+not promote a polynomial to the `qsvt_circuit` tier when the polynomial lacks a
+QSVT realizability certificate.
+
+New algorithm reports emit `qsvt-algorithm-workflow` schema `1.1`. Legacy
+schema `1.0` reports remain loadable and can be migrated when their saved
+polynomial coefficients are sufficient to derive the 1.1 evidence.
 
 ## Scope
 

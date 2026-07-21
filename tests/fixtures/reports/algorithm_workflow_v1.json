@@ -5,9 +5,11 @@
   "implementation_kind": "dense-spectral-polynomial-workflow",
   "truth_contract": {
     "workflow": "linear-system-workflow",
+    "target": "inverse transform",
     "truth_status": "validated_polynomial_core",
     "is_end_to_end_quantum_algorithm": false
   },
+  "coeffs": [0.0, 0.0, 1.0],
   "degree": 8,
   "polynomial_residual_norm": 0.031,
   "polynomial_relative_error": 0.028

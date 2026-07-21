@@ -289,8 +289,9 @@ The module also includes simulator-scale workflows that wrap polynomial
 builders with exact dense references. Each workflow has a concise theory page:
 
 All stable algorithm result reports use schema name
-`qsvt-algorithm-workflow`, schema version `1.0`, with `mode` identifying the
-concrete workflow and a required `truth_contract` preserving its claim boundary.
+`qsvt-algorithm-workflow`, current schema version `1.1`, with `mode` identifying
+the concrete workflow and a required `truth_contract` preserving its claim
+boundary. Version `1.0` remains supported for reading and explicit migration.
 
 - [`block_encoded_qsvt_workflow`](workflow_block_encoded_qsvt.md)
 - [`linear_system_comparison_workflow`](workflow_linear_system_comparison.md)
@@ -825,6 +826,16 @@ Load a JSON diagnostics report from disk.
 
 Return a copy of the supported versioned report-schema registry as
 `{schema_name: (versions, ...)}`.
+
+---
+
+### `migrate_algorithm_workflow_report(report, target_version="1.1")`
+
+Upgrade a `qsvt-algorithm-workflow` schema `1.0` mapping to `1.1` without
+mutating the input. The helper derives the new execution tier and polynomial
+evidence from retained coefficients and raises `ValueError` if the legacy
+artifact cannot support those claims. Passing an existing `1.1` report returns
+an independent JSON-safe copy.
 
 ---
 

@@ -1,5 +1,35 @@
 # Changelog
 
+## [0.2.18] – 21st July 2026
+
+### Added
+
+- added artifact-derived execution tiers and per-polynomial truth evidence to
+  every stable algorithm workflow report, including design and certification
+  domains, physical output prefactors, extrema-based boundedness certificates,
+  parity, realizability class, and parity-decomposition requirements
+- added semantic truth-contract auditing that independently recomputes
+  polynomial classifications and rejects contradictory circuit, QNode,
+  hardware, and realizability claims
+- added release-preflight enforcement and workflow-wide regression coverage for
+  truth-contract semantics
+- added an explicit, non-mutating algorithm-report migration from schema `1.0`
+  to `1.1`, with a committed migration fixture and release-preflight audit;
+  migration derives new truth evidence from retained coefficients and fails
+  clearly when the legacy artifact lacks them
+
+### Changed
+
+- replaced the generic algorithm `truth_status` with statuses that distinguish
+  QSVT-compatible polynomial cores, mixed-parity cores requiring a combination
+  mechanism, classical-only polynomial cores, and verified finite QSVT circuits
+- made `execution_tier`, QNode/device execution flags, circuit-evaluation state,
+  partial resource completeness, and artifact-derived polynomial evidence part
+  of `qsvt-algorithm-workflow` schema `1.1`; schema `1.0` remains readable
+- expanded the roadmap and documentation around mechanically derived claim
+  boundaries, full-domain QSVT realizability, HHL reliability, and terminology
+  for polynomial surrogates versus circuit implementations
+
 ## [0.2.17] – 19th July 2026
 
 ### Added

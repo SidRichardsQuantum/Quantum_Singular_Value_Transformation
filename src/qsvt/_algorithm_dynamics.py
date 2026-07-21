@@ -67,6 +67,10 @@ class HamiltonianSimulationWorkflowResult:
             "truth_contract": algorithm_truth_contract(
                 "hamiltonian-simulation-workflow",
                 target="real-time Hamiltonian matrix exponential action",
+                polynomials={
+                    "cosine": self.cos_coeffs,
+                    "sine": self.sin_coeffs,
+                },
             ),
             "time": self.time,
             "degree": self.degree,
@@ -130,6 +134,10 @@ class QuantumWalkSearchWorkflowResult:
                     "continuous-time quantum-walk search and polynomial phase "
                     "approximation"
                 ),
+                polynomials={
+                    "cosine": self.cos_coeffs,
+                    "sine": self.sin_coeffs,
+                },
             ),
             "marked_vertex": self.marked_vertex,
             "gamma": self.gamma,

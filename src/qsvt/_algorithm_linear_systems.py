@@ -69,6 +69,10 @@ class LinearSystemWorkflowResult:
                 "linear-system-workflow",
                 target="positive-definite linear-system inverse action",
                 qsvt_check=qsvt_check,
+                polynomials={"inverse": self.coeffs},
+                polynomial_output_prefactors={
+                    "inverse": 1.0 / (self.gamma * self.scaled_operator.scale),
+                },
             ),
             "gamma": self.gamma,
             "scaled_min_eigenvalue": self.scaled_min_eigenvalue,
@@ -130,6 +134,11 @@ class LinearSystemComparisonResult:
                 "linear-system-comparison-workflow",
                 target="positive-definite linear-system solver comparison",
                 qsvt_check=_qsvt_check_from_result(self.workflow),
+                polynomials={"inverse": self.workflow.coeffs},
+                polynomial_output_prefactors={
+                    "inverse": 1.0
+                    / (self.workflow.gamma * self.workflow.scaled_operator.scale),
+                },
             ),
             "rows": list(self.rows),
             "reference_solution": self.reference_solution,

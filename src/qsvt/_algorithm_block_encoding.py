@@ -7,7 +7,12 @@ from typing import Any
 
 import numpy as np
 
-from ._algorithm_reports import algorithm_workflow_schema_fields
+from ._algorithm_reports import (
+    _execution_tier,
+    _polynomial_truth_status,
+    algorithm_workflow_schema_fields,
+    polynomial_truth_evidence,
+)
 from ._algorithm_shared import (
     _relative_error,
     _validate_state,
@@ -48,6 +53,7 @@ class BlockEncodedQSVTWorkflowResult:
             "implementation_kind": "verified-dense-block-encoded-qsvt-workflow",
             "truth_contract": _block_encoded_qsvt_truth_contract(
                 qsvt_check=qsvt_check,
+                coeffs=self.coeffs,
             ),
             "degree": self.degree,
             "coeffs": self.coeffs,
@@ -64,19 +70,43 @@ class BlockEncodedQSVTWorkflowResult:
         }
 
 
-def _block_encoded_qsvt_truth_contract(*, qsvt_check: str) -> dict[str, object]:
+def _block_encoded_qsvt_truth_contract(
+    *,
+    qsvt_check: str,
+    coeffs: np.ndarray,
+) -> dict[str, object]:
     if qsvt_check not in {"succeeded", "failed"}:
         raise ValueError("qsvt_check must be 'succeeded' or 'failed'.")
 
+    evidence = polynomial_truth_evidence({"block_encoded_transform": coeffs})
     return {
         "workflow": "block-encoded-qsvt-workflow",
         "target": "finite block-encoded positive-Hermitian polynomial transform",
         "implementation_kind": "verified-dense-block-encoded-qsvt-workflow",
-        "truth_status": (
+        "truth_status": _polynomial_truth_status(
+            qsvt_check=qsvt_check,
+            all_single_sequence_realizable=bool(
+                evidence["all_single_sequence_realizable"]
+            ),
+            requires_parity_decomposition=bool(
+                evidence["requires_parity_decomposition"]
+            ),
+        ),
+        "block_encoding_verification_status": (
             "verified_block_encoding_and_qsvt_polynomial_transform"
             if qsvt_check == "succeeded"
             else "verified_block_encoding_qsvt_transform_failed"
         ),
+        "execution_tier": _execution_tier(
+            qsvt_check=qsvt_check,
+            qnode_executed=False,
+            physical_device_executed=False,
+            qsvt_realizable=bool(evidence["all_single_sequence_realizable"]),
+        ),
+        "qnode_executed": False,
+        "physical_device_executed": False,
+        "circuit_evaluated": qsvt_check == "succeeded",
+        "resource_completeness": "partial",
         "is_end_to_end_quantum_algorithm": False,
         "implemented_components": [
             "explicit_dense_unitary_block_encoding",
@@ -87,6 +117,7 @@ def _block_encoded_qsvt_truth_contract(*, qsvt_check: str) -> dict[str, object]:
             "operator_and_optional_state_error_diagnostics",
         ],
         "pennylane_qsvt_check": qsvt_check,
+        "polynomial_evidence": evidence,
         "conditional_qsvt_statement": (
             "The supplied finite matrix is encoded as the top-left block of an "
             "explicit unitary and transformed with a compatible QSVT polynomial "

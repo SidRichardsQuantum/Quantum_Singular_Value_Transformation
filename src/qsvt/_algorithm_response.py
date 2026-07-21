@@ -54,6 +54,10 @@ class ResolventWorkflowResult:
             "truth_contract": algorithm_truth_contract(
                 "resolvent-workflow",
                 target="Green's-function resolvent matrix function",
+                polynomials={
+                    "real_component": self.real_coeffs,
+                    "imaginary_component": self.imag_coeffs,
+                },
             ),
             "omega": self.omega,
             "eta": self.eta,
@@ -101,6 +105,10 @@ class SpectralDensityWorkflowResult:
             "truth_contract": algorithm_truth_contract(
                 "spectral-density-workflow",
                 target="Gaussian-window spectral-density estimate",
+                polynomials={
+                    f"window_{index}": coeffs
+                    for index, coeffs in enumerate(self.coeffs_by_center)
+                },
             ),
             "centers": self.centers,
             "width": self.width,

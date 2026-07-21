@@ -208,8 +208,8 @@ Vertices : 4 | 4 | 8 | 8 | 16 | 16
 Degree : 8 | 14 | 8 | 14 | 10 | 18
 Best probability : 1 | 1 | 1 | 1 | 1 | 1
 Polynomial probability : 0.9999 | 1 | 0.9998 | 1 | 0.9999 | 1
-Probability error : 6.28e-05 | 6.13e-11 | 1.89e-04 | 5.21e-10 | 1.35e-04 | 1.11e-11
-State error : 3.96e-05 | 3.52e-11 | 2.05e-04 | 1.02e-09 | 9.39e-05 | 1.02e-11
+Probability error : 6.28e-05 | 6.18e-11 | 1.89e-04 | 5.21e-10 | 1.35e-04 | 1.19e-11
+State error : 3.96e-05 | 3.55e-11 | 2.05e-04 | 1.02e-09 | 9.39e-05 | 1.07e-11
 Signal calls : 8 | 14 | 8 | 14 | 10 | 18
 JSON: /workspaces/Quantum_Singular_Value_Transformation/results/benchmarks/quantum_walk_search_scaling.json
 CSV: /workspaces/Quantum_Singular_Value_Transformation/results/tables/quantum_walk_search_scaling_summary.csv

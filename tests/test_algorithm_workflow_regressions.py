@@ -1,6 +1,10 @@
 import numpy as np
 import pytest
 
+from qsvt._algorithm_reports import (
+    algorithm_truth_contract,
+    algorithm_truth_contract_issues,
+)
 from qsvt.algorithms import (
     fermi_dirac_occupation_workflow,
     fixed_point_amplification_workflow,
@@ -37,8 +41,68 @@ def _validated_algorithm_report(result):
 
     assert compatibility.supported is True
     assert report["schema_name"] == "qsvt-algorithm-workflow"
-    assert report["schema_version"] == "1.0"
+    assert report["schema_version"] == "1.1"
+    contract = report["truth_contract"]
+    assert algorithm_truth_contract_issues(contract) == ()
+    assert contract["execution_tier"] in {"polynomial_core", "qsvt_circuit"}
+    assert contract["qnode_executed"] is False
+    assert contract["physical_device_executed"] is False
+    assert contract["resource_completeness"] == "partial"
+    assert contract["polynomial_evidence"]["component_count"] >= 1
+    for component in contract["polynomial_evidence"]["components"].values():
+        assert {
+            "coeffs",
+            "design_domain",
+            "qsvt_certification_domain",
+            "output_prefactor",
+            "boundedness_certificate",
+            "parity",
+            "realizability_kind",
+            "single_sequence_realizable",
+            "requires_parity_decomposition",
+        } <= component.keys()
     return report
+
+
+def test_truth_contract_derives_tier_from_realizability_and_execution():
+    compatible = algorithm_truth_contract(
+        "compatible-test",
+        target="test",
+        qsvt_check="succeeded",
+        polynomials={"transform": [0.0, 0.0, 1.0]},
+    )
+    mixed = algorithm_truth_contract(
+        "mixed-test",
+        target="test",
+        qsvt_check="succeeded",
+        polynomials={"transform": [0.5, 0.5]},
+    )
+
+    assert compatible["execution_tier"] == "qsvt_circuit"
+    assert compatible["truth_status"] == "verified_finite_qsvt_circuit"
+    assert algorithm_truth_contract_issues(compatible) == ()
+    assert mixed["execution_tier"] == "polynomial_core"
+    assert mixed["truth_status"] == (
+        "circuit_evaluated_without_qsvt_realizability_certificate"
+    )
+    assert mixed["polynomial_evidence"]["requires_parity_decomposition"] is True
+    assert algorithm_truth_contract_issues(mixed) == ()
+
+
+def test_truth_contract_audit_rejects_semantic_contradictions():
+    contract = algorithm_truth_contract(
+        "audit-test",
+        target="test",
+        polynomials={"transform": [0.0, 0.0, 1.0]},
+    )
+    contract["execution_tier"] = "hardware_execution"
+    component = contract["polynomial_evidence"]["components"]["transform"]
+    component["parity"] = "odd"
+
+    issues = algorithm_truth_contract_issues(contract)
+
+    assert "hardware_tier_without_physical_execution" in issues
+    assert "polynomial_evidence_mismatch:transform:parity" in issues
 
 
 def test_singular_value_filtering_workflow_regression():
@@ -61,6 +125,12 @@ def test_singular_value_filtering_workflow_regression():
 
     assert report["mode"] == "singular-value-filtering-workflow"
     assert report["implementation_kind"] == "dense-svd-polynomial-workflow"
+    evidence = report["truth_contract"]["polynomial_evidence"]["components"]
+    assert evidence["singular_value_filter"]["design_domain"] == [0.0, 1.0]
+    assert evidence["singular_value_filter"]["qsvt_certification_domain"] == [
+        -1.0,
+        1.0,
+    ]
     assert result.polynomial_matrix.shape == matrix.shape
     assert result.reference_matrix.shape == matrix.shape
     assert result.operator_relative_error < 3e-4
@@ -192,10 +262,19 @@ def test_linear_system_workflow_regression():
     report = _validated_algorithm_report(result)
 
     assert report["mode"] == "linear-system-workflow"
-    assert report["truth_contract"]["truth_status"] == "validated_polynomial_core"
+    assert report["truth_contract"]["truth_status"] == (
+        "validated_polynomial_core_requires_parity_combination"
+    )
     assert report["truth_contract"]["is_end_to_end_quantum_algorithm"] is False
     assert report["truth_contract"]["pennylane_qsvt_check"] == "not_attempted"
     assert report["implementation_kind"] == "dense-spectral-polynomial-workflow"
+    inverse_evidence = report["truth_contract"]["polynomial_evidence"]["components"][
+        "inverse"
+    ]
+    assert np.isclose(
+        inverse_evidence["output_prefactor"],
+        1.0 / (result.gamma * result.scaled_operator.scale),
+    )
     assert np.isclose(result.gamma, 0.5657414540893352)
     assert np.isclose(result.scaled_min_eigenvalue, result.gamma)
     assert np.isclose(result.scaled_max_eigenvalue, 1.0)
@@ -345,7 +424,9 @@ def test_quantum_walk_search_workflow_regression():
 
     assert report["mode"] == "quantum-walk-search-workflow"
     assert report["implementation_kind"] == "dense-spectral-polynomial-workflow"
-    assert report["truth_contract"]["truth_status"] == "validated_polynomial_core"
+    assert report["truth_contract"]["truth_status"] == (
+        "validated_qsvt_compatible_polynomial_core"
+    )
     assert report["truth_contract"]["is_end_to_end_quantum_algorithm"] is False
     assert report["marked_vertex"] == 0
     assert np.isclose(result.gamma, 0.25)

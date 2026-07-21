@@ -1,0 +1,8 @@
+{
+  "source_fixture": "algorithm_workflow_v1.json",
+  "target_schema_version": "1.1",
+  "expected_execution_tier": "polynomial_core",
+  "expected_truth_status": "validated_qsvt_compatible_polynomial_core",
+  "expected_components": ["transform"],
+  "expected_realizability_kind": "single-sequence-qsp-qsvt"
+}

@@ -132,6 +132,51 @@ def _check_report_schema_fixtures() -> None:
     subprocess.run(command, cwd=REPO_ROOT, check=True, env=env)
 
 
+def _check_algorithm_truth_contract_semantics() -> None:
+    """Reject release metadata that can overstate QSVT execution."""
+    sys.path.insert(0, str(REPO_ROOT / "src"))
+    from qsvt._algorithm_reports import (
+        algorithm_truth_contract,
+        algorithm_truth_contract_issues,
+    )
+    from qsvt.reports import load_report, migrate_algorithm_workflow_report
+
+    compatible = algorithm_truth_contract(
+        "release-check-compatible",
+        target="release preflight",
+        qsvt_check="succeeded",
+        polynomials={"transform": [0.0, 0.0, 1.0]},
+    )
+    mixed = algorithm_truth_contract(
+        "release-check-mixed",
+        target="release preflight",
+        qsvt_check="succeeded",
+        polynomials={"transform": [0.5, 0.5]},
+    )
+    failures = {
+        "compatible": algorithm_truth_contract_issues(compatible),
+        "mixed": algorithm_truth_contract_issues(mixed),
+    }
+    failures = {name: issues for name, issues in failures.items() if issues}
+    if failures:
+        raise SystemExit(f"Algorithm truth-contract semantic audit failed: {failures}")
+    if compatible["execution_tier"] != "qsvt_circuit":
+        raise SystemExit("Compatible executed polynomial was not labeled qsvt_circuit.")
+    if mixed["execution_tier"] != "polynomial_core":
+        raise SystemExit("Mixed-parity polynomial was mislabeled as qsvt_circuit.")
+
+    legacy_path = (
+        REPO_ROOT / "tests" / "fixtures" / "reports" / "algorithm_workflow_v1.json"
+    )
+    migrated = migrate_algorithm_workflow_report(load_report(legacy_path))
+    migrated_issues = algorithm_truth_contract_issues(migrated["truth_contract"])
+    if migrated["schema_version"] != "1.1" or migrated_issues:
+        raise SystemExit(
+            "Algorithm workflow 1.0-to-1.1 migration audit failed: "
+            f"schema={migrated['schema_version']!r}, issues={migrated_issues!r}"
+        )
+
+
 def _matches_generated_artifact(path: str, pattern: str) -> bool:
     if pattern.startswith("**/"):
         return fnmatch.fnmatch(path, pattern) or fnmatch.fnmatch(
@@ -263,6 +308,7 @@ def main(argv: Sequence[str] | None = None) -> None:
 
     _check_git_hygiene()
     _check_report_schema_fixtures()
+    _check_algorithm_truth_contract_semantics()
     _require_module("ruff", "lint")
     _run(_python_module("ruff", "check", "."))
     _require_module("black", "lint")

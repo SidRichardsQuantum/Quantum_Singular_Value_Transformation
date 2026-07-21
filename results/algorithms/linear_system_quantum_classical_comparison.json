@@ -1,23 +1,126 @@
 {
   "schema_name": "qsvt-algorithm-workflow",
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "mode": "linear-system-comparison-workflow",
   "implementation_kind": "linear-system-solver-comparison",
   "truth_contract": {
     "workflow": "linear-system-comparison-workflow",
     "target": "positive-definite linear-system solver comparison",
     "implementation_kind": "dense-spectral-polynomial-workflow",
-    "truth_status": "validated_polynomial_core",
+    "truth_status": "validated_polynomial_core_requires_parity_combination",
+    "execution_tier": "polynomial_core",
+    "qnode_executed": false,
+    "physical_device_executed": false,
+    "circuit_evaluated": false,
+    "resource_completeness": "partial",
     "is_end_to_end_quantum_algorithm": false,
     "implemented_components": [
       "input_validation",
       "spectral_rescaling",
-      "bounded_polynomial_design_or_application",
+      "polynomial_design_or_application_with_realizability_classification",
       "dense_classical_spectral_reference",
       "numerical_error_diagnostics"
     ],
     "conditional_qsvt_statement": "If a valid block encoding and input-state preparation are supplied, a compatible bounded polynomial is the QSVT-transform core for this target.",
     "pennylane_qsvt_check": "not_attempted",
+    "polynomial_evidence": {
+      "components": {
+        "inverse": {
+          "mode": "polynomial-realizability-report",
+          "coeffs": [
+            0.9978765191201352,
+            -0.010562619352510757,
+            -0.2631102913061036,
+            -0.28752486004860633,
+            -0.032853707216148914
+          ],
+          "degree": 4,
+          "parity": "mixed",
+          "bounded": true,
+          "max_abs_value": 0.9999999999989996,
+          "bounded_domain": [
+            -1.0,
+            1.0
+          ],
+          "bounded_num_points": 4001,
+          "realizability_kind": "multiple-parity-sequences-or-lcu",
+          "single_sequence_realizable": false,
+          "requires_parity_decomposition": true,
+          "even_coeffs": [
+            0.9978765191201352,
+            0.0,
+            -0.2631102913061036,
+            0.0,
+            -0.032853707216148914
+          ],
+          "odd_coeffs": [
+            0.0,
+            -0.010562619352510757,
+            0.0,
+            -0.28752486004860633,
+            0.0
+          ],
+          "reasons": [
+            "mixed_parity"
+          ],
+          "boundedness_certificate": {
+            "mode": "polynomial-boundedness-certificate",
+            "certification_kind": "numerical-polynomial-extrema",
+            "coeffs": [
+              0.9978765191201352,
+              -0.010562619352510757,
+              -0.2631102913061036,
+              -0.28752486004860633,
+              -0.032853707216148914
+            ],
+            "domain": [
+              -1.0,
+              1.0
+            ],
+            "bound": 1.0,
+            "tolerance": 1e-10,
+            "critical_points": [
+              -0.6572361227013884,
+              -0.020778049945574195
+            ],
+            "evaluated_points": [
+              -1.0,
+              -0.6572361227013884,
+              -0.020778049945574195,
+              1.0
+            ],
+            "values": [
+              0.9999999999989996,
+              0.9666636733910418,
+              0.9979849709458501,
+              0.40382504119676566
+            ],
+            "max_abs_value": 0.9999999999989996,
+            "maximizing_point": -1.0,
+            "margin": 1.0004219674897286e-12,
+            "is_bounded": true,
+            "derivative_root_residual": 1.6479873021779667e-16,
+            "interpretation": "All interval endpoints and numerically real derivative roots were evaluated. This is a floating-point extrema certificate, not an interval-arithmetic proof."
+          },
+          "interpretation": "The polynomial is extrema-bounded but has mixed parity. Realize its even and odd components separately and combine them, for example with an LCU-style construction.",
+          "name": "inverse",
+          "design_domain": [
+            -1.0,
+            1.0
+          ],
+          "qsvt_certification_domain": [
+            -1.0,
+            1.0
+          ],
+          "output_prefactor": 1.0
+        }
+      },
+      "component_count": 1,
+      "all_bounded": true,
+      "all_single_sequence_realizable": false,
+      "requires_parity_decomposition": true,
+      "contains_classical_only_component": false
+    },
     "assumed_quantum_components": [
       "block_encoding_construction",
       "input_state_preparation_or_data_loading",
@@ -97,24 +200,127 @@
   ],
   "linear_system_workflow": {
     "schema_name": "qsvt-algorithm-workflow",
-    "schema_version": "1.0",
+    "schema_version": "1.1",
     "mode": "linear-system-workflow",
     "implementation_kind": "dense-spectral-polynomial-workflow",
     "truth_contract": {
       "workflow": "linear-system-workflow",
       "target": "positive-definite linear-system inverse action",
       "implementation_kind": "dense-spectral-polynomial-workflow",
-      "truth_status": "validated_polynomial_core",
+      "truth_status": "validated_polynomial_core_requires_parity_combination",
+      "execution_tier": "polynomial_core",
+      "qnode_executed": false,
+      "physical_device_executed": false,
+      "circuit_evaluated": false,
+      "resource_completeness": "partial",
       "is_end_to_end_quantum_algorithm": false,
       "implemented_components": [
         "input_validation",
         "spectral_rescaling",
-        "bounded_polynomial_design_or_application",
+        "polynomial_design_or_application_with_realizability_classification",
         "dense_classical_spectral_reference",
         "numerical_error_diagnostics"
       ],
       "conditional_qsvt_statement": "If a valid block encoding and input-state preparation are supplied, a compatible bounded polynomial is the QSVT-transform core for this target.",
       "pennylane_qsvt_check": "not_attempted",
+      "polynomial_evidence": {
+        "components": {
+          "inverse": {
+            "mode": "polynomial-realizability-report",
+            "coeffs": [
+              0.9978765191201352,
+              -0.010562619352510757,
+              -0.2631102913061036,
+              -0.28752486004860633,
+              -0.032853707216148914
+            ],
+            "degree": 4,
+            "parity": "mixed",
+            "bounded": true,
+            "max_abs_value": 0.9999999999989996,
+            "bounded_domain": [
+              -1.0,
+              1.0
+            ],
+            "bounded_num_points": 4001,
+            "realizability_kind": "multiple-parity-sequences-or-lcu",
+            "single_sequence_realizable": false,
+            "requires_parity_decomposition": true,
+            "even_coeffs": [
+              0.9978765191201352,
+              0.0,
+              -0.2631102913061036,
+              0.0,
+              -0.032853707216148914
+            ],
+            "odd_coeffs": [
+              0.0,
+              -0.010562619352510757,
+              0.0,
+              -0.28752486004860633,
+              0.0
+            ],
+            "reasons": [
+              "mixed_parity"
+            ],
+            "boundedness_certificate": {
+              "mode": "polynomial-boundedness-certificate",
+              "certification_kind": "numerical-polynomial-extrema",
+              "coeffs": [
+                0.9978765191201352,
+                -0.010562619352510757,
+                -0.2631102913061036,
+                -0.28752486004860633,
+                -0.032853707216148914
+              ],
+              "domain": [
+                -1.0,
+                1.0
+              ],
+              "bound": 1.0,
+              "tolerance": 1e-10,
+              "critical_points": [
+                -0.6572361227013884,
+                -0.020778049945574195
+              ],
+              "evaluated_points": [
+                -1.0,
+                -0.6572361227013884,
+                -0.020778049945574195,
+                1.0
+              ],
+              "values": [
+                0.9999999999989996,
+                0.9666636733910418,
+                0.9979849709458501,
+                0.40382504119676566
+              ],
+              "max_abs_value": 0.9999999999989996,
+              "maximizing_point": -1.0,
+              "margin": 1.0004219674897286e-12,
+              "is_bounded": true,
+              "derivative_root_residual": 1.6479873021779667e-16,
+              "interpretation": "All interval endpoints and numerically real derivative roots were evaluated. This is a floating-point extrema certificate, not an interval-arithmetic proof."
+            },
+            "interpretation": "The polynomial is extrema-bounded but has mixed parity. Realize its even and odd components separately and combine them, for example with an LCU-style construction.",
+            "name": "inverse",
+            "design_domain": [
+              -1.0,
+              1.0
+            ],
+            "qsvt_certification_domain": [
+              -1.0,
+              1.0
+            ],
+            "output_prefactor": 1.0
+          }
+        },
+        "component_count": 1,
+        "all_bounded": true,
+        "all_single_sequence_realizable": false,
+        "requires_parity_decomposition": true,
+        "contains_classical_only_component": false
+      },
       "assumed_quantum_components": [
         "block_encoding_construction",
         "input_state_preparation_or_data_loading",

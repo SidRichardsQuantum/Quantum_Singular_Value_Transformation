@@ -10,6 +10,7 @@ from __future__ import annotations
 import csv
 import json
 from collections.abc import Iterable, Mapping, Sequence
+from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -22,7 +23,7 @@ _SUPPORTED_REPORT_SCHEMAS: dict[str, frozenset[str]] = {
     "hardware-qsvt-execution": frozenset({"1.0"}),
     "qsvt-accuracy-resource-frontier": frozenset({"1.0"}),
     "qsvt-accuracy-resource-frontier-rows": frozenset({"1.0"}),
-    "qsvt-algorithm-workflow": frozenset({"1.0"}),
+    "qsvt-algorithm-workflow": frozenset({"1.0", "1.1"}),
     "qsvt-problem-workflow": frozenset({"1.0"}),
     "qsvt-research-sweep-manifest": frozenset({"1.0"}),
     "qsvt-research-sweep-spec": frozenset({"1.0"}),
@@ -132,6 +133,18 @@ _REQUIRED_REPORT_SCHEMA_FIELDS: dict[str, frozenset[str]] = {
         }
     ),
 }
+
+_REQUIRED_ALGORITHM_TRUTH_FIELDS_V1_1 = frozenset(
+    {
+        "circuit_evaluated",
+        "execution_tier",
+        "physical_device_executed",
+        "polynomial_evidence",
+        "qnode_executed",
+        "resource_completeness",
+        "truth_status",
+    }
+)
 
 _KNOWN_REPORT_SCHEMA_FIELDS: dict[str, frozenset[str]] = {
     "block-encoding-qsvt-execution": frozenset(
@@ -343,6 +356,81 @@ def supported_report_schemas() -> dict[str, tuple[str, ...]]:
     }
 
 
+def migrate_algorithm_workflow_report(
+    report: Mapping[str, Any],
+    *,
+    target_version: str = "1.1",
+) -> dict[str, Any]:
+    """Migrate a ``qsvt-algorithm-workflow`` report from 1.0 to 1.1.
+
+    Schema 1.1 derives execution-tier and polynomial-realizability claims from
+    coefficients stored in the report. Migration therefore fails explicitly
+    when a legacy report does not retain polynomial coefficients; it never
+    fabricates truth evidence from a legacy status label.
+
+    Reports already at 1.1 are returned as independent deep copies. The input
+    mapping is never mutated.
+    """
+    schema_name = str(report.get("schema_name", ""))
+    source_version = str(report.get("schema_version", ""))
+    if schema_name != "qsvt-algorithm-workflow":
+        raise ValueError(
+            "algorithm workflow migration requires schema_name "
+            "'qsvt-algorithm-workflow'"
+        )
+    if target_version != "1.1":
+        raise ValueError("algorithm workflow reports can only migrate to version '1.1'")
+    if source_version == target_version:
+        return report_to_jsonable(dict(deepcopy(report)))
+    if source_version != "1.0":
+        raise ValueError(
+            "algorithm workflow migration supports source version '1.0'; "
+            f"received {source_version!r}"
+        )
+
+    polynomials = _legacy_algorithm_polynomials(report)
+    if not polynomials:
+        raise ValueError(
+            "cannot migrate qsvt-algorithm-workflow 1.0 report to 1.1: "
+            "no polynomial coefficients were retained"
+        )
+
+    legacy_contract = report.get("truth_contract")
+    if not isinstance(legacy_contract, Mapping):
+        raise ValueError("legacy algorithm report truth_contract must be a mapping")
+
+    # Import lazily so the generic reporting module does not depend on the
+    # algorithm workflow implementation during normal report loading.
+    from ._algorithm_reports import algorithm_truth_contract
+
+    workflow = str(legacy_contract.get("workflow", report.get("mode", "unknown")))
+    target = str(legacy_contract.get("target", "legacy algorithm workflow"))
+    qsvt_check = str(legacy_contract.get("pennylane_qsvt_check", "not_attempted"))
+    derived_contract = algorithm_truth_contract(
+        workflow,
+        target=target,
+        qsvt_check=qsvt_check,
+        polynomials=polynomials,
+        qnode_executed=bool(legacy_contract.get("qnode_executed", False)),
+        physical_device_executed=bool(
+            legacy_contract.get("physical_device_executed", False)
+        ),
+    )
+
+    migrated = dict(deepcopy(report))
+    migrated["schema_version"] = target_version
+    migrated["truth_contract"] = {
+        **dict(deepcopy(legacy_contract)),
+        **derived_contract,
+    }
+    migrated["schema_migration"] = {
+        "from_version": source_version,
+        "to_version": target_version,
+        "method": "artifact-derived-polynomial-truth-evidence",
+    }
+    return report_to_jsonable(migrated)
+
+
 def report_schema_manifest(paths: Iterable[str | Path]) -> list[dict[str, Any]]:
     """
     Return schema compatibility summaries for multiple report files.
@@ -471,6 +559,20 @@ def validate_report_schema(
         else ()
     )
     missing_fields = tuple(field for field in required_fields if field not in report)
+    if (
+        schema_name_text == "qsvt-algorithm-workflow"
+        and schema_version_text == "1.1"
+        and "truth_contract" in report
+    ):
+        truth_contract = report["truth_contract"]
+        if not isinstance(truth_contract, Mapping):
+            missing_fields += ("truth_contract.<mapping>",)
+        else:
+            missing_fields += tuple(
+                f"truth_contract.{field}"
+                for field in sorted(_REQUIRED_ALGORITHM_TRUTH_FIELDS_V1_1)
+                if field not in truth_contract
+            )
     if missing_fields:
         missing = ", ".join(missing_fields)
         return ReportSchemaCompatibility(
@@ -696,6 +798,24 @@ def _polynomial_label(report: Mapping[str, Any]) -> str:
     return label.removeprefix("design_").removeprefix("template_")
 
 
+def _legacy_algorithm_polynomials(report: Mapping[str, Any]) -> dict[str, object]:
+    """Extract retained polynomial components from a 1.0 workflow report."""
+    polynomials: dict[str, object] = {}
+    coeffs_by_center = report.get("coeffs_by_center")
+    if isinstance(coeffs_by_center, Mapping):
+        polynomials.update(
+            {f"center_{center}": coeffs for center, coeffs in coeffs_by_center.items()}
+        )
+
+    for key, value in report.items():
+        key_text = str(key)
+        if key_text == "coeffs":
+            polynomials.setdefault("transform", value)
+        elif key_text.endswith("_coeffs") and key_text != "coeffs_by_center":
+            polynomials[key_text.removesuffix("_coeffs")] = value
+    return polynomials
+
+
 def _set_symmetric_error_limits(ax, errors: np.ndarray) -> None:
     finite_errors = errors[np.isfinite(errors)]
     if finite_errors.size == 0:
@@ -715,6 +835,7 @@ __all__ = [
     "save_report",
     "load_report",
     "load_report_with_schema",
+    "migrate_algorithm_workflow_report",
     "plot_approximation_report",
     "save_report_plot",
     "supported_report_schemas",

@@ -65,6 +65,10 @@ package, it should have an explicit definition of done:
 - add stronger adversarial and property-style tests for boundedness, parity,
   normalization, singular spectra, near-boundary inputs, wire layouts, and
   synthesis failures,
+- require every public workflow report to derive its execution and
+  realizability claims from the artifacts produced by that run, and make the
+  release check fail when a report labels an uncertified polynomial or an
+  unexecuted path as QSVT-executable,
 - document provider and hardware execution as either supported, experimental,
   or out of scope for each workflow, with paid/live execution behind explicit
   opt-in tests,
@@ -139,6 +143,24 @@ The remaining roadmap work is to broaden numerical regimes, access models,
 hardware compilation, and application-specific state preparation without
 weakening the explicit finite-simulation and logical-resource claim boundary.
 
+#### Truth and execution classification
+
+- replace generic workflow truth claims with fields computed from the exact
+  polynomial, synthesis result, access model, and execution result returned by
+  each run,
+- standardize an execution tier such as `classical_reference`,
+  `polynomial_core`, `qsvt_circuit`, or `hardware_execution`, and keep it
+  separate from scalability and resource-completeness claims,
+- include the polynomial design domain, QSVT certification domain,
+  normalization or prefactor, boundedness certificate, parity, realizability
+  class, required parity-combination mechanism, phase-synthesis status, QNode
+  execution status, and physical-device execution status where applicable,
+- use structured `partial`, `conditional`, or `complete_for_stated_scope`
+  statuses instead of inferring a complete implementation from the presence of
+  a callback, circuit factory, backend, or resource estimate,
+- add semantic report tests that reconstruct these facts independently and
+  reject contradictions between `truth_contract` fields and what actually ran.
+
 ### Polynomial Design, Realizability, and Phase Synthesis
 
 - strengthen bounded polynomial design for inverse, sign, threshold, filter,
@@ -157,6 +179,18 @@ weakening the explicit finite-simulation and logical-resource claim boundary.
   application observables,
 - provide actionable diagnostics when a polynomial is bounded but not
   realizable by the requested construction,
+- implement an executable even/odd parity-decomposition path, including the
+  explicit LCU or other coherent combination mechanism, its normalization,
+  ancillas, success probability, and resource overhead,
+- add QSVT-valid full-domain extensions for functions currently designed only
+  on positive singular values or positive spectra, rather than treating a fit
+  on `[0, 1]` as automatically realizable on `[-1, 1]`,
+- normalize resolvent, matrix-log, entropy, and other naturally out-of-range
+  targets before synthesis, preserve the physical prefactor in reports, and
+  propagate its effect into postselection and sampling costs,
+- replace heuristic score-amplification naming with either a certified
+  fixed-point QSVT construction or an explicit spectral-polynomial-surrogate
+  label,
 - continue developing certification and reconstruction checks that do not rely
   only on sampled grids,
 - document phase conventions and conversion rules alongside every synthesis
@@ -200,6 +234,31 @@ weakening the explicit finite-simulation and logical-resource claim boundary.
   noise models to simulator execution,
 - make the planner jointly choose polynomial degree, phase solver, access
   model, and shot budget under an approximation-and-noise error target.
+
+For the initial fully traced flagship paths, prioritize Hamiltonian simulation,
+spectral filtering, and quantum linear systems or Poisson inversion. Each path
+should expose and test the complete chain from problem definition through
+access model, normalized realizable polynomial, synthesis, circuit execution,
+measurement, component error ledger, and component resource ledger. A full
+classical statevector or solution vector should remain simulator validation
+data rather than being presented as efficient quantum output.
+
+### HHL and Phase-Estimation Reliability
+
+- report the spectral scaling and no-aliasing assumptions that relate the HHL
+  evolution time to the supported eigenvalue interval, and reject dense inputs
+  whose phases wrap outside that declared interval,
+- separate Hamiltonian-simulation, phase-discretization, reciprocal-rotation,
+  postselection, and sampling errors in HHL reports,
+- replace the boolean scalable-HHL claim with an access classification such as
+  `dense`, `oracle_assumed`, or `verified_structured`; supplying an opaque
+  controlled-evolution callback alone must not certify scalability,
+- require callback-backed HHL reports to record caller-declared oracle
+  assumptions and query costs, and validate the queued finite circuit against a
+  dense reference whenever one is available,
+- add adversarial tests for phase wrapping, insufficient phase precision,
+  eigenvalues near reciprocal-rotation cutoffs, and low postselection
+  probability.
 
 ### Hardware-Executable QSVT
 
@@ -273,7 +332,8 @@ weakening the explicit finite-simulation and logical-resource claim boundary.
 - maintain a report-schema registry, compatibility fixtures, and migration
   tests before changing versioned execution or benchmark report formats, so old
   committed reports remain loadable or fail with an intentional migration
-  message,
+  message; the algorithm-workflow `1.0` to `1.1` transition is the first
+  implemented artifact-derived migration,
 - maintain regression cases for known synthesis and backend failure modes.
 
 ### Resource Estimation and Claim Boundaries
@@ -283,6 +343,12 @@ weakening the explicit finite-simulation and logical-resource claim boundary.
 - identify which costs come from polynomial transformation, block encoding,
   state preparation, amplitude amplification, readout, compilation, and
   hardware assumptions,
+- report block-encoding normalization `alpha`, access-model query cost,
+  polynomial prefactors, parity-combination overhead, postselection
+  probability, amplitude-amplification overhead, and measurement complexity as
+  separate fields rather than folding them into a single total,
+- mark resource reports as partial until every layer required by their stated
+  scope has either a concrete estimate or an explicit omitted/assumed status,
 - compare encoding-specific resource profiles without presenting simulator
   timings as hardware runtime claims,
 - distinguish machine-readable implementation layers:
@@ -304,6 +370,10 @@ weakening the explicit finite-simulation and logical-resource claim boundary.
   research,
 - keep algorithm and CLI implementations split by workflow family as the
   supported surface grows,
+- evaluate a clearer public separation between dense classical references and
+  executable quantum constructions, for example `qsvt.references` and
+  `qsvt.circuits`, while preserving compatibility through documented facade
+  imports,
 - use shared result and report types across Python, CLI, examples, and
   notebooks,
 - keep type annotations, API-status metadata, and generated API documentation
@@ -355,6 +425,12 @@ added: a clear problem statement, reusable package-level construction, a
 classical reference, QSVT target definition, approximation and execution or
 proxy errors, resource interpretation, and an explicit statement of whether the
 workflow used true finite QSVT execution or a polynomial/resource proxy.
+
+Notebook and documentation headings should use the same classification as the
+machine-readable report. In particular, reserve "QSVT implementation" for an
+executed or explicitly constructible QSVT path; use "classical polynomial
+surrogate" or "QSVT-compatible polynomial core" for dense spectral and SVD
+studies.
 
 - prioritize physics studies based on narrowly defined observables rather than
   full-state reconstruction, beginning with Ising spectral filtering, Poisson

@@ -130,24 +130,237 @@
   "reports": [
     {
       "schema_name": "qsvt-algorithm-workflow",
-      "schema_version": "1.0",
+      "schema_version": "1.1",
       "mode": "quantum-walk-search-workflow",
       "implementation_kind": "dense-spectral-polynomial-workflow",
       "truth_contract": {
         "workflow": "quantum-walk-search-workflow",
         "target": "continuous-time quantum-walk search and polynomial phase approximation",
         "implementation_kind": "dense-spectral-polynomial-workflow",
-        "truth_status": "validated_polynomial_core",
+        "truth_status": "validated_qsvt_compatible_polynomial_core",
+        "execution_tier": "polynomial_core",
+        "qnode_executed": false,
+        "physical_device_executed": false,
+        "circuit_evaluated": false,
+        "resource_completeness": "partial",
         "is_end_to_end_quantum_algorithm": false,
         "implemented_components": [
           "input_validation",
           "spectral_rescaling",
-          "bounded_polynomial_design_or_application",
+          "polynomial_design_or_application_with_realizability_classification",
           "dense_classical_spectral_reference",
           "numerical_error_diagnostics"
         ],
         "conditional_qsvt_statement": "If a valid block encoding and input-state preparation are supplied, a compatible bounded polynomial is the QSVT-transform core for this target.",
         "pennylane_qsvt_check": "not_attempted",
+        "polynomial_evidence": {
+          "components": {
+            "cosine": {
+              "mode": "polynomial-realizability-report",
+              "coeffs": [
+                0.9999982038341247,
+                0.0,
+                -2.7757272437809326,
+                0.0,
+                1.2833402135896501,
+                0.0,
+                -0.23504014046559182,
+                0.0,
+                0.02032885041070265
+              ],
+              "degree": 8,
+              "parity": "even",
+              "bounded": true,
+              "max_abs_value": 0.9999982038341247,
+              "bounded_domain": [
+                -1.0,
+                1.0
+              ],
+              "bounded_num_points": 4001,
+              "realizability_kind": "single-sequence-qsp-qsvt",
+              "single_sequence_realizable": true,
+              "requires_parity_decomposition": false,
+              "even_coeffs": [
+                0.9999982038341247,
+                0.0,
+                -2.7757272437809326,
+                0.0,
+                1.2833402135896501,
+                0.0,
+                -0.23504014046559182,
+                0.0,
+                0.02032885041070265
+              ],
+              "odd_coeffs": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reasons": [],
+              "boundedness_certificate": {
+                "mode": "polynomial-boundedness-certificate",
+                "certification_kind": "numerical-polynomial-extrema",
+                "coeffs": [
+                  0.9999982038341247,
+                  0.0,
+                  -2.7757272437809326,
+                  0.0,
+                  1.2833402135896501,
+                  0.0,
+                  -0.23504014046559182,
+                  0.0,
+                  0.02032885041070265
+                ],
+                "domain": [
+                  -1.0,
+                  1.0
+                ],
+                "bound": 1.0,
+                "tolerance": 1e-10,
+                "critical_points": [
+                  0.0
+                ],
+                "evaluated_points": [
+                  -1.0,
+                  0.0,
+                  1.0
+                ],
+                "values": [
+                  -0.7071001164120468,
+                  0.9999982038341247,
+                  -0.7071001164120468
+                ],
+                "max_abs_value": 0.9999982038341247,
+                "maximizing_point": 0.0,
+                "margin": 1.796165875256328e-06,
+                "is_bounded": true,
+                "derivative_root_residual": 0.0,
+                "interpretation": "All interval endpoints and numerically real derivative roots were evaluated. This is a floating-point extrema certificate, not an interval-arithmetic proof."
+              },
+              "interpretation": "The polynomial is extrema-bounded and has definite parity, so it is eligible for one standard QSP/QSVT phase sequence.",
+              "name": "cosine",
+              "design_domain": [
+                -1.0,
+                1.0
+              ],
+              "qsvt_certification_domain": [
+                -1.0,
+                1.0
+              ],
+              "output_prefactor": 1.0
+            },
+            "sine": {
+              "mode": "polynomial-realizability-report",
+              "coeffs": [
+                0.0,
+                2.35605097238469,
+                0.0,
+                -2.1780132307657505,
+                0.0,
+                0.5968317191913369,
+                0.0,
+                -0.06781626965115423
+              ],
+              "degree": 7,
+              "parity": "odd",
+              "bounded": true,
+              "max_abs_value": 0.9999893932925982,
+              "bounded_domain": [
+                -1.0,
+                1.0
+              ],
+              "bounded_num_points": 4001,
+              "realizability_kind": "single-sequence-qsp-qsvt",
+              "single_sequence_realizable": true,
+              "requires_parity_decomposition": false,
+              "even_coeffs": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "odd_coeffs": [
+                0.0,
+                2.35605097238469,
+                0.0,
+                -2.1780132307657505,
+                0.0,
+                0.5968317191913369,
+                0.0,
+                -0.06781626965115423
+              ],
+              "reasons": [],
+              "boundedness_certificate": {
+                "mode": "polynomial-boundedness-certificate",
+                "certification_kind": "numerical-polynomial-extrema",
+                "coeffs": [
+                  0.0,
+                  2.35605097238469,
+                  0.0,
+                  -2.1780132307657505,
+                  0.0,
+                  0.5968317191913369,
+                  0.0,
+                  -0.06781626965115423
+                ],
+                "domain": [
+                  -1.0,
+                  1.0
+                ],
+                "bound": 1.0,
+                "tolerance": 1e-10,
+                "critical_points": [
+                  -0.6666344013000265,
+                  0.6666344013000244
+                ],
+                "evaluated_points": [
+                  -1.0,
+                  -0.6666344013000265,
+                  0.6666344013000244,
+                  1.0
+                ],
+                "values": [
+                  -0.707053191159122,
+                  -0.9999893932925982,
+                  0.9999893932925977,
+                  0.707053191159122
+                ],
+                "max_abs_value": 0.9999893932925982,
+                "maximizing_point": -0.6666344013000265,
+                "margin": 1.0606707401827897e-05,
+                "is_bounded": true,
+                "derivative_root_residual": 5.773159728050814e-15,
+                "interpretation": "All interval endpoints and numerically real derivative roots were evaluated. This is a floating-point extrema certificate, not an interval-arithmetic proof."
+              },
+              "interpretation": "The polynomial is extrema-bounded and has definite parity, so it is eligible for one standard QSP/QSVT phase sequence.",
+              "name": "sine",
+              "design_domain": [
+                -1.0,
+                1.0
+              ],
+              "qsvt_certification_domain": [
+                -1.0,
+                1.0
+              ],
+              "output_prefactor": 1.0
+            }
+          },
+          "component_count": 2,
+          "all_bounded": true,
+          "all_single_sequence_realizable": true,
+          "requires_parity_decomposition": false,
+          "contains_classical_only_component": false
+        },
         "assumed_quantum_components": [
           "block_encoding_construction",
           "input_state_preparation_or_data_loading",
@@ -699,24 +912,285 @@
     },
     {
       "schema_name": "qsvt-algorithm-workflow",
-      "schema_version": "1.0",
+      "schema_version": "1.1",
       "mode": "quantum-walk-search-workflow",
       "implementation_kind": "dense-spectral-polynomial-workflow",
       "truth_contract": {
         "workflow": "quantum-walk-search-workflow",
         "target": "continuous-time quantum-walk search and polynomial phase approximation",
         "implementation_kind": "dense-spectral-polynomial-workflow",
-        "truth_status": "validated_polynomial_core",
+        "truth_status": "validated_qsvt_compatible_polynomial_core",
+        "execution_tier": "polynomial_core",
+        "qnode_executed": false,
+        "physical_device_executed": false,
+        "circuit_evaluated": false,
+        "resource_completeness": "partial",
         "is_end_to_end_quantum_algorithm": false,
         "implemented_components": [
           "input_validation",
           "spectral_rescaling",
-          "bounded_polynomial_design_or_application",
+          "polynomial_design_or_application_with_realizability_classification",
           "dense_classical_spectral_reference",
           "numerical_error_diagnostics"
         ],
         "conditional_qsvt_statement": "If a valid block encoding and input-state preparation are supplied, a compatible bounded polynomial is the QSVT-transform core for this target.",
         "pennylane_qsvt_check": "not_attempted",
+        "polynomial_evidence": {
+          "components": {
+            "cosine": {
+              "mode": "polynomial-realizability-report",
+              "coeffs": [
+                0.999999999999128,
+                0.0,
+                -2.775826237687829,
+                0.0,
+                1.2842018811229308,
+                0.0,
+                -0.23764806351669157,
+                3.127566951312999e-12,
+                0.02355954478050761,
+                -5.37794284424315e-12,
+                -0.001453074986162329,
+                4.336068841133629e-12,
+                6.087306423035505e-05,
+                -1.3287735218235665e-12,
+                -1.7039663772323534e-06
+              ],
+              "degree": 14,
+              "parity": "even",
+              "bounded": true,
+              "max_abs_value": 0.999999999999128,
+              "bounded_domain": [
+                -1.0,
+                1.0
+              ],
+              "bounded_num_points": 4001,
+              "realizability_kind": "single-sequence-qsp-qsvt",
+              "single_sequence_realizable": true,
+              "requires_parity_decomposition": false,
+              "even_coeffs": [
+                0.999999999999128,
+                0.0,
+                -2.775826237687829,
+                0.0,
+                1.2842018811229308,
+                0.0,
+                -0.23764806351669157,
+                0.0,
+                0.02355954478050761,
+                0.0,
+                -0.001453074986162329,
+                0.0,
+                6.087306423035505e-05,
+                0.0,
+                -1.7039663772323534e-06
+              ],
+              "odd_coeffs": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                3.127566951312999e-12,
+                0.0,
+                -5.37794284424315e-12,
+                0.0,
+                4.336068841133629e-12,
+                0.0,
+                -1.3287735218235665e-12,
+                0.0
+              ],
+              "reasons": [],
+              "boundedness_certificate": {
+                "mode": "polynomial-boundedness-certificate",
+                "certification_kind": "numerical-polynomial-extrema",
+                "coeffs": [
+                  0.999999999999128,
+                  0.0,
+                  -2.775826237687829,
+                  0.0,
+                  1.2842018811229308,
+                  0.0,
+                  -0.23764806351669157,
+                  3.127566951312999e-12,
+                  0.02355954478050761,
+                  -5.37794284424315e-12,
+                  -0.001453074986162329,
+                  4.336068841133629e-12,
+                  6.087306423035505e-05,
+                  -1.3287735218235665e-12,
+                  -1.7039663772323534e-06
+                ],
+                "domain": [
+                  -1.0,
+                  1.0
+                ],
+                "bound": 1.0,
+                "tolerance": 1e-10,
+                "critical_points": [
+                  0.0
+                ],
+                "evaluated_points": [
+                  -1.0,
+                  0.0,
+                  1.0
+                ],
+                "values": [
+                  -0.7071067811910202,
+                  0.999999999999128,
+                  -0.7071067811895063
+                ],
+                "max_abs_value": 0.999999999999128,
+                "maximizing_point": 0.0,
+                "margin": 8.719691635405979e-13,
+                "is_bounded": true,
+                "derivative_root_residual": 0.0,
+                "interpretation": "All interval endpoints and numerically real derivative roots were evaluated. This is a floating-point extrema certificate, not an interval-arithmetic proof."
+              },
+              "interpretation": "The polynomial is extrema-bounded and has definite parity, so it is eligible for one standard QSP/QSVT phase sequence.",
+              "name": "cosine",
+              "design_domain": [
+                -1.0,
+                1.0
+              ],
+              "qsvt_certification_domain": [
+                -1.0,
+                1.0
+              ],
+              "output_prefactor": 1.0
+            },
+            "sine": {
+              "mode": "polynomial-realizability-report",
+              "coeffs": [
+                0.0,
+                2.3561944900096456,
+                0.0,
+                -2.180128821841794,
+                0.0,
+                0.6051657980178626,
+                0.0,
+                -0.07999174558273085,
+                -1.86503650531673e-12,
+                0.006166840485764989,
+                2.1578052523966025e-12,
+                -0.0003098414093690119,
+                -1.2779943025762356e-12,
+                1.0061556727248751e-05
+              ],
+              "degree": 13,
+              "parity": "odd",
+              "bounded": true,
+              "max_abs_value": 1.0000000000129752,
+              "bounded_domain": [
+                -1.0,
+                1.0
+              ],
+              "bounded_num_points": 4001,
+              "realizability_kind": "single-sequence-qsp-qsvt",
+              "single_sequence_realizable": true,
+              "requires_parity_decomposition": false,
+              "even_coeffs": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                -1.86503650531673e-12,
+                0.0,
+                2.1578052523966025e-12,
+                0.0,
+                -1.2779943025762356e-12,
+                0.0
+              ],
+              "odd_coeffs": [
+                0.0,
+                2.3561944900096456,
+                0.0,
+                -2.180128821841794,
+                0.0,
+                0.6051657980178626,
+                0.0,
+                -0.07999174558273085,
+                0.0,
+                0.006166840485764989,
+                0.0,
+                -0.0003098414093690119,
+                0.0,
+                1.0061556727248751e-05
+              ],
+              "reasons": [],
+              "boundedness_certificate": {
+                "mode": "polynomial-boundedness-certificate",
+                "certification_kind": "numerical-polynomial-extrema",
+                "coeffs": [
+                  0.0,
+                  2.3561944900096456,
+                  0.0,
+                  -2.180128821841794,
+                  0.0,
+                  0.6051657980178626,
+                  0.0,
+                  -0.07999174558273085,
+                  -1.86503650531673e-12,
+                  0.006166840485764989,
+                  2.1578052523966025e-12,
+                  -0.0003098414093690119,
+                  -1.2779943025762356e-12,
+                  1.0061556727248751e-05
+                ],
+                "domain": [
+                  -1.0,
+                  1.0
+                ],
+                "bound": 1.0,
+                "tolerance": 1e-10,
+                "critical_points": [
+                  -0.6666666666525579,
+                  0.6666666666523846
+                ],
+                "evaluated_points": [
+                  -1.0,
+                  -0.6666666666525579,
+                  0.6666666666523846,
+                  1.0
+                ],
+                "values": [
+                  -0.7071067812370919,
+                  -1.0000000000129752,
+                  1.000000000012885,
+                  0.7071067812351215
+                ],
+                "max_abs_value": 1.0000000000129752,
+                "maximizing_point": -0.6666666666525579,
+                "margin": -1.2975176488794204e-11,
+                "is_bounded": true,
+                "derivative_root_residual": 1.3322676295501878e-14,
+                "interpretation": "All interval endpoints and numerically real derivative roots were evaluated. This is a floating-point extrema certificate, not an interval-arithmetic proof."
+              },
+              "interpretation": "The polynomial is extrema-bounded and has definite parity, so it is eligible for one standard QSP/QSVT phase sequence.",
+              "name": "sine",
+              "design_domain": [
+                -1.0,
+                1.0
+              ],
+              "qsvt_certification_domain": [
+                -1.0,
+                1.0
+              ],
+              "output_prefactor": 1.0
+            }
+          },
+          "component_count": 2,
+          "all_bounded": true,
+          "all_single_sequence_realizable": true,
+          "requires_parity_decomposition": false,
+          "contains_classical_only_component": false
+        },
         "assumed_quantum_components": [
           "block_encoding_construction",
           "input_state_preparation_or_data_loading",
@@ -1280,24 +1754,239 @@
     },
     {
       "schema_name": "qsvt-algorithm-workflow",
-      "schema_version": "1.0",
+      "schema_version": "1.1",
       "mode": "quantum-walk-search-workflow",
       "implementation_kind": "dense-spectral-polynomial-workflow",
       "truth_contract": {
         "workflow": "quantum-walk-search-workflow",
         "target": "continuous-time quantum-walk search and polynomial phase approximation",
         "implementation_kind": "dense-spectral-polynomial-workflow",
-        "truth_status": "validated_polynomial_core",
+        "truth_status": "validated_classical_polynomial_core",
+        "execution_tier": "polynomial_core",
+        "qnode_executed": false,
+        "physical_device_executed": false,
+        "circuit_evaluated": false,
+        "resource_completeness": "partial",
         "is_end_to_end_quantum_algorithm": false,
         "implemented_components": [
           "input_validation",
           "spectral_rescaling",
-          "bounded_polynomial_design_or_application",
+          "polynomial_design_or_application_with_realizability_classification",
           "dense_classical_spectral_reference",
           "numerical_error_diagnostics"
         ],
         "conditional_qsvt_statement": "If a valid block encoding and input-state preparation are supplied, a compatible bounded polynomial is the QSVT-transform core for this target.",
         "pennylane_qsvt_check": "not_attempted",
+        "polynomial_evidence": {
+          "components": {
+            "cosine": {
+              "mode": "polynomial-realizability-report",
+              "coeffs": [
+                0.9999808165751614,
+                0.0,
+                -4.5194818962607695,
+                0.0,
+                3.396613001705115,
+                0.0,
+                -0.9981637171789032,
+                0.0,
+                0.13018742063402336
+              ],
+              "degree": 8,
+              "parity": "even",
+              "bounded": true,
+              "max_abs_value": 0.9999808165751614,
+              "bounded_domain": [
+                -1.0,
+                1.0
+              ],
+              "bounded_num_points": 4001,
+              "realizability_kind": "single-sequence-qsp-qsvt",
+              "single_sequence_realizable": true,
+              "requires_parity_decomposition": false,
+              "even_coeffs": [
+                0.9999808165751614,
+                0.0,
+                -4.5194818962607695,
+                0.0,
+                3.396613001705115,
+                0.0,
+                -0.9981637171789032,
+                0.0,
+                0.13018742063402336
+              ],
+              "odd_coeffs": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reasons": [],
+              "boundedness_certificate": {
+                "mode": "polynomial-boundedness-certificate",
+                "certification_kind": "numerical-polynomial-extrema",
+                "coeffs": [
+                  0.9999808165751614,
+                  0.0,
+                  -4.5194818962607695,
+                  0.0,
+                  3.396613001705115,
+                  0.0,
+                  -0.9981637171789032,
+                  0.0,
+                  0.13018742063402336
+                ],
+                "domain": [
+                  -1.0,
+                  1.0
+                ],
+                "bound": 1.0,
+                "tolerance": 1e-10,
+                "critical_points": [
+                  0.0
+                ],
+                "evaluated_points": [
+                  -1.0,
+                  0.0,
+                  1.0
+                ],
+                "values": [
+                  -0.9908643745253732,
+                  0.9999808165751614,
+                  -0.9908643745253732
+                ],
+                "max_abs_value": 0.9999808165751614,
+                "maximizing_point": 0.0,
+                "margin": 1.9183424838642438e-05,
+                "is_bounded": true,
+                "derivative_root_residual": 0.0,
+                "interpretation": "All interval endpoints and numerically real derivative roots were evaluated. This is a floating-point extrema certificate, not an interval-arithmetic proof."
+              },
+              "interpretation": "The polynomial is extrema-bounded and has definite parity, so it is eligible for one standard QSP/QSVT phase sequence.",
+              "name": "cosine",
+              "design_domain": [
+                -1.0,
+                1.0
+              ],
+              "qsvt_certification_domain": [
+                -1.0,
+                1.0
+              ],
+              "output_prefactor": 1.0
+            },
+            "sine": {
+              "mode": "polynomial-realizability-report",
+              "coeffs": [
+                0.0,
+                3.005643636719551,
+                0.0,
+                -4.513131418311209,
+                0.0,
+                1.9778215623346864,
+                0.0,
+                -0.33642627455431745
+              ],
+              "degree": 7,
+              "parity": "odd",
+              "bounded": false,
+              "max_abs_value": 1.0001157249575245,
+              "bounded_domain": [
+                -1.0,
+                1.0
+              ],
+              "bounded_num_points": 4001,
+              "realizability_kind": "classical-polynomial-only",
+              "single_sequence_realizable": false,
+              "requires_parity_decomposition": false,
+              "even_coeffs": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "odd_coeffs": [
+                0.0,
+                3.005643636719551,
+                0.0,
+                -4.513131418311209,
+                0.0,
+                1.9778215623346864,
+                0.0,
+                -0.33642627455431745
+              ],
+              "reasons": [
+                "out_of_bounds"
+              ],
+              "boundedness_certificate": {
+                "mode": "polynomial-boundedness-certificate",
+                "certification_kind": "numerical-polynomial-extrema",
+                "coeffs": [
+                  0.0,
+                  3.005643636719551,
+                  0.0,
+                  -4.513131418311209,
+                  0.0,
+                  1.9778215623346864,
+                  0.0,
+                  -0.33642627455431745
+                ],
+                "domain": [
+                  -1.0,
+                  1.0
+                ],
+                "bound": 1.0,
+                "tolerance": 1e-10,
+                "critical_points": [
+                  -0.5223282614696506,
+                  0.5223282614696522
+                ],
+                "evaluated_points": [
+                  -1.0,
+                  -0.5223282614696506,
+                  0.5223282614696522,
+                  1.0
+                ],
+                "values": [
+                  -0.13390750618871067,
+                  -1.0001157249575243,
+                  1.0001157249575245,
+                  0.13390750618871067
+                ],
+                "max_abs_value": 1.0001157249575245,
+                "maximizing_point": 0.5223282614696522,
+                "margin": -0.00011572495752454337,
+                "is_bounded": false,
+                "derivative_root_residual": 1.2878587085651816e-14,
+                "interpretation": "All interval endpoints and numerically real derivative roots were evaluated. This is a floating-point extrema certificate, not an interval-arithmetic proof."
+              },
+              "interpretation": "The polynomial can be evaluated classically but is not bounded by one on the sampled QSP/QSVT signal domain.",
+              "name": "sine",
+              "design_domain": [
+                -1.0,
+                1.0
+              ],
+              "qsvt_certification_domain": [
+                -1.0,
+                1.0
+              ],
+              "output_prefactor": 1.0
+            }
+          },
+          "component_count": 2,
+          "all_bounded": false,
+          "all_single_sequence_realizable": false,
+          "requires_parity_decomposition": false,
+          "contains_classical_only_component": true
+        },
         "assumed_quantum_components": [
           "block_encoding_construction",
           "input_state_preparation_or_data_loading",
@@ -2261,24 +2950,285 @@
     },
     {
       "schema_name": "qsvt-algorithm-workflow",
-      "schema_version": "1.0",
+      "schema_version": "1.1",
       "mode": "quantum-walk-search-workflow",
       "implementation_kind": "dense-spectral-polynomial-workflow",
       "truth_contract": {
         "workflow": "quantum-walk-search-workflow",
         "target": "continuous-time quantum-walk search and polynomial phase approximation",
         "implementation_kind": "dense-spectral-polynomial-workflow",
-        "truth_status": "validated_polynomial_core",
+        "truth_status": "validated_qsvt_compatible_polynomial_core",
+        "execution_tier": "polynomial_core",
+        "qnode_executed": false,
+        "physical_device_executed": false,
+        "circuit_evaluated": false,
+        "resource_completeness": "partial",
         "is_end_to_end_quantum_algorithm": false,
         "implemented_components": [
           "input_validation",
           "spectral_rescaling",
-          "bounded_polynomial_design_or_application",
+          "polynomial_design_or_application_with_realizability_classification",
           "dense_classical_spectral_reference",
           "numerical_error_diagnostics"
         ],
         "conditional_qsvt_statement": "If a valid block encoding and input-state preparation are supplied, a compatible bounded polynomial is the QSVT-transform core for this target.",
         "pennylane_qsvt_check": "not_attempted",
+        "polynomial_evidence": {
+          "components": {
+            "cosine": {
+              "mode": "polynomial-realizability-report",
+              "coeffs": [
+                0.9999999999588048,
+                0.0,
+                -4.520542282115823,
+                0.0,
+                3.4058836383480973,
+                0.0,
+                -1.0264283944328705,
+                3.1266302132480283e-12,
+                0.1657106197316282,
+                -5.3437507646892686e-12,
+                -0.016637545468007723,
+                4.277231795852326e-12,
+                0.0011283287447919844,
+                -1.2998820099333198e-12,
+                -4.8906888585191534e-05
+              ],
+              "degree": 14,
+              "parity": "even",
+              "bounded": true,
+              "max_abs_value": 0.9999999999588048,
+              "bounded_domain": [
+                -1.0,
+                1.0
+              ],
+              "bounded_num_points": 4001,
+              "realizability_kind": "single-sequence-qsp-qsvt",
+              "single_sequence_realizable": true,
+              "requires_parity_decomposition": false,
+              "even_coeffs": [
+                0.9999999999588048,
+                0.0,
+                -4.520542282115823,
+                0.0,
+                3.4058836383480973,
+                0.0,
+                -1.0264283944328705,
+                0.0,
+                0.1657106197316282,
+                0.0,
+                -0.016637545468007723,
+                0.0,
+                0.0011283287447919844,
+                0.0,
+                -4.8906888585191534e-05
+              ],
+              "odd_coeffs": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                3.1266302132480283e-12,
+                0.0,
+                -5.3437507646892686e-12,
+                0.0,
+                4.277231795852326e-12,
+                0.0,
+                -1.2998820099333198e-12,
+                0.0
+              ],
+              "reasons": [],
+              "boundedness_certificate": {
+                "mode": "polynomial-boundedness-certificate",
+                "certification_kind": "numerical-polynomial-extrema",
+                "coeffs": [
+                  0.9999999999588048,
+                  0.0,
+                  -4.520542282115823,
+                  0.0,
+                  3.4058836383480973,
+                  0.0,
+                  -1.0264283944328705,
+                  3.1266302132480283e-12,
+                  0.1657106197316282,
+                  -5.3437507646892686e-12,
+                  -0.016637545468007723,
+                  4.277231795852326e-12,
+                  0.0011283287447919844,
+                  -1.2998820099333198e-12,
+                  -4.8906888585191534e-05
+                ],
+                "domain": [
+                  -1.0,
+                  1.0
+                ],
+                "bound": 1.0,
+                "tolerance": 1e-10,
+                "critical_points": [
+                  0.0
+                ],
+                "evaluated_points": [
+                  -1.0,
+                  0.0,
+                  1.0
+                ],
+                "values": [
+                  -0.9909345421227242,
+                  0.9999999999588048,
+                  -0.9909345421212037
+                ],
+                "max_abs_value": 0.9999999999588048,
+                "maximizing_point": 0.0,
+                "margin": 4.119515839562382e-11,
+                "is_bounded": true,
+                "derivative_root_residual": 0.0,
+                "interpretation": "All interval endpoints and numerically real derivative roots were evaluated. This is a floating-point extrema certificate, not an interval-arithmetic proof."
+              },
+              "interpretation": "The polynomial is extrema-bounded and has definite parity, so it is eligible for one standard QSP/QSVT phase sequence.",
+              "name": "cosine",
+              "design_domain": [
+                -1.0,
+                1.0
+              ],
+              "qsvt_certification_domain": [
+                -1.0,
+                1.0
+              ],
+              "output_prefactor": 1.0
+            },
+            "sine": {
+              "mode": "polynomial-realizability-report",
+              "coeffs": [
+                0.0,
+                3.006839625736096,
+                0.0,
+                -4.530848302878743,
+                0.0,
+                2.0481862036070826,
+                1.0815721357887681e-12,
+                -0.44088594265999037,
+                -3.011003037997982e-12,
+                0.055324936789609584,
+                4.318051365867506e-12,
+                -0.004496339801089361,
+                -3.0755817277489747e-12,
+                0.00022539621968009678
+              ],
+              "degree": 13,
+              "parity": "odd",
+              "bounded": true,
+              "max_abs_value": 0.9999999996320185,
+              "bounded_domain": [
+                -1.0,
+                1.0
+              ],
+              "bounded_num_points": 4001,
+              "realizability_kind": "single-sequence-qsp-qsvt",
+              "single_sequence_realizable": true,
+              "requires_parity_decomposition": false,
+              "even_coeffs": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0815721357887681e-12,
+                0.0,
+                -3.011003037997982e-12,
+                0.0,
+                4.318051365867506e-12,
+                0.0,
+                -3.0755817277489747e-12,
+                0.0
+              ],
+              "odd_coeffs": [
+                0.0,
+                3.006839625736096,
+                0.0,
+                -4.530848302878743,
+                0.0,
+                2.0481862036070826,
+                0.0,
+                -0.44088594265999037,
+                0.0,
+                0.055324936789609584,
+                0.0,
+                -0.004496339801089361,
+                0.0,
+                0.00022539621968009678
+              ],
+              "reasons": [],
+              "boundedness_certificate": {
+                "mode": "polynomial-boundedness-certificate",
+                "certification_kind": "numerical-polynomial-extrema",
+                "coeffs": [
+                  0.0,
+                  3.006839625736096,
+                  0.0,
+                  -4.530848302878743,
+                  0.0,
+                  2.0481862036070826,
+                  1.0815721357887681e-12,
+                  -0.44088594265999037,
+                  -3.011003037997982e-12,
+                  0.055324936789609584,
+                  4.318051365867506e-12,
+                  -0.004496339801089361,
+                  -3.0755817277489747e-12,
+                  0.00022539621968009678
+                ],
+                "domain": [
+                  -1.0,
+                  1.0
+                ],
+                "bound": 1.0,
+                "tolerance": 1e-10,
+                "critical_points": [
+                  -0.5224077504961089,
+                  0.5224077504961301
+                ],
+                "evaluated_points": [
+                  -1.0,
+                  -0.5224077504961089,
+                  0.5224077504961301,
+                  1.0
+                ],
+                "values": [
+                  -0.13434557701333244,
+                  -0.9999999996319971,
+                  0.9999999996320185,
+                  0.13434557701195848
+                ],
+                "max_abs_value": 0.9999999996320185,
+                "maximizing_point": 0.5224077504961301,
+                "margin": 3.6798153413286627e-10,
+                "is_bounded": true,
+                "derivative_root_residual": 7.105427357601002e-15,
+                "interpretation": "All interval endpoints and numerically real derivative roots were evaluated. This is a floating-point extrema certificate, not an interval-arithmetic proof."
+              },
+              "interpretation": "The polynomial is extrema-bounded and has definite parity, so it is eligible for one standard QSP/QSVT phase sequence.",
+              "name": "sine",
+              "design_domain": [
+                -1.0,
+                1.0
+              ],
+              "qsvt_certification_domain": [
+                -1.0,
+                1.0
+              ],
+              "output_prefactor": 1.0
+            }
+          },
+          "component_count": 2,
+          "all_bounded": true,
+          "all_single_sequence_realizable": true,
+          "requires_parity_decomposition": false,
+          "contains_classical_only_component": false
+        },
         "assumed_quantum_components": [
           "block_encoding_construction",
           "input_state_preparation_or_data_loading",
@@ -3254,24 +4204,263 @@
     },
     {
       "schema_name": "qsvt-algorithm-workflow",
-      "schema_version": "1.0",
+      "schema_version": "1.1",
       "mode": "quantum-walk-search-workflow",
       "implementation_kind": "dense-spectral-polynomial-workflow",
       "truth_contract": {
         "workflow": "quantum-walk-search-workflow",
         "target": "continuous-time quantum-walk search and polynomial phase approximation",
         "implementation_kind": "dense-spectral-polynomial-workflow",
-        "truth_status": "validated_polynomial_core",
+        "truth_status": "validated_classical_polynomial_core",
+        "execution_tier": "polynomial_core",
+        "qnode_executed": false,
+        "physical_device_executed": false,
+        "circuit_evaluated": false,
+        "resource_completeness": "partial",
         "is_end_to_end_quantum_algorithm": false,
         "implemented_components": [
           "input_validation",
           "spectral_rescaling",
-          "bounded_polynomial_design_or_application",
+          "polynomial_design_or_application_with_realizability_classification",
           "dense_classical_spectral_reference",
           "numerical_error_diagnostics"
         ],
         "conditional_qsvt_statement": "If a valid block encoding and input-state preparation are supplied, a compatible bounded polynomial is the QSVT-transform core for this target.",
         "pennylane_qsvt_check": "not_attempted",
+        "polynomial_evidence": {
+          "components": {
+            "cosine": {
+              "mode": "polynomial-realizability-report",
+              "coeffs": [
+                0.9999925458089132,
+                0.0,
+                -7.710043921359063,
+                0.0,
+                9.901597053591033,
+                0.0,
+                -5.059756430227442,
+                0.0,
+                1.33202041881965,
+                0.0,
+                -0.17094510243153166
+              ],
+              "degree": 10,
+              "parity": "even",
+              "bounded": false,
+              "max_abs_value": 1.000005349013654,
+              "bounded_domain": [
+                -1.0,
+                1.0
+              ],
+              "bounded_num_points": 4001,
+              "realizability_kind": "classical-polynomial-only",
+              "single_sequence_realizable": false,
+              "requires_parity_decomposition": false,
+              "even_coeffs": [
+                0.9999925458089132,
+                0.0,
+                -7.710043921359063,
+                0.0,
+                9.901597053591033,
+                0.0,
+                -5.059756430227442,
+                0.0,
+                1.33202041881965,
+                0.0,
+                -0.17094510243153166
+              ],
+              "odd_coeffs": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reasons": [
+                "out_of_bounds"
+              ],
+              "boundedness_certificate": {
+                "mode": "polynomial-boundedness-certificate",
+                "certification_kind": "numerical-polynomial-extrema",
+                "coeffs": [
+                  0.9999925458089132,
+                  0.0,
+                  -7.710043921359063,
+                  0.0,
+                  9.901597053591033,
+                  0.0,
+                  -5.059756430227442,
+                  0.0,
+                  1.33202041881965,
+                  0.0,
+                  -0.17094510243153166
+                ],
+                "domain": [
+                  -1.0,
+                  1.0
+                ],
+                "bound": 1.0,
+                "tolerance": 1e-10,
+                "critical_points": [
+                  -0.8000106747497048,
+                  0.0,
+                  0.8000106747497042
+                ],
+                "evaluated_points": [
+                  -1.0,
+                  -0.8000106747497048,
+                  0.0,
+                  0.8000106747497042,
+                  1.0
+                ],
+                "values": [
+                  -0.7071354357984403,
+                  -1.000005349013654,
+                  0.9999925458089132,
+                  -1.0000053490136531,
+                  -0.7071354357984403
+                ],
+                "max_abs_value": 1.000005349013654,
+                "maximizing_point": -0.8000106747497048,
+                "margin": -5.349013654010193e-06,
+                "is_bounded": false,
+                "derivative_root_residual": 7.105522168424237e-15,
+                "interpretation": "All interval endpoints and numerically real derivative roots were evaluated. This is a floating-point extrema certificate, not an interval-arithmetic proof."
+              },
+              "interpretation": "The polynomial can be evaluated classically but is not bounded by one on the sampled QSP/QSVT signal domain.",
+              "name": "cosine",
+              "design_domain": [
+                -1.0,
+                1.0
+              ],
+              "qsvt_certification_domain": [
+                -1.0,
+                1.0
+              ],
+              "output_prefactor": 1.0
+            },
+            "sine": {
+              "mode": "polynomial-realizability-report",
+              "coeffs": [
+                0.0,
+                3.9264760497154034,
+                0.0,
+                -10.081930403604277,
+                0.0,
+                7.713888345815506,
+                0.0,
+                -2.686354824727841,
+                0.0,
+                0.42097954559111117
+              ],
+              "degree": 9,
+              "parity": "odd",
+              "bounded": false,
+              "max_abs_value": 1.0000461242392495,
+              "bounded_domain": [
+                -1.0,
+                1.0
+              ],
+              "bounded_num_points": 4001,
+              "realizability_kind": "classical-polynomial-only",
+              "single_sequence_realizable": false,
+              "requires_parity_decomposition": false,
+              "even_coeffs": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "odd_coeffs": [
+                0.0,
+                3.9264760497154034,
+                0.0,
+                -10.081930403604277,
+                0.0,
+                7.713888345815506,
+                0.0,
+                -2.686354824727841,
+                0.0,
+                0.42097954559111117
+              ],
+              "reasons": [
+                "out_of_bounds"
+              ],
+              "boundedness_certificate": {
+                "mode": "polynomial-boundedness-certificate",
+                "certification_kind": "numerical-polynomial-extrema",
+                "coeffs": [
+                  0.0,
+                  3.9264760497154034,
+                  0.0,
+                  -10.081930403604277,
+                  0.0,
+                  7.713888345815506,
+                  0.0,
+                  -2.686354824727841,
+                  0.0,
+                  0.42097954559111117
+                ],
+                "domain": [
+                  -1.0,
+                  1.0
+                ],
+                "bound": 1.0,
+                "tolerance": 1e-10,
+                "critical_points": [
+                  -0.3999991598111238,
+                  0.39999915981112466
+                ],
+                "evaluated_points": [
+                  -1.0,
+                  -0.3999991598111238,
+                  0.39999915981112466,
+                  1.0
+                ],
+                "values": [
+                  0.7069412872100973,
+                  -1.0000461242392493,
+                  1.0000461242392495,
+                  -0.7069412872100973
+                ],
+                "max_abs_value": 1.0000461242392495,
+                "maximizing_point": 0.39999915981112466,
+                "margin": -4.612423924954534e-05,
+                "is_bounded": false,
+                "derivative_root_residual": 2.2648549702353193e-14,
+                "interpretation": "All interval endpoints and numerically real derivative roots were evaluated. This is a floating-point extrema certificate, not an interval-arithmetic proof."
+              },
+              "interpretation": "The polynomial can be evaluated classically but is not bounded by one on the sampled QSP/QSVT signal domain.",
+              "name": "sine",
+              "design_domain": [
+                -1.0,
+                1.0
+              ],
+              "qsvt_certification_domain": [
+                -1.0,
+                1.0
+              ],
+              "output_prefactor": 1.0
+            }
+          },
+          "component_count": 2,
+          "all_bounded": false,
+          "all_single_sequence_realizable": false,
+          "requires_parity_decomposition": false,
+          "contains_classical_only_component": true
+        },
         "assumed_quantum_components": [
           "block_encoding_construction",
           "input_state_preparation_or_data_loading",
@@ -5735,24 +6924,327 @@
     },
     {
       "schema_name": "qsvt-algorithm-workflow",
-      "schema_version": "1.0",
+      "schema_version": "1.1",
       "mode": "quantum-walk-search-workflow",
       "implementation_kind": "dense-spectral-polynomial-workflow",
       "truth_contract": {
         "workflow": "quantum-walk-search-workflow",
         "target": "continuous-time quantum-walk search and polynomial phase approximation",
         "implementation_kind": "dense-spectral-polynomial-workflow",
-        "truth_status": "validated_polynomial_core",
+        "truth_status": "validated_qsvt_compatible_polynomial_core",
+        "execution_tier": "polynomial_core",
+        "qnode_executed": false,
+        "physical_device_executed": false,
+        "circuit_evaluated": false,
+        "resource_completeness": "partial",
         "is_end_to_end_quantum_algorithm": false,
         "implemented_components": [
           "input_validation",
           "spectral_rescaling",
-          "bounded_polynomial_design_or_application",
+          "polynomial_design_or_application_with_realizability_classification",
           "dense_classical_spectral_reference",
           "numerical_error_diagnostics"
         ],
         "conditional_qsvt_statement": "If a valid block encoding and input-state preparation are supplied, a compatible bounded polynomial is the QSVT-transform core for this target.",
         "pennylane_qsvt_check": "not_attempted",
+        "polynomial_evidence": {
+          "components": {
+            "cosine": {
+              "mode": "polynomial-realizability-report",
+              "coeffs": [
+                0.9999999999996418,
+                0.0,
+                -7.710628438275299,
+                0.0,
+                9.908965149769779,
+                0.0,
+                -5.093623198354429,
+                0.0,
+                1.4026796269666166,
+                0.0,
+                -0.24034449162720126,
+                -1.6131052709833784e-12,
+                0.0280768472357874,
+                2.2138164452898275e-12,
+                -0.0023760469812704214,
+                -1.5511644448365395e-12,
+                0.00015008319346749915,
+                0.0,
+                -6.313115188908244e-06
+              ],
+              "degree": 18,
+              "parity": "even",
+              "bounded": true,
+              "max_abs_value": 1.0000000000005296,
+              "bounded_domain": [
+                -1.0,
+                1.0
+              ],
+              "bounded_num_points": 4001,
+              "realizability_kind": "single-sequence-qsp-qsvt",
+              "single_sequence_realizable": true,
+              "requires_parity_decomposition": false,
+              "even_coeffs": [
+                0.9999999999996418,
+                0.0,
+                -7.710628438275299,
+                0.0,
+                9.908965149769779,
+                0.0,
+                -5.093623198354429,
+                0.0,
+                1.4026796269666166,
+                0.0,
+                -0.24034449162720126,
+                0.0,
+                0.0280768472357874,
+                0.0,
+                -0.0023760469812704214,
+                0.0,
+                0.00015008319346749915,
+                0.0,
+                -6.313115188908244e-06
+              ],
+              "odd_coeffs": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                -1.6131052709833784e-12,
+                0.0,
+                2.2138164452898275e-12,
+                0.0,
+                -1.5511644448365395e-12,
+                0.0,
+                0.0,
+                0.0
+              ],
+              "reasons": [],
+              "boundedness_certificate": {
+                "mode": "polynomial-boundedness-certificate",
+                "certification_kind": "numerical-polynomial-extrema",
+                "coeffs": [
+                  0.9999999999996418,
+                  0.0,
+                  -7.710628438275299,
+                  0.0,
+                  9.908965149769779,
+                  0.0,
+                  -5.093623198354429,
+                  0.0,
+                  1.4026796269666166,
+                  0.0,
+                  -0.24034449162720126,
+                  -1.6131052709833784e-12,
+                  0.0280768472357874,
+                  2.2138164452898275e-12,
+                  -0.0023760469812704214,
+                  -1.5511644448365395e-12,
+                  0.00015008319346749915,
+                  0.0,
+                  -6.313115188908244e-06
+                ],
+                "domain": [
+                  -1.0,
+                  1.0
+                ],
+                "bound": 1.0,
+                "tolerance": 1e-10,
+                "critical_points": [
+                  -0.7999999999998308,
+                  0.0,
+                  0.7999999999999537
+                ],
+                "evaluated_points": [
+                  -1.0,
+                  -0.7999999999998308,
+                  0.0,
+                  0.7999999999999537,
+                  1.0
+                ],
+                "values": [
+                  -0.7071067811871458,
+                  -1.0000000000003866,
+                  0.9999999999996418,
+                  -1.0000000000005296,
+                  -0.7071067811890469
+                ],
+                "max_abs_value": 1.0000000000005296,
+                "maximizing_point": 0.7999999999999537,
+                "margin": -5.295763827461997e-13,
+                "is_bounded": true,
+                "derivative_root_residual": 9.947598300640828e-15,
+                "interpretation": "All interval endpoints and numerically real derivative roots were evaluated. This is a floating-point extrema certificate, not an interval-arithmetic proof."
+              },
+              "interpretation": "The polynomial is extrema-bounded and has definite parity, so it is eligible for one standard QSP/QSVT phase sequence.",
+              "name": "cosine",
+              "design_domain": [
+                -1.0,
+                1.0
+              ],
+              "qsvt_certification_domain": [
+                -1.0,
+                1.0
+              ],
+              "output_prefactor": 1.0
+            },
+            "sine": {
+              "mode": "polynomial-realizability-report",
+              "coeffs": [
+                0.0,
+                3.9269908169161933,
+                0.0,
+                -10.093189019058523,
+                0.0,
+                7.78248294943942,
+                -1.2468749921271271e-12,
+                -2.8575152640524317,
+                4.781998384294363e-12,
+                0.6120314465077227,
+                -1.1230500591831001e-11,
+                -0.08579489337123526,
+                1.6360972789586925e-11,
+                0.008468834607493437,
+                -1.4392334662935399e-11,
+                -0.0006102768793796346,
+                7.024476186483661e-12,
+                2.862471980251261e-05,
+                -1.4704847057992067e-12
+              ],
+              "degree": 18,
+              "parity": "odd",
+              "bounded": true,
+              "max_abs_value": 0.9999999999962649,
+              "bounded_domain": [
+                -1.0,
+                1.0
+              ],
+              "bounded_num_points": 4001,
+              "realizability_kind": "single-sequence-qsp-qsvt",
+              "single_sequence_realizable": true,
+              "requires_parity_decomposition": false,
+              "even_coeffs": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                -1.2468749921271271e-12,
+                0.0,
+                4.781998384294363e-12,
+                0.0,
+                -1.1230500591831001e-11,
+                0.0,
+                1.6360972789586925e-11,
+                0.0,
+                -1.4392334662935399e-11,
+                0.0,
+                7.024476186483661e-12,
+                0.0,
+                -1.4704847057992067e-12
+              ],
+              "odd_coeffs": [
+                0.0,
+                3.9269908169161933,
+                0.0,
+                -10.093189019058523,
+                0.0,
+                7.78248294943942,
+                0.0,
+                -2.8575152640524317,
+                0.0,
+                0.6120314465077227,
+                0.0,
+                -0.08579489337123526,
+                0.0,
+                0.008468834607493437,
+                0.0,
+                -0.0006102768793796346,
+                0.0,
+                2.862471980251261e-05,
+                0.0
+              ],
+              "reasons": [],
+              "boundedness_certificate": {
+                "mode": "polynomial-boundedness-certificate",
+                "certification_kind": "numerical-polynomial-extrema",
+                "coeffs": [
+                  0.0,
+                  3.9269908169161933,
+                  0.0,
+                  -10.093189019058523,
+                  0.0,
+                  7.78248294943942,
+                  -1.2468749921271271e-12,
+                  -2.8575152640524317,
+                  4.781998384294363e-12,
+                  0.6120314465077227,
+                  -1.1230500591831001e-11,
+                  -0.08579489337123526,
+                  1.6360972789586925e-11,
+                  0.008468834607493437,
+                  -1.4392334662935399e-11,
+                  -0.0006102768793796346,
+                  7.024476186483661e-12,
+                  2.862471980251261e-05,
+                  -1.4704847057992067e-12
+                ],
+                "domain": [
+                  -1.0,
+                  1.0
+                ],
+                "bound": 1.0,
+                "tolerance": 1e-10,
+                "critical_points": [
+                  -0.3999999999847567,
+                  0.4000000000071851
+                ],
+                "evaluated_points": [
+                  -1.0,
+                  -0.3999999999847567,
+                  0.4000000000071851,
+                  1.0
+                ],
+                "values": [
+                  0.7071067811707642,
+                  -0.9999999999962649,
+                  0.9999999999962589,
+                  -0.7071067811711095
+                ],
+                "max_abs_value": 0.9999999999962649,
+                "maximizing_point": -0.3999999999847567,
+                "margin": 3.735123321746414e-12,
+                "is_bounded": true,
+                "derivative_root_residual": 2.479567662305726e-10,
+                "interpretation": "All interval endpoints and numerically real derivative roots were evaluated. This is a floating-point extrema certificate, not an interval-arithmetic proof."
+              },
+              "interpretation": "The polynomial is extrema-bounded and has definite parity, so it is eligible for one standard QSP/QSVT phase sequence.",
+              "name": "sine",
+              "design_domain": [
+                -1.0,
+                1.0
+              ],
+              "qsvt_certification_domain": [
+                -1.0,
+                1.0
+              ],
+              "output_prefactor": 1.0
+            }
+          },
+          "component_count": 2,
+          "all_bounded": true,
+          "all_single_sequence_realizable": true,
+          "requires_parity_decomposition": false,
+          "contains_classical_only_component": false
+        },
         "assumed_quantum_components": [
           "block_encoding_construction",
           "input_state_preparation_or_data_loading",

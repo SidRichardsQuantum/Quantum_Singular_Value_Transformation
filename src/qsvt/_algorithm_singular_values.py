@@ -50,6 +50,8 @@ class SingularValueFilteringWorkflowResult:
             "truth_contract": algorithm_truth_contract(
                 "singular-value-filtering-workflow",
                 target="rectangular singular-value filter transform",
+                polynomials={"singular_value_filter": self.coeffs},
+                polynomial_design_domains={"singular_value_filter": (0.0, 1.0)},
             ),
             "degree": self.degree,
             "cutoff": self.cutoff,
@@ -100,6 +102,11 @@ class SingularValuePseudoinverseWorkflowResult:
             "truth_contract": algorithm_truth_contract(
                 "singular-value-pseudoinverse-workflow",
                 target="truncated singular-value pseudoinverse action",
+                polynomials={"singular_value_inverse": self.coeffs},
+                polynomial_design_domains={"singular_value_inverse": (0.0, 1.0)},
+                polynomial_output_prefactors={
+                    "singular_value_inverse": 1.0 / (self.cutoff * self.scale),
+                },
             ),
             "degree": self.degree,
             "cutoff": self.cutoff,

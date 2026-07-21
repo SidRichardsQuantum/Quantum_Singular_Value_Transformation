@@ -649,6 +649,8 @@ print(report["ground_energy"])
 print(report["ground_state_overlap"])
 print(report["operator_relative_error"])
 print(report["truth_contract"]["truth_status"])
+print(report["truth_contract"]["execution_tier"])
+print(report["truth_contract"]["polynomial_evidence"])
 print(report["truth_contract"]["is_end_to_end_quantum_algorithm"])
 
 save_report(report, "tight-binding-filter-report.json")
@@ -660,9 +662,10 @@ Read the fields as follows:
   polynomial approximation for this finite instance.
 - `ground_state_overlap` is the physics diagnostic for whether the filter
   emphasized the low-energy eigenspace.
-- `truth_contract` states that the report validates the spectral-polynomial
-  core and does not include block-encoding construction, state preparation,
-  readout, amplitude amplification, or hardware costs.
+- `truth_contract` classifies the exact returned polynomial, states whether the
+  run remained a polynomial core or reached finite QSVT circuit evaluation,
+  and lists omitted block-encoding, state-preparation, readout,
+  amplitude-amplification, and hardware costs.
 
 For research benchmarking, pair this workflow with a resource proxy:
 
@@ -785,8 +788,10 @@ qsvt report-schema-manifest \
 The manifest checks saved JSON reports against the package's supported
 versioned schemas and records unsupported versions, invalid JSON, and missing
 required top-level fields without modifying the original reports. Stable
-algorithm results use schema name `qsvt-algorithm-workflow`, version `1.0`,
-with `mode` identifying the concrete workflow. Extra
+algorithm results use schema name `qsvt-algorithm-workflow`, current version
+`1.1`, with `mode` identifying the concrete workflow. Version `1.0` remains
+readable and can be upgraded with `migrate_algorithm_workflow_report(report)`
+when the saved report retains its polynomial coefficients. Extra
 top-level fields on known schemas are reported as `unknown_fields` but do not
 fail the audit unless another compatibility error is present.
 

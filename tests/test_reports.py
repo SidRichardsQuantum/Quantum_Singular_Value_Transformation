@@ -9,6 +9,7 @@ import pytest
 from qsvt.reports import (
     load_report,
     load_report_with_schema,
+    migrate_algorithm_workflow_report,
     plot_approximation_report,
     report_schema_manifest,
     report_to_jsonable,
@@ -232,7 +233,7 @@ def test_supported_report_schema_registry_matches_fixture_families():
     assert registry["block-encoding-qsvt-execution"] == ("1.0",)
     assert registry["hardware-qsvt-execution"] == ("1.0",)
     assert registry["hardware-qsvt-circuit"] == ("1.0",)
-    assert registry["qsvt-algorithm-workflow"] == ("1.0",)
+    assert registry["qsvt-algorithm-workflow"] == ("1.0", "1.1")
     assert fixture_pairs <= {
         (schema_name, version)
         for schema_name, versions in registry.items()
@@ -338,9 +339,78 @@ def test_algorithm_workflow_legacy_fixture_requires_intentional_migration():
     assert compatibility.schema_version == "0.9"
     assert compatibility.supported is False
     assert compatibility.migration_required is True
-    assert "supported versions: 1.0" in compatibility.message
-    with pytest.raises(ValueError, match="supported versions: 1.0"):
+    assert "supported versions: 1.0, 1.1" in compatibility.message
+    with pytest.raises(ValueError, match="supported versions: 1.0, 1.1"):
         load_report_with_schema(path)
+
+
+def test_algorithm_workflow_v1_migrates_to_artifact_derived_v1_1():
+    source_path = FIXTURE_DIR / "algorithm_workflow_v1.json"
+    expectation_path = MIGRATION_FIXTURE_DIR / "algorithm_workflow_v1_to_v1_1.json"
+    source = load_report(source_path)
+    expected = load_report(expectation_path)
+
+    migrated = migrate_algorithm_workflow_report(source)
+    compatibility = validate_report_schema(migrated, require_schema=True)
+    contract = migrated["truth_contract"]
+    components = contract["polynomial_evidence"]["components"]
+
+    assert source["schema_version"] == "1.0"
+    assert migrated["schema_version"] == expected["target_schema_version"]
+    assert compatibility.supported is True
+    assert contract["execution_tier"] == expected["expected_execution_tier"]
+    assert contract["truth_status"] == expected["expected_truth_status"]
+    assert sorted(components) == expected["expected_components"]
+    assert (
+        components["transform"]["realizability_kind"]
+        == expected["expected_realizability_kind"]
+    )
+    assert migrated["schema_migration"] == {
+        "from_version": "1.0",
+        "to_version": "1.1",
+        "method": "artifact-derived-polynomial-truth-evidence",
+    }
+
+
+def test_algorithm_workflow_v1_1_requires_derived_truth_fields():
+    source = load_report(FIXTURE_DIR / "algorithm_workflow_v1.json")
+    relabeled_without_migration = {**source, "schema_version": "1.1"}
+
+    compatibility = validate_report_schema(
+        relabeled_without_migration,
+        require_schema=True,
+    )
+
+    assert compatibility.supported is False
+    assert compatibility.migration_required is False
+    assert "truth_contract.execution_tier" in compatibility.missing_fields
+    assert "truth_contract.polynomial_evidence" in compatibility.missing_fields
+
+
+def test_algorithm_workflow_migration_is_idempotent_and_nonmutating():
+    source = load_report(FIXTURE_DIR / "algorithm_workflow_v1.json")
+    migrated = migrate_algorithm_workflow_report(source)
+    migrated_copy = migrate_algorithm_workflow_report(migrated)
+
+    assert migrated_copy == migrated
+    assert migrated_copy is not migrated
+    migrated_copy["truth_contract"]["workflow"] = "changed"
+    assert migrated["truth_contract"]["workflow"] == "linear-system-workflow"
+
+
+def test_algorithm_workflow_migration_rejects_insufficient_or_wrong_reports():
+    source = load_report(FIXTURE_DIR / "algorithm_workflow_v1.json")
+
+    without_coeffs = {**source}
+    without_coeffs.pop("coeffs")
+    with pytest.raises(ValueError, match="no polynomial coefficients"):
+        migrate_algorithm_workflow_report(without_coeffs)
+    with pytest.raises(ValueError, match="can only migrate to version '1.1'"):
+        migrate_algorithm_workflow_report(source, target_version="2.0")
+    with pytest.raises(ValueError, match="requires schema_name"):
+        migrate_algorithm_workflow_report(
+            {**source, "schema_name": "qsvt-problem-workflow"}
+        )
 
 
 def test_report_schema_manifest_summarizes_paths(tmp_path):

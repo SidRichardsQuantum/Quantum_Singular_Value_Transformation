@@ -114,11 +114,16 @@ want compact rows that are easy to diff in release artifacts.
 
 | schema | versions | required top-level fields |
 | --- | --- | --- |
-| `qsvt-algorithm-workflow` | `1.0` | `schema_name`, `schema_version`, `mode`, `implementation_kind`, `truth_contract` |
+| `qsvt-algorithm-workflow` | `1.0`, `1.1` | `schema_name`, `schema_version`, `mode`, `implementation_kind`, `truth_contract` |
 | `qsvt-problem-workflow` | `1.0` | `schema_name`, `schema_version`, `target`, `truth_contract` |
 | `block-encoding-qsvt-execution` | `1.0` | `schema_name`, `schema_version`, `mode`, `implementation_kind`, `truth_contract`, `resource_summary` |
 | `hardware-qsvt-execution` | `1.0` | `schema_name`, `schema_version`, `mode`, `implementation_kind`, `truth_contract`, `resource_summary` |
 | `hardware-qsvt-circuit` | `1.0` | `schema_name`, `schema_version`, `mode`, `implementation_kind`, `truth_contract`, `logical_resource_summary`, `decomposed_resource_summary` |
+
+For algorithm schema `1.1`, `truth_contract` additionally requires
+`execution_tier`, `truth_status`, QNode/device/circuit execution flags,
+`resource_completeness`, and `polynomial_evidence`. Merely relabeling a `1.0`
+payload as `1.1` therefore fails validation; use the migration helper.
 
 ## Report fields
 
@@ -143,6 +148,7 @@ want compact rows that are easy to diff in release artifacts.
 - `report_to_jsonable(report)`
 - `save_report(report, path)`
 - `load_report(path)`
+- `migrate_algorithm_workflow_report(report, target_version="1.1")`
 - `supported_report_schemas()`
 - `report_schema_manifest(paths)`
 - `write_report_schema_manifest_csv(rows, path)`
@@ -153,9 +159,13 @@ want compact rows that are easy to diff in release artifacts.
 - `save_report_plot(report, path)`
 
 Versioned machine-readable reports currently include
-`qsvt-algorithm-workflow`, `qsvt-problem-workflow`, `block-encoding-qsvt-execution`,
-`hardware-qsvt-execution`, and `hardware-qsvt-circuit` at schema version
-`1.0`. Unsupported schema names or versions return an intentional
+`qsvt-algorithm-workflow` at schema versions `1.0` and `1.1`, plus
+`qsvt-problem-workflow`, `block-encoding-qsvt-execution`,
+`hardware-qsvt-execution`, and `hardware-qsvt-circuit` at schema version `1.0`.
+Algorithm schema `1.1` guarantees artifact-derived execution-tier and
+polynomial truth evidence. The migration helper upgrades `1.0` reports when
+they retain polynomial coefficients and fails explicitly otherwise.
+Unsupported schema names or versions return an intentional
 migration-required compatibility message before callers rely on stale report
 fields. Unknown fields are reported as warnings in compatibility payloads and
 CSV manifests, but they do not make an otherwise supported report fail.

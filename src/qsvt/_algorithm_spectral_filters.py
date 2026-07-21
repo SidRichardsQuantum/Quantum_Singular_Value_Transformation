@@ -62,6 +62,7 @@ class GroundStateFilteringWorkflowResult:
             "truth_contract": algorithm_truth_contract(
                 "ground-state-filtering-workflow",
                 target="low-energy Gaussian spectral filtering",
+                polynomials={"gaussian_filter": self.coeffs},
             ),
             "degree": self.degree,
             "center": self.center,
@@ -119,6 +120,7 @@ class SpectralThresholdingWorkflowResult:
             "truth_contract": algorithm_truth_contract(
                 "spectral-thresholding-workflow",
                 target="smooth spectral interval-projector approximation",
+                polynomials={"interval_projector": self.coeffs},
             ),
             "degree": self.degree,
             "lower": self.lower,
@@ -173,6 +175,7 @@ class SpectralCountingWorkflowResult:
             "truth_contract": algorithm_truth_contract(
                 "spectral-counting-workflow",
                 target="spectral interval counting through smooth projector traces",
+                polynomials={"interval_projector": self.coeffs},
             ),
             "degree": self.degree,
             "lower": self.lower,
@@ -222,6 +225,8 @@ class FixedPointAmplificationWorkflowResult:
             "truth_contract": algorithm_truth_contract(
                 "fixed-point-amplification-workflow",
                 target="monotone fixed-point polynomial amplification of scores",
+                polynomials={"score_amplification": self.coeffs},
+                polynomial_design_domains={"score_amplification": (0.0, 1.0)},
             ),
             "rounds": self.rounds,
             "degree": self.degree,

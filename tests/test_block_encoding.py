@@ -3,6 +3,7 @@ import pennylane as qml
 import pytest
 
 import qsvt.block_encoding as block_encoding_module
+from qsvt._algorithm_reports import algorithm_truth_contract_issues
 from qsvt.algorithms import block_encoded_qsvt_workflow
 from qsvt.block_encoding import (
     BlockEncodingSpec,
@@ -189,6 +190,9 @@ def test_block_encoded_qsvt_workflow_matches_spectral_reference():
         "verified-dense-block-encoded-qsvt-workflow"
     )
     assert report["truth_contract"]["pennylane_qsvt_check"] == "succeeded"
+    assert report["truth_contract"]["execution_tier"] == "qsvt_circuit"
+    assert report["truth_contract"]["qnode_executed"] is False
+    assert algorithm_truth_contract_issues(report["truth_contract"]) == ()
     assert report["verification"]["block_encoding_verified"] is True
     assert report["verification"]["unitary_verified"] is True
     assert np.allclose(result.reference_operator, reference, atol=1e-12)
