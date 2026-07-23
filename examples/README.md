@@ -23,6 +23,8 @@ python examples/rectangular_execution.py \
 python examples/spectral_filter_qsvt.py \
   --output /tmp/qsvt-spectral-filter.json
 python examples/poisson_qsvt.py --output /tmp/qsvt-poisson.json
+python examples/hamiltonian_simulation.py \
+  --output /tmp/qsvt-hamiltonian-simulation.json
 python examples/accuracy_driven_plan.py \
   --output /tmp/qsvt-accuracy-driven-plan.json
 python examples/custom_block_encoding.py \
@@ -41,9 +43,14 @@ summary tables.
 The examples cover design/report basics, high-level finite problem workflows,
 linear systems, spectral filtering, finite block encodings, PennyLane circuit
 execution, specification-based block-encoding execution, and rectangular
-singular-value execution. The two flagship scripts additionally perform
+singular-value execution. The three flagship scripts use the frozen
+`qsvt.stable` facade and persist their versioned acceptance reports. Poisson
+inversion and spectral filtering additionally perform
 tolerance-driven degree search, phase synthesis, encoding-aware logical
 resource estimation, finite QNode execution, and classical-reference checks.
+Hamiltonian simulation validates its dense `polynomial_core` scope and
+explicitly reports that full-QSVT acceptance remains false until coherent
+even/odd sequence combination and concrete circuit resources are implemented.
 The additional cookbook scripts show the same APIs in isolation: planning from
 an accuracy target, supplying a custom circuit and signal projectors, checking
 a credential-free finite-shot FABLE run against an ideal reference, and

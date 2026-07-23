@@ -24,6 +24,7 @@ _SUPPORTED_REPORT_SCHEMAS: dict[str, frozenset[str]] = {
     "qsvt-accuracy-resource-frontier": frozenset({"1.0"}),
     "qsvt-accuracy-resource-frontier-rows": frozenset({"1.0"}),
     "qsvt-algorithm-workflow": frozenset({"1.0", "1.1"}),
+    "qsvt-flagship-acceptance": frozenset({"1.0"}),
     "qsvt-problem-workflow": frozenset({"1.0"}),
     "qsvt-research-sweep-manifest": frozenset({"1.0"}),
     "qsvt-research-sweep-spec": frozenset({"1.0"}),
@@ -77,6 +78,18 @@ _REQUIRED_REPORT_SCHEMA_FIELDS: dict[str, frozenset[str]] = {
             "schema_version",
             "target",
             "truth_contract",
+        }
+    ),
+    "qsvt-flagship-acceptance": frozenset(
+        {
+            "schema_name",
+            "schema_version",
+            "workflow",
+            "scope",
+            "status",
+            "accepted_for_stated_scope",
+            "full_qsvt_acceptance",
+            "checks",
         }
     ),
     "qsvt-research-sweep-spec": frozenset(

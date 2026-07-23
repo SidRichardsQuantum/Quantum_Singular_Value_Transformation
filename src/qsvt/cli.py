@@ -36,6 +36,7 @@ from ._cli_design_commands import (
 )
 from ._cli_flagship_commands import (
     cmd_degree_search,
+    cmd_hamiltonian_simulation,
     cmd_plan_qsvt,
     cmd_poisson_qsvt,
     cmd_spectral_filter_qsvt,
@@ -123,6 +124,7 @@ __all__ = [
     "cmd_diag",
     "cmd_examples",
     "cmd_execute_spec",
+    "cmd_hamiltonian_simulation",
     "cmd_linear_system_compare",
     "cmd_matrix_report",
     "cmd_mixed_parity_synthesis",
@@ -159,6 +161,7 @@ def cmd_examples(args: argparse.Namespace) -> dict:
             "plan-workflow",
             "spectral-filter-qsvt",
             "poisson-qsvt",
+            "hamiltonian-simulation",
             "degree-search",
             "research-sweep",
             "accuracy-resource-frontier",
@@ -193,6 +196,8 @@ def cmd_examples(args: argparse.Namespace) -> dict:
             '--state "0.5,0.5,0.5,0.5" --lower -0.4 --upper 0.4 '
             "--tolerance 0.16",
             "qsvt poisson-qsvt --n-points 4 --tolerance 0.4",
+            'qsvt hamiltonian-simulation --matrix "0,1;1,0" '
+            '--state "1,0" --time 0.5 --degree 8',
         ],
     }
 

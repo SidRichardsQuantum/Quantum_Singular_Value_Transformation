@@ -77,11 +77,13 @@ def test_top_level_public_api_exports_are_resolvable():
     }
     assert expected_stable_surface <= exported
     assert qsvt.api_status("design_workflow") == qsvt.API_STATUS_STABLE
+    assert qsvt.api_status("QSVTProblemWorkflowResult") == qsvt.API_STATUS_COMPATIBILITY
     assert qsvt.api_status("execute_qsvt_circuit") == qsvt.API_STATUS_EXPERIMENTAL
     assert qsvt.api_status("execute_qsvt_from_spec") == qsvt.API_STATUS_EXPERIMENTAL
     assert qsvt.api_status("unknown_future_name") == qsvt.API_STATUS_EXPERIMENTAL
     assert set(qsvt.__api_statuses__.values()) <= {
         qsvt.API_STATUS_STABLE,
+        qsvt.API_STATUS_COMPATIBILITY,
         qsvt.API_STATUS_EXPERIMENTAL,
     }
 
@@ -314,8 +316,10 @@ def test_cli_examples_command_emits_discovery_payload(capsys):
     assert "cg-solve" in payload["benchmark_commands"]
     assert "linear-system-compare" in payload["workflow_commands"]
     assert "problem-workflow" in payload["workflow_commands"]
+    assert "hamiltonian-simulation" in payload["workflow_commands"]
     assert any("resource-report" in example for example in payload["examples"])
     assert any("problem-workflow" in example for example in payload["examples"])
+    assert any("hamiltonian-simulation" in example for example in payload["examples"])
 
 
 def test_cli_cheb_command_emits_json(capsys):
@@ -328,6 +332,32 @@ def test_cli_cheb_command_emits_json(capsys):
         "x": 0.5,
         "value": -1.0,
     }
+
+
+def test_cli_hamiltonian_simulation_emits_accepted_polynomial_core(capsys):
+    main(
+        [
+            "hamiltonian-simulation",
+            "--matrix",
+            "0,1;1,0",
+            "--state",
+            "1,0",
+            "--time",
+            "0.5",
+            "--degree",
+            "8",
+            "--num-points",
+            "201",
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["mode"] == "hamiltonian-simulation-workflow"
+    assert payload["degree"] == 8
+    assert payload["time"] == 0.5
+    assert payload["acceptance"]["scope"] == "polynomial_core"
+    assert payload["acceptance"]["accepted_for_stated_scope"] is True
+    assert payload["acceptance"]["full_qsvt_acceptance"] is False
 
 
 def test_cli_design_report_emits_json(capsys):

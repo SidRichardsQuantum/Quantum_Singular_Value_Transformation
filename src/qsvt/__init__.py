@@ -58,8 +58,12 @@ from .algorithms import (
     write_linear_system_comparison_csv,
 )
 from .api import (
+    API_STATUS_COMPATIBILITY,
     API_STATUS_EXPERIMENTAL,
     API_STATUS_STABLE,
+    COMPATIBILITY_API_NAMES,
+    DEPRECATION_POLICY,
+    STABLE_API_NAMES,
     __api_statuses__,
     api_status,
 )
@@ -347,10 +351,10 @@ except PackageNotFoundError:  # pragma: no cover
 
 __api_status__ = "alpha"
 __public_api_policy__ = (
-    "Names exported from qsvt.__all__ are the intended public API. During the "
-    "0.x series, qsvt.api_status(name) identifies stable workflow-level names "
-    "and experimental lower-level names. Incompatible changes should be "
-    "documented in the changelog and prefer a deprecation period when practical."
+    "qsvt.stable is the frozen public facade for the remainder of the 0.x "
+    "series. Existing names in qsvt.__all__ remain available as compatibility "
+    "or experimental interfaces. qsvt.api_status(name) identifies the tier. "
+    "See qsvt.DEPRECATION_POLICY for the required deprecation window."
 )
 
 __all__ = [
@@ -358,8 +362,12 @@ __all__ = [
     "__api_status__",
     "__api_statuses__",
     "__public_api_policy__",
+    "API_STATUS_COMPATIBILITY",
     "API_STATUS_EXPERIMENTAL",
     "API_STATUS_STABLE",
+    "COMPATIBILITY_API_NAMES",
+    "DEPRECATION_POLICY",
+    "STABLE_API_NAMES",
     "api_status",
     "GroundStateFilteringWorkflowResult",
     "PoissonQSVTResult",

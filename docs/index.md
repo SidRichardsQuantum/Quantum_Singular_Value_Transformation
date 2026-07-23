@@ -438,6 +438,7 @@ Polynomial Design <qsvt/design>
 Phase Synthesis <qsvt/synthesis>
 Accuracy-Driven Planning <qsvt/planning>
 Executable Flagship Workflows <qsvt/flagship_workflows>
+API Stability <qsvt/stability>
 Reproducible Research Sweeps <qsvt/research>
 Algorithm Notes <qsvt/algorithms>
 Linear Systems <qsvt/linear_systems>

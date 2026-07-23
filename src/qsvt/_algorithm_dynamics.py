@@ -18,6 +18,7 @@ from ._algorithm_shared import (
     _state_error,
     _validate_state,
 )
+from .acceptance import evaluate_hamiltonian_simulation_acceptance
 from .diagnostics import operator_error
 from .matrix_functions import design_real_time_evolution_polynomials
 from .rescaling import ScaledOperator, rescale_hermitian_to_unit_interval
@@ -55,6 +56,7 @@ class HamiltonianSimulationWorkflowResult:
     state_relative_error: float
     operator_relative_error: float
     norm_drift: float
+    acceptance_tolerance: float
 
     def as_report(self) -> dict[str, Any]:
         """
@@ -86,6 +88,8 @@ class HamiltonianSimulationWorkflowResult:
             "state_relative_error": self.state_relative_error,
             "operator_relative_error": self.operator_relative_error,
             "norm_drift": self.norm_drift,
+            "acceptance_tolerance": self.acceptance_tolerance,
+            "acceptance": evaluate_hamiltonian_simulation_acceptance(self),
         }
 
 
@@ -262,10 +266,14 @@ def hamiltonian_simulation_workflow(
     time: float,
     degree: int,
     num_points: int = 1001,
+    acceptance_tolerance: float = 1e-6,
 ) -> HamiltonianSimulationWorkflowResult:
     """
     Approximate real-time evolution ``exp(-i H t)|psi>`` with polynomial pairs.
     """
+    acceptance_tolerance = float(acceptance_tolerance)
+    if not np.isfinite(acceptance_tolerance) or acceptance_tolerance <= 0.0:
+        raise ValueError("acceptance_tolerance must be positive and finite.")
     scaled = rescale_hermitian_to_unit_interval(matrix)
     psi = _normalize_state(_validate_state(state, scaled.matrix.shape[0]))
     polynomials = design_real_time_evolution_polynomials(
@@ -301,6 +309,7 @@ def hamiltonian_simulation_workflow(
         state_relative_error=_state_error(reference, evolved),
         operator_relative_error=operator_error(reference_unitary, polynomial_unitary),
         norm_drift=float(abs(np.linalg.norm(evolved) - 1.0)),
+        acceptance_tolerance=acceptance_tolerance,
     )
 
 

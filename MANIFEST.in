@@ -33,6 +33,7 @@ prune dist
 prune htmlcov
 prune .mypy_cache
 prune .pytest_cache
+prune .hypothesis
 prune .ruff_cache
 prune .venv
 prune env

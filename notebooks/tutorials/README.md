@@ -15,7 +15,7 @@ notebooks.
 | Matrix powers and roots | `06_QSVT_Matrix_Functions_Powers_and_Roots.ipynb` |
 | Sign functions and projectors | `07_QSVT_Sign_Function_and_Projectors.ipynb` |
 | Design workflows and templates | `08_QSVT_Design_and_Templates.ipynb` |
-| QSVT algorithm workflows | `09_QSVT_Algorithm_Workflows.ipynb` |
+| QSVT algorithm workflows and acceptance scope | `09_QSVT_Algorithm_Workflows.ipynb` |
 | QSVT reports, CLI, and artifacts | `10_QSVT_Reports_CLI_and_Artifacts.ipynb` |
 | QSVT design tradeoffs | `11_QSVT_Design_Tradeoffs.ipynb` |
 | QSVT resource-proxy limits | `12_QSVT_Resource_Proxy_Limits.ipynb` |
@@ -25,3 +25,4 @@ notebooks.
 | QSVT linear-system comparisons | `16_QSVT_Linear_System_Comparisons.ipynb` |
 | HHL linear-system solver | `17_HHL_Linear_System_Solver.ipynb` |
 | Quantum walk search workflow | `18_Quantum_Walk_Search_Workflow.ipynb` |
+| Accuracy-driven QSVT planning | `19_Accuracy_Driven_QSVT_Planning.ipynb` |

@@ -258,6 +258,9 @@ def test_spectral_filter_flagship_executes_pauli_lcu_qsvt():
     assert result.execution.logical_output_relative_error < 1e-8
     assert result.resource_estimate.estimator_model == "pauli-lcu-qubitization"
     assert result.error_budget["polynomial_approximation_error"] <= 0.16
+    acceptance = result.as_report()["acceptance"]
+    assert acceptance["accepted_for_stated_scope"] is True
+    assert acceptance["full_qsvt_acceptance"] is True
 
 
 def test_poisson_flagship_compares_direct_cg_polynomial_and_circuit_paths():
@@ -282,6 +285,9 @@ def test_poisson_flagship_compares_direct_cg_polynomial_and_circuit_paths():
     )
     assert result.error_budget["discretization_error"] is not None
     assert result.resource_estimate.estimator_model == "pauli-lcu-qubitization"
+    acceptance = result.as_report()["acceptance"]
+    assert acceptance["accepted_for_stated_scope"] is True
+    assert acceptance["full_qsvt_acceptance"] is True
 
 
 def test_new_cli_commands_emit_machine_readable_reports(capsys):
@@ -327,3 +333,4 @@ def test_new_cli_commands_emit_machine_readable_reports(capsys):
     assert degree_report["chosen_degree"] == 3
     assert poisson_report["mode"] == "poisson-qsvt-flagship"
     assert poisson_report["execution"] is None
+    assert poisson_report["acceptance"]["accepted_for_stated_scope"] is False

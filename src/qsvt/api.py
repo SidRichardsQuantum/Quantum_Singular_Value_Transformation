@@ -1,19 +1,39 @@
-"""
-Public API status labels for qsvt.
-
-The labels are intentionally coarse during the 0.x series. They help users
-distinguish documented workflow entry points from lower-level utilities that
-may still move as the package approaches a 1.0 API.
-"""
+"""Public API stability labels and compatibility policy for :mod:`qsvt`."""
 
 from __future__ import annotations
 
 from types import MappingProxyType
 
 API_STATUS_STABLE = "stable"
+API_STATUS_COMPATIBILITY = "compatibility"
 API_STATUS_EXPERIMENTAL = "experimental"
 
 _STABLE_NAMES = frozenset(
+    {
+        "BlockEncodingSpec",
+        "QSVTExecutionConfig",
+        "QSVTProblemSpec",
+        "QSVTTransformSpec",
+        "certify_polynomial_boundedness",
+        "classify_polynomial_realizability",
+        "design_workflow",
+        "estimate_encoding_aware_resources",
+        "hamiltonian_simulation_workflow",
+        "load_report_with_schema",
+        "plan_qsvt",
+        "poisson_qsvt_workflow",
+        "qsvt_problem_workflow",
+        "report_to_jsonable",
+        "save_report",
+        "synthesize_phases",
+        "supported_report_schemas",
+        "spectral_filter_qsvt_workflow",
+        "run_qsvt_plan",
+        "validate_report_schema",
+    }
+)
+
+_PREVIOUS_STABLE_NAMES = frozenset(
     {
         "ClassicalBenchmarkResult",
         "BoundednessCertificate",
@@ -109,6 +129,8 @@ _STABLE_NAMES = frozenset(
     }
 )
 
+_COMPATIBILITY_NAMES = _PREVIOUS_STABLE_NAMES - _STABLE_NAMES
+
 _EXPERIMENTAL_NAMES = frozenset(
     {
         "BlockEncodedQSVTWorkflowResult",
@@ -164,10 +186,23 @@ _EXPERIMENTAL_NAMES = frozenset(
     }
 )
 
+STABLE_API_NAMES = tuple(sorted(_STABLE_NAMES))
+COMPATIBILITY_API_NAMES = tuple(sorted(_COMPATIBILITY_NAMES))
+
+DEPRECATION_POLICY = (
+    "The names exported by qsvt.stable are frozen for the remainder of the 0.x "
+    "series. Compatibility names remain importable from their documented modules "
+    "and the qsvt package root. A compatibility name must be announced as "
+    "deprecated in the changelog and emit DeprecationWarning for at least two "
+    "minor releases before removal. Experimental names may change between minor "
+    "releases, but incompatible changes must still be documented."
+)
+
 __api_statuses__ = MappingProxyType(
     {
-        **{name: API_STATUS_STABLE for name in _STABLE_NAMES},
         **{name: API_STATUS_EXPERIMENTAL for name in _EXPERIMENTAL_NAMES},
+        **{name: API_STATUS_COMPATIBILITY for name in _COMPATIBILITY_NAMES},
+        **{name: API_STATUS_STABLE for name in _STABLE_NAMES},
     }
 )
 
@@ -176,16 +211,20 @@ def api_status(name: str) -> str:
     """
     Return the coarse public API status for an exported name.
 
-    Names not listed explicitly are treated as experimental during the 0.x
-    series. This keeps the root API importable while making the stability
-    boundary clear to users.
+    ``stable`` names are frozen in :mod:`qsvt.stable`. ``compatibility`` names
+    retain the documented two-minor-release deprecation window. Names not
+    listed explicitly are treated as experimental during the 0.x series.
     """
     return __api_statuses__.get(name, API_STATUS_EXPERIMENTAL)
 
 
 __all__ = [
+    "API_STATUS_COMPATIBILITY",
     "API_STATUS_EXPERIMENTAL",
     "API_STATUS_STABLE",
+    "COMPATIBILITY_API_NAMES",
+    "DEPRECATION_POLICY",
+    "STABLE_API_NAMES",
     "__api_statuses__",
     "api_status",
 ]

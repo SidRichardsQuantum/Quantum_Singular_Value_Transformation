@@ -1,0 +1,25 @@
+{
+  "schema_name": "qsvt-flagship-acceptance",
+  "schema_version": "1.0",
+  "workflow": "hamiltonian_simulation",
+  "scope": "polynomial_core",
+  "status": "accepted_for_stated_scope",
+  "accepted_for_stated_scope": true,
+  "full_qsvt_acceptance": false,
+  "checks": [
+    {
+      "id": "classical_reference",
+      "description": "The exact dense matrix exponential is present and finite.",
+      "required_for_scope": true,
+      "required_for_full_qsvt": true,
+      "passed": true
+    },
+    {
+      "id": "finite_qsvt_execution",
+      "description": "Even and odd sequences are coherently combined and executed.",
+      "required_for_scope": false,
+      "required_for_full_qsvt": true,
+      "passed": false
+    }
+  ]
+}

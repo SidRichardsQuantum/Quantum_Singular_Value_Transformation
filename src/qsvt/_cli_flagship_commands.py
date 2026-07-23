@@ -14,6 +14,7 @@ from ._cli_utils import (
     parse_float_list,
     parse_matrix,
 )
+from .algorithms import hamiltonian_simulation_workflow
 from .degree import search_design_degree
 from .flagship import poisson_qsvt_workflow, spectral_filter_qsvt_workflow
 from .planning import (
@@ -114,6 +115,19 @@ def cmd_poisson_qsvt(args: argparse.Namespace) -> dict[str, object]:
     return result.as_report()
 
 
+def cmd_hamiltonian_simulation(args: argparse.Namespace) -> dict[str, object]:
+    """Run the dense polynomial-core Hamiltonian-simulation flagship."""
+    result = hamiltonian_simulation_workflow(
+        np.asarray(parse_matrix(args.matrix), dtype=complex),
+        np.asarray(parse_complex_list(args.state), dtype=complex),
+        time=args.time,
+        degree=args.degree,
+        num_points=args.num_points,
+        acceptance_tolerance=args.acceptance_tolerance,
+    )
+    return result.as_report()
+
+
 def cmd_degree_search(args: argparse.Namespace) -> dict[str, object]:
     """Search a public design target for the requested approximation error."""
     kwargs = {
@@ -207,6 +221,32 @@ def register_flagship_commands(
     _add_execution_args(p_poisson, block_choices=None)
     add_report_output_args(p_poisson)
     p_poisson.set_defaults(func=cmd_poisson_qsvt)
+
+    p_hamiltonian = sub.add_parser(
+        "hamiltonian-simulation",
+        help="Run the dense polynomial-core Hamiltonian-simulation flagship",
+    )
+    p_hamiltonian.add_argument(
+        "--matrix",
+        required=True,
+        help='Semicolon-separated Hermitian matrix, e.g. "0,1;1,0".',
+    )
+    p_hamiltonian.add_argument(
+        "--state",
+        required=True,
+        help='Comma-separated input state, e.g. "1,0".',
+    )
+    p_hamiltonian.add_argument("--time", type=float, required=True)
+    p_hamiltonian.add_argument("--degree", type=int, required=True)
+    p_hamiltonian.add_argument("--num-points", type=int, default=1001)
+    p_hamiltonian.add_argument(
+        "--acceptance-tolerance",
+        type=float,
+        default=1e-6,
+        help="Maximum polynomial, state, and norm errors for stated-scope acceptance.",
+    )
+    add_report_output_args(p_hamiltonian)
+    p_hamiltonian.set_defaults(func=cmd_hamiltonian_simulation)
 
     p_degree = sub.add_parser(
         "degree-search",

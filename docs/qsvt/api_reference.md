@@ -43,10 +43,12 @@ The package is organised into the following modules:
 - `qsvt.flagship`
 - `qsvt.research`
 - `qsvt.research_frontier`
+- `qsvt.acceptance`
 - `qsvt.reports`
 - `qsvt.resources`
 - `qsvt.benchmarks`
 - `qsvt.api`
+- `qsvt.stable`
 - `qsvt.operators`
 - `qsvt.execution`
 - `qsvt.hardware`
@@ -81,25 +83,29 @@ For the higher-level polynomial builders and ready-made templates, see:
 - [Implementation notes](implementation.md)
 - [Diagnostics reports](reports.md)
 - [QSVT transform reports](qsvt_reports.md)
+- [API stability](stability.md)
 
-### `qsvt.api`
+### `qsvt.stable` and `qsvt.api`
 
-During the `0.x` series, exported names carry coarse stability labels:
+`qsvt.stable` is the frozen 20-name facade for the remainder of the `0.x`
+series:
 
 ```python
-import qsvt
-
-qsvt.api_status("design_workflow")
-qsvt.api_status("execute_qsvt_circuit")
-qsvt.api_status("execute_qsvt_from_spec")
-qsvt.api_status("execute_qsvt_on_device")
-qsvt.api_status("qsvt_hardware_circuit_report")
-qsvt.api_status("qsvt_provider_plugin_report")
+from qsvt.stable import (
+    QSVTProblemSpec,
+    QSVTTransformSpec,
+    design_workflow,
+    plan_qsvt,
+    poisson_qsvt_workflow,
+)
 ```
 
-Workflow-level helpers, report/export utilities, and benchmark baselines are
-the most stable user-facing surface. Lower-level circuit execution and backend
-adapter helpers are marked experimental until the package approaches `1.0`.
+Existing root and submodule imports remain available. `qsvt.api_status(name)`
+returns `stable`, `compatibility`, or `experimental`. Compatibility names
+receive a changelog notice and at least two minor releases of
+`DeprecationWarning` before removal; experimental names may change between
+minor releases. See [API stability](stability.md) for the exact facade and
+policy.
 
 ### `qsvt.workflow`
 

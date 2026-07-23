@@ -138,10 +138,24 @@ The repository already provides the following foundation:
 - `qsvt.research_frontier` provides the initial Poisson, Ising, and
   graph-Laplacian accuracy-resource study across inverse, projector,
   band-filter, and resolvent targets and four access models.
+- `qsvt.stable` now freezes a compact 20-name facade for the remainder of the
+  `0.x` series; former stable imports remain available under a compatibility
+  tier with a mandatory two-minor-release deprecation window,
+- versioned flagship acceptance reports now evaluate exact references,
+  polynomial accuracy, synthesis, finite execution, diagnostics, and resources
+  for Poisson inversion, Pauli-LCU spectral filtering, and Hamiltonian
+  simulation,
+- the numerical regression suite now includes property-based and adversarial
+  coverage for extrema boundedness, parity, block-encoding normalization,
+  unitarity, near-boundary spectra, high-degree polynomials, and phase
+  reconstruction.
 
-The remaining roadmap work is to broaden numerical regimes, access models,
-hardware compilation, and application-specific state preparation without
-weakening the explicit finite-simulation and logical-resource claim boundary.
+The remaining flagship gap is the coherent even/odd QSVT combination and
+encoding-aware circuit resource ledger required to promote Hamiltonian
+simulation beyond its accepted polynomial-core scope. Broader roadmap work
+continues across numerical regimes, access models, hardware compilation, and
+application-specific state preparation without weakening the explicit
+finite-simulation and logical-resource claim boundary.
 
 #### Truth and execution classification
 

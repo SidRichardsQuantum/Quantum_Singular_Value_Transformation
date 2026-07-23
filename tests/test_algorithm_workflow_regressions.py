@@ -509,11 +509,15 @@ def test_hamiltonian_simulation_workflow_regression():
         degree=9,
         num_points=201,
     )
-    _validated_algorithm_report(result)
+    report = _validated_algorithm_report(result)
 
     assert result.state_relative_error < 1e-12
     assert result.operator_relative_error < 1e-12
     assert result.norm_drift < 1e-12
+    acceptance = report["acceptance"]
+    assert acceptance["scope"] == "polynomial_core"
+    assert acceptance["accepted_for_stated_scope"] is True
+    assert acceptance["full_qsvt_acceptance"] is False
 
 
 def test_resolvent_workflow_regression():

@@ -192,7 +192,7 @@ calculations, and diagnostics:
 
 ```python
 import numpy as np
-from qsvt.algorithms import hamiltonian_simulation_workflow
+from qsvt.stable import hamiltonian_simulation_workflow
 
 H = np.diag([-1.0, 0.0, 1.0])
 psi = np.array([1.0, 1.0j, 0.5])

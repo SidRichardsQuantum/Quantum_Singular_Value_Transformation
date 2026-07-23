@@ -212,9 +212,19 @@ phase_reconstruction_error       6.95e-13
 circuit_vs_polynomial_error      1.00e-12
 maximum_sampling_standard_error  n/a
 additive_error_proxy             0.3586
+Flagship acceptance checks
+--------------------------
+criterion                  required for scope  passed
+-------------------------  ------------------  ------
+classical_reference        True                True
+polynomial_accuracy        True                True
+phase_synthesis            True                True
+finite_qsvt_execution      True                True
+diagnostics_and_resources  True                True
 selected degree: 5
 normalization alpha: 100.000000
 resource model: pauli-lcu-qubitization
+acceptance: accepted_for_stated_scope (scope=finite_qsvt, full_qsvt=True)
 ```
 
 Output 7 (cell 24):
@@ -240,7 +250,17 @@ Source: [`notebooks/real_examples/05_hamiltonian_simulation_schrodinger_dynamics
 Output 1 (cell 5):
 
 ```text
-State Error: 3.324978121461713e-13
+Hamiltonian simulation acceptance checks
+----------------------------------------
+criterion                  required for scope  required for full QSVT  passed
+-------------------------  ------------------  ----------------------  ------
+classical_reference        True                True                    True
+polynomial_accuracy        True                True                    True
+norm_preservation          True                True                    True
+finite_qsvt_execution      False               True                    False
+diagnostics_and_resources  False               True                    False
+State Error: 4.891912136866264e-13
+acceptance: accepted_for_stated_scope (scope=polynomial_core, full_qsvt=False)
 ```
 
 ### `06_quantum_chemistry_h2_toy_solver.ipynb`
@@ -789,9 +809,19 @@ polynomial success probability  0.3658
 reference <M_z^2>               0.6923
 polynomial <M_z^2>              0.6967
 circuit <M_z^2>                 0.6967
+Flagship acceptance checks
+--------------------------
+criterion                  required for scope  passed
+-------------------------  ------------------  ------
+classical_reference        True                True
+polynomial_accuracy        True                True
+phase_synthesis            True                True
+finite_qsvt_execution      True                True
+diagnostics_and_resources  True                True
 normalization alpha: 6.000000
 phase reconstruction error: 8.187e-13
 resource model: pauli-lcu-qubitization
+acceptance: accepted_for_stated_scope (scope=finite_qsvt, full_qsvt=True)
 ```
 
 Output 4 (cell 14):

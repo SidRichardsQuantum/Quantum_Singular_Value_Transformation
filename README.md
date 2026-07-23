@@ -85,7 +85,7 @@ result = qsvt_scalar_output(
 Design a bounded sign polynomial and keep the diagnostics:
 
 ```python
-from qsvt.workflow import design_workflow
+from qsvt.stable import design_workflow
 
 result = design_workflow(
     kind="sign",
@@ -101,7 +101,7 @@ Plan from a finite problem and a requested error instead of choosing a degree
 manually:
 
 ```python
-from qsvt import QSVTProblemSpec, QSVTTransformSpec, plan_qsvt
+from qsvt.stable import QSVTProblemSpec, QSVTTransformSpec, plan_qsvt
 
 plan = plan_qsvt(
     QSVTProblemSpec(np.diag([1.0, 2.0]), rhs=np.ones(2)),
@@ -147,6 +147,8 @@ qsvt degree-search --kind sign --gamma 0.2 --tolerance 0.05
 qsvt spectral-filter-qsvt --pauli-terms "0.4:ZI,0.3:IZ,0.2:XI" \
   --state "0.5,0.5,0.5,0.5" --lower -0.4 --upper 0.4 --tolerance 0.16
 qsvt poisson-qsvt --n-points 4 --tolerance 0.4
+qsvt hamiltonian-simulation --matrix "0,1;1,0" \
+  --state "1,0" --time 0.5 --degree 8
 qsvt research-sweep --config examples/accuracy_resource_frontier.json \
   --output-dir /tmp/qsvt-accuracy-resource-frontier
 qsvt accuracy-resource-frontier --degrees 3,5,7 --tolerances 0.2 \
@@ -176,6 +178,8 @@ python examples/rectangular_execution.py \
 python examples/spectral_filter_qsvt.py \
   --output /tmp/qsvt-spectral-filter.json
 python examples/poisson_qsvt.py --output /tmp/qsvt-poisson.json
+python examples/hamiltonian_simulation.py \
+  --output /tmp/qsvt-hamiltonian-simulation.json
 python examples/accuracy_driven_plan.py \
   --output /tmp/qsvt-accuracy-driven-plan.json
 python examples/custom_block_encoding.py \
@@ -207,6 +211,8 @@ The public package lives under `src/qsvt`.
 | `qsvt.workflow` | combined coefficient, diagnostic, compatibility, and high-level problem workflows |
 | `qsvt.planning`, `qsvt.degree` | typed problem planning and target-error degree selection |
 | `qsvt.flagship` | executable Pauli spectral-filter and Poisson workflows |
+| `qsvt.acceptance` | versioned acceptance contracts for the three flagship workflows |
+| `qsvt.stable` | frozen compact facade for the remainder of the 0.x series |
 | `qsvt.research` | typed declarative, deterministic, and resumable experiment sweeps |
 | `qsvt.research_frontier` | finite accuracy versus encoding-aware logical-resource frontier studies |
 | `qsvt.reports` | JSON-safe reports, schema checks, and plot helpers |
@@ -225,11 +231,12 @@ For detailed function-level documentation, use
 The package includes a `py.typed` marker so type checkers can consume the
 inline type annotations shipped with the public modules.
 
-During the `0.x` series, `qsvt.api_status(name)` labels exported names as
-`stable` or `experimental`. Workflow-level helpers and report/export utilities
-are the most stable user-facing surface; lower-level circuit execution and
-backend-adapter helpers remain experimental while the package approaches a
-`1.0` API.
+During the `0.x` series, new applications should import from `qsvt.stable`.
+That module contains the frozen 20-name facade. `qsvt.api_status(name)` labels
+other root exports as `compatibility` or `experimental`; compatibility names
+remain importable and receive at least two minor releases of deprecation
+warning before removal. See
+[API stability](docs/qsvt/stability.md) for the exact list and policy.
 
 ## Roadmap
 
@@ -264,7 +271,10 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
 - [docs/qsvt/planning.md](docs/qsvt/planning.md): typed accuracy-driven
   planning, degree selection, and finite execution
 - [docs/qsvt/flagship_workflows.md](docs/qsvt/flagship_workflows.md): executable
-  Pauli spectral-filter and Poisson workflows
+  Pauli spectral-filter and Poisson workflows plus the three-workflow
+  acceptance matrix
+- [docs/qsvt/stability.md](docs/qsvt/stability.md): compact stable facade,
+  compatibility tier, and deprecation policy
 - [docs/qsvt/research.md](docs/qsvt/research.md): declarative research sweeps,
   deterministic artifacts, and the accuracy-resource frontier
 - [docs/qsvt/block_encoding.md](docs/qsvt/block_encoding.md): finite dense
@@ -280,7 +290,7 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.2.18`
+Current release: `0.2.19`
 
 ## Notebooks
 
@@ -290,7 +300,9 @@ projectors, matrix functions, reusable design workflows, end-to-end algorithm
 workflows, reproducible reports, degree/error tradeoff studies, and
 resource-proxy limitations. The accuracy-driven planning tutorial connects a
 requested error to degree search, phase synthesis, access-model selection,
-logical resources, and finite circuit execution.
+logical resources, and finite circuit execution. The workflow tutorial and
+three corresponding real examples also show the versioned flagship acceptance
+checks and distinguish stated-scope acceptance from full-QSVT acceptance.
 
 Real physics examples live in `notebooks/real_examples/` and cover Hamiltonian
 simulation, ground-state filtering, quantum chemistry, Green's functions,

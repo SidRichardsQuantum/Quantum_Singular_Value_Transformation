@@ -20,3 +20,4 @@ evaluation (PME).
 | Dimension, conditioning, and degree sweeps | `03_scaling_sweeps.ipynb` |
 | Classical baseline assumptions | `04_classical_baseline_assumptions.ipynb` |
 | Quantum walk search scaling | `05_quantum_walk_search_scaling.ipynb` |
+| Encoding-aware logical resources | `06_encoding_aware_resources.ipynb` |

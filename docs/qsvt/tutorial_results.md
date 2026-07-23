@@ -633,15 +633,15 @@ Eigenvalues: [-1.1405 -0.258   0.7399  1.6086]
 Output 2 (cell 6):
 
 ```text
-Polynomial residual: 0.06293241692724773
-Relative error: 0.04364138768069171
+Polynomial residual: 0.06293240930104763
+Relative error: 0.04364138573090729
 ```
 
 Output 3 (cell 8):
 
 ```text
-SVD pseudoinverse residual: 0.2565205851400423
-SVD pseudoinverse relative error: 0.20781080071097086
+SVD pseudoinverse residual: 0.2565206117883862
+SVD pseudoinverse relative error: 0.20781082242140675
 ```
 
 Output 4 (cell 10):
@@ -653,6 +653,9 @@ Hamiltonian state error: 3.953e-08
 Resolvent response error: 1.695e-01
 Spectral density error: 4.670e-02
 Thermal density error: 6.412e-08
+Hamiltonian acceptance: accepted_for_stated_scope (scope=polynomial_core, full_qsvt=False)
+Full-QSVT gap: finite_qsvt_execution — Even/odd sequences are coherently combined and executed through a finite block-encoded QSVT circuit.
+Full-QSVT gap: diagnostics_and_resources — A component error ledger and concrete encoding-aware circuit resource ledger are present.
 ```
 
 Output 5 (cell 14):

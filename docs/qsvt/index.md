@@ -40,6 +40,7 @@ The repository also includes a sequence of notebooks that introduce QSVT concept
 | Understand finite block encodings | [Block encodings](block_encoding.md) |
 | Plan from a problem and error tolerance | [Accuracy-driven planning](planning.md) |
 | Run the spectral-filter and Poisson flagships | [Executable flagship workflows](flagship_workflows.md) |
+| Use the frozen compact API | [API stability](stability.md) |
 | Run reproducible parameter sweeps and frontiers | [Research sweeps](research.md) |
 | Classify polynomials and synthesize phases | [Phase synthesis](synthesis.md) |
 | Interpret QSVT compatibility failures | [QSVT compatibility](compatibility.md) |
@@ -172,6 +173,8 @@ Workflow-level theory and implementation conventions:
 - [Implementation notes](implementation.md): coefficient conventions,
   rescaling choices, boundedness/compatibility checks, report serialization,
   and public API status
+- [API stability](stability.md): the frozen 20-name facade, compatibility
+  guarantees, and deprecation policy
 - [Block encodings](block_encoding.md): finite dense unitary block encodings,
   normalization, verification, and omitted scalable-oracle costs
 - [Accuracy-driven planning](planning.md): typed finite problems, target-error
@@ -198,6 +201,8 @@ See: [Changelog](changelog.md)
 ```
 
 qsvt
+├── stable.py
+├── acceptance.py
 ├── polynomials.py
 ├── approximation.py
 ├── design.py
@@ -232,6 +237,8 @@ Each module is intentionally small and focused:
 
 | module | purpose |
 |--------|--------|
+| `stable` | frozen compact facade for the remainder of the 0.x series |
+| `acceptance` | versioned acceptance contracts for the three flagships |
 | `polynomials` | Chebyshev utilities and polynomial helpers |
 | `approximation` | bounded polynomial approximation tools |
 | `design` | task-oriented bounded polynomial builders |

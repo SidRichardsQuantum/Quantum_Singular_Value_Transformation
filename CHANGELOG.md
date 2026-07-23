@@ -1,5 +1,48 @@
 # Changelog
 
+## [0.2.19] – 23rd July 2026
+
+### Added
+
+- added `qsvt.stable`, a frozen 20-name facade covering problem
+  specifications, design and planning, the three flagship workflows,
+  realizability and phase synthesis, encoding-aware resources, and
+  schema-aware reporting
+- added an explicit `compatibility` API tier, stable and compatibility name
+  manifests, and a formal policy requiring a changelog notice and at least two
+  minor releases of `DeprecationWarning` before compatibility imports may be
+  removed
+- added versioned, machine-readable acceptance matrices for Poisson inversion,
+  Pauli-LCU spectral filtering, and Hamiltonian simulation, with independently
+  evaluated classical-reference, polynomial-accuracy, synthesis, execution,
+  diagnostics, and resource criteria
+- added Hypothesis-based property coverage for extrema boundedness
+  certificates, even/odd and mixed-parity classification, block-encoding
+  normalization and unitarity, near-boundary spectra, high-degree Chebyshev
+  polynomials, and phase reconstruction across parities
+- added a stable-facade Hamiltonian-simulation cookbook script that reports
+  polynomial-core acceptance alongside the intentionally incomplete full-QSVT
+  status
+- added a `qsvt hamiltonian-simulation` CLI command for schema-versioned
+  polynomial-core reports from explicit Hermitian matrices and input states
+
+### Changed
+
+- narrowed the `stable` status from the former broad workflow-level surface to
+  the compact `qsvt.stable` contract while retaining every former stable import
+  under the new compatibility tier
+- embedded acceptance reports in the Poisson, spectral-filter, and Hamiltonian
+  simulation workflow reports; the first two require successful finite QSVT
+  execution, while Hamiltonian simulation is accepted only for its stated
+  polynomial-core scope until coherent even/odd sequence combination and
+  encoding-aware circuit resources are implemented
+- documented the compact facade, deprecation guarantees, flagship acceptance
+  criteria, current Hamiltonian execution boundary, and release metadata
+- updated the Poisson, Hamiltonian-simulation, and Ising-filter notebooks to
+  display their versioned acceptance checks; refreshed cookbook and notebook
+  indexes, including the previously omitted planning tutorial and
+  encoding-aware benchmark entries
+
 ## [0.2.18] – 21st July 2026
 
 ### Added

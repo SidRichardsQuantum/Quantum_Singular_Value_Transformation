@@ -26,22 +26,39 @@ reference.
 
 The result includes cosine and sine coefficients, polynomial and exact
 unitaries, evolved and exact states, state relative error, operator relative
-error, scaled time, norm drift, and rescaling metadata.
+error, scaled time, norm drift, rescaling metadata, and a versioned flagship
+acceptance report.
 
 ## Scope
 
-This validates polynomial matrix-function accuracy for small systems. It does
-not synthesize an optimized Hamiltonian simulation circuit or account for
-Hamiltonian access costs.
+This validates polynomial matrix-function accuracy for small systems and may
+be `accepted_for_stated_scope` when the declared numerical tolerance is met.
+Its stated scope is `polynomial_core`. `full_qsvt_acceptance` remains false
+because the workflow does not coherently combine the even cosine and odd sine
+QSVT sequences and does not report a concrete encoding-aware circuit resource
+ledger.
 
 ## API
 
 ```python
-from qsvt.algorithms import hamiltonian_simulation_workflow
+from qsvt.stable import hamiltonian_simulation_workflow
 
 result = hamiltonian_simulation_workflow(H, psi, time=0.75, degree=18)
 report = result.as_report()
+acceptance = report["acceptance"]
 ```
+
+## CLI
+
+```bash
+qsvt hamiltonian-simulation \
+  --matrix "0,1;1,0" --state "1,0" \
+  --time 0.5 --degree 8 \
+  --output hamiltonian-simulation.json
+```
+
+The saved report uses the same schema and acceptance contract as
+`HamiltonianSimulationWorkflowResult.as_report()`.
 
 See also [Time evolution and response](time_evolution_and_response.md) and
 [Algorithm notes](algorithms.md).

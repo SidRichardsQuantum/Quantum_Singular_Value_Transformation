@@ -60,7 +60,7 @@ domain-specific implementation logic.
 | `tutorials/06_QSVT_Matrix_Functions_Powers_and_Roots.ipynb` | matrix functions, powers, and roots | [Time evolution and response](time_evolution_and_response.md) |
 | `tutorials/07_QSVT_Sign_Function_and_Projectors.ipynb` | sign functions and projectors | [Spectral filters](spectral_filters.md) |
 | `tutorials/08_QSVT_Design_and_Templates.ipynb` | design helpers and templates | [Algorithm notes](algorithms.md) |
-| `tutorials/09_QSVT_Algorithm_Workflows.ipynb` | QSVT algorithm workflow diagnostics | [Algorithm notes](algorithms.md) |
+| `tutorials/09_QSVT_Algorithm_Workflows.ipynb` | QSVT algorithm workflow diagnostics plus Hamiltonian polynomial-core and full-QSVT acceptance scope | [Algorithm notes](algorithms.md), [Executable flagship workflows](flagship_workflows.md) |
 | `tutorials/10_QSVT_Reports_CLI_and_Artifacts.ipynb` | QSVT reports, CLI output, and reproducible artifacts | [Implementation notes](implementation.md) |
 | `tutorials/11_QSVT_Design_Tradeoffs.ipynb` | QSVT design degree/error/boundedness tradeoffs | [Algorithm notes](algorithms.md) |
 | `tutorials/12_QSVT_Resource_Proxy_Limits.ipynb` | block-encoding assumptions and QSVT resource-proxy limits | [QSVT resource model](qsvt_resource_model.md) |
@@ -101,8 +101,8 @@ or quantum-relevance context for the toy-scale example.
 | `01_ground_state_filtering.ipynb` | ground-state filtering | [Spectral filters](spectral_filters.md) |
 | `02_tight_binding_band_filter.ipynb` | tight-binding band filters | [Spectral filters](spectral_filters.md) |
 | `03_imaginary_time_filtering.ipynb` | imaginary-time filtering | [Time evolution and response](time_evolution_and_response.md) |
-| `04_poisson_equation_pde.ipynb` | Poisson PDE polynomial studies plus direct, CG, and executable block-encoded QSVT comparison | [Linear systems](linear_systems.md), [Executable flagship workflows](flagship_workflows.md) |
-| `05_hamiltonian_simulation_schrodinger_dynamics.ipynb` | Hamiltonian simulation | [Time evolution and response](time_evolution_and_response.md) |
+| `04_poisson_equation_pde.ipynb` | Poisson PDE polynomial studies plus direct, CG, executable block-encoded QSVT, and finite-QSVT acceptance checks | [Linear systems](linear_systems.md), [Executable flagship workflows](flagship_workflows.md) |
+| `05_hamiltonian_simulation_schrodinger_dynamics.ipynb` | Hamiltonian simulation with polynomial-core acceptance and explicit full-QSVT gaps | [Time evolution and response](time_evolution_and_response.md), [Executable flagship workflows](flagship_workflows.md) |
 | `06_quantum_chemistry_h2_toy_solver.ipynb` | H2 toy chemistry solver | [Linear systems](linear_systems.md), [Spectral filters](spectral_filters.md) |
 | `07_greens_function_response.ipynb` | Green's-function response | [Time evolution and response](time_evolution_and_response.md) |
 | `08_spectral_density_estimation.ipynb` | spectral density estimation | [Spectral filters](spectral_filters.md) |
@@ -119,7 +119,7 @@ or quantum-relevance context for the toy-scale example.
 | `19_quantum_harmonic_oscillator_grid.ipynb` | harmonic-oscillator grid spectrum | [Spectral filters](spectral_filters.md) |
 | `20_electrostatic_green_function_poisson.ipynb` | electrostatic Green's function | [Linear systems](linear_systems.md), [Time evolution and response](time_evolution_and_response.md) |
 | `21_coupled_oscillator_normal_modes.ipynb` | coupled-oscillator normal modes | [Spectral filters](spectral_filters.md) |
-| `22_ising_phase_transition_filtering.ipynb` | Ising phase-transition diagnostics plus executable Pauli-LCU ground-band filtering | [Spectral filters](spectral_filters.md), [Executable flagship workflows](flagship_workflows.md) |
+| `22_ising_phase_transition_filtering.ipynb` | Ising phase-transition diagnostics plus executable Pauli-LCU ground-band filtering and finite-QSVT acceptance checks | [Spectral filters](spectral_filters.md), [Executable flagship workflows](flagship_workflows.md) |
 | `23_diffusion_heat_treatment_slab.ipynb` | diffusion-limited heat treatment | [Time evolution and response](time_evolution_and_response.md) |
 | `24_graphene_nanoribbon_density_of_states.ipynb` | graphene nanoribbon density of states | [Spectral filters](spectral_filters.md) |
 | `25_fermi_dirac_electronic_occupations.ipynb` | Fermi-Dirac electronic occupations | [Spectral filters](spectral_filters.md), [Time evolution and response](time_evolution_and_response.md) |

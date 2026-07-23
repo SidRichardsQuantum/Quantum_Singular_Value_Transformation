@@ -9,6 +9,10 @@ from typing import Any, Literal, cast
 import numpy as np
 import pennylane as qml
 
+from .acceptance import (
+    evaluate_poisson_acceptance,
+    evaluate_spectral_filter_acceptance,
+)
 from .benchmarks import conjugate_gradient_solve
 from .block_encoding import (
     BlockEncodingSpec,
@@ -56,6 +60,8 @@ class SpectralFilterQSVTResult:
     reference_success_probability: float
     polynomial_operator_error: float
     polynomial_state_error: float
+    execution_requested: bool
+    phase_reconstruction_tolerance: float
     execution: BlockEncodingQSVTExecutionResult | None
     observable_values: dict[str, dict[str, float | complex | None]]
     error_budget: dict[str, float | None]
@@ -81,9 +87,12 @@ class SpectralFilterQSVTResult:
             "reference_success_probability": self.reference_success_probability,
             "polynomial_operator_error": self.polynomial_operator_error,
             "polynomial_state_error": self.polynomial_state_error,
+            "execution_requested": self.execution_requested,
+            "phase_reconstruction_tolerance": (self.phase_reconstruction_tolerance),
             "execution": None if self.execution is None else self.execution.as_report(),
             "observable_values": self.observable_values,
             "error_budget": self.error_budget,
+            "acceptance": evaluate_spectral_filter_acceptance(self),
             "truth_contract": {
                 "implemented_components": [
                     "pauli_hamiltonian_matrix_reference",
@@ -125,6 +134,8 @@ class PoissonQSVTResult:
     polynomial_relative_error: float
     synthesis: PhaseSynthesisResult
     resource_estimate: EncodingAwareResourceEstimate
+    execution_requested: bool
+    phase_reconstruction_tolerance: float
     execution: BlockEncodingQSVTExecutionResult | None
     circuit_solution: np.ndarray | None
     circuit_relative_error: float | None
@@ -153,12 +164,15 @@ class PoissonQSVTResult:
             "polynomial_relative_error": self.polynomial_relative_error,
             "synthesis": self.synthesis.as_report(),
             "resources": self.resource_estimate.as_report(),
+            "execution_requested": self.execution_requested,
+            "phase_reconstruction_tolerance": (self.phase_reconstruction_tolerance),
             "execution": None if self.execution is None else self.execution.as_report(),
             "circuit_solution": self.circuit_solution,
             "circuit_relative_error": self.circuit_relative_error,
             "physical_observables": self.physical_observables,
             "continuum_relative_error": self.continuum_relative_error,
             "error_budget": self.error_budget,
+            "acceptance": evaluate_poisson_acceptance(self),
             "truth_contract": {
                 "implemented_components": [
                     "dirichlet_finite_difference_discretization",
@@ -347,6 +361,8 @@ def spectral_filter_qsvt_workflow(
             reference_projector, polynomial_operator
         ),
         polynomial_state_error=state_error,
+        execution_requested=bool(execute),
+        phase_reconstruction_tolerance=float(phase_reconstruction_tolerance),
         execution=execution_result,
         observable_values=observable_values,
         error_budget=error_budget,
@@ -537,6 +553,8 @@ def poisson_qsvt_workflow(
         polynomial_relative_error=polynomial_error,
         synthesis=synthesis,
         resource_estimate=resources,
+        execution_requested=bool(execute),
+        phase_reconstruction_tolerance=float(phase_reconstruction_tolerance),
         execution=execution_result,
         circuit_solution=(
             None if circuit_solution is None else np.real_if_close(circuit_solution)

@@ -166,4 +166,4 @@ def test_problem_workflow_validates_required_inputs():
 def test_problem_workflow_is_exported_as_stable_root_api():
     assert qsvt.qsvt_problem_workflow is qsvt_problem_workflow
     assert qsvt.api_status("qsvt_problem_workflow") == "stable"
-    assert qsvt.api_status("QSVTProblemWorkflowResult") == "stable"
+    assert qsvt.api_status("QSVTProblemWorkflowResult") == qsvt.API_STATUS_COMPATIBILITY

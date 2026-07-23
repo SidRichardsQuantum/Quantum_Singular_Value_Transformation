@@ -387,11 +387,17 @@ Its report retains the degree sweep, numerical target error, phase
 reconstruction, access-model choice, encoding-aware resources, and omitted
 application layers.
 
-Two flagship workflows provide complete finite examples:
+Three explicitly contracted flagship workflows expose versioned acceptance
+reports. Poisson inversion and spectral filtering provide complete finite
+examples; Hamiltonian simulation currently validates its polynomial core:
 
 ```python
 import pennylane as qml
-from qsvt import poisson_qsvt_workflow, spectral_filter_qsvt_workflow
+from qsvt.stable import (
+    hamiltonian_simulation_workflow,
+    poisson_qsvt_workflow,
+    spectral_filter_qsvt_workflow,
+)
 
 hamiltonian = qml.dot(
     [0.4, 0.3, 0.2],
@@ -409,7 +415,30 @@ filtered = spectral_filter_qsvt_workflow(
 poisson = poisson_qsvt_workflow(
     4, tolerance=0.4, min_degree=5, max_degree=5
 )
+dynamics = hamiltonian_simulation_workflow(
+    qml.matrix(hamiltonian, wire_order=[0, 1]),
+    np.ones(4) / 2,
+    time=0.8,
+    degree=12,
+)
+
+assert filtered.as_report()["acceptance"]["full_qsvt_acceptance"]
+assert poisson.as_report()["acceptance"]["full_qsvt_acceptance"]
+assert dynamics.as_report()["acceptance"]["accepted_for_stated_scope"]
+assert not dynamics.as_report()["acceptance"]["full_qsvt_acceptance"]
 ```
+
+The Hamiltonian workflow has a matching report-oriented CLI entry point:
+
+```bash
+qsvt hamiltonian-simulation \
+  --matrix "0,1;1,0" --state "1,0" \
+  --time 0.5 --degree 8 \
+  --output hamiltonian-simulation.json
+```
+
+The command reports the same `polynomial_core` acceptance boundary as the
+Python API; it does not claim coherent even/odd QSVT circuit execution.
 
 See [Accuracy-driven planning](./docs/qsvt/planning.md) and
 [Executable flagship workflows](./docs/qsvt/flagship_workflows.md) for access
@@ -471,6 +500,8 @@ python examples/rectangular_execution.py \
 python examples/spectral_filter_qsvt.py \
   --output /tmp/qsvt-spectral-filter.json
 python examples/poisson_qsvt.py --output /tmp/qsvt-poisson.json
+python examples/hamiltonian_simulation.py \
+  --output /tmp/qsvt-hamiltonian-simulation.json
 python examples/accuracy_driven_plan.py \
   --output /tmp/qsvt-accuracy-driven-plan.json
 python examples/custom_block_encoding.py \
@@ -487,9 +518,12 @@ linear-system comparison, threshold filtering, block-encoded QSVT checks,
 PennyLane circuit execution, specification-based block-encoding execution,
 and rectangular singular-value execution. Use the dedicated
 `compatibility-report` and `benchmark` CLI commands for those report families.
-The flagship examples additionally search degree from a tolerance, synthesize
-phases with reconstruction validation, execute concrete block encodings, and
-report encoding-aware logical resources.
+The three flagship examples use `qsvt.stable` and persist acceptance reports.
+Poisson inversion and spectral filtering additionally search degree from a
+tolerance, synthesize phases with reconstruction validation, execute concrete
+block encodings, and report encoding-aware logical resources. Hamiltonian
+simulation reports accepted `polynomial_core` evidence alongside the
+intentionally incomplete full-QSVT status.
 The focused additions demonstrate accuracy-driven planning, explicit custom
 block-encoding/projector contracts, seeded finite-shot validation on a local
 FABLE circuit, and an encoding-aware resource sweep across dense embedding,

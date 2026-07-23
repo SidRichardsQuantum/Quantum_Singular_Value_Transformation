@@ -77,6 +77,7 @@ def _check_git_hygiene() -> None:
         "build/**",
         "htmlcov/**",
         ".pytest_cache/**",
+        ".hypothesis/**",
         ".ruff_cache/**",
         ".mypy_cache/**",
         ".venv/**",

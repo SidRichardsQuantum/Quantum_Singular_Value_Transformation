@@ -108,6 +108,9 @@ def test_release_preflight_detects_generated_artifact_patterns():
         "**/__pycache__/**",
     )
     assert release_check._matches_generated_artifact("coverage.xml", "coverage.xml")
+    assert release_check._matches_generated_artifact(
+        ".hypothesis/examples/abc", ".hypothesis/**"
+    )
     assert release_check._matches_generated_artifact("dist/package.whl", "dist/**")
     assert not release_check._matches_generated_artifact(
         "results/report.json", "dist/**"
@@ -214,6 +217,7 @@ def test_sdist_manifest_keeps_large_repo_artifacts_out_of_package():
     assert "prune docs" in manifest
     assert "prune tests" in manifest
     assert "prune .mypy_cache" in manifest
+    assert "prune .hypothesis" in manifest
     assert "prune .venv" in manifest
     assert "prune venv" in manifest
     assert "prune env" in manifest
@@ -221,7 +225,7 @@ def test_sdist_manifest_keeps_large_repo_artifacts_out_of_package():
     assert "global-exclude coverage.xml" in manifest
 
 
-def test_stable_algorithm_workflows_have_theory_pages():
+def test_documented_algorithm_workflows_have_theory_pages_and_statuses():
     import qsvt
     import qsvt.algorithms as algorithms
 
@@ -253,7 +257,9 @@ def test_stable_algorithm_workflows_have_theory_pages():
         and hasattr(algorithms, name)
     }
 
-    assert stable_algorithm_workflows == set(expected_pages)
+    assert stable_algorithm_workflows == {"hamiltonian_simulation_workflow"}
+    for workflow_name in set(expected_pages) - stable_algorithm_workflows:
+        assert qsvt.api_status(workflow_name) == qsvt.API_STATUS_COMPATIBILITY
 
     algorithms_doc = _read_text("docs/qsvt/algorithms.md")
     api_doc = _read_text("docs/qsvt/api_reference.md")
@@ -264,6 +270,20 @@ def test_stable_algorithm_workflows_have_theory_pages():
         assert workflow_name in page_text
         assert page_name in algorithms_doc
         assert page_name in api_doc
+
+
+def test_compact_stable_facade_is_frozen_and_complete():
+    import qsvt
+    import qsvt.stable as stable
+
+    assert len(stable.__all__) == 20
+    assert tuple(sorted(stable.__all__)) == qsvt.STABLE_API_NAMES
+    assert set(qsvt.STABLE_API_NAMES).isdisjoint(qsvt.COMPATIBILITY_API_NAMES)
+    assert "at least two minor releases" in qsvt.DEPRECATION_POLICY
+    assert "qsvt.stable" in qsvt.__public_api_policy__
+    for name in stable.__all__:
+        assert getattr(stable, name) is getattr(qsvt, name)
+        assert qsvt.api_status(name) == qsvt.API_STATUS_STABLE
 
 
 def test_algorithm_workflow_result_surface_is_complete():

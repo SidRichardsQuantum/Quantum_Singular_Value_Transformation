@@ -44,6 +44,7 @@ from examples import (
     custom_block_encoding,
     encoding_aware_resources,
     finite_shot_qsvt,
+    hamiltonian_simulation,
     linear_system_compare,
     poisson_qsvt,
     problem_workflow,
@@ -79,6 +80,9 @@ spectral_filter_qsvt.main([
     "--output", str(output_dir / "spectral-filter-qsvt.json"),
 ])
 poisson_qsvt.main(["--output", str(output_dir / "poisson-qsvt.json")])
+hamiltonian_simulation.main([
+    "--output", str(output_dir / "hamiltonian-simulation.json"),
+])
 accuracy_driven_plan.main([
     "--output", str(output_dir / "accuracy-driven-plan.json"),
 ])
@@ -131,6 +135,9 @@ encoding_aware_resources.main([
         (tmp_path / "spectral-filter-qsvt.json").read_text(encoding="utf-8")
     )
     poisson = json.loads((tmp_path / "poisson-qsvt.json").read_text(encoding="utf-8"))
+    hamiltonian = json.loads(
+        (tmp_path / "hamiltonian-simulation.json").read_text(encoding="utf-8")
+    )
     accuracy_plan = json.loads(
         (tmp_path / "accuracy-driven-plan.json").read_text(encoding="utf-8")
     )
@@ -211,12 +218,22 @@ encoding_aware_resources.main([
     assert spectral_filter["degree_search"]["met_tolerance"] is True
     assert spectral_filter["execution"]["succeeded"] is True
     assert spectral_filter["resources"]["estimator_model"] == ("pauli-lcu-qubitization")
+    assert spectral_filter["acceptance"]["accepted_for_stated_scope"] is True
+    assert spectral_filter["acceptance"]["full_qsvt_acceptance"] is True
 
     assert poisson["example"] == "poisson-qsvt"
     assert poisson["mode"] == "poisson-qsvt-flagship"
     assert poisson["conjugate_gradient"]["converged"] is True
     assert poisson["degree_search"]["met_tolerance"] is True
     assert poisson["execution"]["succeeded"] is True
+    assert poisson["acceptance"]["accepted_for_stated_scope"] is True
+    assert poisson["acceptance"]["full_qsvt_acceptance"] is True
+
+    assert hamiltonian["example"] == "hamiltonian-simulation"
+    assert hamiltonian["mode"] == "hamiltonian-simulation-workflow"
+    assert hamiltonian["acceptance"]["scope"] == "polynomial_core"
+    assert hamiltonian["acceptance"]["accepted_for_stated_scope"] is True
+    assert hamiltonian["acceptance"]["full_qsvt_acceptance"] is False
 
     assert accuracy_plan["example"] == "accuracy-driven-plan"
     assert accuracy_plan["mode"] == "accuracy-driven-plan-cookbook"

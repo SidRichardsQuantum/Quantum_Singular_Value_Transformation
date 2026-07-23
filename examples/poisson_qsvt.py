@@ -5,8 +5,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from qsvt.flagship import poisson_qsvt_workflow
-from qsvt.reports import save_report
+from qsvt.stable import poisson_qsvt_workflow, save_report
 
 
 def build_report(*, execute: bool = True) -> dict[str, object]:
@@ -37,8 +36,16 @@ def main(argv: list[str] | None = None) -> None:
     parser.set_defaults(execute=True)
     args = parser.parse_args(argv)
 
-    written = save_report(build_report(execute=args.execute), args.output)
+    report = build_report(execute=args.execute)
+    written = save_report(report, args.output)
     print(written)
+    acceptance = report["acceptance"]
+    print(
+        "acceptance: "
+        f"{acceptance['status']} "
+        f"(scope={acceptance['scope']}, "
+        f"full_qsvt={acceptance['full_qsvt_acceptance']})"
+    )
 
 
 if __name__ == "__main__":

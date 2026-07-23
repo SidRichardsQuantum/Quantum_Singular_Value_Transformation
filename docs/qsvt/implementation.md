@@ -264,14 +264,15 @@ asymptotic resource estimates.
 ## Public API Status
 
 The package root exposes `__api_status__ = "alpha"`, a
-`__public_api_policy__` string, and `qsvt.api_status(name)`. Names in
-`qsvt.__all__` are the intended public surface, but the project is still in the
-`0.x` series.
+`__public_api_policy__` string, and `qsvt.api_status(name)`. The exact frozen
+surface lives in `qsvt.stable`; existing names in `qsvt.__all__` remain
+available for compatibility or experimental use.
 
 `qsvt.api_status(name)` returns:
 
-- `stable` for workflow-level helpers, report/export utilities, and benchmark
-  baselines that are intended as the primary user-facing surface,
+- `stable` for the 20 names exported by `qsvt.stable`,
+- `compatibility` for previously stable imports that remain supported but are
+  outside the compact frozen facade,
 - `experimental` for lower-level circuit execution, backend-adapter helpers,
   hardware-oriented device helpers,
   and any exported name that has not yet been explicitly promoted.
@@ -281,8 +282,10 @@ shipped with the package so committed notebooks can import them, but they are
 not re-exported from the package root in `0.2.8`. Treat them as experimental
 notebook support rather than stable algorithm APIs.
 
-Incompatible changes should be documented in the changelog and should use a
-deprecation period when practical.
+Compatibility names cannot be removed until the changelog announces the
+deprecation and the package has emitted `DeprecationWarning` for at least two
+minor releases. See [API stability](stability.md) for the complete policy and
+stable-name list.
 
 The local release preflight checks code, types, tests, cookbook integration,
 docs, package build metadata, and a built-wheel smoke test. It can also include
