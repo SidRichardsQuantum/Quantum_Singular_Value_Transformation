@@ -14,7 +14,7 @@ notebooks.
 | Polynomial design and approximation | `05_QSVT_Polynomial_Design_and_Approximation.ipynb` |
 | Matrix powers and roots | `06_QSVT_Matrix_Functions_Powers_and_Roots.ipynb` |
 | Sign functions and projectors | `07_QSVT_Sign_Function_and_Projectors.ipynb` |
-| Design workflows and templates | `08_QSVT_Design_and_Templates.ipynb` |
+| Design workflows and presets | `08_QSVT_Design_and_Presets.ipynb` |
 | QSVT algorithm workflows and acceptance scope | `09_QSVT_Algorithm_Workflows.ipynb` |
 | QSVT reports, CLI, and artifacts | `10_QSVT_Reports_CLI_and_Artifacts.ipynb` |
 | QSVT design tradeoffs | `11_QSVT_Design_Tradeoffs.ipynb` |

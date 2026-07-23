@@ -32,11 +32,11 @@ The package is organised into the following modules:
 - `qsvt.hamiltonians`
 - `qsvt.pde`
 - `qsvt.rescaling`
-- `qsvt.matrix_functions`
+- `qsvt.design`
 - `qsvt.diagnostics`
 - `qsvt.spectral`
-- `qsvt.design`
-- `qsvt.templates`
+- `qsvt.presets`
+- `qsvt.comparisons`
 - `qsvt.workflow`
 - `qsvt.planning`
 - `qsvt.degree`
@@ -55,6 +55,9 @@ The package is organised into the following modules:
 - `qsvt.diagonal`
 - `qsvt.matrix`
 - `qsvt.compatibility`
+- `qsvt.matrix_functions` compatibility re-exports
+- `qsvt.templates` compatibility re-exports
+- `qsvt.hhl` compatibility re-exports
 - `qsvt.qsvt` compatibility re-exports
 - `qsvt.__main__`
 
@@ -71,10 +74,12 @@ or import selected names from the package root:
 from qsvt import qsvt_scalar_output, chebyshev_t
 ```
 
-For the higher-level polynomial builders and ready-made templates, see:
+For the higher-level polynomial builders, named presets, and adjacent
+algorithm comparisons, see:
 
 - [Polynomial design helpers](design.md)
-- [Polynomial templates](templates.md)
+- [Polynomial presets](presets.md)
+- [Algorithm comparisons](comparisons.md)
 - [Algorithm notes](algorithms.md)
 - [Accuracy-driven planning](planning.md)
 - [Executable flagship workflows](flagship_workflows.md)
@@ -325,7 +330,7 @@ approximation at the best sampled time:
 
 ```python
 import numpy as np
-from qsvt.algorithms import quantum_walk_search_workflow
+from qsvt.comparisons import quantum_walk_search_workflow
 
 n_vertices = 4
 adjacency = np.ones((n_vertices, n_vertices)) - np.eye(n_vertices)
@@ -781,7 +786,7 @@ Build a compact sampled report with:
 - target vs polynomial sample arrays
 
 This is the shared reporting helper used by the `qsvt.design` and
-`qsvt.templates` diagnostics functions.
+`qsvt.presets` diagnostics functions.
 
 For JSON serialization, saving, loading, and plotting, see `qsvt.reports`.
 

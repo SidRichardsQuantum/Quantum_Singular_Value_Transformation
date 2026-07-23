@@ -69,6 +69,16 @@ from ._design_targets import (
 from ._design_targets import (
     validate_unit_interval_parameter as _validate_unit_interval_parameter,
 )
+from ._matrix_function_designs import (
+    RealTimeEvolutionPolynomials,
+    ScaledPolynomial,
+    design_gaussian_window_polynomial,
+    design_imaginary_time_polynomial,
+    design_low_energy_projector_polynomial,
+    design_positive_inverse_matrix_polynomial,
+    design_real_time_evolution_polynomials,
+    design_resolvent_polynomials,
+)
 from ._polyfit import enforce_boundedness
 from .approximation import approximation_quality_report
 
@@ -787,9 +797,17 @@ def design_interval_projector_diagnostics(
 
 
 __all__ = [
+    "RealTimeEvolutionPolynomials",
+    "ScaledPolynomial",
+    "design_gaussian_window_polynomial",
+    "design_imaginary_time_polynomial",
     "design_interval_projector_diagnostics",
+    "design_low_energy_projector_polynomial",
     "design_inverse_diagnostics",
     "design_positive_inverse_diagnostics",
+    "design_positive_inverse_matrix_polynomial",
+    "design_real_time_evolution_polynomials",
+    "design_resolvent_polynomials",
     "design_sign_diagnostics",
     "design_projector_diagnostics",
     "design_sqrt_diagnostics",

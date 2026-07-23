@@ -1,4 +1,4 @@
-"""Polynomial design and template CLI commands."""
+"""Polynomial design and preset CLI commands."""
 
 from __future__ import annotations
 
@@ -21,14 +21,14 @@ from .design import (
     design_sqrt_diagnostics,
     design_sqrt_polynomial,
 )
-from .qsvt import qsvt_compatibility_report, qsvt_transform_report
-from .templates import (
+from .presets import (
     exponential_approximation_diagnostics,
     inverse_like_diagnostics,
     sign_approximation_diagnostics,
     soft_threshold_filter_diagnostics,
     sqrt_approximation_diagnostics,
 )
+from .qsvt import qsvt_compatibility_report, qsvt_transform_report
 from .workflow import design_workflow
 
 
@@ -173,9 +173,9 @@ def cmd_design_sweep(args: argparse.Namespace) -> dict:
     }
 
 
-def cmd_template_report(args: argparse.Namespace) -> dict:
+def _build_preset_report(args: argparse.Namespace, *, mode: str) -> dict:
     """
-    Build a diagnostics report for a template polynomial.
+    Build a diagnostics report for a named preset polynomial.
     """
     builders = {
         "inverse": lambda: inverse_like_diagnostics(
@@ -212,10 +212,20 @@ def cmd_template_report(args: argparse.Namespace) -> dict:
 
     report = builders[args.kind]()
     return {
-        "mode": "template-report",
+        "mode": mode,
         "kind": args.kind,
         **report,
     }
+
+
+def cmd_preset_report(args: argparse.Namespace) -> dict:
+    """Build a diagnostics report for a named preset polynomial."""
+    return _build_preset_report(args, mode="preset-report")
+
+
+def cmd_template_report(args: argparse.Namespace) -> dict:
+    """Compatibility handler for the legacy ``template-report`` command."""
+    return _build_preset_report(args, mode="template-report")
 
 
 def cmd_design_compatibility(args: argparse.Namespace) -> dict:
@@ -332,7 +342,41 @@ def cmd_apply_design(args: argparse.Namespace) -> dict:
     return report
 
 
-def register_design_commands(sub, design_kinds, template_kinds) -> None:
+def _add_preset_report_arguments(parser, preset_kinds) -> None:
+    parser.add_argument(
+        "--kind",
+        choices=preset_kinds,
+        required=True,
+    )
+
+    parser.add_argument("--degree", type=int, required=True)
+
+    parser.add_argument("--mu", type=float, default=0.25)
+
+    parser.add_argument("--sharpness", type=float, default=6.0)
+
+    parser.add_argument("--threshold", type=float, default=0.5)
+
+    parser.add_argument("--beta", type=float, default=1.0)
+
+    parser.add_argument(
+        "--num-points",
+        dest="num_points",
+        type=int,
+        default=2001,
+    )
+
+    parser.add_argument(
+        "--bounded-num-points",
+        dest="bounded_num_points",
+        type=int,
+        default=4001,
+    )
+
+    add_report_output_args(parser, include_plot=True)
+
+
+def register_design_commands(sub, design_kinds, preset_kinds) -> None:
     p_design_report = sub.add_parser(
         "design-report",
         help="Build a design diagnostics report",
@@ -487,43 +531,18 @@ def register_design_commands(sub, design_kinds, template_kinds) -> None:
 
     p_design_sweep.set_defaults(func=cmd_design_sweep)
 
+    p_preset_report = sub.add_parser(
+        "preset-report",
+        help="Build a named-preset diagnostics report",
+    )
+    _add_preset_report_arguments(p_preset_report, preset_kinds)
+    p_preset_report.set_defaults(func=cmd_preset_report)
+
     p_template_report = sub.add_parser(
         "template-report",
-        help="Build a template diagnostics report",
+        help="Compatibility alias for preset-report",
     )
-
-    p_template_report.add_argument(
-        "--kind",
-        choices=template_kinds,
-        required=True,
-    )
-
-    p_template_report.add_argument("--degree", type=int, required=True)
-
-    p_template_report.add_argument("--mu", type=float, default=0.25)
-
-    p_template_report.add_argument("--sharpness", type=float, default=6.0)
-
-    p_template_report.add_argument("--threshold", type=float, default=0.5)
-
-    p_template_report.add_argument("--beta", type=float, default=1.0)
-
-    p_template_report.add_argument(
-        "--num-points",
-        dest="num_points",
-        type=int,
-        default=2001,
-    )
-
-    p_template_report.add_argument(
-        "--bounded-num-points",
-        dest="bounded_num_points",
-        type=int,
-        default=4001,
-    )
-
-    add_report_output_args(p_template_report, include_plot=True)
-
+    _add_preset_report_arguments(p_template_report, preset_kinds)
     p_template_report.set_defaults(func=cmd_template_report)
 
 

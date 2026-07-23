@@ -22,11 +22,11 @@ documentation.
 
 <div class="metric-grid">
   <div class="metric-card">
-    <span class="metric-value">55</span>
+    <span class="metric-value">33</span>
     <span class="metric-label">validated notebooks</span>
   </div>
   <div class="metric-card">
-    <span class="metric-value">30</span>
+    <span class="metric-value">8</span>
     <span class="metric-label">real-example workflows</span>
   </div>
   <div class="metric-card">
@@ -34,7 +34,7 @@ documentation.
     <span class="metric-label">diagonal QSVT max-error scale</span>
   </div>
   <div class="metric-card">
-    <span class="metric-value">0.2.19</span>
+    <span class="metric-value">0.2.20</span>
     <span class="metric-label">current release marker</span>
   </div>
 </div>
@@ -158,7 +158,7 @@ QSVT algorithm workflow diagnostics from the tutorial sequence.
 Degree/error/boundedness tradeoff results for QSVT-compatible polynomial design.
 ```
 
-```{figure} ../../results/plots/real_examples/27_topological_band_projector_chern_marker-plot-02.png
+```{figure} ../../results/plots/real_examples/06_topological_band_projector_chern_marker-plot-02.png
 :alt: Topological band projector Chern marker plot
 :width: 520px
 

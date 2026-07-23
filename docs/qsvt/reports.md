@@ -3,7 +3,7 @@
 The `qsvt.reports` module provides small helpers for reusing diagnostics
 reports outside an interactive Python session.
 
-Design and template diagnostics functions return dictionaries that include
+Design and preset diagnostics functions return dictionaries that include
 NumPy arrays. Those arrays are convenient for plotting and further numerical
 work, but they are not directly JSON serializable. The reports module converts
 those payloads into plain Python containers, writes JSON files, loads saved
@@ -42,11 +42,13 @@ qsvt design-sweep --kind sign --degrees "5,9,13,17" --gamma 0.2 \
   --no-synthesis \
   --output sign-degree-sweep.json
 
-qsvt template-report --kind inverse --degree 7 --mu 0.3 \
+qsvt preset-report --kind inverse --degree 7 --mu 0.3 \
   --output inverse-report.json
 ```
 
 The report commands print full JSON to standard output by default.
+`template-report` remains available as a compatibility alias; it preserves the
+legacy `mode: "template-report"` field for existing consumers.
 `design-workflow` combines coefficients, diagnostics, and QSVT compatibility
 metadata in one JSON report. `design-sweep` runs the same design workflow over
 multiple degrees and writes a compact manifest suitable for release summaries

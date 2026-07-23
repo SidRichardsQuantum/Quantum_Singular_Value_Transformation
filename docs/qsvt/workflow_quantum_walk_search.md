@@ -33,7 +33,7 @@ hardware execution.
 ## API
 
 ```python
-from qsvt.algorithms import quantum_walk_search_workflow
+from qsvt.comparisons import quantum_walk_search_workflow
 
 result = quantum_walk_search_workflow(adjacency, marked_vertex=0, degree=18)
 report = result.as_report()

@@ -79,7 +79,7 @@
           <li>Bounded polynomial design for QSVT and QSP workflows</li>
           <li>Classical spectral transforms and matrix-function experiments</li>
           <li>PennyLane wrappers for explicit scalar and matrix checks</li>
-          <li>Diagnostics, templates, and report generation for notebook reuse</li>
+          <li>Diagnostics, presets, and report generation for notebook reuse</li>
         </ul>
       </aside>
     </div>
@@ -91,7 +91,7 @@
       <h2>Read the package the same way it is built</h2>
       <p>
         The documentation is organised around small, explicit helpers: API surface,
-        polynomial design, reusable template families, and diagnostics workflows.
+        polynomial design, reusable preset families, and diagnostics workflows.
       </p>
     </div>
 
@@ -144,7 +144,7 @@
       <article class="project-card">
         <div>
           <h3>Notebooks</h3>
-          <p>Browse the introductory and real physics notebook sequence, including PDEs, Hamiltonians, spectral density, and transport examples.</p>
+          <p>Browse the introductory and real physics notebook sequence, including PDE inversion, Hamiltonian dynamics, spectral filtering, topology, inverse imaging, and graph entropy.</p>
         </div>
         <div class="tags">
           <span>Notebooks</span>
@@ -278,16 +278,16 @@
 
       <article class="project-card">
         <div>
-          <h3>Template Families</h3>
-          <p>Use ready-made bounded templates for inverse-like, sign-like, square-root, and exponential transforms.</p>
+          <h3>Polynomial Presets</h3>
+          <p>Use named bounded presets for inverse-like, sign-like, square-root, and exponential transforms.</p>
         </div>
         <div class="tags">
-          <span>Templates</span>
+          <span>Presets</span>
           <span>QSP</span>
           <span>Reusable</span>
         </div>
         <div class="card-links">
-          <a href="qsvt/templates.html">Open templates</a>
+          <a href="qsvt/presets.html">Open presets</a>
         </div>
       </article>
 
@@ -441,6 +441,7 @@ Executable Flagship Workflows <qsvt/flagship_workflows>
 API Stability <qsvt/stability>
 Reproducible Research Sweeps <qsvt/research>
 Algorithm Notes <qsvt/algorithms>
+Algorithm Comparisons <qsvt/comparisons>
 Linear Systems <qsvt/linear_systems>
 Spectral Filters <qsvt/spectral_filters>
 Time Evolution and Response <qsvt/time_evolution_and_response>
@@ -450,7 +451,7 @@ Physics Workflows <qsvt/physics>
 Classical Benchmarks <qsvt/benchmarks>
 Classical Baseline Details <qsvt/classical_baselines>
 QSVT Resource Model <qsvt/qsvt_resource_model>
-Polynomial Templates <qsvt/templates>
+Polynomial Presets <qsvt/presets>
 Implementation Notes <qsvt/implementation>
 API Reference <qsvt/api_reference>
 ```

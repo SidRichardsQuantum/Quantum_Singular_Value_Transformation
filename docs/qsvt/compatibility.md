@@ -136,5 +136,5 @@ benchmark outputs.
 - For broad mathematical context, see [Theory](theory.md).
 - For finite block encodings, see [Block encodings](block_encoding.md).
 - For polynomial builders, see [Polynomial design helpers](design.md) and
-  [Polynomial templates](templates.md).
+  [Polynomial presets](presets.md).
 - For resource interpretation, see [QSVT resource model](qsvt_resource_model.md).

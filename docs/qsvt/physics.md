@@ -10,11 +10,10 @@ recommended pattern is:
 4. apply it classically for validation or pass the coefficients to QSVT tools.
 
 The real-example notebooks in `notebooks/real_examples/` use this pattern for
-Hamiltonian simulation, ground-state filtering, quantum chemistry, Green's
-functions, spectral density estimation, Gibbs states, PDE linear systems,
-transport physics, spin-chain phase diagnostics, electronic occupations,
-singular-value inverse problems, photonic band gaps, graphene nanoribbon
-density of states, and tensor-network hybrid filtering.
+Poisson PDE inversion, Hamiltonian simulation, Green's-function response,
+spin-chain phase diagnostics and spectral filtering, electronic occupations,
+topological band projectors, singular-value pseudoinverse imaging, and
+matrix-log graph entropy.
 
 For concise theory and diagnostics notes on the high-level workflow functions,
 see [Algorithm notes](algorithms.md). For coefficient conventions, rescaling,
@@ -84,7 +83,7 @@ A = scaled.matrix
 
 ## Matrix-Function Polynomials
 
-`qsvt.matrix_functions` provides general polynomial builders for common physics
+`qsvt.design` provides general polynomial builders for common physics
 matrix functions:
 
 - `design_real_time_evolution_polynomials(time, scale, degree=...)`
@@ -95,7 +94,7 @@ matrix functions:
 - `design_positive_inverse_matrix_polynomial(gamma, degree=...)`
 
 ```python
-from qsvt.matrix_functions import design_real_time_evolution_polynomials
+from qsvt.design import design_real_time_evolution_polynomials
 from qsvt.spectral import apply_polynomial_to_hermitian
 
 polys = design_real_time_evolution_polynomials(
@@ -216,12 +215,12 @@ workflows, and [Time evolution and response](time_evolution_and_response.md)
 for Hamiltonian simulation, resolvents, and Gibbs weighting.
 
 For concrete package-client examples, see
-`notebooks/real_examples/25_fermi_dirac_electronic_occupations.ipynb` for
+`notebooks/real_examples/05_fermi_dirac_electronic_occupations.ipynb` for
 finite-temperature electronic occupations and
-`notebooks/real_examples/29_singular_value_pseudoinverse_deblurring.ipynb` for
+`notebooks/real_examples/07_singular_value_pseudoinverse_deblurring.ipynb` for
 a regularized inverse problem driven by singular-value pseudoinverse
 polynomials, and
-`notebooks/real_examples/30_matrix_log_entropy_graph_laplacian.ipynb` for a
+`notebooks/real_examples/08_matrix_log_entropy_graph_laplacian.ipynb` for a
 regularized graph-spectrum entropy diagnostic.
 
 ## Interval Projectors

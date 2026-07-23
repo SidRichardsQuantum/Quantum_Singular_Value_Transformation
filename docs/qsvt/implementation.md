@@ -264,9 +264,10 @@ asymptotic resource estimates.
 ## Public API Status
 
 The package root exposes `__api_status__ = "alpha"`, a
-`__public_api_policy__` string, and `qsvt.api_status(name)`. The exact frozen
-surface lives in `qsvt.stable`; existing names in `qsvt.__all__` remain
-available for compatibility or experimental use.
+`__public_api_policy__` string, and `qsvt.api_status(name)`. Importing `qsvt`
+loads only metadata and the API registry. Stable and compatibility objects are
+resolved lazily; experimental interfaces are imported from their documented
+submodules.
 
 `qsvt.api_status(name)` returns:
 
@@ -277,10 +278,8 @@ available for compatibility or experimental use.
   hardware-oriented device helpers,
   and any exported name that has not yet been explicitly promoted.
 
-Notebook presentation helpers live in the `qsvt.notebook` submodule. They are
-shipped with the package so committed notebooks can import them, but they are
-not re-exported from the package root in `0.2.8`. Treat them as experimental
-notebook support rather than stable algorithm APIs.
+Notebook presentation helpers live in the repository-only
+`notebooks._support` module and are not shipped in the package.
 
 Compatibility names cannot be removed until the changelog announces the
 deprecation and the package has emitted `DeprecationWarning` for at least two

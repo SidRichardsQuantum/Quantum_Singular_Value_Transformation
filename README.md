@@ -66,7 +66,12 @@ Requirements:
 - Python >= 3.10
 - PennyLane >= 0.42, < 0.46
 - NumPy >= 1.23, < 3
-- Matplotlib >= 3.7, < 4
+
+Plotting helpers are optional:
+
+```bash
+pip install "qsvt-pennylane[plot]"
+```
 
 ## Quick Example
 
@@ -201,13 +206,13 @@ The public package lives under `src/qsvt`.
 | --- | --- |
 | `qsvt.polynomials` | Chebyshev utilities, parity checks, boundedness checks |
 | `qsvt.approximation` | polynomial fitting and approximation error helpers |
-| `qsvt.design` | task-oriented polynomial builders |
+| `qsvt.design` | task-oriented and physics matrix-function polynomial builders |
 | `qsvt.algorithms` | end-to-end simulator-scale algorithm workflows |
 | `qsvt.block_encoding` | finite dense block-encoding construction and verification |
 | `qsvt.execution` | QNode execution for matrices and block-encoding specifications |
 | `qsvt.hardware` | finite-shot execution on caller-supplied PennyLane devices with preflight and provider/fake-backend metadata reports |
 | `qsvt.synthesis` | realizability classification, parity decomposition, and phase synthesis |
-| `qsvt.templates` | ready-made bounded polynomial families |
+| `qsvt.presets` | ready-made named bounded polynomial families |
 | `qsvt.workflow` | combined coefficient, diagnostic, compatibility, and high-level problem workflows |
 | `qsvt.planning`, `qsvt.degree` | typed problem planning and target-error degree selection |
 | `qsvt.flagship` | executable Pauli spectral-filter and Poisson workflows |
@@ -218,12 +223,12 @@ The public package lives under `src/qsvt`.
 | `qsvt.reports` | JSON-safe reports, schema checks, and plot helpers |
 | `qsvt.resources` | polynomial proxies and encoding-aware logical resource estimates |
 | `qsvt.benchmarks` | classical baselines and QSVT-oriented benchmark summaries |
-| `qsvt.notebook` | experimental notebook presentation and path helpers used by committed notebooks |
+| `qsvt.comparisons` | HHL and quantum-walk comparison algorithms |
 | `qsvt.matrices` | small Hermitian test matrices |
 | `qsvt.spectral` | classical spectral matrix-function references |
 | `qsvt.qsvt` | PennyLane QSVT wrappers and comparisons |
 | `qsvt.hamiltonians`, `qsvt.pde`, `qsvt.rescaling` | reusable physics and PDE helpers |
-| `qsvt.matrix_functions`, `qsvt.diagnostics` | matrix-function designs and validation metrics |
+| `qsvt.diagnostics` | application-level validation metrics |
 
 For detailed function-level documentation, use
 [docs/qsvt/api_reference.md](docs/qsvt/api_reference.md).
@@ -281,7 +286,7 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
   block encodings, normalization, verification, and omitted oracle costs
 - [docs/qsvt/compatibility.md](docs/qsvt/compatibility.md): QSVT boundedness,
   parity, synthesis checks, and common failure modes
-- [docs/qsvt/templates.md](docs/qsvt/templates.md): template polynomial
+- [docs/qsvt/presets.md](docs/qsvt/presets.md): named polynomial preset
   families
 - [docs/qsvt/physics.md](docs/qsvt/physics.md): Hamiltonian, PDE, rescaling,
   and matrix-function workflows
@@ -290,7 +295,7 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.2.19`
+Current release: `0.2.20`
 
 ## Notebooks
 
@@ -304,14 +309,12 @@ logical resources, and finite circuit execution. The workflow tutorial and
 three corresponding real examples also show the versioned flagship acceptance
 checks and distinguish stated-scope acceptance from full-QSVT acceptance.
 
-Real physics examples live in `notebooks/real_examples/` and cover Hamiltonian
-simulation, ground-state filtering, quantum chemistry, Green's functions,
-spectral density estimation, Gibbs states, PDE systems, transport physics,
-spin-chain diagnostics, electronic occupations, singular-value inverse
-problems, matrix-log graph entropy, photonic band gaps, graphene density of
-states, topological band projectors, and tensor-network hybrid filtering. Each
-real-example notebook includes a near-top orientation block for the system,
-QSVT implementation strategy, and quantum relevance.
+Real physics examples live in `notebooks/real_examples/`. The curated
+eight-notebook gallery covers Poisson inversion, Hamiltonian simulation,
+Green's functions, Ising filtering, electronic occupations, topological band
+projectors, singular-value deblurring, and matrix-log graph entropy. Each
+notebook identifies the physical system, QSVT implementation strategy, and
+classical validation boundary.
 
 Benchmark notebooks live in `notebooks/benchmarks/` and compare classical
 linear-system, spectral, and polynomial matrix-function baselines against

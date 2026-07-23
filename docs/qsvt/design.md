@@ -470,9 +470,9 @@ Use `qsvt.approximation` when you want low-level fitting utilities and direct co
 
 Use `qsvt.design` when you want task-oriented builders for common spectral transforms.
 
-### `qsvt.templates`
+### `qsvt.presets`
 
-Use `qsvt.templates` when you want predefined coefficient families or notebook-friendly canned examples.
+Use `qsvt.presets` when you want predefined coefficient families or notebook-friendly canned examples.
 
 Use `qsvt.design` when you want a more direct construction API for practical polynomial generation from high-level intent.
 

@@ -1,363 +1,78 @@
-"""
-qsvt
-----
+"""Public package facade for :mod:`qsvt`.
 
-Educational PennyLane-based utilities for Quantum Singular Value
-Transformation (QSVT) and Quantum Signal Processing (QSP).
-
-This package provides lightweight helpers for:
-
-- Chebyshev and polynomial utilities
-- function approximation on bounded intervals
-- small Hermitian matrix construction
-- spectral matrix-function reference calculations
-- explicit QSVT matrix extraction and comparison workflows
-
-The project is designed for small-scale demonstrations, notebooks, and
-classical validation of QSVT/QSP ideas.
+Importing :mod:`qsvt` loads only package metadata and the API-status registry.
+Public objects are imported from their implementation modules on first access.
+The compact, frozen surface remains available from :mod:`qsvt.stable`.
 """
 
+from __future__ import annotations
+
+from importlib import import_module
 from importlib.metadata import PackageNotFoundError
 from importlib.metadata import version as _pkg_version
+from typing import Any
 
-from .algorithms import (
-    BlockEncodedQSVTWorkflowResult,
-    FermiDiracWorkflowResult,
-    FixedPointAmplificationWorkflowResult,
-    GroundStateFilteringWorkflowResult,
-    HamiltonianSimulationWorkflowResult,
-    LinearSystemComparisonResult,
-    LinearSystemWorkflowResult,
-    MatrixLogEntropyWorkflowResult,
-    QuantumWalkSearchWorkflowResult,
-    ResolventWorkflowResult,
-    SingularValueFilteringWorkflowResult,
-    SingularValuePseudoinverseWorkflowResult,
-    SpectralCountingWorkflowResult,
-    SpectralDensityWorkflowResult,
-    SpectralThresholdingWorkflowResult,
-    ThermalGibbsWorkflowResult,
-    block_encoded_qsvt_workflow,
-    fermi_dirac_occupation_workflow,
-    fixed_point_amplification_workflow,
-    ground_state_filtering_workflow,
-    hamiltonian_simulation_workflow,
-    linear_system_comparison_summary_table,
-    linear_system_comparison_workflow,
-    linear_system_workflow,
-    matrix_log_entropy_workflow,
-    quantum_walk_search_resource_proxy,
-    quantum_walk_search_workflow,
-    resolvent_workflow,
-    singular_value_filtering_workflow,
-    singular_value_pseudoinverse_workflow,
-    spectral_counting_workflow,
-    spectral_density_workflow,
-    spectral_thresholding_workflow,
-    thermal_gibbs_workflow,
-    write_linear_system_comparison_csv,
-)
-from .api import (
-    API_STATUS_COMPATIBILITY,
-    API_STATUS_EXPERIMENTAL,
-    API_STATUS_STABLE,
-    COMPATIBILITY_API_NAMES,
-    DEPRECATION_POLICY,
-    STABLE_API_NAMES,
-    __api_statuses__,
-    api_status,
-)
-from .approximation import (
-    approximation_quality_report,
-    chebyshev_approximant,
-    chebyshev_eval,
-    chebyshev_fit_function,
-    fit_and_build_approximant,
-    max_error,
-    rms_error,
-    sample_approximation,
-    scale_from_chebyshev_domain,
-    scale_to_chebyshev_domain,
-)
-from .benchmarks import (
-    ClassicalBenchmarkResult,
-    benchmark_environment_report,
-    benchmark_summary_table,
-    conjugate_gradient_benchmark,
-    conjugate_gradient_solve,
-    dense_eigendecomposition_benchmark,
-    dense_linear_solve_benchmark,
-    plot_benchmark_timings,
-    plot_qsvt_proxy_resources,
-    polynomial_matrix_function_benchmark,
-    spectral_matrix_function_benchmark,
-    write_benchmark_summary_csv,
-)
-from .block_encoding import (
-    BlockEncoding,
-    BlockEncodingSpec,
-    block_encode_matrix,
-    block_encoding_report,
-    build_block_encoding_operator,
-    circuit_block_encoding_spec,
-    extract_block_encoded_operator,
-    matrix_block_encoding_spec,
-    pennylane_operator_block_encoding_spec,
-    qsvt_operator_from_block_encoding,
-    verify_block_encoding,
-)
-from .degree import (
-    DegreeSearchCandidate,
-    DegreeSearchResult,
-    search_design_degree,
-    search_polynomial_degree,
-)
-from .design import (
-    design_filter_diagnostics,
-    design_filter_polynomial,
-    design_interval_projector_diagnostics,
-    design_interval_projector_polynomial,
-    design_inverse_diagnostics,
-    design_inverse_polynomial,
-    design_positive_inverse_diagnostics,
-    design_positive_inverse_polynomial,
-    design_power_diagnostics,
-    design_power_polynomial,
-    design_projector_diagnostics,
-    design_projector_polynomial,
-    design_sign_diagnostics,
-    design_sign_polynomial,
-    design_sqrt_diagnostics,
-    design_sqrt_polynomial,
-)
-from .diagnostics import (
-    density_matrix_error,
-    expectation_value,
-    ground_state_overlap,
-    operator_error,
-    relative_state_error,
-    spectral_weights,
-)
-from .execution import (
-    BlockEncodingQSVTExecutionResult,
-    QSVTCircuitExecutionResult,
-    execute_qsvt_circuit,
-    execute_qsvt_from_spec,
-    qsvt_circuit_truth_contract,
-)
-from .flagship import (
-    PoissonQSVTResult,
-    SpectralFilterQSVTResult,
-    poisson_qsvt_workflow,
-    spectral_filter_qsvt_workflow,
-)
-from .hamiltonians import (
-    heisenberg_chain,
-    ising_hamiltonian,
-    pauli_string_matrix,
-    tight_binding_chain,
-)
-from .hardware import (
-    HardwareQSVTCircuitReport,
-    HardwareQSVTExecutionResult,
-    HardwareQSVTPreflightResult,
-    ProviderPluginReport,
-    execute_qsvt_on_device,
-    qsvt_hardware_circuit_report,
-    qsvt_hardware_preflight,
-    qsvt_hardware_truth_contract,
-    qsvt_provider_plugin_report,
-)
-from .hhl import (
-    HHLCircuitExecutionResult,
-    execute_hhl_circuit,
-    hhl_circuit_truth_contract,
-)
-from .matrices import (
-    diagonal_matrix,
-    embed_vector,
-    hermitian_from_eigendecomposition,
-    identity,
-    involutory_diagonal,
-    normalized_vector,
-    pauli_x,
-    pauli_z,
-    rotated_diagonal,
-    rotation,
-)
-from .matrix_functions import (
-    RealTimeEvolutionPolynomials,
-    ScaledPolynomial,
-    design_gaussian_window_polynomial,
-    design_imaginary_time_polynomial,
-    design_low_energy_projector_polynomial,
-    design_positive_inverse_matrix_polynomial,
-    design_real_time_evolution_polynomials,
-    design_resolvent_polynomials,
-)
-from .pde import (
-    dirichlet_laplacian_1d,
-    dirichlet_laplacian_2d,
-    periodic_laplacian_1d,
-)
-from .planning import (
-    QSVTExecutionConfig,
-    QSVTPlan,
-    QSVTPlanRunResult,
-    QSVTProblemSpec,
-    QSVTTransformSpec,
-    plan_qsvt,
-    run_qsvt_plan,
-)
-from .polynomials import (
-    chebyshev_t,
-    chebyshev_t3,
-    chebyshev_to_monomial,
-    eval_polynomial,
-    is_bounded_on_interval,
-    monomial_to_chebyshev,
-    normalize_coefficients,
-    polynomial_degree,
-    polynomial_parity,
-)
-from .qsvt import (
-    apply_qsvt_to_embedded_vector,
-    classical_diagonal_polynomial_transform,
-    compare_qsvt_vs_classical_diagonal,
-    compare_qsvt_vs_classical_matrix,
-    qsvt_compatibility_report,
-    qsvt_diagonal_transform,
-    qsvt_matrix_transform,
-    qsvt_matrix_transform_report,
-    qsvt_operator,
-    qsvt_scalar_output,
-    qsvt_scalar_scan,
-    qsvt_top_left_block,
-    qsvt_transform_report,
-    qsvt_unitary,
-)
-from .reports import (
-    ReportSchemaCompatibility,
-    load_report,
-    load_report_with_schema,
-    migrate_algorithm_workflow_report,
-    plot_approximation_report,
-    report_schema_manifest,
-    report_to_jsonable,
-    save_report,
-    save_report_plot,
-    supported_report_schemas,
-    validate_report_schema,
-    write_report_schema_manifest_csv,
-)
-from .rescaling import (
-    ScaledOperator,
-    rescale_hermitian_about_cutoff,
-    rescale_hermitian_to_unit_interval,
-    rescale_positive_semidefinite,
-    spectral_bounds,
-)
-from .research import (
-    ResearchOperatorSpec,
-    ResearchSweepResult,
-    ResearchSweepSpec,
-    ResearchTargetSpec,
-    ResearchTrial,
-    expand_research_sweep,
-    load_research_sweep_spec,
-    research_summary_rows,
-    run_research_sweep,
-    save_research_sweep_spec,
-    write_research_summary_csv,
-)
-from .research_frontier import (
-    AccuracyResourceFrontierEvaluator,
-    AccuracyResourceFrontierResult,
-    accuracy_resource_frontier_rows,
-    accuracy_resource_frontier_spec,
-    run_accuracy_resource_frontier,
-    write_accuracy_resource_pareto_csv,
-)
-from .resources import (
-    EncodingAwareResourceEstimate,
-    ResourceEstimate,
-    estimate_encoding_aware_resources,
-    estimate_qsvt_resources,
-    qsvt_resource_report,
-)
-from .spectral import (
-    apply_function_to_hermitian,
-    apply_polynomial_to_hermitian,
-    eigh_hermitian,
-    matrix_fractional_power,
-    matrix_from_eigendecomposition,
-    matrix_power_spectral,
-    matrix_sign,
-    matrix_square_root,
-    negative_projector_from_sign,
-    positive_projector_from_sign,
-    spectral_projector_negative,
-    spectral_projector_positive,
-    transformed_eigenvalues,
-)
-from .synthesis import (
-    BoundednessCertificate,
-    MixedParitySynthesisResult,
-    PhaseSolverAdapter,
-    PhaseSolverBenchmarkResult,
-    PhaseSynthesisResult,
-    PolynomialRealizability,
-    available_phase_solver_adapters,
-    benchmark_phase_solvers,
-    certify_polynomial_boundedness,
-    classify_polynomial_realizability,
-    clear_phase_synthesis_cache,
-    parity_components,
-    phase_synthesis_cache_info,
-    register_phase_solver_adapter,
-    synthesis_workflow,
-    synthesize,
-    synthesize_mixed_parity,
-    synthesize_phases,
-    synthesize_phases_cached,
-    synthesize_phases_with_adapter,
-    unregister_phase_solver_adapter,
-)
-from .templates import (
-    exponential_approximation_diagnostics,
-    exponential_approximation_polynomial,
-    inverse_like_diagnostics,
-    inverse_like_polynomial,
-    sign_approximation_diagnostics,
-    sign_approximation_polynomial,
-    soft_threshold_filter_diagnostics,
-    soft_threshold_filter_polynomial,
-    sqrt_approximation_diagnostics,
-    sqrt_approximation_polynomial,
-)
-from .workflow import (
-    DesignWorkflowResult,
-    QSVTProblemWorkflowResult,
-    design_workflow,
-    qsvt_problem_workflow,
-)
+from . import api as _api
 
-# Version ----------------------------------------------------------------------
+API_STATUS_COMPATIBILITY = _api.API_STATUS_COMPATIBILITY
+API_STATUS_EXPERIMENTAL = _api.API_STATUS_EXPERIMENTAL
+API_STATUS_STABLE = _api.API_STATUS_STABLE
+COMPATIBILITY_API_NAMES = _api.COMPATIBILITY_API_NAMES
+DEPRECATION_POLICY = _api.DEPRECATION_POLICY
+STABLE_API_NAMES = _api.STABLE_API_NAMES
+__api_statuses__ = _api.__api_statuses__
+api_status = _api.api_status
+
 try:
     __version__ = _pkg_version("qsvt-pennylane")
 except PackageNotFoundError:  # pragma: no cover
-    # Allows editable installs / local runs without installed dist metadata.
     __version__ = "0.0.0"
 
 __api_status__ = "alpha"
 __public_api_policy__ = (
     "qsvt.stable is the frozen public facade for the remainder of the 0.x "
-    "series. Existing names in qsvt.__all__ remain available as compatibility "
-    "or experimental interfaces. qsvt.api_status(name) identifies the tier. "
-    "See qsvt.DEPRECATION_POLICY for the required deprecation window."
+    "series. Stable and compatibility names remain lazily importable from the "
+    "qsvt package root and comprise qsvt.__all__; experimental interfaces "
+    "should be imported from their documented submodules. "
+    "qsvt.api_status(name) identifies the tier. See qsvt.DEPRECATION_POLICY "
+    "for the required deprecation window."
 )
 
-__all__ = [
+# Ordered from focused public facades to lower-level compatibility modules.
+# A requested object is cached in this module after the first successful lookup.
+_EXPORT_MODULES = (
+    "stable",
+    "algorithms",
+    "approximation",
+    "benchmarks",
+    "block_encoding",
+    "degree",
+    "design",
+    "diagnostics",
+    "execution",
+    "flagship",
+    "hamiltonians",
+    "hardware",
+    "comparisons",
+    "matrices",
+    "operators",
+    "pde",
+    "planning",
+    "polynomials",
+    "presets",
+    "qsvt",
+    "reports",
+    "rescaling",
+    "research",
+    "research_frontier",
+    "resources",
+    "spectral",
+    "synthesis",
+    "templates",
+    "workflow",
+)
+
+_METADATA_EXPORTS = (
     "__version__",
     "__api_status__",
     "__api_statuses__",
@@ -369,261 +84,29 @@ __all__ = [
     "DEPRECATION_POLICY",
     "STABLE_API_NAMES",
     "api_status",
-    "GroundStateFilteringWorkflowResult",
-    "PoissonQSVTResult",
-    "SpectralFilterQSVTResult",
-    "BlockEncodedQSVTWorkflowResult",
-    "HamiltonianSimulationWorkflowResult",
-    "LinearSystemComparisonResult",
-    "LinearSystemWorkflowResult",
-    "QuantumWalkSearchWorkflowResult",
-    "ResolventWorkflowResult",
-    "SpectralDensityWorkflowResult",
-    "SpectralThresholdingWorkflowResult",
-    "ThermalGibbsWorkflowResult",
-    "ResourceEstimate",
-    "EncodingAwareResourceEstimate",
-    "DegreeSearchCandidate",
-    "DegreeSearchResult",
-    "QSVTExecutionConfig",
-    "QSVTPlan",
-    "QSVTPlanRunResult",
-    "QSVTProblemSpec",
-    "QSVTTransformSpec",
-    "ClassicalBenchmarkResult",
-    "BlockEncodingQSVTExecutionResult",
-    "HardwareQSVTCircuitReport",
-    "HardwareQSVTExecutionResult",
-    "HardwareQSVTPreflightResult",
-    "ProviderPluginReport",
-    "QSVTCircuitExecutionResult",
-    "HHLCircuitExecutionResult",
-    "approximation_quality_report",
-    "chebyshev_approximant",
-    "chebyshev_eval",
-    "chebyshev_fit_function",
-    "fit_and_build_approximant",
-    "max_error",
-    "rms_error",
-    "sample_approximation",
-    "scale_from_chebyshev_domain",
-    "scale_to_chebyshev_domain",
-    "chebyshev_to_monomial",
-    "monomial_to_chebyshev",
-    "diagonal_matrix",
-    "embed_vector",
-    "exponential_approximation_polynomial",
-    "exponential_approximation_diagnostics",
-    "inverse_like_polynomial",
-    "inverse_like_diagnostics",
-    "sign_approximation_polynomial",
-    "sign_approximation_diagnostics",
-    "soft_threshold_filter_polynomial",
-    "soft_threshold_filter_diagnostics",
-    "sqrt_approximation_polynomial",
-    "sqrt_approximation_diagnostics",
-    "DesignWorkflowResult",
-    "QSVTProblemWorkflowResult",
-    "BlockEncoding",
-    "BlockEncodingSpec",
-    "BoundednessCertificate",
-    "MixedParitySynthesisResult",
-    "PhaseSynthesisResult",
-    "PhaseSolverBenchmarkResult",
-    "PolynomialRealizability",
-    "FermiDiracWorkflowResult",
-    "FixedPointAmplificationWorkflowResult",
-    "MatrixLogEntropyWorkflowResult",
-    "SingularValueFilteringWorkflowResult",
-    "SingularValuePseudoinverseWorkflowResult",
-    "SpectralCountingWorkflowResult",
-    "design_workflow",
-    "qsvt_problem_workflow",
-    "plan_qsvt",
-    "run_qsvt_plan",
-    "poisson_qsvt_workflow",
-    "spectral_filter_qsvt_workflow",
-    "block_encoded_qsvt_workflow",
-    "fermi_dirac_occupation_workflow",
-    "fixed_point_amplification_workflow",
-    "ground_state_filtering_workflow",
-    "hamiltonian_simulation_workflow",
-    "linear_system_comparison_summary_table",
-    "linear_system_comparison_workflow",
-    "linear_system_workflow",
-    "matrix_log_entropy_workflow",
-    "quantum_walk_search_resource_proxy",
-    "quantum_walk_search_workflow",
-    "resolvent_workflow",
-    "singular_value_filtering_workflow",
-    "singular_value_pseudoinverse_workflow",
-    "spectral_counting_workflow",
-    "spectral_density_workflow",
-    "spectral_thresholding_workflow",
-    "thermal_gibbs_workflow",
-    "write_linear_system_comparison_csv",
-    "benchmark_summary_table",
-    "benchmark_environment_report",
-    "conjugate_gradient_benchmark",
-    "conjugate_gradient_solve",
-    "dense_eigendecomposition_benchmark",
-    "dense_linear_solve_benchmark",
-    "plot_benchmark_timings",
-    "plot_qsvt_proxy_resources",
-    "polynomial_matrix_function_benchmark",
-    "spectral_matrix_function_benchmark",
-    "write_benchmark_summary_csv",
-    "block_encode_matrix",
-    "block_encoding_report",
-    "build_block_encoding_operator",
-    "circuit_block_encoding_spec",
-    "extract_block_encoded_operator",
-    "matrix_block_encoding_spec",
-    "pennylane_operator_block_encoding_spec",
-    "qsvt_operator_from_block_encoding",
-    "verify_block_encoding",
-    "hermitian_from_eigendecomposition",
-    "identity",
-    "involutory_diagonal",
-    "normalized_vector",
-    "pauli_x",
-    "pauli_z",
-    "design_filter_polynomial",
-    "design_filter_diagnostics",
-    "design_interval_projector_polynomial",
-    "design_interval_projector_diagnostics",
-    "design_inverse_polynomial",
-    "design_inverse_diagnostics",
-    "design_positive_inverse_polynomial",
-    "design_positive_inverse_diagnostics",
-    "design_power_polynomial",
-    "design_power_diagnostics",
-    "design_projector_polynomial",
-    "design_projector_diagnostics",
-    "design_sign_polynomial",
-    "design_sign_diagnostics",
-    "design_sqrt_polynomial",
-    "design_sqrt_diagnostics",
-    "rotated_diagonal",
-    "rotation",
-    "chebyshev_t",
-    "chebyshev_t3",
-    "eval_polynomial",
-    "is_bounded_on_interval",
-    "normalize_coefficients",
-    "polynomial_degree",
-    "polynomial_parity",
-    "ScaledOperator",
-    "rescale_hermitian_about_cutoff",
-    "rescale_hermitian_to_unit_interval",
-    "rescale_positive_semidefinite",
-    "spectral_bounds",
-    "tight_binding_chain",
-    "ising_hamiltonian",
-    "heisenberg_chain",
-    "pauli_string_matrix",
-    "dirichlet_laplacian_1d",
-    "dirichlet_laplacian_2d",
-    "periodic_laplacian_1d",
-    "RealTimeEvolutionPolynomials",
-    "ScaledPolynomial",
-    "design_gaussian_window_polynomial",
-    "design_imaginary_time_polynomial",
-    "design_low_energy_projector_polynomial",
-    "design_positive_inverse_matrix_polynomial",
-    "design_real_time_evolution_polynomials",
-    "design_resolvent_polynomials",
-    "density_matrix_error",
-    "execute_qsvt_circuit",
-    "execute_qsvt_from_spec",
-    "execute_qsvt_on_device",
-    "execute_hhl_circuit",
-    "expectation_value",
-    "ground_state_overlap",
-    "operator_error",
-    "relative_state_error",
-    "spectral_weights",
-    "apply_qsvt_to_embedded_vector",
-    "classical_diagonal_polynomial_transform",
-    "compare_qsvt_vs_classical_diagonal",
-    "compare_qsvt_vs_classical_matrix",
-    "qsvt_diagonal_transform",
-    "qsvt_matrix_transform",
-    "qsvt_matrix_transform_report",
-    "qsvt_operator",
-    "qsvt_compatibility_report",
-    "qsvt_circuit_truth_contract",
-    "hhl_circuit_truth_contract",
-    "qsvt_hardware_circuit_report",
-    "qsvt_hardware_preflight",
-    "qsvt_hardware_truth_contract",
-    "qsvt_provider_plugin_report",
-    "qsvt_scalar_output",
-    "qsvt_scalar_scan",
-    "qsvt_top_left_block",
-    "qsvt_transform_report",
-    "qsvt_unitary",
-    "ReportSchemaCompatibility",
-    "ResearchOperatorSpec",
-    "ResearchSweepResult",
-    "ResearchSweepSpec",
-    "ResearchTargetSpec",
-    "ResearchTrial",
-    "AccuracyResourceFrontierEvaluator",
-    "AccuracyResourceFrontierResult",
-    "load_report",
-    "load_report_with_schema",
-    "migrate_algorithm_workflow_report",
-    "plot_approximation_report",
-    "report_schema_manifest",
-    "report_to_jsonable",
-    "save_report",
-    "save_report_plot",
-    "supported_report_schemas",
-    "validate_report_schema",
-    "write_report_schema_manifest_csv",
-    "expand_research_sweep",
-    "load_research_sweep_spec",
-    "research_summary_rows",
-    "run_research_sweep",
-    "save_research_sweep_spec",
-    "write_research_summary_csv",
-    "accuracy_resource_frontier_rows",
-    "accuracy_resource_frontier_spec",
-    "run_accuracy_resource_frontier",
-    "write_accuracy_resource_pareto_csv",
-    "estimate_qsvt_resources",
-    "estimate_encoding_aware_resources",
-    "qsvt_resource_report",
-    "PhaseSolverAdapter",
-    "available_phase_solver_adapters",
-    "benchmark_phase_solvers",
-    "certify_polynomial_boundedness",
-    "classify_polynomial_realizability",
-    "clear_phase_synthesis_cache",
-    "parity_components",
-    "phase_synthesis_cache_info",
-    "register_phase_solver_adapter",
-    "search_design_degree",
-    "search_polynomial_degree",
-    "synthesize",
-    "synthesize_mixed_parity",
-    "synthesize_phases",
-    "synthesize_phases_cached",
-    "synthesize_phases_with_adapter",
-    "synthesis_workflow",
-    "unregister_phase_solver_adapter",
-    "apply_function_to_hermitian",
-    "apply_polynomial_to_hermitian",
-    "eigh_hermitian",
-    "matrix_fractional_power",
-    "matrix_from_eigendecomposition",
-    "matrix_power_spectral",
-    "matrix_sign",
-    "matrix_square_root",
-    "negative_projector_from_sign",
-    "positive_projector_from_sign",
-    "spectral_projector_negative",
-    "spectral_projector_positive",
-    "transformed_eigenvalues",
+)
+
+# Star imports intentionally contain only governed stable/compatibility names.
+# Explicit legacy and experimental imports continue to resolve through
+# ``__getattr__`` and their documented submodules.
+__all__ = [
+    *_METADATA_EXPORTS,
+    *sorted(set(STABLE_API_NAMES) | set(COMPATIBILITY_API_NAMES)),
 ]
+
+
+def __getattr__(name: str) -> Any:
+    """Resolve a public object without importing the full package eagerly."""
+    for module_name in _EXPORT_MODULES:
+        module = import_module(f".{module_name}", __name__)
+        if name not in getattr(module, "__all__", ()):
+            continue
+        value = getattr(module, name)
+        globals()[name] = value
+        return value
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+def __dir__() -> list[str]:
+    """Return metadata and governed root exports without eager imports."""
+    return sorted(set(globals()) | set(__all__))

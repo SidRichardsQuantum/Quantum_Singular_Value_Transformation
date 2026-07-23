@@ -701,6 +701,7 @@ def _resolve_spectral_function(
 
 __all__ = [
     "ClassicalBenchmarkResult",
+    "benchmark_environment_report",
     "benchmark_summary_table",
     "conjugate_gradient_benchmark",
     "conjugate_gradient_solve",

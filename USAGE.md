@@ -47,7 +47,7 @@ repository, eigenvectors are preserved and eigenvalues are transformed.
 Use a ready-made template:
 
 ```python
-from qsvt.templates import sign_approximation_polynomial
+from qsvt.presets import sign_approximation_polynomial
 
 coeffs = sign_approximation_polynomial(
     degree=11,
@@ -632,7 +632,7 @@ The physics helpers use the same bounded-polynomial pattern:
 
 ```python
 from qsvt.hamiltonians import tight_binding_chain
-from qsvt.matrix_functions import design_real_time_evolution_polynomials
+from qsvt.design import design_real_time_evolution_polynomials
 from qsvt.rescaling import rescale_hermitian_to_unit_interval
 from qsvt.spectral import apply_polynomial_to_hermitian
 
@@ -890,6 +890,6 @@ documentation, build, and distribution metadata checks.
 - [THEORY.md](./docs/qsvt/theory.md): conceptual background
 - [docs/qsvt/api_reference.md](./docs/qsvt/api_reference.md): public API details
 - [docs/qsvt/design.md](./docs/qsvt/design.md): design helper reference
-- [docs/qsvt/templates.md](./docs/qsvt/templates.md): reusable template families
+- [docs/qsvt/presets.md](./docs/qsvt/presets.md): reusable preset families
 - [docs/qsvt/notebooks.md](./docs/qsvt/notebooks.md): tutorial and real-example notebooks
 - [RESULTS.md](./docs/qsvt/results.md): reproducible report and plot conventions

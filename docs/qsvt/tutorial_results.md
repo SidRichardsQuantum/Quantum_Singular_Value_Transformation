@@ -351,39 +351,39 @@ positive_projector_trace [states]: 1.000000
 validation: passed
 ```
 
-### `08_QSVT_Design_and_Templates.ipynb`
+### `08_QSVT_Design_and_Presets.ipynb`
 
-Source: [`notebooks/tutorials/08_QSVT_Design_and_Templates.ipynb`](../../notebooks/tutorials/08_QSVT_Design_and_Templates.ipynb)
+Source: [`notebooks/tutorials/08_QSVT_Design_and_Presets.ipynb`](../../notebooks/tutorials/08_QSVT_Design_and_Presets.ipynb)
 
-```{image} ../../results/plots/notebooks/08_QSVT_Design_and_Templates-plot-01.png
-:alt: Polynomial Design and Templates plot 1
+```{image} ../../results/plots/notebooks/08_QSVT_Design_and_Presets-plot-01.png
+:alt: Polynomial Design and Presets plot 1
 :width: 520px
 ```
 
-```{image} ../../results/plots/notebooks/08_QSVT_Design_and_Templates-plot-02.png
-:alt: Polynomial Design and Templates plot 2
+```{image} ../../results/plots/notebooks/08_QSVT_Design_and_Presets-plot-02.png
+:alt: Polynomial Design and Presets plot 2
 :width: 520px
 ```
 
-```{image} ../../results/plots/notebooks/08_QSVT_Design_and_Templates-plot-03.png
-:alt: Polynomial Design and Templates plot 3
+```{image} ../../results/plots/notebooks/08_QSVT_Design_and_Presets-plot-03.png
+:alt: Polynomial Design and Presets plot 3
 :width: 520px
 ```
 
-```{image} ../../results/plots/notebooks/08_QSVT_Design_and_Templates-plot-04.png
-:alt: Polynomial Design and Templates plot 4
+```{image} ../../results/plots/notebooks/08_QSVT_Design_and_Presets-plot-04.png
+:alt: Polynomial Design and Presets plot 4
 :width: 520px
 ```
 
-```{image} ../../results/plots/notebooks/08_QSVT_Design_and_Templates-plot-05.png
-:alt: Polynomial Design and Templates plot 5
+```{image} ../../results/plots/notebooks/08_QSVT_Design_and_Presets-plot-05.png
+:alt: Polynomial Design and Presets plot 5
 :width: 520px
 ```
 
 Output 1 (cell 8):
 
 ```text
-Sign template
+Sign preset
   Degree [polynomial degree]:   13
   Parity [polynomial parity]:   odd
   Bounded [boolean]:  True
@@ -400,16 +400,16 @@ Output 2 (cell 10):
 
 ```text
 Sign approximation errors on |x| >= gamma [dimensionless x]
-  Template max error: 0.0934552831696136
+  Preset max error: 0.0934552831696136
   Design   max error: 0.1154179522161527
-  Template RMS error: 0.06614683867917648
+  Preset RMS error: 0.06614683867917648
   Design   RMS error: 0.08075997225292844
 ```
 
 Output 3 (cell 12):
 
 ```text
-Inverse-like template
+Inverse-like preset
   Degree [polynomial degree]:   13
   Parity [polynomial parity]:   odd
   Bounded [boolean]:  True
@@ -426,16 +426,16 @@ Output 4 (cell 14):
 
 ```text
 Inverse-like approximation errors against gamma/x on |x| >= gamma [dimensionless x]
-  Template max error: 0.2880707591425103
+  Preset max error: 0.2880707591425103
   Design   max error: 0.16259666800719208
-  Template rms error: 0.23148195494558868
+  Preset rms error: 0.23148195494558868
   Design   rms error: 0.08536905981807905
 ```
 
 Output 5 (cell 16):
 
 ```text
-Filter template
+Filter preset
   Degree [polynomial degree]:   12
   Parity [polynomial parity]:   even
   Bounded [boolean]:  True
@@ -452,9 +452,9 @@ Output 6 (cell 18):
 
 ```text
 Filter approximation errors on [-1, 1] [dimensionless x]
-  Template max error: 0.09099962265482087
+  Preset max error: 0.09099962265482087
   Design   max error: 0.09099962265482087
-  Template rms error: 0.04297312621293089
+  Preset rms error: 0.04297312621293089
   Design   rms error: 0.04297312621293089
 ```
 
@@ -527,7 +527,7 @@ Diag(projector_design(A)) via spectral helper:
 Output 12 (cell 31):
 
 ```text
-Sign template
+Sign preset
   Degree [polynomial degree]: 13
   Parity [polynomial parity]: odd
   bounded [boolean]: True
@@ -539,7 +539,7 @@ Sign design
   bounded [boolean]: True
   max_abs_on_grid: 0.9999999999999538
 
-Inverse template
+Inverse preset
   Degree [polynomial degree]: 13
   Parity [polynomial parity]: odd
   bounded [boolean]: True
@@ -551,7 +551,7 @@ Inverse design
   bounded [boolean]: True
   max_abs_on_grid: 1.0
 
-Filter template
+Filter preset
   Degree [polynomial degree]: 12
   Parity [polynomial parity]: even
   bounded [boolean]: True
@@ -570,11 +570,11 @@ Projector design
   max_abs_on_grid: 0.9999999999999769
 
 --- safe-region scalar checks ---
-Sign template max err on |x| >= gamma [dimensionless x]: 0.0934552831696136
+Sign preset max err on |x| >= gamma [dimensionless x]: 0.0934552831696136
 Sign design   max err on |x| >= gamma [dimensionless x]: 0.1154179522161527
-Inverse template max err vs gamma/x on |x| >= gamma [dimensionless x]: 0.2880707591425103
+Inverse preset max err vs gamma/x on |x| >= gamma [dimensionless x]: 0.2880707591425103
 Inverse design   max err vs gamma/x on |x| >= gamma [dimensionless x]: 0.16259666800719208
-Filter template max err on [-1,1]: 0.09099962265482087
+Filter preset max err on [-1,1]: 0.09099962265482087
 Filter design   max err on [-1,1]: 0.09099962265482087
 Projector design max err on |x| >= gamma [dimensionless x]: 0.05770897610807635
 

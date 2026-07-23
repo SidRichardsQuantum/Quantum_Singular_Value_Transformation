@@ -1,12 +1,69 @@
-import pytest
+import json
+from importlib.util import find_spec
+from pathlib import Path
 
-from qsvt.notebook import (
+import pytest
+from notebooks._support import (
     benchmark_output_dirs,
     display_table,
     find_repo_root,
     format_value,
     print_rows,
 )
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+NOTEBOOK_DIRS = (
+    REPO_ROOT / "notebooks" / "tutorials",
+    REPO_ROOT / "notebooks" / "real_examples",
+    REPO_ROOT / "notebooks" / "benchmarks",
+)
+
+
+def test_notebook_support_is_repository_only():
+    assert find_spec("qsvt.notebook") is None
+
+
+def test_real_example_gallery_is_curated():
+    notebooks = {
+        path.name
+        for path in (REPO_ROOT / "notebooks" / "real_examples").glob("*.ipynb")
+    }
+
+    assert notebooks == {
+        "01_poisson_equation_pde.ipynb",
+        "02_hamiltonian_simulation_schrodinger_dynamics.ipynb",
+        "03_greens_function_response.ipynb",
+        "04_ising_phase_transition_filtering.ipynb",
+        "05_fermi_dirac_electronic_occupations.ipynb",
+        "06_topological_band_projector_chern_marker.ipynb",
+        "07_singular_value_pseudoinverse_deblurring.ipynb",
+        "08_matrix_log_entropy_graph_laplacian.ipynb",
+    }
+
+
+def test_every_notebook_defines_markdown_variables_and_parameters():
+    notebook_paths = sorted(
+        path for directory in NOTEBOOK_DIRS for path in directory.glob("*.ipynb")
+    )
+
+    assert len(notebook_paths) == 33
+    for path in notebook_paths:
+        notebook = json.loads(path.read_text(encoding="utf-8"))
+        markdown_cells = [
+            "".join(cell["source"])
+            for cell in notebook["cells"]
+            if cell["cell_type"] == "markdown"
+        ]
+        definition_cells = [
+            source for source in markdown_cells if "## Variable definitions" in source
+        ]
+
+        assert definition_cells, f"{path} has no variable-definition block"
+        assert any(
+            line.startswith("- ")
+            for source in definition_cells
+            for line in source.splitlines()
+        ), f"{path} has an empty variable-definition block"
 
 
 def test_find_repo_root_and_benchmark_output_dirs(tmp_path):

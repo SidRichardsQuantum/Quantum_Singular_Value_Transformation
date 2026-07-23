@@ -14,7 +14,6 @@ from qsvt.algorithms import (
     linear_system_comparison_workflow,
     linear_system_workflow,
     matrix_log_entropy_workflow,
-    quantum_walk_search_workflow,
     resolvent_workflow,
     singular_value_filtering_workflow,
     singular_value_pseudoinverse_workflow,
@@ -24,6 +23,7 @@ from qsvt.algorithms import (
     thermal_gibbs_workflow,
     write_linear_system_comparison_csv,
 )
+from qsvt.comparisons import quantum_walk_search_workflow
 from qsvt.reports import report_to_jsonable, validate_report_schema
 
 HERMitian_2X2 = np.array(

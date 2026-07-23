@@ -13,7 +13,7 @@ from collections.abc import Callable
 import numpy as np
 
 from .approximation import chebyshev_fit_function
-from .polynomials import normalize_coefficients
+from .polynomials import chebyshev_to_monomial, normalize_coefficients
 
 
 def validate_degree(degree: int) -> int:
@@ -32,19 +32,6 @@ def validate_num_points(num_points: int, name: str = "num_points") -> int:
     if num_points < 2:
         raise ValueError(f"{name} must be at least 2.")
     return int(num_points)
-
-
-def chebyshev_to_monomial(
-    cheb_coeffs: np.ndarray,
-    *,
-    domain: tuple[float, float] = (-1.0, 1.0),
-) -> np.ndarray:
-    """
-    Convert Chebyshev-basis coefficients to ascending monomial coefficients.
-    """
-    poly = np.polynomial.Chebyshev(cheb_coeffs, domain=domain)
-    coeffs = np.asarray(poly.convert(kind=np.polynomial.Polynomial).coef, dtype=float)
-    return normalize_coefficients(coeffs)
 
 
 def grid_max_abs(coeffs: np.ndarray, num_points: int = 4001) -> float:
@@ -134,7 +121,6 @@ def fit_bounded_monomial(
 
 __all__ = [
     "apply_parity_projection",
-    "chebyshev_to_monomial",
     "enforce_boundedness",
     "fit_bounded_monomial",
     "grid_max_abs",

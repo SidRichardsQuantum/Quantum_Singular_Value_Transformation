@@ -186,9 +186,11 @@ def test_runtime_dependencies_are_bounded_to_supported_major_ranges():
     project = tomllib.loads(_read_text("pyproject.toml"))["project"]
 
     assert set(project["dependencies"]) == {
-        "matplotlib>=3.7,<4",
         "numpy>=1.23,<3",
         "pennylane>=0.42,<0.46",
+    }
+    assert set(project["optional-dependencies"]["plot"]) == {
+        "matplotlib>=3.7,<4",
     }
 
 
@@ -196,6 +198,14 @@ def test_mypy_uses_runtime_python_for_current_dependency_stubs():
     config = tomllib.loads(_read_text("pyproject.toml"))["tool"]["mypy"]
 
     assert "python_version" not in config
+
+
+def test_pytest_can_import_repository_and_package_modules():
+    config = tomllib.loads(_read_text("pyproject.toml"))["tool"]["pytest"][
+        "ini_options"
+    ]
+
+    assert config["pythonpath"] == [".", "src"]
 
 
 def test_cli_tutorial_uses_active_python_interpreter():
@@ -210,8 +220,12 @@ def test_sdist_manifest_keeps_large_repo_artifacts_out_of_package():
     manifest = _read_text("MANIFEST.in")
 
     assert "graft src" in manifest
-    assert "include ROADMAP.md" in manifest
-    assert "include RELEASING.md" in manifest
+    assert "include ROADMAP.md" not in manifest
+    assert "include RELEASING.md" not in manifest
+    assert "include requirements.txt" not in manifest
+    assert "exclude ROADMAP.md" in manifest
+    assert "exclude RELEASING.md" in manifest
+    assert "exclude requirements.txt" in manifest
     assert "prune notebooks" in manifest
     assert "prune results" in manifest
     assert "prune docs" in manifest
@@ -370,6 +384,7 @@ def test_cli_facade_preserves_public_command_handler_exports():
         "cmd_phase_solver_benchmark",
         "cmd_phase_synthesis",
         "cmd_poly",
+        "cmd_preset_report",
         "cmd_problem_workflow",
         "cmd_report_schema_manifest",
         "cmd_resource_report",

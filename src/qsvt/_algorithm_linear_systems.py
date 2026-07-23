@@ -463,7 +463,7 @@ def _hhl_comparison_row(
     rotation_scale_C: float | None,
     eigenvalue_lower_bound: float | None,
 ) -> dict[str, Any]:
-    from .hhl import execute_hhl_circuit
+    from .comparisons.hhl import execute_hhl_circuit
 
     try:
         eigenvalues = np.linalg.eigvalsh(matrix)

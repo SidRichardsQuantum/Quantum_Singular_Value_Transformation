@@ -64,7 +64,7 @@ def _execute_notebooks(notebooks):
         old_mpl_config = os.environ.get("MPLCONFIGDIR")
         os.environ["MPLCONFIGDIR"] = mpl_config_dir
         try:
-            with patch("qsvt.notebook.benchmark_output_dirs", new=output_dirs):
+            with patch("notebooks._support.benchmark_output_dirs", new=output_dirs):
                 for path in notebooks:
                     namespace = {
                         "__name__": "__notebook_test__",

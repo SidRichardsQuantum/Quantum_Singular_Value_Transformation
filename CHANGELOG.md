@@ -1,5 +1,61 @@
 # Changelog
 
+## [0.2.20] – 23rd July 2026
+
+### Added
+
+- added `qsvt.presets` as the canonical namespace for named bounded polynomial
+  families
+- added `qsvt preset-report` as the canonical named-preset diagnostics command;
+  `qsvt template-report` remains a compatibility alias with its legacy mode
+  field
+- added `qsvt.comparisons` as the canonical namespace for finite HHL and
+  continuous-time quantum-walk comparison workflows
+- added repository-only `notebooks._support` helpers for notebook presentation
+  and generated-artifact paths
+
+### Changed
+
+- made the package root lazy: `import qsvt` now loads metadata and the API
+  registry, while governed stable and compatibility exports resolve on demand
+- narrowed root `__all__` to stable and compatibility names; explicit
+  experimental imports remain available from their documented submodules
+- consolidated task and physics matrix-function builders under `qsvt.design`;
+  `qsvt.matrix_functions` remains as a compatibility import module
+- renamed the named-family layer from `qsvt.templates` to `qsvt.presets`;
+  `qsvt.templates` remains as a compatibility import module
+- reclassified HHL and quantum-walk search as adjacent comparison algorithms
+  instead of presenting them as core QSVT implementations
+- curated the real-world notebook gallery from thirty overlapping surveys to
+  eight complementary flagship applications and regenerated its plot manifest
+  and rendered result ledger
+- aligned the notebook landing pages and physics guide with the eight
+  applications retained in the curated gallery
+- renumbered the curated real-example gallery contiguously from `01` to `08`
+  and renamed the design tutorial and derived artifacts from templates to
+  presets
+- added explicit variable and parameter definitions to every notebook's
+  Markdown narrative, backed by a repository-wide regression check
+- moved Matplotlib from the mandatory runtime dependencies to the optional
+  `plot` extra, while retaining it in test and development environments
+- removed maintainer-only roadmap, release, and development-requirements files
+  from source distributions
+
+### Fixed
+
+- made the `pytest` console entry point include the repository root so
+  repository-only notebook support imports collect under both `pytest` and
+  `python -m pytest`
+
+### Removed
+
+- removed the package-level `qsvt.notebook` module; committed notebooks now use
+  repository-only support code
+- removed a duplicate internal Chebyshev-to-monomial conversion and an unused
+  interval-fitting helper
+- removed derived plots and notebook files belonging only to the retired
+  overlapping real-example surveys
+
 ## [0.2.19] – 23rd July 2026
 
 ### Added

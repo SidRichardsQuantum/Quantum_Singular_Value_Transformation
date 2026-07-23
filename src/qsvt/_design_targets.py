@@ -120,22 +120,3 @@ def fit_on_canonical_interval(
         num_points=num_points,
         bound_num_points=DEF_BOUND_GRID,
     )
-
-
-def fit_on_interval(
-    func,
-    domain: tuple[float, float],
-    *,
-    degree: int,
-    num_points: int = DEF_NUM_POINTS,
-) -> np.ndarray:
-    """
-    Fit a target on a general interval, convert to monomials, and bound it.
-    """
-    return fit_bounded_monomial(
-        func,
-        degree=degree,
-        domain=domain,
-        num_points=num_points,
-        bound_num_points=DEF_BOUND_GRID,
-    )

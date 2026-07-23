@@ -1,44 +1,33 @@
-# Real Physics Examples
+# Curated Real-World Examples
 
-These notebooks are small, executable real-world physics workflows for
-`qsvt-pennylane`. They use finite-dimensional Hamiltonians and PDE
-discretizations so each QSVT-style polynomial transform can be compared against
-an exact classical spectral reference. Most examples are dense spectral
-workflows; the block-encoded Laplacian example additionally verifies an
-explicit finite block encoding and runs a finite PennyLane QNode execution
-check. The Poisson, Hamiltonian-simulation, and Ising-filter notebooks display
-the versioned flagship acceptance checks; Hamiltonian simulation explicitly
-separates accepted polynomial-core evidence from the remaining full-QSVT gap.
+These eight notebooks are the maintained application gallery for
+`qsvt-pennylane`. Together they cover the package's main end-to-end paths
+without repeating closely related spectral-filter, lattice, and PDE surveys.
 
-| Area | Notebook |
-| --- | --- |
-| Ground-state filtering | `01_ground_state_filtering.ipynb` |
-| Tight-binding band filters | `02_tight_binding_band_filter.ipynb` |
-| Imaginary-time filtering | `03_imaginary_time_filtering.ipynb` |
-| PDE linear systems and finite-QSVT acceptance | `04_poisson_equation_pde.ipynb` |
-| Hamiltonian simulation polynomial-core acceptance | `05_hamiltonian_simulation_schrodinger_dynamics.ipynb` |
-| Quantum chemistry | `06_quantum_chemistry_h2_toy_solver.ipynb` |
-| Green's functions | `07_greens_function_response.ipynb` |
-| Spectral density estimation | `08_spectral_density_estimation.ipynb` |
-| Gibbs states | `09_gibbs_state_thermal_weights.ipynb` |
-| Transport physics | `10_transport_physics_landauer_chain.ipynb` |
-| Tensor-network hybrids | `11_tensor_network_hybrid_filtering.ipynb` |
-| PDE heat flow | `12_heat_equation_2d_pde.ipynb` |
-| Advection-diffusion PDE | `13_advection_diffusion_pde.ipynb` |
-| Wave equation dynamics | `14_wave_equation_dynamics.ipynb` |
-| Helmholtz PDE | `15_helmholtz_equation_pde.ipynb` |
-| SSH edge states | `16_ssh_chain_edge_state_filtering.ipynb` |
-| Anderson localization | `17_anderson_localization.ipynb` |
-| Schrödinger bound states | `18_schrodinger_bound_states.ipynb` |
-| Harmonic oscillator | `19_quantum_harmonic_oscillator_grid.ipynb` |
-| Electrostatic Green's function | `20_electrostatic_green_function_poisson.ipynb` |
-| Coupled oscillator modes | `21_coupled_oscillator_normal_modes.ipynb` |
-| Ising phase transition and finite-QSVT acceptance | `22_ising_phase_transition_filtering.ipynb` |
-| Diffusion heat treatment | `23_diffusion_heat_treatment_slab.ipynb` |
-| Graphene nanoribbon DOS | `24_graphene_nanoribbon_density_of_states.ipynb` |
-| Fermi-Dirac occupations | `25_fermi_dirac_electronic_occupations.ipynb` |
-| Photonic crystal band gap | `26_photonic_crystal_band_gap_filtering.ipynb` |
-| Topological band projector | `27_topological_band_projector_chern_marker.ipynb` |
-| Block-encoded Laplacian smoothing | `28_block_encoded_laplacian_smoothing.ipynb` |
-| Singular-value pseudoinverse deblurring | `29_singular_value_pseudoinverse_deblurring.ipynb` |
-| Matrix-log graph entropy | `30_matrix_log_entropy_graph_laplacian.ipynb` |
+| notebook | application | primary package path |
+| --- | --- | --- |
+| `01_poisson_equation_pde.ipynb` | Poisson PDE inversion | planning, block encoding, finite QSVT, classical comparison |
+| `02_hamiltonian_simulation_schrodinger_dynamics.ipynb` | real-time dynamics | paired polynomial design and Hamiltonian workflow acceptance |
+| `03_greens_function_response.ipynb` | resolvents and response functions | matrix-function design and classical spectral validation |
+| `04_ising_phase_transition_filtering.ipynb` | many-body spectral filtering | Pauli-LCU filtering and finite-QSVT acceptance |
+| `05_fermi_dirac_electronic_occupations.ipynb` | thermal electronic occupations | bounded Fermi–Dirac polynomial workflow |
+| `06_topological_band_projector_chern_marker.ipynb` | topological band projectors | projector design and observable diagnostics |
+| `07_singular_value_pseudoinverse_deblurring.ipynb` | inverse imaging | singular-value pseudoinverse workflow |
+| `08_matrix_log_entropy_graph_laplacian.ipynb` | graph entropy | matrix-log workflow and spectral reference |
+
+All notebooks are thin clients of tested package functionality. Shared
+presentation and output-path helpers live in `notebooks._support`; they are not
+part of the installed package.
+
+Execute the curated set with:
+
+```bash
+pytest -m notebook tests/test_real_example_notebooks.py
+```
+
+Refresh extracted plots and the generated result ledger with:
+
+```bash
+python scripts/extract_notebook_plots.py \
+  --preset real-examples --execute --write-docs
+```

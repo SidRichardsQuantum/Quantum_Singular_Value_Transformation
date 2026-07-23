@@ -12,7 +12,7 @@ The package provides small, explicit utilities for:
 - comparing classical polynomial transforms with QSVT outputs
 - reporting QSVT-vs-classical transform error
 - building task-oriented polynomial designs
-- reusing ready-made polynomial templates
+- reusing ready-made polynomial presets
 - reporting fit error and boundedness for polynomial builders
 - saving, loading, and plotting diagnostics reports
 - building small Hamiltonians and finite-difference PDE operators
@@ -34,6 +34,7 @@ The repository also includes a sequence of notebooks that introduce QSVT concept
 | Install the package and run a transform | [Usage guide](usage.md) |
 | Run short cookbook scripts | [Cookbook examples](https://github.com/SidRichardsQuantum/Quantum_Singular_Value_Transformation/tree/main/examples) |
 | Understand the mathematical setup | [Theory](theory.md) |
+| Use HHL or quantum-walk comparison workflows | [Algorithm comparisons](comparisons.md) |
 | Understand linear-system algorithms | [Linear systems](linear_systems.md) |
 | Understand filtering and projector workflows | [Spectral filters](spectral_filters.md) |
 | Understand time-evolution and response workflows | [Time evolution and response](time_evolution_and_response.md) |
@@ -76,6 +77,7 @@ General QSVT/QSP background belongs in [Theory](theory.md), which is rendered
 from the repository root `THEORY.md`. Focused implementation theory belongs in
 dedicated pages: [Linear systems](linear_systems.md), [Spectral filters](spectral_filters.md),
 [Time evolution and response](time_evolution_and_response.md),
+[Algorithm comparisons](comparisons.md),
 [Block encodings](block_encoding.md), [Phase synthesis](synthesis.md),
 [QSVT compatibility](compatibility.md),
 [QSVT resource model](qsvt_resource_model.md), and [Algorithm notes](algorithms.md).
@@ -123,7 +125,8 @@ attached to QSVT-style comparisons, see [QSVT resource model](qsvt_resource_mode
 
 Notebook-first examples cover the core QSVT path and real physics workflows,
 including matrix functions, spectral filters, PDE operators, Hamiltonian
-simulation, and transport examples.
+simulation, electronic occupations, topology, inverse imaging, and graph
+entropy.
 
 See: [Notebooks](notebooks.md)
 
@@ -206,7 +209,10 @@ qsvt
 ├── polynomials.py
 ├── approximation.py
 ├── design.py
-├── templates.py
+├── presets.py
+├── comparisons/
+│   ├── hhl.py
+│   └── quantum_walk.py
 ├── workflow.py
 ├── planning.py
 ├── degree.py
@@ -222,7 +228,6 @@ qsvt
 ├── hamiltonians.py
 ├── pde.py
 ├── rescaling.py
-├── matrix_functions.py
 ├── diagnostics.py
 ├── spectral.py
 ├── operators.py
@@ -240,9 +245,10 @@ Each module is intentionally small and focused:
 | `stable` | frozen compact facade for the remainder of the 0.x series |
 | `acceptance` | versioned acceptance contracts for the three flagships |
 | `polynomials` | Chebyshev utilities and polynomial helpers |
-| `approximation` | bounded polynomial approximation tools |
-| `design` | task-oriented bounded polynomial builders |
-| `templates` | ready-made bounded polynomial families |
+| `approximation` | low-level bounded polynomial approximation tools |
+| `design` | task-oriented and matrix-function polynomial builders |
+| `presets` | named ready-made bounded polynomial families |
+| `comparisons` | finite HHL and quantum-walk comparison workflows |
 | `workflow` | combined coefficient, diagnostic, and compatibility workflows |
 | `planning` | typed accuracy-driven problem planning and execution |
 | `degree` | tolerance-driven polynomial degree selection |
@@ -258,12 +264,15 @@ Each module is intentionally small and focused:
 | `hamiltonians` | reusable small physics Hamiltonians |
 | `pde` | finite-difference PDE operators |
 | `rescaling` | spectral normalization helpers |
-| `matrix_functions` | polynomial builders for physics matrix functions |
 | `diagnostics` | state, operator, and spectral diagnostics |
 | `spectral` | classical spectral matrix functions |
 | `operators`, `diagonal`, `matrix` | focused QSVT construction and comparison helpers |
 | `qsvt` | PennyLane QSVT wrappers |
 | `__main__` | command line interface |
+
+The legacy modules `qsvt.templates`, `qsvt.matrix_functions`, and `qsvt.hhl`
+remain as compatibility re-exports. New code should use `qsvt.presets`,
+`qsvt.design`, and `qsvt.comparisons`, respectively.
 
 ---
 

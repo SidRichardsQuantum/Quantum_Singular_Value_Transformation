@@ -1,5 +1,7 @@
 import json
-from importlib import resources
+import subprocess
+import sys
+from importlib import resources as importlib_resources
 
 import numpy as np
 import pytest
@@ -17,19 +19,60 @@ from qsvt.design import (
     design_sqrt_polynomial,
 )
 from qsvt.polynomials import chebyshev_t
-from qsvt.qsvt import qsvt_scalar_output, qsvt_top_left_block, qsvt_unitary
-from qsvt.templates import (
+from qsvt.presets import (
     inverse_like_polynomial,
     sign_approximation_polynomial,
     soft_threshold_filter_polynomial,
     sqrt_approximation_polynomial,
 )
+from qsvt.qsvt import qsvt_scalar_output, qsvt_top_left_block, qsvt_unitary
 
 
 def test_package_exposes_pep561_type_marker():
-    marker = resources.files("qsvt").joinpath("py.typed")
+    marker = importlib_resources.files("qsvt").joinpath("py.typed")
 
     assert marker.is_file()
+
+
+def test_package_root_import_is_lazy():
+    code = """
+import sys
+import qsvt
+
+loaded = {
+    name
+    for name in sys.modules
+    if name == "qsvt" or name.startswith("qsvt.")
+}
+assert loaded == {"qsvt", "qsvt.api"}, loaded
+"""
+    result = subprocess.run(
+        [sys.executable, "-c", code],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stderr
+
+
+def test_consolidated_namespaces_preserve_compatibility_imports():
+    from qsvt import algorithms, comparisons, design, hhl, matrix_functions, presets
+    from qsvt import templates as legacy_templates
+
+    assert (
+        design.design_real_time_evolution_polynomials
+        is matrix_functions.design_real_time_evolution_polynomials
+    )
+    assert (
+        presets.sign_approximation_polynomial
+        is legacy_templates.sign_approximation_polynomial
+    )
+    assert comparisons.execute_hhl_circuit is hhl.execute_hhl_circuit
+    assert (
+        comparisons.quantum_walk_search_workflow
+        is algorithms.quantum_walk_search_workflow
+    )
 
 
 def test_top_level_public_api_exports_are_resolvable():
@@ -40,6 +83,16 @@ def test_top_level_public_api_exports_are_resolvable():
     exported = set(qsvt.__all__)
     for name in exported:
         assert hasattr(qsvt, name), name
+        if not name.startswith("__") and name not in {
+            "API_STATUS_COMPATIBILITY",
+            "API_STATUS_EXPERIMENTAL",
+            "API_STATUS_STABLE",
+            "COMPATIBILITY_API_NAMES",
+            "DEPRECATION_POLICY",
+            "STABLE_API_NAMES",
+            "api_status",
+        }:
+            assert qsvt.api_status(name) != qsvt.API_STATUS_EXPERIMENTAL
 
     expected_stable_surface = {
         "ClassicalBenchmarkResult",
@@ -65,7 +118,6 @@ def test_top_level_public_api_exports_are_resolvable():
         "spectral_density_workflow",
         "thermal_gibbs_workflow",
         "qsvt_transform_report",
-        "qsvt_matrix_transform_report",
         "report_schema_manifest",
         "report_to_jsonable",
         "save_report",
@@ -150,7 +202,7 @@ def test_design_builders_reject_invalid_parameters(builder, kwargs, message):
         ),
     ],
 )
-def test_template_builders_reject_invalid_parameters(builder, kwargs, message):
+def test_preset_builders_reject_invalid_parameters(builder, kwargs, message):
     with pytest.raises(ValueError, match=message):
         builder(**kwargs)
 
@@ -312,7 +364,9 @@ def test_cli_examples_command_emits_discovery_payload(capsys):
 
     assert payload["mode"] == "examples"
     assert "sign" in payload["design_kinds"]
+    assert "exponential" in payload["preset_kinds"]
     assert "exponential" in payload["template_kinds"]
+    assert payload["template_kinds"] == payload["preset_kinds"]
     assert "cg-solve" in payload["benchmark_commands"]
     assert "linear-system-compare" in payload["workflow_commands"]
     assert "problem-workflow" in payload["workflow_commands"]
@@ -555,15 +609,40 @@ def test_cli_resource_report_emits_json(capsys):
     assert payload["compatibility"]["attempted_pennylane_synthesis"] is False
 
 
-def test_cli_template_report_emits_json(capsys):
-    main(["template-report", "--kind", "inverse", "--degree", "7", "--mu", "0.3"])
+def test_cli_preset_report_emits_json(capsys):
+    main(["preset-report", "--kind", "inverse", "--degree", "7", "--mu", "0.3"])
     payload = json.loads(capsys.readouterr().out)
 
-    assert payload["mode"] == "template-report"
+    assert payload["mode"] == "preset-report"
     assert payload["kind"] == "inverse"
     assert payload["builder"] == "inverse_like_polynomial"
     assert payload["max_error"] >= 0.0
     assert payload["bounded_margin"] >= -1e-8
+
+
+def test_cli_template_report_preserves_compatibility_contract(capsys):
+    args = [
+        "--kind",
+        "inverse",
+        "--degree",
+        "7",
+        "--mu",
+        "0.3",
+        "--num-points",
+        "51",
+        "--bounded-num-points",
+        "101",
+    ]
+    main(["preset-report", *args])
+    preset_payload = json.loads(capsys.readouterr().out)
+    main(["template-report", *args])
+    template_payload = json.loads(capsys.readouterr().out)
+
+    assert template_payload["mode"] == "template-report"
+    assert preset_payload["mode"] == "preset-report"
+    assert {key: value for key, value in template_payload.items() if key != "mode"} == {
+        key: value for key, value in preset_payload.items() if key != "mode"
+    }
 
 
 def test_cli_design_report_writes_output_and_plot(tmp_path, capsys):
@@ -726,12 +805,12 @@ def test_cli_design_sweep_rejects_malformed_degree_list():
         )
 
 
-def test_cli_template_report_writes_output(tmp_path, capsys):
-    output_path = tmp_path / "template-report.json"
+def test_cli_preset_report_writes_output(tmp_path, capsys):
+    output_path = tmp_path / "preset-report.json"
 
     main(
         [
-            "template-report",
+            "preset-report",
             "--kind",
             "inverse",
             "--degree",
@@ -749,7 +828,7 @@ def test_cli_template_report_writes_output(tmp_path, capsys):
     payload = json.loads(capsys.readouterr().out)
     written = json.loads(output_path.read_text(encoding="utf-8"))
 
-    assert payload["mode"] == "template-report"
+    assert payload["mode"] == "preset-report"
     assert payload["report_written"] is True
     assert payload["plot_written"] is False
     assert written["builder"] == "inverse_like_polynomial"

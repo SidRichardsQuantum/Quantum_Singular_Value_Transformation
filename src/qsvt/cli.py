@@ -30,6 +30,7 @@ from ._cli_design_commands import (
     cmd_design_report,
     cmd_design_sweep,
     cmd_design_workflow,
+    cmd_preset_report,
     cmd_template_report,
     register_design_application_commands,
     register_design_commands,
@@ -76,7 +77,10 @@ DESIGN_KINDS = [
 ]
 
 
-TEMPLATE_KINDS = ["inverse", "sign", "filter", "sqrt", "exponential"]
+PRESET_KINDS = ["inverse", "sign", "filter", "sqrt", "exponential"]
+
+# Retained for callers that imported the pre-0.2.20 compatibility name.
+TEMPLATE_KINDS = PRESET_KINDS
 
 
 BENCHMARK_COMMANDS = [
@@ -102,6 +106,7 @@ PROBLEM_WORKFLOW_TARGETS = [
 __all__ = [
     "BENCHMARK_COMMANDS",
     "DESIGN_KINDS",
+    "PRESET_KINDS",
     "PROBLEM_WORKFLOW_TARGETS",
     "TEMPLATE_KINDS",
     "build_parser",
@@ -133,6 +138,7 @@ __all__ = [
     "cmd_plan_qsvt",
     "cmd_poly",
     "cmd_poisson_qsvt",
+    "cmd_preset_report",
     "cmd_problem_workflow",
     "cmd_report_schema_manifest",
     "cmd_research_sweep",
@@ -152,6 +158,7 @@ def cmd_examples(args: argparse.Namespace) -> dict:
     return {
         "mode": "examples",
         "design_kinds": DESIGN_KINDS,
+        "preset_kinds": PRESET_KINDS,
         "template_kinds": TEMPLATE_KINDS,
         "benchmark_commands": BENCHMARK_COMMANDS,
         "workflow_commands": [
@@ -177,6 +184,7 @@ def cmd_examples(args: argparse.Namespace) -> dict:
             'qsvt design-sweep --kind sign --degrees "5,9,13" --gamma 0.2 '
             "--no-synthesis --output sign-degree-sweep.json",
             'qsvt resource-report --poly "0,0,1" --matrix-dimension 4 --no-synthesis',
+            "qsvt preset-report --kind inverse --degree 7 --mu 0.3",
             "qsvt report-schema-manifest --path "
             "tests/fixtures/reports/qsvt_problem_workflow_v1.json",
             'qsvt execute-spec --kind matrix --matrix "0.2,0;0,0.8" '
@@ -216,7 +224,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_examples.set_defaults(func=cmd_examples)
 
     register_core_commands(sub)
-    register_design_commands(sub, DESIGN_KINDS, TEMPLATE_KINDS)
+    register_design_commands(sub, DESIGN_KINDS, PRESET_KINDS)
     register_core_report_commands(sub)
     register_synthesis_commands(sub)
     register_design_application_commands(sub, DESIGN_KINDS)

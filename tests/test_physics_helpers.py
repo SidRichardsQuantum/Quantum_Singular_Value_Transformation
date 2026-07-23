@@ -16,8 +16,12 @@ from qsvt.algorithms import (
     thermal_gibbs_workflow,
 )
 from qsvt.design import (
+    design_gaussian_window_polynomial,
+    design_imaginary_time_polynomial,
     design_positive_inverse_diagnostics,
     design_positive_inverse_polynomial,
+    design_real_time_evolution_polynomials,
+    design_resolvent_polynomials,
 )
 from qsvt.diagnostics import (
     density_matrix_error,
@@ -32,12 +36,6 @@ from qsvt.hamiltonians import (
     ising_hamiltonian,
     pauli_string_matrix,
     tight_binding_chain,
-)
-from qsvt.matrix_functions import (
-    design_gaussian_window_polynomial,
-    design_imaginary_time_polynomial,
-    design_real_time_evolution_polynomials,
-    design_resolvent_polynomials,
 )
 from qsvt.pde import (
     dirichlet_laplacian_1d,

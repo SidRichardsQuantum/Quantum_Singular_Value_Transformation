@@ -2,7 +2,7 @@ import numpy as np
 import pennylane as qml
 import pytest
 
-from qsvt.hhl import execute_hhl_circuit, hhl_circuit_truth_contract
+from qsvt.comparisons import execute_hhl_circuit, hhl_circuit_truth_contract
 from qsvt.reports import report_to_jsonable
 
 

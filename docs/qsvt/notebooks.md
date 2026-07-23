@@ -35,14 +35,9 @@ For the compact result summary and regeneration commands, see
 ## Shared notebook helpers
 
 Several tutorial and benchmark notebooks import compact presentation and path
-helpers from `qsvt.notebook`. These helpers keep result tables, benchmark
-output directories, and repository-root discovery consistent across notebooks
-without duplicating local support code.
-
-`qsvt.notebook` is notebook support, not a core QSVT algorithm module. During
-the `0.x` series it should be imported explicitly as a submodule, for example
-`from qsvt.notebook import display_table`, rather than treated as part of the
-root `qsvt` API.
+helpers from `notebooks._support`. These repository-only helpers keep result
+tables, benchmark output directories, and repository-root discovery consistent
+without adding notebook presentation utilities to the installed package.
 
 ## Tutorial notebooks
 
@@ -59,7 +54,7 @@ domain-specific implementation logic.
 | `tutorials/05_QSVT_Polynomial_Design_and_Approximation.ipynb` | polynomial design and approximation | [Algorithm notes](algorithms.md) |
 | `tutorials/06_QSVT_Matrix_Functions_Powers_and_Roots.ipynb` | matrix functions, powers, and roots | [Time evolution and response](time_evolution_and_response.md) |
 | `tutorials/07_QSVT_Sign_Function_and_Projectors.ipynb` | sign functions and projectors | [Spectral filters](spectral_filters.md) |
-| `tutorials/08_QSVT_Design_and_Templates.ipynb` | design helpers and templates | [Algorithm notes](algorithms.md) |
+| `tutorials/08_QSVT_Design_and_Presets.ipynb` | design helpers and presets | [Algorithm notes](algorithms.md) |
 | `tutorials/09_QSVT_Algorithm_Workflows.ipynb` | QSVT algorithm workflow diagnostics plus Hamiltonian polynomial-core and full-QSVT acceptance scope | [Algorithm notes](algorithms.md), [Executable flagship workflows](flagship_workflows.md) |
 | `tutorials/10_QSVT_Reports_CLI_and_Artifacts.ipynb` | QSVT reports, CLI output, and reproducible artifacts | [Implementation notes](implementation.md) |
 | `tutorials/11_QSVT_Design_Tradeoffs.ipynb` | QSVT design degree/error/boundedness tradeoffs | [Algorithm notes](algorithms.md) |
@@ -91,43 +86,21 @@ or polynomial matrix evaluation.
 
 ## Real physics examples
 
-Real physics examples live in `notebooks/real_examples/`.
-Each notebook now starts with a short orientation block that identifies the
-physical system, the QSVT-style implementation used, and the classical reference
-or quantum-relevance context for the toy-scale example.
+Real physics examples live in `notebooks/real_examples/`. The gallery is
+deliberately limited to eight complementary flagships. Each starts with a short
+orientation block identifying the physical system, the QSVT implementation,
+and the classical reference or quantum-relevance context.
 
 | notebook | focus | theory notes |
 | --- | --- | --- |
-| `01_ground_state_filtering.ipynb` | ground-state filtering | [Spectral filters](spectral_filters.md) |
-| `02_tight_binding_band_filter.ipynb` | tight-binding band filters | [Spectral filters](spectral_filters.md) |
-| `03_imaginary_time_filtering.ipynb` | imaginary-time filtering | [Time evolution and response](time_evolution_and_response.md) |
-| `04_poisson_equation_pde.ipynb` | Poisson PDE polynomial studies plus direct, CG, executable block-encoded QSVT, and finite-QSVT acceptance checks | [Linear systems](linear_systems.md), [Executable flagship workflows](flagship_workflows.md) |
-| `05_hamiltonian_simulation_schrodinger_dynamics.ipynb` | Hamiltonian simulation with polynomial-core acceptance and explicit full-QSVT gaps | [Time evolution and response](time_evolution_and_response.md), [Executable flagship workflows](flagship_workflows.md) |
-| `06_quantum_chemistry_h2_toy_solver.ipynb` | H2 toy chemistry solver | [Linear systems](linear_systems.md), [Spectral filters](spectral_filters.md) |
-| `07_greens_function_response.ipynb` | Green's-function response | [Time evolution and response](time_evolution_and_response.md) |
-| `08_spectral_density_estimation.ipynb` | spectral density estimation | [Spectral filters](spectral_filters.md) |
-| `09_gibbs_state_thermal_weights.ipynb` | Gibbs-state thermal weights | [Time evolution and response](time_evolution_and_response.md) |
-| `10_transport_physics_landauer_chain.ipynb` | transport physics and Landauer chains | [Time evolution and response](time_evolution_and_response.md) |
-| `11_tensor_network_hybrid_filtering.ipynb` | tensor-network hybrid filtering | [Spectral filters](spectral_filters.md) |
-| `12_heat_equation_2d_pde.ipynb` | 2D heat-equation PDE workflow | [Time evolution and response](time_evolution_and_response.md) |
-| `13_advection_diffusion_pde.ipynb` | advection-diffusion PDE workflow | [Time evolution and response](time_evolution_and_response.md) |
-| `14_wave_equation_dynamics.ipynb` | wave-equation dynamics | [Time evolution and response](time_evolution_and_response.md) |
-| `15_helmholtz_equation_pde.ipynb` | Helmholtz-equation PDE workflow | [Linear systems](linear_systems.md), [Time evolution and response](time_evolution_and_response.md) |
-| `16_ssh_chain_edge_state_filtering.ipynb` | SSH-chain edge-state filtering | [Spectral filters](spectral_filters.md) |
-| `17_anderson_localization.ipynb` | Anderson localization | [Spectral filters](spectral_filters.md) |
-| `18_schrodinger_bound_states.ipynb` | Schrodinger bound states | [Spectral filters](spectral_filters.md) |
-| `19_quantum_harmonic_oscillator_grid.ipynb` | harmonic-oscillator grid spectrum | [Spectral filters](spectral_filters.md) |
-| `20_electrostatic_green_function_poisson.ipynb` | electrostatic Green's function | [Linear systems](linear_systems.md), [Time evolution and response](time_evolution_and_response.md) |
-| `21_coupled_oscillator_normal_modes.ipynb` | coupled-oscillator normal modes | [Spectral filters](spectral_filters.md) |
-| `22_ising_phase_transition_filtering.ipynb` | Ising phase-transition diagnostics plus executable Pauli-LCU ground-band filtering and finite-QSVT acceptance checks | [Spectral filters](spectral_filters.md), [Executable flagship workflows](flagship_workflows.md) |
-| `23_diffusion_heat_treatment_slab.ipynb` | diffusion-limited heat treatment | [Time evolution and response](time_evolution_and_response.md) |
-| `24_graphene_nanoribbon_density_of_states.ipynb` | graphene nanoribbon density of states | [Spectral filters](spectral_filters.md) |
-| `25_fermi_dirac_electronic_occupations.ipynb` | Fermi-Dirac electronic occupations | [Spectral filters](spectral_filters.md), [Time evolution and response](time_evolution_and_response.md) |
-| `26_photonic_crystal_band_gap_filtering.ipynb` | photonic-crystal band-gap filtering | [Spectral filters](spectral_filters.md) |
-| `27_topological_band_projector_chern_marker.ipynb` | topological band projectors and Chern markers | [Spectral filters](spectral_filters.md) |
-| `28_block_encoded_laplacian_smoothing.ipynb` | block-encoded QSVT Laplacian smoothing | [Block encodings](block_encoding.md), [Spectral filters](spectral_filters.md) |
-| `29_singular_value_pseudoinverse_deblurring.ipynb` | singular-value pseudoinverse deblurring | [Linear systems](linear_systems.md), [Spectral filters](spectral_filters.md) |
-| `30_matrix_log_entropy_graph_laplacian.ipynb` | matrix-log graph entropy | [Algorithm notes](algorithms.md), [Spectral filters](spectral_filters.md) |
+| `01_poisson_equation_pde.ipynb` | Poisson PDE polynomial studies plus direct, CG, executable block-encoded QSVT, and finite-QSVT acceptance checks | [Linear systems](linear_systems.md), [Executable flagship workflows](flagship_workflows.md) |
+| `02_hamiltonian_simulation_schrodinger_dynamics.ipynb` | Hamiltonian simulation with polynomial-core acceptance and explicit full-QSVT gaps | [Time evolution and response](time_evolution_and_response.md), [Executable flagship workflows](flagship_workflows.md) |
+| `03_greens_function_response.ipynb` | Green's-function response | [Time evolution and response](time_evolution_and_response.md) |
+| `04_ising_phase_transition_filtering.ipynb` | Ising phase-transition diagnostics plus executable Pauli-LCU ground-band filtering and finite-QSVT acceptance checks | [Spectral filters](spectral_filters.md), [Executable flagship workflows](flagship_workflows.md) |
+| `05_fermi_dirac_electronic_occupations.ipynb` | Fermi-Dirac electronic occupations | [Spectral filters](spectral_filters.md), [Time evolution and response](time_evolution_and_response.md) |
+| `06_topological_band_projector_chern_marker.ipynb` | topological band projectors and Chern markers | [Spectral filters](spectral_filters.md) |
+| `07_singular_value_pseudoinverse_deblurring.ipynb` | singular-value pseudoinverse deblurring | [Linear systems](linear_systems.md), [Spectral filters](spectral_filters.md) |
+| `08_matrix_log_entropy_graph_laplacian.ipynb` | matrix-log graph entropy | [Algorithm notes](algorithms.md), [Spectral filters](spectral_filters.md) |
 
 See the repository notebook directory for executable files:
 [notebooks](https://github.com/SidRichardsQuantum/Quantum_Singular_Value_Transformation/tree/main/notebooks).
