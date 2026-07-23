@@ -214,6 +214,8 @@ def test_matrix_function_builders_match_simple_targets():
     evo = design_real_time_evolution_polynomials(time=0.4, scale=2.0, degree=12)
     cos_A = apply_polynomial_to_hermitian(A, evo.cos_coeffs)
     assert np.allclose(np.diag(cos_A), np.cos(0.8 * np.diag(A)), atol=1e-8)
+    assert np.count_nonzero(evo.cos_coeffs[1::2]) == 0
+    assert np.count_nonzero(evo.sin_coeffs[0::2]) == 0
 
     imag = design_imaginary_time_polynomial(
         beta=0.7,

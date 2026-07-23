@@ -54,9 +54,16 @@ def design_real_time_evolution_polynomials(
         degree=degree,
         num_points=num_points,
     )
+    cos_coeffs = chebyshev_to_monomial(cos_cheb)
+    sin_coeffs = chebyshev_to_monomial(sin_cheb)
+    # The targets have exact even/odd parity. Remove conversion roundoff in the
+    # opposite-parity coefficients so downstream QSVT realizability checks see
+    # the mathematical construction rather than numerical noise.
+    cos_coeffs[1::2] = 0.0
+    sin_coeffs[0::2] = 0.0
     return RealTimeEvolutionPolynomials(
-        cos_coeffs=chebyshev_to_monomial(cos_cheb),
-        sin_coeffs=chebyshev_to_monomial(sin_cheb),
+        cos_coeffs=cos_coeffs,
+        sin_coeffs=sin_coeffs,
         scaled_time=tau,
     )
 

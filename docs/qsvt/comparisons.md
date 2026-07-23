@@ -3,7 +3,8 @@
 `qsvt.comparisons` contains finite implementations of adjacent quantum
 algorithms used to put QSVT workflows in context. They are intentionally
 separate from the core polynomial-design, block-encoding, synthesis, and QSVT
-execution layers.
+execution layers. They are experimental teaching and comparison tools, are not
+exported by `qsvt.stable`, and do not define QSVT roadmap milestones.
 
 ## HHL
 

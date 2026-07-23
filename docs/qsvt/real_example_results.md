@@ -154,10 +154,10 @@ criterion                  required for scope  required for full QSVT  passed
 classical_reference        True                True                    True
 polynomial_accuracy        True                True                    True
 norm_preservation          True                True                    True
-finite_qsvt_execution      False               True                    False
-diagnostics_and_resources  False               True                    False
-State Error: 4.891912136866264e-13
-acceptance: accepted_for_stated_scope (scope=polynomial_core, full_qsvt=False)
+finite_qsvt_execution      True                True                    True
+diagnostics_and_resources  True                True                    True
+State Error: 2.8210884267026026e-15
+acceptance: accepted_for_stated_scope (scope=finite_qsvt, full_qsvt=True)
 ```
 
 ### `03_greens_function_response.ipynb`

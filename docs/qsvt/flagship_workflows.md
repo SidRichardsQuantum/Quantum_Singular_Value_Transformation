@@ -1,12 +1,10 @@
 # Executable Flagship Workflows
 
-The package includes two end-to-end finite workflows that connect a physical
+The package includes three end-to-end finite workflows that connect a physical
 problem to degree selection, block encoding, phase synthesis, QNode execution,
 classical validation, observables, resources, and an error ledger.
 
-Together with the dense polynomial-core Hamiltonian simulation workflow, these
-form the three explicitly contracted flagships. Every result report includes a
-versioned `acceptance` section.
+Every result report includes a versioned `acceptance` section.
 
 ## Acceptance matrix
 
@@ -14,22 +12,24 @@ versioned `acceptance` section.
 | --- | --- | --- | --- |
 | Poisson inversion | `finite_qsvt` | direct and CG references, tolerance-selected inverse polynomial, validated phases, successful finite QNode, observables, error ledger, encoding-aware resources | scalable right-hand-side preparation, amplification, norm estimation, and readout remain omitted |
 | Pauli-LCU spectral filtering | `finite_qsvt` | exact projector, tolerance-selected filter, validated phases, successful finite QNode, success probability, observables, error ledger, encoding-aware resources | application state preparation, amplification, and large-scale measurement remain omitted |
-| Hamiltonian simulation | `polynomial_core` | exact dense exponential, accurate cosine/sine polynomial pair, bounded norm drift | coherent even/odd QSVT sequence combination and concrete circuit resources are not implemented |
+| Hamiltonian simulation | `finite_qsvt` | exact dense exponential, accurate cosine/sine polynomial pair, validated component phases, coherent selector-LCU QNode, bounded norm drift, component error and circuit-resource ledgers | scalable Hamiltonian access, application state preparation, amplification, and large-scale readout remain omitted |
 
 The machine-readable source is
 `qsvt.acceptance.flagship_acceptance_matrix()`. Acceptance reports use schema
-`qsvt-flagship-acceptance` version `1.0`. `accepted_for_stated_scope` evaluates
+`qsvt-flagship-acceptance` version `1.1`; historical `1.0` reports remain
+readable. `accepted_for_stated_scope` evaluates
 only criteria required by the declared scope; `full_qsvt_acceptance` evaluates
-all criteria needed for a finite QSVT circuit claim. Consequently, a
-Hamiltonian result may be accepted for its polynomial-core scope while
-correctly reporting `full_qsvt_acceptance = false`.
+all criteria needed for the finite QSVT circuit claim.
 
 ## Hamiltonian simulation
 
 `hamiltonian_simulation_workflow` approximates
 `exp(-i H t)|psi>` with separate cosine and sine Chebyshev polynomials and
-checks the result against an exact dense matrix exponential. The CLI emits the
-same schema-versioned report and acceptance summary:
+checks the result against an exact dense matrix exponential. It normalizes and
+synthesizes both components, extracts each real polynomial through
+`(U + U_adjoint) / 2`, coherently applies the complex cosine/sine weights,
+uncomputes the selector, and measures the finite result. The CLI emits the same
+schema-versioned report and acceptance summary:
 
 ```bash
 qsvt hamiltonian-simulation \
@@ -37,10 +37,12 @@ qsvt hamiltonian-simulation \
   --time 0.5 --degree 8
 ```
 
-This command validates the currently supported `polynomial_core` scope. It
-does not claim a finite QSVT circuit: coherent even/odd sequence combination
-and encoding-aware circuit resources remain unimplemented, so
-`full_qsvt_acceptance` remains false.
+The report records selector and logical postselection probabilities, phase and
+circuit errors, LCU normalization, selector ancillas, forward/adjoint signal
+calls, and actual finite-circuit resources. It can reach
+`full_qsvt_acceptance = true` for its finite matrix-encoding scope; scalable
+Hamiltonian access, application state preparation, amplitude amplification,
+and readout remain omitted.
 
 ## Pauli-Hamiltonian spectral filter
 
@@ -133,7 +135,8 @@ qsvt poisson-qsvt --n-points 4 --tolerance 0.4 \
 
 ## Encoding-aware resources
 
-Both workflows call `estimate_encoding_aware_resources`. When PennyLane's
+The Poisson and spectral-filter workflows call
+`estimate_encoding_aware_resources`. When PennyLane's
 logical estimator is available, Pauli Hamiltonians are costed with a
 Pauli-LCU/qubitization model and matrix/custom sources with an explicit generic
 unitary model. Reports include normalization, forward and adjoint query counts,
@@ -155,5 +158,6 @@ python examples/hamiltonian_simulation.py \
 ```
 
 Each script prints the persisted report path and a compact acceptance summary.
-The Hamiltonian script intentionally prints
-`accepted_for_stated_scope (scope=polynomial_core, full_qsvt=False)`.
+The Hamiltonian script reports
+`accepted_for_stated_scope (scope=finite_qsvt, full_qsvt=True)` when its
+finite circuit and numerical criteria pass.

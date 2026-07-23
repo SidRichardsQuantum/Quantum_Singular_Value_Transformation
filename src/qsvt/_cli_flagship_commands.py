@@ -116,7 +116,7 @@ def cmd_poisson_qsvt(args: argparse.Namespace) -> dict[str, object]:
 
 
 def cmd_hamiltonian_simulation(args: argparse.Namespace) -> dict[str, object]:
-    """Run the dense polynomial-core Hamiltonian-simulation flagship."""
+    """Run the finite coherent-QSVT Hamiltonian-simulation flagship."""
     result = hamiltonian_simulation_workflow(
         np.asarray(parse_matrix(args.matrix), dtype=complex),
         np.asarray(parse_complex_list(args.state), dtype=complex),
@@ -124,6 +124,11 @@ def cmd_hamiltonian_simulation(args: argparse.Namespace) -> dict[str, object]:
         degree=args.degree,
         num_points=args.num_points,
         acceptance_tolerance=args.acceptance_tolerance,
+        phase_reconstruction_tolerance=args.phase_reconstruction_tolerance,
+        execute_qsvt=args.execute,
+        block_encoding=args.block_encoding,
+        device_name=args.device,
+        shots=args.shots,
     )
     return result.as_report()
 
@@ -224,7 +229,7 @@ def register_flagship_commands(
 
     p_hamiltonian = sub.add_parser(
         "hamiltonian-simulation",
-        help="Run the dense polynomial-core Hamiltonian-simulation flagship",
+        help="Run the finite coherent-QSVT Hamiltonian-simulation flagship",
     )
     p_hamiltonian.add_argument(
         "--matrix",
@@ -244,6 +249,15 @@ def register_flagship_commands(
         type=float,
         default=1e-6,
         help="Maximum polynomial, state, and norm errors for stated-scope acceptance.",
+    )
+    p_hamiltonian.add_argument(
+        "--phase-reconstruction-tolerance",
+        type=float,
+        default=1e-6,
+    )
+    _add_execution_args(
+        p_hamiltonian,
+        block_choices=("embedding", "fable"),
     )
     add_report_output_args(p_hamiltonian)
     p_hamiltonian.set_defaults(func=cmd_hamiltonian_simulation)

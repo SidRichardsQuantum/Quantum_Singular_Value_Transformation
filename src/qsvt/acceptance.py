@@ -9,7 +9,7 @@ from typing import Any, cast
 import numpy as np
 
 FLAGSHIP_ACCEPTANCE_SCHEMA_NAME = "qsvt-flagship-acceptance"
-FLAGSHIP_ACCEPTANCE_SCHEMA_VERSION = "1.0"
+FLAGSHIP_ACCEPTANCE_SCHEMA_VERSION = "1.1"
 
 _MATRIX: dict[str, dict[str, object]] = {
     "poisson_qsvt": {
@@ -113,7 +113,7 @@ _MATRIX: dict[str, dict[str, object]] = {
         ),
     },
     "hamiltonian_simulation": {
-        "scope": "polynomial_core",
+        "scope": "finite_qsvt",
         "criteria": (
             {
                 "id": "classical_reference",
@@ -148,7 +148,7 @@ _MATRIX: dict[str, dict[str, object]] = {
                     "Even/odd sequences are coherently combined and executed through "
                     "a finite block-encoded QSVT circuit."
                 ),
-                "required_for_scope": False,
+                "required_for_scope": True,
                 "required_for_full_qsvt": True,
             },
             {
@@ -157,7 +157,7 @@ _MATRIX: dict[str, dict[str, object]] = {
                     "A component error ledger and concrete encoding-aware circuit "
                     "resource ledger are present."
                 ),
-                "required_for_scope": False,
+                "required_for_scope": True,
                 "required_for_full_qsvt": True,
             },
         ),
@@ -340,8 +340,33 @@ def evaluate_spectral_filter_acceptance(result: Any) -> dict[str, object]:
 
 
 def evaluate_hamiltonian_simulation_acceptance(result: Any) -> dict[str, object]:
-    """Evaluate a dense polynomial-core Hamiltonian simulation result."""
+    """Evaluate a finite coherent-QSVT Hamiltonian simulation result."""
     tolerance = float(result.acceptance_tolerance)
+    execution = result.qsvt_execution
+    execution_error = (
+        None if execution is None else execution.logical_output_relative_error
+    )
+    phase_errors = (
+        []
+        if execution is None
+        else [
+            synthesis.reconstruction_max_error
+            for _, synthesis in execution.component_syntheses
+            if synthesis.reconstruction_max_error is not None
+        ]
+    )
+    phase_tolerance = float(result.phase_reconstruction_tolerance)
+    execution_passed = bool(
+        execution is not None
+        and execution.succeeded
+        and execution_error is not None
+        and execution_error <= tolerance
+        and execution.logical_success_probability is not None
+        and execution.logical_success_probability > 0.0
+        and len(phase_errors) == len(execution.component_syntheses)
+        and all(error <= phase_tolerance for error in phase_errors)
+    )
+    resource_ledger = result.circuit_resource_ledger
     checks = {
         "classical_reference": _observed_check(
             bool(
@@ -367,19 +392,51 @@ def evaluate_hamiltonian_simulation_acceptance(result: Any) -> dict[str, object]
             threshold=tolerance,
         ),
         "finite_qsvt_execution": _observed_check(
-            False,
+            execution_passed,
             observed={
-                "executed": False,
-                "reason": (
-                    "coherent even/odd QSVT sequence combination is not implemented"
+                "executed": bool(execution is not None and execution.succeeded),
+                "logical_output_relative_error": execution_error,
+                "logical_success_probability": (
+                    None if execution is None else execution.logical_success_probability
                 ),
+                "lcu_normalization": (
+                    None if execution is None else execution.lcu_normalization
+                ),
+                "phase_reconstruction_errors": phase_errors,
             },
+            threshold=tolerance,
         ),
         "diagnostics_and_resources": _observed_check(
-            False,
+            bool(
+                result.component_error_ledger
+                and resource_ledger
+                and resource_ledger.get("component_sequence_count", 0) >= 1
+                and resource_ledger.get("selection_ancilla_count", 0) >= 1
+                and resource_ledger.get("total_signal_operator_calls", 0) > 0
+                and resource_ledger.get("num_gates") is not None
+            ),
             observed={
-                "component_error_ledger": False,
-                "encoding_aware_circuit_resources": False,
+                "component_error_ledger": sorted(result.component_error_ledger),
+                "component_sequence_count": (
+                    None
+                    if resource_ledger is None
+                    else resource_ledger.get("component_sequence_count")
+                ),
+                "selection_ancilla_count": (
+                    None
+                    if resource_ledger is None
+                    else resource_ledger.get("selection_ancilla_count")
+                ),
+                "total_signal_operator_calls": (
+                    None
+                    if resource_ledger is None
+                    else resource_ledger.get("total_signal_operator_calls")
+                ),
+                "num_gates": (
+                    None
+                    if resource_ledger is None
+                    else resource_ledger.get("num_gates")
+                ),
             },
         ),
     }

@@ -17,26 +17,30 @@ polynomial transformations when a compatible block encoding is available.
 
 ## Implementation
 
-The workflow rescales the Hamiltonian, designs cosine and sine polynomial
-approximations, reconstructs the complex evolution operator including the
-affine phase offset, and compares against an exact dense matrix exponential
-reference.
+The workflow rescales the Hamiltonian, designs and synthesizes cosine and sine
+polynomial approximations, and coherently combines their QSVT sequences with
+the complex coefficients required by the affine phase offset. A selector LCU
+uses each forward and adjoint sequence to extract the real polynomial, then
+uncomputes and postselects the selector. The recovered finite-circuit output is
+compared against both the polynomial evolution and an exact dense matrix
+exponential reference.
 
 ## Diagnostics
 
-The result includes cosine and sine coefficients, polynomial and exact
-unitaries, evolved and exact states, state relative error, operator relative
-error, scaled time, norm drift, rescaling metadata, and a versioned flagship
+The result includes cosine and sine coefficients and synthesis reports,
+polynomial and exact unitaries, evolved and exact states, approximation and
+circuit errors, selector and logical success probabilities, scaled time, norm
+drift, rescaling metadata, component resources, and a versioned flagship
 acceptance report.
 
 ## Scope
 
-This validates polynomial matrix-function accuracy for small systems and may
-be `accepted_for_stated_scope` when the declared numerical tolerance is met.
-Its stated scope is `polynomial_core`. `full_qsvt_acceptance` remains false
-because the workflow does not coherently combine the even cosine and odd sine
-QSVT sequences and does not report a concrete encoding-aware circuit resource
-ledger.
+This is a finite-QSVT validation path for small systems and may reach
+`full_qsvt_acceptance` when its polynomial, synthesis, coherent-circuit, norm,
+and resource criteria pass. The finite matrix block encoding is not a scalable
+Hamiltonian-access claim. Application state preparation, amplitude
+amplification, large-scale readout, fault-tolerant synthesis, and hardware
+compilation remain omitted.
 
 ## API
 

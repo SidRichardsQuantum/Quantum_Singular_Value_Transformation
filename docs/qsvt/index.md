@@ -20,7 +20,8 @@ The package provides small, explicit utilities for:
 - rescaling Hermitian spectra for QSVT-compatible workflows
 - constructing and verifying finite dense block encodings
 - comparing classical baselines with QSVT-oriented resource proxies
-- running declarative, deterministic, and resumable research sweeps
+- reproducing repository accuracy/resource studies with experimental sweep
+  tooling
 - comparing finite accuracy with encoding-aware logical resources
 
 The repository also includes a sequence of notebooks that introduce QSVT concepts step-by-step.
@@ -34,7 +35,7 @@ The repository also includes a sequence of notebooks that introduce QSVT concept
 | Install the package and run a transform | [Usage guide](usage.md) |
 | Run short cookbook scripts | [Cookbook examples](https://github.com/SidRichardsQuantum/Quantum_Singular_Value_Transformation/tree/main/examples) |
 | Understand the mathematical setup | [Theory](theory.md) |
-| Use HHL or quantum-walk comparison workflows | [Algorithm comparisons](comparisons.md) |
+| Inspect experimental HHL or quantum-walk comparisons | [Algorithm comparisons](comparisons.md) |
 | Understand linear-system algorithms | [Linear systems](linear_systems.md) |
 | Understand filtering and projector workflows | [Spectral filters](spectral_filters.md) |
 | Understand time-evolution and response workflows | [Time evolution and response](time_evolution_and_response.md) |
@@ -42,7 +43,7 @@ The repository also includes a sequence of notebooks that introduce QSVT concept
 | Plan from a problem and error tolerance | [Accuracy-driven planning](planning.md) |
 | Run the spectral-filter and Poisson flagships | [Executable flagship workflows](flagship_workflows.md) |
 | Use the frozen compact API | [API stability](stability.md) |
-| Run reproducible parameter sweeps and frontiers | [Research sweeps](research.md) |
+| Reproduce repository parameter sweeps and frontiers | [Research sweeps](research.md) |
 | Classify polynomials and synthesize phases | [Phase synthesis](synthesis.md) |
 | Interpret QSVT compatibility failures | [QSVT compatibility](compatibility.md) |
 | Explore executable examples | [Notebooks](notebooks.md) |
@@ -166,7 +167,7 @@ Workflow-level theory and implementation conventions:
   algorithm workflows, their mathematical targets, diagnostics, limits, and
   links to one-page workflow theory notes
 - [Linear systems](linear_systems.md): QSVT inverse-polynomial workflows,
-  solver comparisons, and finite HHL circuit execution
+  solver comparisons, and experimental finite HHL circuit execution
 - [Spectral filters](spectral_filters.md): ground-state filtering, interval
   projectors, sign/threshold filters, spectral density windows, and design
   tradeoffs
@@ -184,9 +185,9 @@ Workflow-level theory and implementation conventions:
   degree search, phase fallback, access-model selection, and execution
 - [Executable flagship workflows](flagship_workflows.md): Pauli-LCU spectral
   filtering and Poisson direct/CG/QSVT comparisons
-- [Reproducible research sweeps](research.md): declarative configurations,
-  deterministic trial artifacts, resume behavior, and the built-in
-  accuracy-resource frontier
+- [Reproducible research sweeps](research.md): experimental repository
+  configurations, deterministic trial artifacts, resume behavior, and the
+  built-in accuracy-resource frontier
 - [QSVT compatibility](compatibility.md): boundedness, parity, synthesis checks,
   common failure modes, and direct-QSVT interpretation
 
@@ -248,13 +249,13 @@ Each module is intentionally small and focused:
 | `approximation` | low-level bounded polynomial approximation tools |
 | `design` | task-oriented and matrix-function polynomial builders |
 | `presets` | named ready-made bounded polynomial families |
-| `comparisons` | finite HHL and quantum-walk comparison workflows |
+| `comparisons` | experimental finite HHL and quantum-walk comparisons |
 | `workflow` | combined coefficient, diagnostic, and compatibility workflows |
 | `planning` | typed accuracy-driven problem planning and execution |
 | `degree` | tolerance-driven polynomial degree selection |
 | `flagship` | executable spectral-filter and Poisson workflows |
-| `research` | declarative, deterministic, resumable experiment sweeps |
-| `research_frontier` | finite accuracy and encoding-aware logical-resource comparisons |
+| `research` | experimental repository sweep tooling |
+| `research_frontier` | experimental repository accuracy/resource comparisons |
 | `algorithms` | end-to-end simulator-scale algorithm workflows |
 | `block_encoding` | finite dense block-encoding construction and verification |
 | `reports` | diagnostics serialization and plotting helpers |

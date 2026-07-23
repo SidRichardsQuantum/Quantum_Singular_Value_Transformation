@@ -55,6 +55,15 @@ def test_extrema_certificate_detects_peak_missed_by_endpoint_grid():
     assert certificate.derivative_root_residual < 1e-12
 
 
+def test_extrema_certificate_ignores_subnormal_trailing_root_noise():
+    coeffs = [0.0, 1.0, 0.0, -1.0, np.finfo(np.float32).tiny]
+
+    certificate = certify_polynomial_boundedness(coeffs)
+
+    assert certificate.max_abs_value == pytest.approx(2.0 / (3.0 * np.sqrt(3.0)))
+    assert np.any(np.isclose(certificate.critical_points, 1.0 / np.sqrt(3.0)))
+
+
 def test_compatibility_realizability_uses_extrema_certificate():
     result = classify_polynomial_realizability(
         [0.996, 0.1, -0.5],

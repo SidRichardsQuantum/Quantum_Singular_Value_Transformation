@@ -35,7 +35,7 @@ HERMitian_2X2 = np.array(
 STATE_2 = np.array([1.0, 0.3])
 
 
-def _validated_algorithm_report(result):
+def _validated_algorithm_report(result, *, qnode_executed=False):
     report = report_to_jsonable(result.as_report())
     compatibility = validate_report_schema(report, require_schema=True)
 
@@ -45,7 +45,7 @@ def _validated_algorithm_report(result):
     contract = report["truth_contract"]
     assert algorithm_truth_contract_issues(contract) == ()
     assert contract["execution_tier"] in {"polynomial_core", "qsvt_circuit"}
-    assert contract["qnode_executed"] is False
+    assert contract["qnode_executed"] is qnode_executed
     assert contract["physical_device_executed"] is False
     assert contract["resource_completeness"] == "partial"
     assert contract["polynomial_evidence"]["component_count"] >= 1
@@ -509,15 +509,17 @@ def test_hamiltonian_simulation_workflow_regression():
         degree=9,
         num_points=201,
     )
-    report = _validated_algorithm_report(result)
+    report = _validated_algorithm_report(result, qnode_executed=True)
 
     assert result.state_relative_error < 1e-12
     assert result.operator_relative_error < 1e-12
     assert result.norm_drift < 1e-12
     acceptance = report["acceptance"]
-    assert acceptance["scope"] == "polynomial_core"
+    assert acceptance["scope"] == "finite_qsvt"
     assert acceptance["accepted_for_stated_scope"] is True
-    assert acceptance["full_qsvt_acceptance"] is False
+    assert acceptance["full_qsvt_acceptance"] is True
+    assert report["truth_contract"]["execution_tier"] == "qsvt_circuit"
+    assert report["qsvt_execution"]["succeeded"] is True
 
 
 def test_resolvent_workflow_regression():

@@ -231,9 +231,11 @@ def test_supported_report_schema_registry_matches_fixture_families():
 
     assert registry["qsvt-problem-workflow"] == ("1.0",)
     assert registry["block-encoding-qsvt-execution"] == ("1.0",)
+    assert registry["coherent-qsvt-execution"] == ("1.0",)
     assert registry["hardware-qsvt-execution"] == ("1.0",)
     assert registry["hardware-qsvt-circuit"] == ("1.0",)
     assert registry["qsvt-algorithm-workflow"] == ("1.0", "1.1")
+    assert registry["qsvt-flagship-acceptance"] == ("1.0", "1.1")
     assert fixture_pairs <= {
         (schema_name, version)
         for schema_name, versions in registry.items()

@@ -11,7 +11,10 @@ from qsvt.block_encoding import (
     pennylane_operator_block_encoding_spec,
 )
 from qsvt.execution import (
+    CoherentQSVTComponent,
+    execute_mixed_parity_qsvt_from_spec,
     execute_qsvt_circuit,
+    execute_qsvt_component_lcu_from_spec,
     execute_qsvt_from_spec,
     qsvt_circuit_truth_contract,
 )
@@ -214,6 +217,10 @@ def test_execute_qsvt_from_matrix_spec_matches_dense_reference():
     assert result.logical_success_standard_error is None
     assert result.resource_summary["block_encoding_kind"] == "dense-matrix"
     assert result.resource_summary["normalization_alpha"] == pytest.approx(1.0)
+    assert (
+        result.resource_summary["execution_block_encoding_operation"]
+        == "exact-unitary-dilation"
+    )
     assert result.resource_summary["phase_count"] == 3
     assert result.resource_summary["signal_operator_calls"] == 2
     assert result.resource_summary["gate_types"]["QSVT"] == 1
@@ -225,6 +232,143 @@ def test_execute_qsvt_from_matrix_spec_matches_dense_reference():
     compatibility = validate_report_schema(report, require_schema=True)
     assert compatibility.supported is True
     assert compatibility.missing_fields == ()
+
+
+@pytest.mark.parametrize(
+    ("coeffs", "expected_components", "expected_selection_ancillas"),
+    [
+        ([0.2, 0.0, 0.1], 1, 1),
+        ([0.0, 0.3], 1, 1),
+        ([0.2, 0.3, 0.1], 2, 2),
+    ],
+)
+def test_coherent_qsvt_executes_even_odd_and_mixed_parity(
+    coeffs,
+    expected_components,
+    expected_selection_ancillas,
+):
+    spec = matrix_block_encoding_spec(np.diag([0.2, 0.8]), alpha=1.0)
+
+    result = execute_mixed_parity_qsvt_from_spec(
+        spec,
+        coeffs,
+        [1.0, 0.0],
+    )
+    report = report_to_jsonable(result.as_report())
+
+    assert result.succeeded is True
+    assert result.logical_output_relative_error is not None
+    assert result.logical_output_relative_error < 1e-6
+    assert result.selection_success_probability is not None
+    assert result.logical_success_probability is not None
+    assert result.resource_summary["component_sequence_count"] == expected_components
+    assert (
+        result.resource_summary["execution_block_encoding_operation"]
+        == "exact-unitary-dilation"
+    )
+    assert (
+        result.resource_summary["selection_ancilla_count"]
+        == expected_selection_ancillas
+    )
+    assert result.resource_summary["selected_unitary_branch_count"] == (
+        2 * expected_components
+    )
+    assert report["truth_contract"]["lcu_circuit_implemented"] is True
+    compatibility = validate_report_schema(report, require_schema=True)
+    assert compatibility.supported is True
+    assert compatibility.unknown_fields == ()
+
+
+def test_coherent_qsvt_matches_a_nondiagonal_hermitian_reference():
+    matrix = np.array(
+        [
+            [-0.3, -0.5, 0.0, 0.0],
+            [-0.5, -0.1, -0.5, 0.0],
+            [0.0, -0.5, 0.1, -0.5],
+            [0.0, 0.0, -0.5, 0.3],
+        ]
+    )
+    spec = matrix_block_encoding_spec(matrix, alpha=1.0)
+
+    result = execute_mixed_parity_qsvt_from_spec(
+        spec,
+        [0.2, 0.3, 0.1],
+        [1.0, 0.25, -0.1, 0.4],
+        normalize_state=True,
+    )
+
+    assert result.succeeded is True
+    assert result.logical_output_relative_error is not None
+    assert result.logical_output_relative_error < 1e-6
+
+
+def test_coherent_qsvt_reports_even_odd_combination_resource_overhead():
+    spec = matrix_block_encoding_spec(np.diag([0.2, 0.8]), alpha=1.0)
+
+    result = execute_mixed_parity_qsvt_from_spec(
+        spec,
+        [0.2, 0.3, 0.1],
+        [1.0, 0.0],
+    )
+    ledger = result.resource_summary
+
+    assert ledger["total_signal_operator_calls"] == 6
+    assert ledger["total_phase_count"] == 10
+    assert ledger["selector_state_preparations"] == 2
+    assert ledger["lcu_normalization"] == pytest.approx(0.6, rel=1e-7)
+    assert ledger["amplitude_amplification_overhead_proxy"] is not None
+    assert "amplitude_amplification" in ledger["omitted_costs"]
+
+
+def test_coherent_qsvt_rejects_a_mixed_component_with_structured_failure():
+    spec = matrix_block_encoding_spec(np.diag([0.2, 0.8]), alpha=1.0)
+
+    result = execute_qsvt_component_lcu_from_spec(
+        spec,
+        (CoherentQSVTComponent("invalid", np.array([0.2, 0.3, 0.1])),),
+        [1.0, 0.0],
+    )
+
+    assert result.succeeded is False
+    assert result.error_type == "ValueError"
+    assert result.error is not None
+    assert "definite parity" in result.error
+    assert result.as_report()["components"]["invalid"]["synthesis"] is None
+
+
+def test_coherent_qsvt_uses_synthesis_margin_and_fallback_near_boundary():
+    spec = matrix_block_encoding_spec(np.diag([0.2, 0.8]), alpha=1.0)
+
+    result = execute_mixed_parity_qsvt_from_spec(
+        spec,
+        [0.0, 1.0],
+        [1.0, 0.0],
+    )
+
+    assert result.succeeded is True
+    synthesis = dict(result.component_syntheses)["odd"]
+    assert synthesis.succeeded is True
+    assert synthesis.angle_solver in {"root-finding", "iterative"}
+    assert result.logical_output_relative_error is not None
+    assert result.logical_output_relative_error < 1e-6
+
+
+def test_coherent_qsvt_finite_shots_report_postselection_uncertainty():
+    spec = matrix_block_encoding_spec(np.diag([0.2, 0.8]), alpha=1.0)
+
+    result = execute_mixed_parity_qsvt_from_spec(
+        spec,
+        [0.2, 0.3, 0.1],
+        [1.0, 0.0],
+        shots=200,
+    )
+
+    assert result.succeeded is True
+    assert result.final_state is None
+    assert result.logical_output is None
+    assert result.selection_success_standard_error is not None
+    assert result.logical_success_standard_error is not None
+    assert result.maximum_probability_standard_error is not None
 
 
 def test_execute_qsvt_from_rectangular_spec_uses_singular_value_reference():

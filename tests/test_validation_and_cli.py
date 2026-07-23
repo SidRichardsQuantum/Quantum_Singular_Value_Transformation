@@ -132,6 +132,15 @@ def test_top_level_public_api_exports_are_resolvable():
     assert qsvt.api_status("QSVTProblemWorkflowResult") == qsvt.API_STATUS_COMPATIBILITY
     assert qsvt.api_status("execute_qsvt_circuit") == qsvt.API_STATUS_EXPERIMENTAL
     assert qsvt.api_status("execute_qsvt_from_spec") == qsvt.API_STATUS_EXPERIMENTAL
+    assert (
+        qsvt.api_status("execute_mixed_parity_qsvt_from_spec")
+        == qsvt.API_STATUS_EXPERIMENTAL
+    )
+    assert (
+        qsvt.api_status("execute_qsvt_component_lcu_from_spec")
+        == qsvt.API_STATUS_EXPERIMENTAL
+    )
+    assert "execute_mixed_parity_qsvt_from_spec" not in qsvt.STABLE_API_NAMES
     assert qsvt.api_status("unknown_future_name") == qsvt.API_STATUS_EXPERIMENTAL
     assert set(qsvt.__api_statuses__.values()) <= {
         qsvt.API_STATUS_STABLE,
@@ -388,7 +397,7 @@ def test_cli_cheb_command_emits_json(capsys):
     }
 
 
-def test_cli_hamiltonian_simulation_emits_accepted_polynomial_core(capsys):
+def test_cli_hamiltonian_simulation_emits_accepted_finite_qsvt(capsys):
     main(
         [
             "hamiltonian-simulation",
@@ -409,9 +418,10 @@ def test_cli_hamiltonian_simulation_emits_accepted_polynomial_core(capsys):
     assert payload["mode"] == "hamiltonian-simulation-workflow"
     assert payload["degree"] == 8
     assert payload["time"] == 0.5
-    assert payload["acceptance"]["scope"] == "polynomial_core"
+    assert payload["acceptance"]["scope"] == "finite_qsvt"
     assert payload["acceptance"]["accepted_for_stated_scope"] is True
-    assert payload["acceptance"]["full_qsvt_acceptance"] is False
+    assert payload["acceptance"]["full_qsvt_acceptance"] is True
+    assert payload["qsvt_execution"]["succeeded"] is True
 
 
 def test_cli_design_report_emits_json(capsys):

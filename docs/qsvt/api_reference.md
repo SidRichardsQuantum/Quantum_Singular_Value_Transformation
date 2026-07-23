@@ -61,6 +61,12 @@ The package is organised into the following modules:
 - `qsvt.qsvt` compatibility re-exports
 - `qsvt.__main__`
 
+`qsvt.stable` is the compact supported facade. The comparison, research,
+research-frontier, and hardware modules are experimental: HHL and quantum walks
+provide adjacent algorithm comparisons, research modules support repository
+benchmarks, and hardware helpers operate only on caller-supplied PennyLane
+devices.
+
 You can either import from submodules directly:
 
 ```python
@@ -201,19 +207,22 @@ execution = run_qsvt_plan(plan)
 `search_design_degree` searches the public design targets. See
 [Accuracy-driven planning](planning.md).
 
-### `qsvt.flagship`
+### Flagship workflows
 
-The two finite flagship entry points are:
+The three finite flagship entry points are:
 
 - `spectral_filter_qsvt_workflow` for a Pauli-Hamiltonian band filter using
   PrepSelPrep or qubitization,
 - `poisson_qsvt_workflow` for direct, conjugate-gradient, polynomial, and
-  circuit comparisons on a one-dimensional Dirichlet Poisson system.
+  circuit comparisons on a one-dimensional Dirichlet Poisson system,
+- `hamiltonian_simulation_workflow` for cosine/sine polynomial design and a
+  coherent component-LCU circuit implementing finite real-time evolution.
 
-Both return dataclasses with `as_report()` and include target-error degree
-search, phase reconstruction, an encoding-aware logical resource report,
-classical references, finite QNode results when requested, and component error
-ledgers. See [Executable flagship workflows](flagship_workflows.md).
+They return dataclasses with `as_report()` and include the applicable
+polynomial design or degree search, phase reconstruction, encoding-aware
+resources, classical references, finite QNode results when requested, and
+component error ledgers. See
+[Executable flagship workflows](flagship_workflows.md).
 
 ### `qsvt.synthesis`
 
@@ -525,6 +534,10 @@ For per-baseline assumptions and cost-model context, see
 ---
 
 ### `qsvt.research` and `qsvt.research_frontier`
+
+These experimental modules support reproducible repository benchmarks. They
+are not part of `qsvt.stable` and are not intended to provide a general
+experiment-management framework.
 
 Use `ResearchSweepSpec`, `ResearchOperatorSpec`, and `ResearchTargetSpec` to
 define a Cartesian experiment. `run_research_sweep` evaluates deterministic
@@ -1292,6 +1305,50 @@ The matrix-specification CLI equivalent is:
 qsvt execute-spec --kind matrix --matrix "0.2,0;0,0.8" \
   --poly "0,0,1" --state "1,0"
 ```
+
+---
+
+### `execute_mixed_parity_qsvt_from_spec(spec, poly, state, ...)`
+
+Execute a real polynomial containing even and odd powers through a coherent
+component LCU. The helper decomposes the coefficients by parity, leaves a
+small boundedness margin for robust phase synthesis, extracts each real
+polynomial with its forward and adjoint QSVT sequences, and uncomputes the
+selector.
+
+```python
+import numpy as np
+from qsvt import (
+    execute_mixed_parity_qsvt_from_spec,
+    matrix_block_encoding_spec,
+)
+
+spec = matrix_block_encoding_spec(np.diag([0.2, 0.8]))
+result = execute_mixed_parity_qsvt_from_spec(
+    spec,
+    [0.2, 0.3, 0.1],
+    [1.0, 0.0],
+)
+```
+
+`execute_qsvt_component_lcu_from_spec` is the lower-level form. It accepts
+named `CoherentQSVTComponent` objects with real definite-parity coefficient
+arrays and complex combination coefficients, which is used for the cosine and
+sine branches of Hamiltonian simulation.
+
+Both functions return `CoherentQSVTExecutionResult`. Its
+`coherent-qsvt-execution` `1.0` report contains:
+
+- component weights, normalized coefficients, phases, and reconstruction
+  errors,
+- selector wires, LCU normalization, and preparation amplitudes,
+- measured selector and logical success probabilities,
+- recovered logical output and a dense finite reference where available,
+- forward/adjoint sequence calls, gates, depth, wires, shots, and omitted
+  amplitude-amplification costs.
+
+These interfaces remain experimental and are intentionally absent from the
+frozen `qsvt.stable` facade.
 
 ---
 

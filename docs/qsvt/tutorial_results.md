@@ -653,9 +653,7 @@ Hamiltonian state error: 3.953e-08
 Resolvent response error: 1.695e-01
 Spectral density error: 4.670e-02
 Thermal density error: 6.412e-08
-Hamiltonian acceptance: accepted_for_stated_scope (scope=polynomial_core, full_qsvt=False)
-Full-QSVT gap: finite_qsvt_execution — Even/odd sequences are coherently combined and executed through a finite block-encoded QSVT circuit.
-Full-QSVT gap: diagnostics_and_resources — A component error ledger and concrete encoding-aware circuit resource ledger are present.
+Hamiltonian acceptance: accepted_for_stated_scope (scope=finite_qsvt, full_qsvt=True)
 ```
 
 Output 5 (cell 14):

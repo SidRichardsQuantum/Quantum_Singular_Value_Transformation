@@ -55,7 +55,7 @@ domain-specific implementation logic.
 | `tutorials/06_QSVT_Matrix_Functions_Powers_and_Roots.ipynb` | matrix functions, powers, and roots | [Time evolution and response](time_evolution_and_response.md) |
 | `tutorials/07_QSVT_Sign_Function_and_Projectors.ipynb` | sign functions and projectors | [Spectral filters](spectral_filters.md) |
 | `tutorials/08_QSVT_Design_and_Presets.ipynb` | design helpers and presets | [Algorithm notes](algorithms.md) |
-| `tutorials/09_QSVT_Algorithm_Workflows.ipynb` | QSVT algorithm workflow diagnostics plus Hamiltonian polynomial-core and full-QSVT acceptance scope | [Algorithm notes](algorithms.md), [Executable flagship workflows](flagship_workflows.md) |
+| `tutorials/09_QSVT_Algorithm_Workflows.ipynb` | QSVT algorithm diagnostics plus finite coherent-QSVT Hamiltonian acceptance | [Algorithm notes](algorithms.md), [Executable flagship workflows](flagship_workflows.md) |
 | `tutorials/10_QSVT_Reports_CLI_and_Artifacts.ipynb` | QSVT reports, CLI output, and reproducible artifacts | [Implementation notes](implementation.md) |
 | `tutorials/11_QSVT_Design_Tradeoffs.ipynb` | QSVT design degree/error/boundedness tradeoffs | [Algorithm notes](algorithms.md) |
 | `tutorials/12_QSVT_Resource_Proxy_Limits.ipynb` | block-encoding assumptions and QSVT resource-proxy limits | [QSVT resource model](qsvt_resource_model.md) |
@@ -63,7 +63,7 @@ domain-specific implementation logic.
 | `tutorials/14_Sparse_Oracle_Assumptions.ipynb` | sparse operators, oracle assumptions, and omitted costs | [QSVT resource model](qsvt_resource_model.md) |
 | `tutorials/15_QSVT_Compatibility_Failure_Cases.ipynb` | boundedness, parity, and QSVT compatibility failures | [QSVT compatibility](compatibility.md) |
 | `tutorials/16_QSVT_Linear_System_Comparisons.ipynb` | dense, CG, and QSVT-style linear-system comparison rows | [Linear systems](linear_systems.md) |
-| `tutorials/17_HHL_Linear_System_Solver.ipynb` | finite simulator-scale HHL linear-system solver | [Linear systems](linear_systems.md) |
+| `tutorials/17_HHL_Linear_System_Solver.ipynb` | experimental finite HHL comparison/tutorial | [Linear systems](linear_systems.md) |
 | `tutorials/18_Quantum_Walk_Search_Workflow.ipynb` | continuous-time quantum walk search and polynomial phase approximation | [Time evolution and response](time_evolution_and_response.md) |
 | `tutorials/19_Accuracy_Driven_QSVT_Planning.ipynb` | tolerance-driven degree search, synthesis caching, access models, logical resources, and circuit execution | [Accuracy-driven planning](planning.md) |
 
@@ -94,7 +94,7 @@ and the classical reference or quantum-relevance context.
 | notebook | focus | theory notes |
 | --- | --- | --- |
 | `01_poisson_equation_pde.ipynb` | Poisson PDE polynomial studies plus direct, CG, executable block-encoded QSVT, and finite-QSVT acceptance checks | [Linear systems](linear_systems.md), [Executable flagship workflows](flagship_workflows.md) |
-| `02_hamiltonian_simulation_schrodinger_dynamics.ipynb` | Hamiltonian simulation with polynomial-core acceptance and explicit full-QSVT gaps | [Time evolution and response](time_evolution_and_response.md), [Executable flagship workflows](flagship_workflows.md) |
+| `02_hamiltonian_simulation_schrodinger_dynamics.ipynb` | Hamiltonian simulation with coherent cosine/sine QSVT execution and finite-QSVT acceptance | [Time evolution and response](time_evolution_and_response.md), [Executable flagship workflows](flagship_workflows.md) |
 | `03_greens_function_response.ipynb` | Green's-function response | [Time evolution and response](time_evolution_and_response.md) |
 | `04_ising_phase_transition_filtering.ipynb` | Ising phase-transition diagnostics plus executable Pauli-LCU ground-band filtering and finite-QSVT acceptance checks | [Spectral filters](spectral_filters.md), [Executable flagship workflows](flagship_workflows.md) |
 | `05_fermi_dirac_electronic_occupations.ipynb` | Fermi-Dirac electronic occupations | [Spectral filters](spectral_filters.md), [Time evolution and response](time_evolution_and_response.md) |

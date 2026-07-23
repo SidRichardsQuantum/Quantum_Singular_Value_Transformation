@@ -48,9 +48,9 @@ singular-value execution. The three flagship scripts use the frozen
 inversion and spectral filtering additionally perform
 tolerance-driven degree search, phase synthesis, encoding-aware logical
 resource estimation, finite QNode execution, and classical-reference checks.
-Hamiltonian simulation validates its dense `polynomial_core` scope and
-explicitly reports that full-QSVT acceptance remains false until coherent
-even/odd sequence combination and concrete circuit resources are implemented.
+Hamiltonian simulation coherently combines cosine and sine QSVT sequences,
+executes the finite selector-LCU circuit, and reports full stated-scope
+finite-QSVT acceptance with a concrete circuit-resource ledger.
 The additional cookbook scripts show the same APIs in isolation: planning from
 an accuracy target, supplying a custom circuit and signal projectors, checking
 a credential-free finite-shot FABLE run against an ideal reference, and

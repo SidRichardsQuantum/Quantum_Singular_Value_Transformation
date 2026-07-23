@@ -233,6 +233,33 @@ def test_accuracy_driven_plan_executes_selected_polynomial():
     assert execution.observables["coeffs:population_0"]["circuit"] is not None
 
 
+def test_hamiltonian_plan_executes_coherent_cosine_sine_combination():
+    plan = plan_qsvt(
+        QSVTProblemSpec(
+            np.array([[0.0, 1.0], [1.0, 0.0]]),
+            state=np.array([1.0, 0.0]),
+        ),
+        QSVTTransformSpec(
+            "hamiltonian_simulation",
+            tolerance=1e-5,
+            degree=8,
+            parameters={"time": 0.5, "num_points": 201},
+        ),
+        QSVTExecutionConfig(execute=True, reconstruction_num_points=65),
+    )
+    execution = run_qsvt_plan(plan)
+
+    assert plan.execution_ready is True
+    assert plan.coherent_resource_estimate is not None
+    assert plan.coherent_resource_estimate["component_sequence_count"] == 2
+    assert plan.coherent_resource_estimate["selection_ancilla_count"] == 2
+    assert plan.coherent_resource_estimate["total_signal_operator_calls"] == 30
+    assert execution.succeeded is True
+    assert execution.executions[0][0] == "coherent_cosine_sine"
+    assert execution.executions[0][1].logical_output_relative_error < 1e-6
+    assert execution.error_budget["circuit_vs_polynomial_error"] < 1e-6
+
+
 def test_spectral_filter_flagship_executes_pauli_lcu_qsvt():
     operator = qml.dot(
         [0.4, 0.3, 0.2],

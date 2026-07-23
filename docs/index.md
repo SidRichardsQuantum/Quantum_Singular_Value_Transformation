@@ -219,11 +219,11 @@
       <article class="project-card">
         <div>
           <h3>Linear Systems</h3>
-          <p>Understand QSVT inverse-polynomial workflows, solver comparisons, and finite HHL circuit execution.</p>
+          <p>Understand QSVT inverse-polynomial workflows, solver comparisons, and experimental finite HHL circuit execution.</p>
         </div>
         <div class="tags">
           <span>Linear Systems</span>
-          <span>HHL</span>
+          <span>Experimental HHL</span>
           <span>QSVT</span>
         </div>
         <div class="card-links">
@@ -439,7 +439,7 @@ Phase Synthesis <qsvt/synthesis>
 Accuracy-Driven Planning <qsvt/planning>
 Executable Flagship Workflows <qsvt/flagship_workflows>
 API Stability <qsvt/stability>
-Reproducible Research Sweeps <qsvt/research>
+Experimental Repository Research Sweeps <qsvt/research>
 Algorithm Notes <qsvt/algorithms>
 Algorithm Comparisons <qsvt/comparisons>
 Linear Systems <qsvt/linear_systems>

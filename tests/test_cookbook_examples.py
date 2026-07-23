@@ -231,9 +231,10 @@ encoding_aware_resources.main([
 
     assert hamiltonian["example"] == "hamiltonian-simulation"
     assert hamiltonian["mode"] == "hamiltonian-simulation-workflow"
-    assert hamiltonian["acceptance"]["scope"] == "polynomial_core"
+    assert hamiltonian["acceptance"]["scope"] == "finite_qsvt"
     assert hamiltonian["acceptance"]["accepted_for_stated_scope"] is True
-    assert hamiltonian["acceptance"]["full_qsvt_acceptance"] is False
+    assert hamiltonian["acceptance"]["full_qsvt_acceptance"] is True
+    assert hamiltonian["qsvt_execution"]["succeeded"] is True
 
     assert accuracy_plan["example"] == "accuracy-driven-plan"
     assert accuracy_plan["mode"] == "accuracy-driven-plan-cookbook"

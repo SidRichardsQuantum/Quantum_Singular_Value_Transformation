@@ -406,6 +406,7 @@ def qsvt_problem_workflow(
             time=_require_float(time, "time"),
             degree=degree,
             num_points=num_points,
+            execute_qsvt=apply_qsvt,
         )
     elif target == "resolvent":
         result = resolvent_workflow(

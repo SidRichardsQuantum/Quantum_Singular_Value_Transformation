@@ -209,8 +209,8 @@ The public package lives under `src/qsvt`.
 | `qsvt.design` | task-oriented and physics matrix-function polynomial builders |
 | `qsvt.algorithms` | end-to-end simulator-scale algorithm workflows |
 | `qsvt.block_encoding` | finite dense block-encoding construction and verification |
-| `qsvt.execution` | QNode execution for matrices and block-encoding specifications |
-| `qsvt.hardware` | finite-shot execution on caller-supplied PennyLane devices with preflight and provider/fake-backend metadata reports |
+| `qsvt.execution` | single-sequence and coherent component-LCU QNode execution for block-encoding specifications |
+| `qsvt.hardware` | experimental finite-shot execution on caller-supplied PennyLane devices with local preflight and decomposition reports |
 | `qsvt.synthesis` | realizability classification, parity decomposition, and phase synthesis |
 | `qsvt.presets` | ready-made named bounded polynomial families |
 | `qsvt.workflow` | combined coefficient, diagnostic, compatibility, and high-level problem workflows |
@@ -218,16 +218,16 @@ The public package lives under `src/qsvt`.
 | `qsvt.flagship` | executable Pauli spectral-filter and Poisson workflows |
 | `qsvt.acceptance` | versioned acceptance contracts for the three flagship workflows |
 | `qsvt.stable` | frozen compact facade for the remainder of the 0.x series |
-| `qsvt.research` | typed declarative, deterministic, and resumable experiment sweeps |
-| `qsvt.research_frontier` | finite accuracy versus encoding-aware logical-resource frontier studies |
+| `qsvt.research` | experimental repository tooling for deterministic and resumable research sweeps |
+| `qsvt.research_frontier` | experimental repository accuracy/resource frontier tooling |
 | `qsvt.reports` | JSON-safe reports, schema checks, and plot helpers |
 | `qsvt.resources` | polynomial proxies and encoding-aware logical resource estimates |
 | `qsvt.benchmarks` | classical baselines and QSVT-oriented benchmark summaries |
-| `qsvt.comparisons` | HHL and quantum-walk comparison algorithms |
+| `qsvt.comparisons` | experimental HHL and quantum-walk comparisons and tutorials |
 | `qsvt.matrices` | small Hermitian test matrices |
 | `qsvt.spectral` | classical spectral matrix-function references |
 | `qsvt.qsvt` | PennyLane QSVT wrappers and comparisons |
-| `qsvt.hamiltonians`, `qsvt.pde`, `qsvt.rescaling` | reusable physics and PDE helpers |
+| `qsvt.hamiltonians`, `qsvt.pde`, `qsvt.rescaling` | small helpers supporting QSVT examples and validation |
 | `qsvt.diagnostics` | application-level validation metrics |
 
 For detailed function-level documentation, use
@@ -245,10 +245,17 @@ warning before removal. See
 
 ## Roadmap
 
-The project is moving toward general package workflows that users can apply to
-specific physics and mathematics problems from thin client notebooks. Core
-helpers should stay reusable across domains; notebooks should focus on problem
-setup, parameter choices, and interpretation.
+Finite coherent mixed-parity execution and all three flagship acceptance paths
+are now implemented. The immediate priorities are phase-synthesis robustness,
+block-encoding verification across access models, and hardening the coherent
+execution/report contracts. Hardware execution, noise-aware planning, and
+broader applications remain experimental or later work.
+
+Physics and mathematics applications are thin clients of domain-general QSVT
+interfaces, not domain libraries maintained by the core package. HHL and
+quantum-walk implementations remain adjacent experimental comparisons.
+Research sweeps and aggregate plotting support repository benchmarks and are
+not part of `qsvt.stable`.
 
 See [ROADMAP.md](ROADMAP.md) for the current development direction.
 
@@ -280,8 +287,8 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
   acceptance matrix
 - [docs/qsvt/stability.md](docs/qsvt/stability.md): compact stable facade,
   compatibility tier, and deprecation policy
-- [docs/qsvt/research.md](docs/qsvt/research.md): declarative research sweeps,
-  deterministic artifacts, and the accuracy-resource frontier
+- [docs/qsvt/research.md](docs/qsvt/research.md): experimental repository
+  sweep tooling, deterministic artifacts, and the accuracy-resource frontier
 - [docs/qsvt/block_encoding.md](docs/qsvt/block_encoding.md): finite dense
   block encodings, normalization, verification, and omitted oracle costs
 - [docs/qsvt/compatibility.md](docs/qsvt/compatibility.md): QSVT boundedness,
@@ -295,7 +302,7 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.2.20`
+Current release: `0.2.21`
 
 ## Notebooks
 
@@ -372,6 +379,11 @@ Implemented and tested:
 - lower-level QSVT execution from dense, rectangular, PennyLane-operator, and
   custom-circuit block-encoding specifications, including caller-supplied
   signal projectors and structured backend failures,
+- coherent even/odd and complex component-LCU execution using forward and
+  adjoint QSVT sequences, selector ancillas, measured postselection
+  probabilities, and component circuit-resource ledgers,
+- finite coherent-QSVT Hamiltonian simulation with cosine/sine sequence
+  combination and full stated-scope flagship acceptance,
 - finite-shot QSVT execution on caller-supplied PennyLane devices with
   caller-supplied preparation circuits, local preflight checks, probability
   measurements, shot-noise uncertainty fields, logical resource summaries, and

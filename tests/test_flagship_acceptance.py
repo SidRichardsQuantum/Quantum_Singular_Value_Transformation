@@ -23,7 +23,7 @@ def test_flagship_acceptance_matrix_has_three_explicit_scopes():
     }
     assert matrix["poisson_qsvt"]["scope"] == "finite_qsvt"
     assert matrix["spectral_filter_qsvt"]["scope"] == "finite_qsvt"
-    assert matrix["hamiltonian_simulation"]["scope"] == "polynomial_core"
+    assert matrix["hamiltonian_simulation"]["scope"] == "finite_qsvt"
     assert {
         criterion["id"]
         for criterion in matrix["hamiltonian_simulation"]["criteria"]
@@ -43,7 +43,7 @@ def test_committed_flagship_acceptance_fixture_loads_through_schema_registry():
     assert report["full_qsvt_acceptance"] is False
 
 
-def test_hamiltonian_acceptance_is_schema_valid_and_exposes_remaining_gap():
+def test_hamiltonian_acceptance_is_schema_valid_and_accepts_coherent_execution():
     result = hamiltonian_simulation_workflow(
         np.diag([-1.0, 0.5]),
         np.array([1.0, 1.0]),
@@ -58,9 +58,11 @@ def test_hamiltonian_acceptance_is_schema_valid_and_exposes_remaining_gap():
     assert compatibility.supported is True
     assert acceptance["schema_name"] == FLAGSHIP_ACCEPTANCE_SCHEMA_NAME
     assert acceptance["accepted_for_stated_scope"] is True
-    assert acceptance["full_qsvt_acceptance"] is False
-    assert checks["finite_qsvt_execution"]["required_for_scope"] is False
-    assert checks["finite_qsvt_execution"]["passed"] is False
+    assert acceptance["schema_version"] == "1.1"
+    assert acceptance["full_qsvt_acceptance"] is True
+    assert checks["finite_qsvt_execution"]["required_for_scope"] is True
+    assert checks["finite_qsvt_execution"]["passed"] is True
+    assert checks["diagnostics_and_resources"]["passed"] is True
 
 
 def test_hamiltonian_acceptance_rejects_insufficient_degree_for_declared_tolerance():

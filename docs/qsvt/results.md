@@ -34,7 +34,7 @@ documentation.
     <span class="metric-label">diagonal QSVT max-error scale</span>
   </div>
   <div class="metric-card">
-    <span class="metric-value">0.2.20</span>
+    <span class="metric-value">0.2.21</span>
     <span class="metric-label">current release marker</span>
   </div>
 </div>

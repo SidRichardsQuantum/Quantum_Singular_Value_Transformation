@@ -47,12 +47,15 @@ e^{-iHt}
 - i\sin(\mathrm{scale}\,t\,X)\right).
 $$
 
-The workflow approximates cosine and sine with separate bounded polynomials,
-then reconstructs the complex evolution. Diagnostics include state error,
-operator error, scaled time, and norm drift.
+The workflow approximates cosine and sine with separate bounded polynomials.
+It then coherently combines their real-part QSVT sequences with the complex
+coefficients required by the affine phase and executes the finite selector-LCU
+circuit. Diagnostics include state and operator error, scaled time, norm drift,
+postselection probabilities, phase reconstruction, and circuit resources.
 
-This is a polynomial matrix-function validation path. It is not an optimized
-Hamiltonian-simulation circuit synthesis routine.
+The implemented block encoding is a finite validation construction. The
+workflow is not an optimized or scalable Hamiltonian-simulation compilation
+method.
 
 See [Hamiltonian simulation workflow](workflow_hamiltonian_simulation.md).
 

@@ -329,10 +329,20 @@ def certify_polynomial_boundedness(
         raise ValueError("tolerances must be non-negative.")
 
     derivative = np.polynomial.polynomial.polyder(coeffs)
+    root_derivative = derivative.copy()
+    derivative_scale = float(np.max(np.abs(root_derivative), initial=0.0))
+    trimming_threshold = (
+        np.finfo(float).eps * max(1.0, derivative_scale) * max(1, root_derivative.size)
+    )
+    while (
+        root_derivative.size > 1
+        and abs(float(root_derivative[-1])) <= trimming_threshold
+    ):
+        root_derivative = root_derivative[:-1]
     critical: list[float] = []
     residual = 0.0
-    if derivative.size > 1 or np.any(np.abs(derivative) > 0.0):
-        roots = np.polynomial.polynomial.polyroots(derivative)
+    if root_derivative.size > 1 or np.any(np.abs(root_derivative) > 0.0):
+        roots = np.polynomial.polynomial.polyroots(root_derivative)
         for root in roots:
             if abs(float(np.imag(root))) <= root_imag_tolerance:
                 point = float(np.real(root))

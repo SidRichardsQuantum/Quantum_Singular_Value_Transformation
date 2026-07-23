@@ -1,5 +1,68 @@
 # Changelog
 
+## [0.2.21] – 23rd July 2026
+
+### Added
+
+- added experimental coherent component-LCU execution from `BlockEncodingSpec`
+  inputs, including even/odd decomposition, real-part extraction through
+  forward and adjoint QSVT sequences, complex component weights, selector
+  ancillas, uncomputation, and finite statevector or shot execution
+- added the versioned `coherent-qsvt-execution` `1.0` report contract with
+  measured selector and logical postselection probabilities, finite-shot
+  uncertainty, component synthesis evidence, and circuit-vs-polynomial errors
+- added component and combination resource ledgers covering both phase
+  sequences, forward/adjoint signal calls, selector overhead, LCU
+  normalization, success probability, and amplitude-amplification assumptions
+- added adversarial regression coverage for pure-even, pure-odd, mixed-parity,
+  invalid-component, near-boundary, non-diagonal Hermitian, and finite-shot
+  coherent execution
+
+### Changed
+
+- promoted Hamiltonian simulation from accepted polynomial-core scope to
+  accepted finite-QSVT scope by coherently combining its cosine and sine
+  sequences, executing the resulting circuit, and reporting its concrete
+  finite circuit ledger
+- made dense embedding execution preserve the declared
+  `BlockEncodingSpec.alpha` through an exact finite unitary dilation instead of
+  inheriting PennyLane's additional normalization for some non-diagonal
+  contractions
+- enforced exact even/odd coefficient parity in real-time cosine/sine
+  polynomial design so conversion roundoff cannot produce false
+  mixed-realizability failures
+- updated accuracy-driven Hamiltonian plans to emit coherent combination
+  resource estimates and execute one combined cosine/sine circuit
+- advanced `qsvt-flagship-acceptance` reports to version `1.1`; historical
+  version `1.0` reports remain supported
+- kept the new low-level coherent execution interfaces experimental and left
+  the frozen 20-name `qsvt.stable` facade unchanged
+- refocused the roadmap on importing, implementing, validating, and applying
+  reusable QSVT primitives to finite physics and mathematics problems
+- replaced the implementation-area backlog with explicit `Now`, `Next`, and
+  `Later / Experimental` priorities
+- removed HHL as an independent roadmap track and documented HHL and
+  quantum-walk implementations as adjacent experimental comparisons and
+  tutorials rather than stable QSVT milestones
+- limited future hardware scope to caller-supplied PennyLane devices, local
+  preflight and decomposition checks, finite-shot execution, and portable
+  reports; provider credentials, job orchestration, retries, cancellation, and
+  billing remain outside the package
+- classified research sweeps, statistical aggregation, standardized plots, and
+  Pareto-front generation as experimental repository tooling rather than part
+  of the stable package facade
+- clarified that physics and mathematics applications are thin clients of
+  domain-general QSVT interfaces, not domain libraries maintained by the core
+  package
+- removed repeated roadmap status inventories and consolidated overlapping
+  acceptance, truth-contract, validation, and reproducibility requirements
+
+### Fixed
+
+- made extrema boundedness certification ignore subnormal trailing derivative
+  coefficients before root finding, preventing valid interior extrema from
+  being lost to an ill-conditioned polynomial root solve
+
 ## [0.2.20] – 23rd July 2026
 
 ### Added

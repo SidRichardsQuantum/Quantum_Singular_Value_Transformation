@@ -15,6 +15,11 @@ spin-chain phase diagnostics and spectral filtering, electronic occupations,
 topological band projectors, singular-value pseudoinverse imaging, and
 matrix-log graph entropy.
 
+These applications are clients of the domain-general QSVT interfaces. They
+demonstrate distinct transformations and validation patterns; they do not
+commit the core package to maintaining general PDE, imaging,
+condensed-matter, graph-analysis, or quantum-chemistry libraries.
+
 For concise theory and diagnostics notes on the high-level workflow functions,
 see [Algorithm notes](algorithms.md). For coefficient conventions, rescaling,
 boundedness checks, and report serialization choices, see
@@ -24,7 +29,7 @@ Focused theory notes for the main physics algorithm families are also
 available:
 
 - [Linear systems](linear_systems.md) covers inverse-polynomial workflows,
-  solver comparisons, and finite HHL circuit execution.
+  solver comparisons, and experimental finite HHL comparison execution.
 - [Spectral filters](spectral_filters.md) covers ground-state filtering,
   interval projectors, sign/threshold filters, and spectral density windows.
 - [Time evolution and response](time_evolution_and_response.md) covers

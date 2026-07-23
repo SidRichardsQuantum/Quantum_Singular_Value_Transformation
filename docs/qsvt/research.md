@@ -1,9 +1,15 @@
-# Reproducible Research Sweeps
+# Experimental Repository Research Sweeps
 
 The experimental `qsvt.research` layer turns a declarative experiment into a
 deterministic Cartesian sweep. It is intended for studies where every trial,
 including failures and skipped configurations, must remain independently
 auditable.
+
+This layer supports the repository's benchmarks and generated research
+artifacts. It is not exported by `qsvt.stable`, is not a general
+experiment-management framework, and may evolve with repository needs.
+Statistical aggregation, standardized plots, and Pareto-front generation
+remain research tooling rather than core QSVT API commitments.
 
 The built-in `qsvt.research_frontier` study compares finite spectral accuracy
 with encoding-aware logical resource estimates. It covers Poisson, transverse-

@@ -62,6 +62,7 @@ the Python import tier.
 
 API stability does not imply that every workflow has the same quantum
 execution scope. See [Executable flagship workflows](flagship_workflows.md)
-for the versioned acceptance matrix. In particular, Hamiltonian simulation is
-stable as a polynomial-core workflow while its report explicitly withholds a
-full finite-QSVT acceptance claim.
+for the versioned acceptance matrix. Poisson inversion, spectral filtering,
+and Hamiltonian simulation now each have a finite-QSVT acceptance path. Their
+reports still distinguish finite simulator validation from scalable access,
+state preparation, amplitude amplification, readout, and hardware execution.

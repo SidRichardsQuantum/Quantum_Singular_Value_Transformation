@@ -158,8 +158,29 @@ result = synthesize_mixed_parity([0.5, 0.5])
 The component extrema norms become LCU weights. The report includes the
 normalization sum and idealized postselection probability proxy
 `1 / lambda**2`, together with explicit assumptions and omitted amplitude
-amplification costs. The package synthesizes the component sequences but does
-not claim to implement the full LCU circuit.
+amplification costs. This synthesis-only report does not claim circuit
+execution.
+
+Use `execute_mixed_parity_qsvt_from_spec` to construct and execute the full
+finite selector-LCU circuit. It selects the forward and adjoint form of each
+component sequence to extract the real polynomial, uncomputes the selector,
+and reports measured postselection probabilities and circuit resources:
+
+```python
+from qsvt import (
+    execute_mixed_parity_qsvt_from_spec,
+    matrix_block_encoding_spec,
+)
+
+spec = matrix_block_encoding_spec([[0.2, 0.0], [0.0, 0.8]])
+execution = execute_mixed_parity_qsvt_from_spec(
+    spec,
+    [0.2, 0.3, 0.1],
+    [1.0, 0.0],
+)
+```
+
+The executor remains experimental and is not exported by `qsvt.stable`.
 
 ```bash
 qsvt mixed-parity-synthesis --poly "0.5,0.5"

@@ -108,6 +108,11 @@ execute these specifications in a QNode. It supports:
 - PennyLane operators through PrepSelPrep or qubitization,
 - custom operation factories with synthesized or caller-supplied projectors.
 
+For dense `embedding` specifications, the executor supplies the exact finite
+unitary dilation to `qml.QSVT`. This preserves the normalization recorded as
+`BlockEncodingSpec.alpha` for non-diagonal contractions; it avoids an
+additional backend normalization that `qml.BlockEncode` may otherwise apply.
+
 ```python
 import pennylane as qml
 from qsvt import (
@@ -133,6 +138,16 @@ Reports identify themselves with schema name
 `block-encoding-qsvt-execution` and schema version `1.0`. Numerical diagnostics
 separate real-output error, complex leakage, logical-subspace leakage,
 normalization error, and finite-shot uncertainty.
+
+Mixed-parity or complex multi-component transforms use
+`execute_mixed_parity_qsvt_from_spec` or
+`execute_qsvt_component_lcu_from_spec`. These experimental helpers implement
+real-part extraction with forward and adjoint QSVT sequences, coherently select
+the weighted components, uncompute the selector, and emit
+`coherent-qsvt-execution` `1.0` reports with measured postselection and circuit
+resource ledgers. The initial coherent-combination contract requires a square
+Hermitian logical transform. Rectangular single-sequence execution remains
+available through `execute_qsvt_from_spec`.
 
 For a complete rectangular example, run:
 

@@ -11,12 +11,19 @@ import pennylane as qml
 from .block_encoding import BlockEncodingSpec, matrix_block_encoding_spec
 from .degree import DegreeSearchCandidate
 from .diagnostics import expectation_value
-from .execution import BlockEncodingQSVTExecutionResult, execute_qsvt_from_spec
+from .execution import (
+    BlockEncodingQSVTExecutionResult,
+    CoherentQSVTComponent,
+    CoherentQSVTExecutionResult,
+    execute_qsvt_component_lcu_from_spec,
+    execute_qsvt_from_spec,
+)
 from .polynomials import polynomial_degree
 from .resources import EncodingAwareResourceEstimate, estimate_encoding_aware_resources
 from .synthesis import (
     PhaseSynthesisResult,
     available_phase_solver_adapters,
+    certify_polynomial_boundedness,
     synthesize_phases_cached,
     synthesize_phases_with_adapter,
 )
@@ -123,6 +130,7 @@ class QSVTPlan:
     access_model_status: str
     access_model_reason: str
     resource_estimates: tuple[tuple[str, EncodingAwareResourceEstimate], ...]
+    coherent_resource_estimate: dict[str, object] | None
     execution_ready: bool
     planning_warnings: tuple[str, ...]
 
@@ -159,6 +167,7 @@ class QSVTPlan:
             "resources": {
                 name: estimate.as_report() for name, estimate in self.resource_estimates
             },
+            "coherent_resource_estimate": self.coherent_resource_estimate,
             "execution_ready": self.execution_ready,
             "planning_warnings": list(self.planning_warnings),
             "truth_contract": {
@@ -181,7 +190,13 @@ class QSVTPlanRunResult:
     """Execution results, observable values, and a component error ledger."""
 
     plan: QSVTPlan
-    executions: tuple[tuple[str, BlockEncodingQSVTExecutionResult], ...]
+    executions: tuple[
+        tuple[
+            str,
+            BlockEncodingQSVTExecutionResult | CoherentQSVTExecutionResult,
+        ],
+        ...,
+    ]
     observables: dict[str, dict[str, float | complex | None]]
     error_budget: dict[str, float | None]
     succeeded: bool
@@ -344,6 +359,12 @@ def plan_qsvt(
         if selected_spec is not None
         else ()
     )
+    coherent_resources = _coherent_resource_plan(
+        transform.target,
+        coeff_sets,
+        synthesis_results,
+        resources,
+    )
     warnings: list[str] = []
     if not selected_candidate.met_tolerance:
         warnings.append(
@@ -386,6 +407,7 @@ def plan_qsvt(
         access_model_status=access_status,
         access_model_reason=access_reason,
         resource_estimates=resources,
+        coherent_resource_estimate=coherent_resources,
         execution_ready=ready,
         planning_warnings=tuple(warnings),
     )
@@ -421,22 +443,47 @@ def run_qsvt_plan(plan: QSVTPlan) -> QSVTPlanRunResult:
     state = np.asarray(raw_state, dtype=complex)
     state = state / np.linalg.norm(state)
     synth_by_name = dict(plan.synthesis_results)
-    executions: list[tuple[str, BlockEncodingQSVTExecutionResult]] = []
-    for name, coeffs in plan.coefficient_sets:
-        synthesis = synth_by_name[name]
-        projectors = _projectors_from_synthesis(plan.block_encoding_spec, synthesis)
-        result = execute_qsvt_from_spec(
+    executions: list[
+        tuple[
+            str,
+            BlockEncodingQSVTExecutionResult | CoherentQSVTExecutionResult,
+        ]
+    ] = []
+    if plan.transform.target == "hamiltonian_simulation":
+        components = _hamiltonian_coherent_components(plan)
+        coherent_result = execute_qsvt_component_lcu_from_spec(
             plan.block_encoding_spec,
-            coeffs,
+            components,
             state,
-            projectors=projectors,
-            angle_solver=_builtin_solver_name(synthesis.angle_solver),
+            angle_solver=_builtin_solver_name(
+                next(iter(synth_by_name.values())).angle_solver
+            ),
             device_name=plan.execution_config.device_name,
             shots=plan.execution_config.shots,
             normalize_state=True,
+            reconstruction_num_points=(plan.execution_config.reconstruction_num_points),
+            phase_reconstruction_tolerance=(
+                plan.execution_config.phase_reconstruction_tolerance
+            ),
             raise_on_failure=False,
         )
-        executions.append((name, result))
+        executions.append(("coherent_cosine_sine", coherent_result))
+    else:
+        for name, coeffs in plan.coefficient_sets:
+            synthesis = synth_by_name[name]
+            projectors = _projectors_from_synthesis(plan.block_encoding_spec, synthesis)
+            component_result = execute_qsvt_from_spec(
+                plan.block_encoding_spec,
+                coeffs,
+                state,
+                projectors=projectors,
+                angle_solver=_builtin_solver_name(synthesis.angle_solver),
+                device_name=plan.execution_config.device_name,
+                shots=plan.execution_config.shots,
+                normalize_state=True,
+                raise_on_failure=False,
+            )
+            executions.append((name, component_result))
 
     succeeded = bool(executions) and all(result.succeeded for _, result in executions)
     return QSVTPlanRunResult(
@@ -661,6 +708,130 @@ def _execution_input(
     return problem.state
 
 
+def _hamiltonian_coherent_components(
+    plan: QSVTPlan,
+) -> tuple[CoherentQSVTComponent, CoherentQSVTComponent]:
+    result = plan.workflow.result
+    coeffs = dict(plan.coefficient_sets)
+    if "cos_coeffs" not in coeffs or "sin_coeffs" not in coeffs:
+        raise ValueError(
+            "Hamiltonian execution requires cosine and sine coefficient sets."
+        )
+    offset = float(result.scaled_operator.offset)
+    time = float(result.time)
+    physical_phase = complex(np.exp(-1j * offset * time))
+    return (
+        CoherentQSVTComponent(
+            "cosine",
+            coeffs["cos_coeffs"],
+            physical_phase,
+        ),
+        CoherentQSVTComponent(
+            "sine",
+            coeffs["sin_coeffs"],
+            -1j * physical_phase,
+        ),
+    )
+
+
+def _coherent_resource_plan(
+    target: PlanningTarget,
+    coefficient_sets: tuple[tuple[str, np.ndarray], ...],
+    synthesis_results: tuple[tuple[str, PhaseSynthesisResult], ...],
+    resource_estimates: tuple[tuple[str, EncodingAwareResourceEstimate], ...],
+) -> dict[str, object] | None:
+    if target != "hamiltonian_simulation":
+        return None
+    syntheses = dict(synthesis_results)
+    estimates = dict(resource_estimates)
+    if any(name not in estimates for name, _ in coefficient_sets):
+        return None
+    component_rows: list[dict[str, object]] = []
+    lcu_normalization = 0.0
+    for name, coeffs in coefficient_sets:
+        extrema_weight = float(certify_polynomial_boundedness(coeffs).max_abs_value)
+        if extrema_weight <= 1e-15:
+            continue
+        weight = extrema_weight / (1.0 - 1e-8)
+        lcu_normalization += weight
+        synthesis = syntheses[name]
+        estimate = estimates[name]
+        component_rows.append(
+            {
+                "name": name,
+                "lcu_weight": weight,
+                "polynomial_degree": estimate.degree,
+                "phase_count_per_sequence": (
+                    None if synthesis.angles is None else int(synthesis.angles.size)
+                ),
+                "forward_signal_operator_calls": estimate.signal_operator_calls
+                + estimate.inverse_signal_operator_calls,
+                "adjoint_signal_operator_calls": estimate.signal_operator_calls
+                + estimate.inverse_signal_operator_calls,
+                "total_signal_operator_calls": 2
+                * (
+                    estimate.signal_operator_calls
+                    + estimate.inverse_signal_operator_calls
+                ),
+                "encoding_aware_total_wires": estimate.total_wires,
+                "encoding_aware_total_gates_per_sequence": estimate.total_gates,
+            }
+        )
+    gate_counts = [
+        row["encoding_aware_total_gates_per_sequence"]
+        for row in component_rows
+        if row["encoding_aware_total_gates_per_sequence"] is not None
+    ]
+    wire_counts = [
+        row["encoding_aware_total_wires"]
+        for row in component_rows
+        if row["encoding_aware_total_wires"] is not None
+    ]
+    phase_counts = [
+        int(cast(Any, row["phase_count_per_sequence"]))
+        for row in component_rows
+        if row["phase_count_per_sequence"] is not None
+    ]
+    selector_count = max(1, (2 * len(component_rows) - 1).bit_length())
+    return {
+        "mode": "coherent-qsvt-resource-plan",
+        "implementation_kind": "encoding-aware-coherent-lcu-resource-estimate",
+        "component_sequence_count": len(component_rows),
+        "selected_unitary_branch_count": 2 * len(component_rows),
+        "selection_ancilla_count": selector_count,
+        "lcu_normalization": lcu_normalization,
+        "component_resource_ledger": component_rows,
+        "total_phase_count": 2 * sum(phase_counts),
+        "total_signal_operator_calls": sum(
+            int(cast(Any, row["total_signal_operator_calls"])) for row in component_rows
+        ),
+        "estimated_total_wires": (
+            None
+            if not wire_counts
+            else max(int(cast(Any, value)) for value in wire_counts) + selector_count
+        ),
+        "estimated_total_gates": (
+            None
+            if len(gate_counts) != len(component_rows)
+            else 2 * sum(int(cast(Any, value)) for value in gate_counts) + 3
+        ),
+        "selector_overhead_model": [
+            "selector_state_preparation",
+            "branch_phase_diagonal",
+            "selector_uncomputation",
+        ],
+        "success_probability": None,
+        "amplitude_amplification_overhead": None,
+        "omitted_costs": [
+            "application_state_preparation",
+            "amplitude_amplification",
+            "application_readout_or_tomography",
+            "provider_compilation_and_routing",
+            "fault_tolerant_synthesis",
+        ],
+    }
+
+
 def _projectors_from_synthesis(
     spec: BlockEncodingSpec,
     synthesis: PhaseSynthesisResult,
@@ -695,7 +866,13 @@ def _builtin_solver_name(name: str) -> str:
 
 def _observable_reports(
     problem: QSVTProblemSpec,
-    executions: tuple[tuple[str, BlockEncodingQSVTExecutionResult], ...],
+    executions: tuple[
+        tuple[
+            str,
+            BlockEncodingQSVTExecutionResult | CoherentQSVTExecutionResult,
+        ],
+        ...,
+    ],
 ) -> dict[str, dict[str, float | complex | None]]:
     reports: dict[str, dict[str, float | complex | None]] = {}
     for component, execution in executions:
@@ -730,7 +907,13 @@ def _observable_reports(
 
 def _error_budget(
     plan: QSVTPlan,
-    executions: tuple[tuple[str, BlockEncodingQSVTExecutionResult], ...],
+    executions: tuple[
+        tuple[
+            str,
+            BlockEncodingQSVTExecutionResult | CoherentQSVTExecutionResult,
+        ],
+        ...,
+    ],
 ) -> dict[str, float | None]:
     synthesis_errors = [
         result.reconstruction_max_error

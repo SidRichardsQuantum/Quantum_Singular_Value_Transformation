@@ -97,8 +97,11 @@ Every `as_report()` payload from this module includes a `truth_contract` field.
 That field is part of the public reporting surface and should be read before
 using a workflow result in a benchmark, paper draft, or comparison table.
 
-The contract states that the workflow is a dense spectral-polynomial
-implementation, not an end-to-end quantum algorithm. It records:
+The contract states the exact implementation tier produced by the run. Most
+high-level workflows remain dense spectral-polynomial implementations;
+Hamiltonian simulation can additionally report a finite coherent-QSVT circuit
+tier. None is presented as a complete scalable application algorithm. The
+contract records:
 
 - the concrete target being approximated,
 - an artifact-derived `execution_tier`, with separate flags for circuit
@@ -136,7 +139,7 @@ implementation details, diagnostics, and scope boundaries. The family pages
 provide broader mathematical context:
 
 - [Linear systems](linear_systems.md) covers inverse-polynomial workflows,
-  solver comparisons, and finite HHL circuit execution.
+  solver comparisons, and experimental finite HHL comparison execution.
 - [Spectral filters](spectral_filters.md) covers ground-state filtering,
   interval projectors, sign/threshold filters, spectral density windows,
   singular-value filters, and related projector-style workflows.

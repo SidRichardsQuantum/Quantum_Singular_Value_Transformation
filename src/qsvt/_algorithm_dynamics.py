@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Literal
 
 import numpy as np
 
@@ -19,7 +19,13 @@ from ._algorithm_shared import (
     _validate_state,
 )
 from .acceptance import evaluate_hamiltonian_simulation_acceptance
+from .block_encoding import matrix_block_encoding_spec
 from .diagnostics import operator_error
+from .execution import (
+    CoherentQSVTComponent,
+    CoherentQSVTExecutionResult,
+    execute_qsvt_component_lcu_from_spec,
+)
 from .matrix_functions import design_real_time_evolution_polynomials
 from .rescaling import ScaledOperator, rescale_hermitian_to_unit_interval
 from .spectral import apply_function_to_hermitian, apply_polynomial_to_hermitian
@@ -57,23 +63,54 @@ class HamiltonianSimulationWorkflowResult:
     operator_relative_error: float
     norm_drift: float
     acceptance_tolerance: float
+    phase_reconstruction_tolerance: float
+    qsvt_execution: CoherentQSVTExecutionResult | None
+    component_error_ledger: dict[str, float | None]
+    circuit_resource_ledger: dict[str, object] | None
 
     def as_report(self) -> dict[str, Any]:
         """
         Return a report-style dictionary for JSON conversion or persistence.
         """
+        qsvt_check = (
+            "not_attempted"
+            if self.qsvt_execution is None
+            else ("succeeded" if self.qsvt_execution.succeeded else "failed")
+        )
+        truth_contract = algorithm_truth_contract(
+            "hamiltonian-simulation-workflow",
+            target="real-time Hamiltonian matrix exponential action",
+            qsvt_check=qsvt_check,
+            polynomials={
+                "cosine": self.cos_coeffs,
+                "sine": self.sin_coeffs,
+            },
+            qnode_executed=bool(
+                self.qsvt_execution is not None and self.qsvt_execution.succeeded
+            ),
+        )
+        if self.qsvt_execution is not None and self.qsvt_execution.succeeded:
+            truth_contract["implementation_kind"] = (
+                "finite-coherent-component-lcu-qsvt-workflow"
+            )
+            implemented = truth_contract["implemented_components"]
+            assert isinstance(implemented, list)
+            truth_contract["implemented_components"] = [
+                *implemented,
+                "finite_matrix_block_encoding",
+                "coherent_cosine_sine_qsvt_sequence_combination",
+                "selector_postselection",
+                "encoding_aware_circuit_resource_ledger",
+            ]
         return {
             **algorithm_workflow_schema_fields(),
             "mode": "hamiltonian-simulation-workflow",
-            "implementation_kind": "dense-spectral-polynomial-workflow",
-            "truth_contract": algorithm_truth_contract(
-                "hamiltonian-simulation-workflow",
-                target="real-time Hamiltonian matrix exponential action",
-                polynomials={
-                    "cosine": self.cos_coeffs,
-                    "sine": self.sin_coeffs,
-                },
+            "implementation_kind": (
+                "dense-spectral-polynomial-workflow"
+                if self.qsvt_execution is None or not self.qsvt_execution.succeeded
+                else "finite-coherent-component-lcu-qsvt-workflow"
             ),
+            "truth_contract": truth_contract,
             "time": self.time,
             "degree": self.degree,
             "scaled_time": self.scaled_time,
@@ -89,6 +126,12 @@ class HamiltonianSimulationWorkflowResult:
             "operator_relative_error": self.operator_relative_error,
             "norm_drift": self.norm_drift,
             "acceptance_tolerance": self.acceptance_tolerance,
+            "phase_reconstruction_tolerance": (self.phase_reconstruction_tolerance),
+            "qsvt_execution": (
+                None if self.qsvt_execution is None else self.qsvt_execution.as_report()
+            ),
+            "component_error_ledger": self.component_error_ledger,
+            "circuit_resource_ledger": self.circuit_resource_ledger,
             "acceptance": evaluate_hamiltonian_simulation_acceptance(self),
         }
 
@@ -267,6 +310,12 @@ def hamiltonian_simulation_workflow(
     degree: int,
     num_points: int = 1001,
     acceptance_tolerance: float = 1e-6,
+    phase_reconstruction_tolerance: float = 1e-6,
+    execute_qsvt: bool = True,
+    block_encoding: Literal["embedding", "fable"] = "embedding",
+    angle_solver: str = "root-finding",
+    device_name: str = "default.qubit",
+    shots: int | None = None,
 ) -> HamiltonianSimulationWorkflowResult:
     """
     Approximate real-time evolution ``exp(-i H t)|psi>`` with polynomial pairs.
@@ -274,6 +323,14 @@ def hamiltonian_simulation_workflow(
     acceptance_tolerance = float(acceptance_tolerance)
     if not np.isfinite(acceptance_tolerance) or acceptance_tolerance <= 0.0:
         raise ValueError("acceptance_tolerance must be positive and finite.")
+    phase_reconstruction_tolerance = float(phase_reconstruction_tolerance)
+    if (
+        not np.isfinite(phase_reconstruction_tolerance)
+        or phase_reconstruction_tolerance < 0.0
+    ):
+        raise ValueError(
+            "phase_reconstruction_tolerance must be finite and non-negative."
+        )
     scaled = rescale_hermitian_to_unit_interval(matrix)
     psi = _normalize_state(_validate_state(state, scaled.matrix.shape[0]))
     polynomials = design_real_time_evolution_polynomials(
@@ -293,6 +350,61 @@ def hamiltonian_simulation_workflow(
     )
     evolved = polynomial_unitary @ psi
     reference = reference_unitary @ psi
+    qsvt_execution: CoherentQSVTExecutionResult | None = None
+    if execute_qsvt:
+        block_spec = matrix_block_encoding_spec(
+            scaled.matrix,
+            alpha=1.0,
+            block_encoding=block_encoding,
+        )
+        qsvt_execution = execute_qsvt_component_lcu_from_spec(
+            block_spec,
+            (
+                CoherentQSVTComponent(
+                    "cosine",
+                    polynomials.cos_coeffs,
+                    phase,
+                ),
+                CoherentQSVTComponent(
+                    "sine",
+                    polynomials.sin_coeffs,
+                    -1j * phase,
+                ),
+            ),
+            psi,
+            angle_solver=angle_solver,
+            device_name=device_name,
+            shots=shots,
+            phase_reconstruction_tolerance=phase_reconstruction_tolerance,
+            raise_on_failure=False,
+        )
+
+    phase_errors = (
+        []
+        if qsvt_execution is None
+        else [
+            synthesis.reconstruction_max_error
+            for _, synthesis in qsvt_execution.component_syntheses
+            if synthesis.reconstruction_max_error is not None
+        ]
+    )
+    polynomial_operator_error = operator_error(reference_unitary, polynomial_unitary)
+    polynomial_state_error = _state_error(reference, evolved)
+    component_error_ledger: dict[str, float | None] = {
+        "polynomial_operator_relative_error": polynomial_operator_error,
+        "polynomial_state_relative_error": polynomial_state_error,
+        "phase_reconstruction_max_error": max(phase_errors, default=None),
+        "coherent_circuit_vs_polynomial_relative_error": (
+            None
+            if qsvt_execution is None
+            else qsvt_execution.logical_output_relative_error
+        ),
+        "probability_normalization_error": (
+            None
+            if qsvt_execution is None
+            else qsvt_execution.probability_normalization_error
+        ),
+    }
 
     return HamiltonianSimulationWorkflowResult(
         cos_coeffs=polynomials.cos_coeffs,
@@ -306,10 +418,16 @@ def hamiltonian_simulation_workflow(
         time=float(time),
         degree=int(degree),
         scaled_time=polynomials.scaled_time,
-        state_relative_error=_state_error(reference, evolved),
-        operator_relative_error=operator_error(reference_unitary, polynomial_unitary),
+        state_relative_error=polynomial_state_error,
+        operator_relative_error=polynomial_operator_error,
         norm_drift=float(abs(np.linalg.norm(evolved) - 1.0)),
         acceptance_tolerance=acceptance_tolerance,
+        phase_reconstruction_tolerance=phase_reconstruction_tolerance,
+        qsvt_execution=qsvt_execution,
+        component_error_ledger=component_error_ledger,
+        circuit_resource_ledger=(
+            None if qsvt_execution is None else qsvt_execution.resource_summary
+        ),
     )
 
 

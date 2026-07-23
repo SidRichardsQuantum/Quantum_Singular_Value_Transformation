@@ -278,6 +278,30 @@ version `1.0`. Diagnostics separate real-output absolute/relative error,
 complex leakage, logical-subspace leakage, probability and statevector
 normalization error, and finite-shot standard errors.
 
+For a bounded polynomial containing both even and odd powers, use the
+experimental coherent executor:
+
+```python
+from qsvt import (
+    execute_mixed_parity_qsvt_from_spec,
+    matrix_block_encoding_spec,
+)
+
+spec = matrix_block_encoding_spec(np.diag([0.2, 0.8]))
+result = execute_mixed_parity_qsvt_from_spec(
+    spec,
+    [0.2, 0.3, 0.1],
+    [1.0, 0.0],
+)
+```
+
+This path synthesizes the components independently, extracts each real
+polynomial with `(U + U_adjoint) / 2`, and combines them through a selector
+LCU. Its `coherent-qsvt-execution` `1.0` report records the normalization,
+selector ancillas, measured success probabilities, circuit error, and
+component resource ledger. Amplitude amplification remains omitted and is
+reported separately.
+
 ### Hardware-Oriented Device Execution
 
 Use `execute_qsvt_on_device` when you already have a PennyLane device and want
@@ -388,8 +412,8 @@ reconstruction, access-model choice, encoding-aware resources, and omitted
 application layers.
 
 Three explicitly contracted flagship workflows expose versioned acceptance
-reports. Poisson inversion and spectral filtering provide complete finite
-examples; Hamiltonian simulation currently validates its polynomial core:
+reports. Poisson inversion, spectral filtering, and Hamiltonian simulation all
+provide complete finite-QSVT examples for their stated access models:
 
 ```python
 import pennylane as qml
@@ -425,7 +449,7 @@ dynamics = hamiltonian_simulation_workflow(
 assert filtered.as_report()["acceptance"]["full_qsvt_acceptance"]
 assert poisson.as_report()["acceptance"]["full_qsvt_acceptance"]
 assert dynamics.as_report()["acceptance"]["accepted_for_stated_scope"]
-assert not dynamics.as_report()["acceptance"]["full_qsvt_acceptance"]
+assert dynamics.as_report()["acceptance"]["full_qsvt_acceptance"]
 ```
 
 The Hamiltonian workflow has a matching report-oriented CLI entry point:
@@ -444,7 +468,7 @@ See [Accuracy-driven planning](./docs/qsvt/planning.md) and
 [Executable flagship workflows](./docs/qsvt/flagship_workflows.md) for access
 models, resource semantics, and the exact scope boundary.
 
-## Reproducible Research Sweeps
+## Experimental Repository Research Sweeps
 
 Run the committed accuracy-resource frontier definition as a resumable
 Cartesian sweep:
@@ -471,6 +495,10 @@ finite spectral references with access-model-specific normalization and
 encoding-aware logical gates, wires, and signal calls. It does not execute
 hardware, state preparation, postselection, or amplitude amplification;
 logical depth and success probability are therefore explicit null fields.
+
+These commands are experimental repository research tooling and are not part
+of the `qsvt.stable` facade. They support reproducible project benchmarks; they
+are not intended as a general experiment-management API.
 
 JSON sweep definitions work in the base install. YAML requires
 `pip install "qsvt-pennylane[research]"`. See
