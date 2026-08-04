@@ -13,6 +13,13 @@ Plot legends use compact labels: dense linear solve (DLS), conjugate gradient
 solve (CGS), dense spectral matrix function (DSMF), and polynomial matrix
 evaluation (PME).
 
+Each notebook includes a standard guide and takeaways section with links through
+this ordered collection. Validate those sections and canonical notebook
+metadata with `python scripts/normalize_notebooks.py --check` from the
+repository root. Clean-kernel tests redirect generated artifacts to a temporary
+output root; interactive benchmark execution continues to write under
+`results/`.
+
 | Topic | Notebook |
 | --- | --- |
 | Linear systems, QSVT proxy, and finite HHL execution | `01_linear_system_classical_vs_qsvt_proxy.ipynb` |

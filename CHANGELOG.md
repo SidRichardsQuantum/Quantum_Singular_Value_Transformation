@@ -1,5 +1,57 @@
 # Changelog
 
+## [0.2.25] – 4th August 2026
+
+### Added
+
+- added a deterministic notebook-normalization command that maintains visible
+  learning objectives, prerequisites, runtime guidance, collection navigation,
+  takeaways, interpretation boundaries, deterministic guide/takeaway cell IDs,
+  and role metadata across all 35 maintained notebooks
+- added fresh-kernel notebook execution coverage through `nbclient` and
+  `nbformat`, with test-only output redirection that keeps committed benchmark
+  and table artifacts unchanged during validation
+- added regression coverage for the notebook navigation/schema and neutral-prose
+  contracts, concise variable-definition blocks, isolated benchmark output
+  roots, normalization idempotence, and repository import paths used by result
+  regeneration
+
+### Changed
+
+- refactored the design-and-presets tutorial into focused summary, plotting,
+  safe-region validation, diagonal readout, and spectral-consistency cells
+- rewrote conversational notebook narration and reader-facing API commentary as
+  concise, neutral technical prose across the maintained collections
+- replaced exhaustive notebook variable inventories with compact mathematical
+  glossaries that define every equation symbol while leaving plotting, report,
+  path, and other implementation-local names beside the relevant code
+- separated phase-grid diagnostics, state diagnostics, package circuit
+  execution, and comparison-table presentation in the finite HHL tutorial
+- separated scaling-sweep execution, artifact writing, library plots, and
+  combined-plot formatting in the scaling benchmark
+- made notebook execution use a canonical Python 3 kernel and execute each
+  notebook in a fresh kernel instead of emulating notebooks by executing code
+  cells in one shared Python namespace
+- made the result-extraction helper expose both the repository root and package
+  source tree to notebook kernels, so repository-only helpers import correctly
+  without caller-supplied path configuration
+- advanced the package and synchronized release-documentation markers to
+  `0.2.25`; the frozen 20-name `qsvt.stable` facade remains unchanged
+
+### Fixed
+
+- prevented clean-kernel notebook tests from overwriting committed JSON and CSV
+  benchmark artifacts by honoring `QSVT_NOTEBOOK_OUTPUT_ROOT`
+- fixed documented notebook-result regeneration for notebooks that import
+  `notebooks._support` from kernels started inside collection directories
+
+### Documentation
+
+- refreshed all notebook outputs, 67 extracted plots, result manifests, and the
+  tutorial, real-example, and benchmark result ledgers
+- documented the shared notebook guide/navigation contract, normalization
+  check, isolated test outputs, and v0.2.25 regeneration workflow
+
 ## [0.2.24] – 4th August 2026
 
 ### Added

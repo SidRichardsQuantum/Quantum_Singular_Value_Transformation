@@ -5,6 +5,11 @@ algorithms, implementations, diagnostics, reports, and CLI surfaces. Keep them
 short enough that users can copy the usage pattern into their own scripts or
 notebooks.
 
+Each notebook includes a standard guide and takeaways section with links through
+this ordered collection. Validate those sections and canonical notebook
+metadata with `python scripts/normalize_notebooks.py --check` from the
+repository root.
+
 | Topic | Notebook |
 | --- | --- |
 | Scalar and diagonal transforms | `01_QSVT_Scalar_and_Diagonal_Matrix.ipynb` |

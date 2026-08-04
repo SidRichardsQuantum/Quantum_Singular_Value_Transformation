@@ -1,127 +1,72 @@
-import json
-import os
-import sys
-import tempfile
+from __future__ import annotations
+
 from pathlib import Path
-from unittest.mock import patch
 
-import matplotlib
-import matplotlib.pyplot as plt
+import nbformat
 import pytest
+from nbclient import NotebookClient
+from notebooks._support import benchmark_output_dirs
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
-def _sandboxed_benchmark_output_dirs(repo_root, artifact_root):
-    benchmark_dir = artifact_root / "benchmarks"
-    table_dir = artifact_root / "tables"
-    benchmark_dir.mkdir(parents=True, exist_ok=True)
-    table_dir.mkdir(parents=True, exist_ok=True)
+def test_benchmark_notebook_artifact_paths_are_sandboxed(tmp_path, monkeypatch):
+    output_root = tmp_path / "sandbox"
+    monkeypatch.setenv("QSVT_NOTEBOOK_OUTPUT_ROOT", str(output_root))
 
-    def output_dirs(root=None):
-        del root
-        return repo_root, benchmark_dir, table_dir
+    found_root, benchmark_dir, table_dir = benchmark_output_dirs(REPO_ROOT)
 
-    return output_dirs
-
-
-def test_benchmark_notebook_artifact_paths_are_sandboxed(tmp_path):
-    repo_root = tmp_path / "repository"
-    output_dirs = _sandboxed_benchmark_output_dirs(
-        repo_root,
-        tmp_path / "sandbox",
-    )
-    found_root, benchmark_dir, table_dir = output_dirs()
-
-    assert found_root == repo_root
-    assert benchmark_dir == tmp_path / "sandbox" / "benchmarks"
-    assert table_dir == tmp_path / "sandbox" / "tables"
+    assert found_root == output_root
+    assert benchmark_dir == output_root / "results" / "benchmarks"
+    assert table_dir == output_root / "results" / "tables"
     assert benchmark_dir.is_dir()
     assert table_dir.is_dir()
 
 
-def _snapshot_files(*directories):
-    return {
-        path: path.read_bytes()
-        for directory in directories
-        for path in directory.rglob("*")
-        if path.is_file()
-    }
-
-
-def _execute_notebooks(notebooks):
-    matplotlib.use("Agg")
-
+def _execute_notebooks(notebooks, tmp_path, monkeypatch):
+    """Execute each notebook in a fresh Jupyter kernel with isolated artifacts."""
     assert notebooks
 
-    repo_root = Path(__file__).resolve().parents[1]
-    committed_artifacts = _snapshot_files(
-        repo_root / "results" / "benchmarks",
-        repo_root / "results" / "tables",
-    )
+    output_root = tmp_path / "notebook-output"
+    mpl_config = tmp_path / "matplotlib"
+    mpl_config.mkdir()
+    monkeypatch.setenv("MPLBACKEND", "Agg")
+    monkeypatch.setenv("MPLCONFIGDIR", str(mpl_config))
+    monkeypatch.setenv("QSVT_NOTEBOOK_OUTPUT_ROOT", str(output_root))
 
-    with tempfile.TemporaryDirectory() as mpl_config_dir:
-        artifact_root = Path(mpl_config_dir) / "artifacts"
-        output_dirs = _sandboxed_benchmark_output_dirs(repo_root, artifact_root)
-        old_mpl_config = os.environ.get("MPLCONFIGDIR")
-        os.environ["MPLCONFIGDIR"] = mpl_config_dir
-        try:
-            with patch("notebooks._support.benchmark_output_dirs", new=output_dirs):
-                for path in notebooks:
-                    namespace = {
-                        "__name__": "__notebook_test__",
-                        "__notebook_python__": sys.executable,
-                    }
-
-                    notebook = json.loads(path.read_text())
-                    for cell in notebook["cells"]:
-                        if cell.get("cell_type") == "code":
-                            source = "".join(cell["source"])
-                            source = source.replace(
-                                '"python",\n            "-m",\n            "qsvt",',
-                                (
-                                    "__notebook_python__,\n"
-                                    '            "-m",\n'
-                                    '            "qsvt",'
-                                ),
-                            )
-                            exec(source, namespace)
-                    plt.close("all")
-        finally:
-            if old_mpl_config is None:
-                os.environ.pop("MPLCONFIGDIR", None)
-            else:
-                os.environ["MPLCONFIGDIR"] = old_mpl_config
-
-    assert (
-        _snapshot_files(
-            repo_root / "results" / "benchmarks",
-            repo_root / "results" / "tables",
+    for path in notebooks:
+        notebook = nbformat.read(path, as_version=4)
+        client = NotebookClient(
+            notebook,
+            timeout=300,
+            kernel_name="python3",
+            resources={"metadata": {"path": str(REPO_ROOT)}},
+            record_timing=False,
         )
-        == committed_artifacts
-    )
+        client.execute()
+
+    return output_root
 
 
 @pytest.mark.notebook
-def test_introductory_notebooks_execute():
-    repo_root = Path(__file__).resolve().parents[1]
-    notebook_dir = repo_root / "notebooks" / "tutorials"
-    notebooks = sorted(notebook_dir.glob("*.ipynb"))
+def test_introductory_notebooks_execute(tmp_path, monkeypatch):
+    notebooks = sorted((REPO_ROOT / "notebooks" / "tutorials").glob("*.ipynb"))
 
-    _execute_notebooks(notebooks)
+    _execute_notebooks(notebooks, tmp_path, monkeypatch)
 
 
 @pytest.mark.notebook
-def test_real_example_notebooks_execute():
-    repo_root = Path(__file__).resolve().parents[1]
-    notebook_dir = repo_root / "notebooks" / "real_examples"
-    notebooks = sorted(notebook_dir.glob("*.ipynb"))
+def test_real_example_notebooks_execute(tmp_path, monkeypatch):
+    notebooks = sorted((REPO_ROOT / "notebooks" / "real_examples").glob("*.ipynb"))
 
-    _execute_notebooks(notebooks)
+    _execute_notebooks(notebooks, tmp_path, monkeypatch)
 
 
 @pytest.mark.notebook
-def test_benchmark_notebooks_execute():
-    repo_root = Path(__file__).resolve().parents[1]
-    notebook_dir = repo_root / "notebooks" / "benchmarks"
-    notebooks = sorted(notebook_dir.glob("*.ipynb"))
+def test_benchmark_notebooks_execute(tmp_path, monkeypatch):
+    notebooks = sorted((REPO_ROOT / "notebooks" / "benchmarks").glob("*.ipynb"))
 
-    _execute_notebooks(notebooks)
+    output_root = _execute_notebooks(notebooks, tmp_path, monkeypatch)
+
+    assert list((output_root / "results" / "benchmarks").glob("*.json"))
+    assert list((output_root / "results" / "tables").glob("*.csv"))

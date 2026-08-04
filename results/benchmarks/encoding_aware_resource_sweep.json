@@ -302,6 +302,8 @@
           "is_logical_algorithm_estimate": true,
           "includes_encoding_normalization": true,
           "includes_selected_block_encoding_model": true,
+          "uses_pennylane_logical_estimator": true,
+          "uses_logical_primitive_fallback": false,
           "omitted_costs": [
             "application_state_preparation",
             "postselection_or_amplitude_amplification",
@@ -355,6 +357,8 @@
           "is_logical_algorithm_estimate": true,
           "includes_encoding_normalization": true,
           "includes_selected_block_encoding_model": true,
+          "uses_pennylane_logical_estimator": true,
+          "uses_logical_primitive_fallback": false,
           "omitted_costs": [
             "application_state_preparation",
             "postselection_or_amplitude_amplification",
@@ -408,6 +412,8 @@
           "is_logical_algorithm_estimate": true,
           "includes_encoding_normalization": true,
           "includes_selected_block_encoding_model": true,
+          "uses_pennylane_logical_estimator": true,
+          "uses_logical_primitive_fallback": false,
           "omitted_costs": [
             "application_state_preparation",
             "postselection_or_amplitude_amplification",
@@ -461,6 +467,8 @@
           "is_logical_algorithm_estimate": true,
           "includes_encoding_normalization": true,
           "includes_selected_block_encoding_model": true,
+          "uses_pennylane_logical_estimator": true,
+          "uses_logical_primitive_fallback": false,
           "omitted_costs": [
             "application_state_preparation",
             "postselection_or_amplitude_amplification",
@@ -514,6 +522,8 @@
           "is_logical_algorithm_estimate": true,
           "includes_encoding_normalization": true,
           "includes_selected_block_encoding_model": true,
+          "uses_pennylane_logical_estimator": true,
+          "uses_logical_primitive_fallback": false,
           "omitted_costs": [
             "application_state_preparation",
             "postselection_or_amplitude_amplification",
@@ -571,6 +581,8 @@
           "is_logical_algorithm_estimate": true,
           "includes_encoding_normalization": true,
           "includes_selected_block_encoding_model": true,
+          "uses_pennylane_logical_estimator": true,
+          "uses_logical_primitive_fallback": false,
           "omitted_costs": [
             "application_state_preparation",
             "postselection_or_amplitude_amplification",
@@ -626,6 +638,8 @@
           "is_logical_algorithm_estimate": true,
           "includes_encoding_normalization": true,
           "includes_selected_block_encoding_model": true,
+          "uses_pennylane_logical_estimator": true,
+          "uses_logical_primitive_fallback": false,
           "omitted_costs": [
             "application_state_preparation",
             "postselection_or_amplitude_amplification",
@@ -681,6 +695,8 @@
           "is_logical_algorithm_estimate": true,
           "includes_encoding_normalization": true,
           "includes_selected_block_encoding_model": true,
+          "uses_pennylane_logical_estimator": true,
+          "uses_logical_primitive_fallback": false,
           "omitted_costs": [
             "application_state_preparation",
             "postselection_or_amplitude_amplification",
@@ -736,6 +752,8 @@
           "is_logical_algorithm_estimate": true,
           "includes_encoding_normalization": true,
           "includes_selected_block_encoding_model": true,
+          "uses_pennylane_logical_estimator": true,
+          "uses_logical_primitive_fallback": false,
           "omitted_costs": [
             "application_state_preparation",
             "postselection_or_amplitude_amplification",
@@ -791,6 +809,8 @@
           "is_logical_algorithm_estimate": true,
           "includes_encoding_normalization": true,
           "includes_selected_block_encoding_model": true,
+          "uses_pennylane_logical_estimator": true,
+          "uses_logical_primitive_fallback": false,
           "omitted_costs": [
             "application_state_preparation",
             "postselection_or_amplitude_amplification",
@@ -853,6 +873,8 @@
           "is_logical_algorithm_estimate": true,
           "includes_encoding_normalization": true,
           "includes_selected_block_encoding_model": true,
+          "uses_pennylane_logical_estimator": true,
+          "uses_logical_primitive_fallback": false,
           "omitted_costs": [
             "application_state_preparation",
             "postselection_or_amplitude_amplification",
@@ -913,6 +935,8 @@
           "is_logical_algorithm_estimate": true,
           "includes_encoding_normalization": true,
           "includes_selected_block_encoding_model": true,
+          "uses_pennylane_logical_estimator": true,
+          "uses_logical_primitive_fallback": false,
           "omitted_costs": [
             "application_state_preparation",
             "postselection_or_amplitude_amplification",
@@ -973,6 +997,8 @@
           "is_logical_algorithm_estimate": true,
           "includes_encoding_normalization": true,
           "includes_selected_block_encoding_model": true,
+          "uses_pennylane_logical_estimator": true,
+          "uses_logical_primitive_fallback": false,
           "omitted_costs": [
             "application_state_preparation",
             "postselection_or_amplitude_amplification",
@@ -1033,6 +1059,8 @@
           "is_logical_algorithm_estimate": true,
           "includes_encoding_normalization": true,
           "includes_selected_block_encoding_model": true,
+          "uses_pennylane_logical_estimator": true,
+          "uses_logical_primitive_fallback": false,
           "omitted_costs": [
             "application_state_preparation",
             "postselection_or_amplitude_amplification",
@@ -1093,6 +1121,8 @@
           "is_logical_algorithm_estimate": true,
           "includes_encoding_normalization": true,
           "includes_selected_block_encoding_model": true,
+          "uses_pennylane_logical_estimator": true,
+          "uses_logical_primitive_fallback": false,
           "omitted_costs": [
             "application_state_preparation",
             "postselection_or_amplitude_amplification",
@@ -1155,6 +1185,8 @@
           "is_logical_algorithm_estimate": true,
           "includes_encoding_normalization": true,
           "includes_selected_block_encoding_model": true,
+          "uses_pennylane_logical_estimator": true,
+          "uses_logical_primitive_fallback": false,
           "omitted_costs": [
             "application_state_preparation",
             "postselection_or_amplitude_amplification",
@@ -1215,6 +1247,8 @@
           "is_logical_algorithm_estimate": true,
           "includes_encoding_normalization": true,
           "includes_selected_block_encoding_model": true,
+          "uses_pennylane_logical_estimator": true,
+          "uses_logical_primitive_fallback": false,
           "omitted_costs": [
             "application_state_preparation",
             "postselection_or_amplitude_amplification",
@@ -1275,6 +1309,8 @@
           "is_logical_algorithm_estimate": true,
           "includes_encoding_normalization": true,
           "includes_selected_block_encoding_model": true,
+          "uses_pennylane_logical_estimator": true,
+          "uses_logical_primitive_fallback": false,
           "omitted_costs": [
             "application_state_preparation",
             "postselection_or_amplitude_amplification",
@@ -1335,6 +1371,8 @@
           "is_logical_algorithm_estimate": true,
           "includes_encoding_normalization": true,
           "includes_selected_block_encoding_model": true,
+          "uses_pennylane_logical_estimator": true,
+          "uses_logical_primitive_fallback": false,
           "omitted_costs": [
             "application_state_preparation",
             "postselection_or_amplitude_amplification",
@@ -1395,6 +1433,8 @@
           "is_logical_algorithm_estimate": true,
           "includes_encoding_normalization": true,
           "includes_selected_block_encoding_model": true,
+          "uses_pennylane_logical_estimator": true,
+          "uses_logical_primitive_fallback": false,
           "omitted_costs": [
             "application_state_preparation",
             "postselection_or_amplitude_amplification",

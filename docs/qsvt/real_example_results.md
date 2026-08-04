@@ -54,27 +54,27 @@ Source: [`notebooks/real_examples/01_poisson_equation_pde.ipynb`](../../notebook
 :width: 760px
 ```
 
-Output 1 (cell 6):
+Output 1 (cell 7):
 
 ```text
 First Eigenvalue [inverse grid-length units]: 9.705050945562935
 Last Eigenvalue [inverse grid-length units]: 186.29494905443704
 ```
 
-Output 2 (cell 10):
+Output 2 (cell 11):
 
 ```text
 Gamma: 0.05209508360168709
 Condition Number: 19.1956693580892
 ```
 
-Output 3 (cell 12):
+Output 3 (cell 13):
 
 ```text
 Relative Error: 0.014154496734875139
 ```
 
-Output 4 (cell 15):
+Output 4 (cell 16):
 
 ```text
 Gamma: 0.05209508360168687
@@ -82,13 +82,13 @@ Condition Number: 19.195669358089283
 Matrix Shape [rows, cols]: (36, 36)
 ```
 
-Output 5 (cell 17):
+Output 5 (cell 18):
 
 ```text
 Relative Error: 0.03496500256208569
 ```
 
-Output 6 (cell 20):
+Output 6 (cell 21):
 
 ```text
 Poisson solver comparison
@@ -124,7 +124,7 @@ resource model: pauli-lcu-qubitization
 acceptance: accepted_for_stated_scope (scope=finite_qsvt, full_qsvt=True)
 ```
 
-Output 7 (cell 24):
+Output 7 (cell 25):
 
 ```text
 1D condition_number: 19.196
@@ -144,7 +144,7 @@ Source: [`notebooks/real_examples/02_hamiltonian_simulation_schrodinger_dynamics
 :width: 760px
 ```
 
-Output 1 (cell 5):
+Output 1 (cell 6):
 
 ```text
 Hamiltonian simulation acceptance checks
@@ -169,10 +169,10 @@ Source: [`notebooks/real_examples/03_greens_function_response.ipynb`](../../note
 :width: 520px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
-Response Error: 0.001236443161688136
+Response Error: 0.0012364154973827407
 ```
 
 ### `04_ising_phase_transition_filtering.ipynb`
@@ -194,7 +194,7 @@ Source: [`notebooks/real_examples/04_ising_phase_transition_filtering.ipynb`](..
 :width: 760px
 ```
 
-Output 1 (cell 5):
+Output 1 (cell 6):
 
 ```text
 Ising sweep diagnostics
@@ -205,14 +205,14 @@ Maximum magnetization field [coupling ratio h/J] : 0.2
 Maximum magnetization [magnetization squared]       : 0.9818
 ```
 
-Output 2 (cell 9):
+Output 2 (cell 10):
 
 ```text
 Projector eigenweights [probability]: [0.7761 0.2239 0.0087 0.1109 0.1143]
 Projector error: 0.528681239779227
 ```
 
-Output 3 (cell 12):
+Output 3 (cell 13):
 
 ```text
 Two-spin executable filter
@@ -243,7 +243,7 @@ resource model: pauli-lcu-qubitization
 acceptance: accepted_for_stated_scope (scope=finite_qsvt, full_qsvt=True)
 ```
 
-Output 4 (cell 14):
+Output 4 (cell 15):
 
 ```text
 minimum_doublet_gap_field [coupling ratio h/J]: 0.600
@@ -263,15 +263,15 @@ Source: [`notebooks/real_examples/05_fermi_dirac_electronic_occupations.ipynb`](
 :width: 760px
 ```
 
-Output 1 (cell 5):
+Output 1 (cell 6):
 
 ```text
-Occupation Error: 0.00040589862385073276
-Exact Particle Number [electrons]: 9.385723227081577
-Polynomial Particle Number [electrons]: 9.386398855727302
+Occupation Error: 0.00040589869353275295
+Exact Particle Number [electrons]: 9.38572322708158
+Polynomial Particle Number [electrons]: 9.386398856204215
 ```
 
-Output 2 (cell 7):
+Output 2 (cell 8):
 
 ```text
 relative_density_matrix_error: 0.0004
@@ -294,7 +294,7 @@ Source: [`notebooks/real_examples/06_topological_band_projector_chern_marker.ipy
 :width: 760px
 ```
 
-Output 1 (cell 6):
+Output 1 (cell 7):
 
 ```text
 Dimension [states]: 50
@@ -302,19 +302,19 @@ Spectral range [model energy units]: (-2.800243765865765, 2.8002437658657637)
 Gap around zero [model energy units]: 0.13742301418061872
 ```
 
-Output 2 (cell 10):
+Output 2 (cell 11):
 
 ```text
 Scaled gap: 0.04907537545686846
-Projector relative error: 0.10636398990180881
+Projector relative error: 0.10636399000740762
 ```
 
-Output 3 (cell 12):
+Output 3 (cell 13):
 
 ```text
-Marker relative error: 0.45526864295151465
-Bulk exact marker [Chern marker]: 0.9583268200049554
-Bulk polynomial marker [Chern marker]: 0.6430191290198954
+Marker relative error: 0.4552686433282826
+Bulk exact marker [Chern marker]: 0.9583268200049557
+Bulk polynomial marker [Chern marker]: 0.643019128521274
 ```
 
 ### `07_singular_value_pseudoinverse_deblurring.ipynb`
@@ -326,7 +326,7 @@ Source: [`notebooks/real_examples/07_singular_value_pseudoinverse_deblurring.ipy
 :width: 760px
 ```
 
-Output 1 (cell 5):
+Output 1 (cell 6):
 
 ```text
 polynomial residual norm: 0.0606
@@ -334,12 +334,12 @@ solution relative error vs truncated SVD: 0.1145
 signal reconstruction error: 0.2002
 ```
 
-Output 2 (cell 7):
+Output 2 (cell 8):
 
 ```text
 polynomial_vs_truncated_svd_error: 0.1145
 regularized_signal_error: 0.2002
-naive_least_squares_signal_error: 899062.9002
+naive_least_squares_signal_error: 899062.8902
 validation: passed
 ```
 
@@ -352,19 +352,19 @@ Source: [`notebooks/real_examples/08_matrix_log_entropy_graph_laplacian.ipynb`](
 :width: 760px
 ```
 
-Output 1 (cell 5):
+Output 1 (cell 6):
 
 ```text
 reference entropy: 1.938678
 polynomial entropy: 1.938678
-log operator relative error: 1.803e-08
-entropy operator relative error: 4.289e-10
+log operator relative error: 1.735e-08
+entropy operator relative error: 1.300e-09
 ```
 
-Output 2 (cell 7):
+Output 2 (cell 8):
 
 ```text
 regularized_entropy: 1.938678
-polynomial_entropy_error: 2.830e-11
+polynomial_entropy_error: 1.851e-09
 validation: passed
 ```

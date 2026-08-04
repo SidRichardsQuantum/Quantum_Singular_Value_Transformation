@@ -19,6 +19,11 @@ All notebooks are thin clients of tested package functionality. Shared
 presentation and output-path helpers live in `notebooks._support`; they are not
 part of the installed package.
 
+Each notebook includes a standard guide and takeaways section with links through
+this ordered collection. Validate those sections and canonical notebook
+metadata with `python scripts/normalize_notebooks.py --check` from the
+repository root.
+
 Execute the curated set with:
 
 ```bash

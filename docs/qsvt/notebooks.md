@@ -12,6 +12,38 @@ The repository has three notebook roles.
   against the relevant classical algorithms or implementations for the same
   task.
 
+## Notebook contract
+
+Every maintained notebook starts with a visible guide containing a learning
+objective, prerequisites, estimated local runtime, and previous/index/next
+navigation. It ends with the demonstrated result, the boundary on how that
+result may be interpreted, and continuation links. Machine-readable metadata
+records the notebook role and schema version independently of transient kernel
+details. Explanatory prose uses a neutral technical voice without addressing
+the reader or notebook author directly.
+
+Each `Variable definitions` block is a compact mathematical glossary. It
+defines every symbol used in the notebook's formulas and equations, including
+non-obvious indices and domains, in at most eight bullets. Python locals,
+plotting handles, report containers, output paths, and similar implementation
+details belong beside the code that needs them rather than in this glossary.
+
+Check this contract from the repository root with:
+
+```bash
+python scripts/normalize_notebooks.py --check
+```
+
+Run the full clean-kernel suite with:
+
+```bash
+pytest -m notebook tests/test_real_example_notebooks.py
+```
+
+The suite redirects notebook-produced JSON and CSV files to a temporary output
+root. Normal interactive execution continues to write deliberate benchmark
+artifacts under `results/`.
+
 ## Notebook outputs
 
 The rendered results pages are generated from the embedded outputs of these
@@ -37,7 +69,9 @@ For the compact result summary and regeneration commands, see
 Several tutorial and benchmark notebooks import compact presentation and path
 helpers from `notebooks._support`. These repository-only helpers keep result
 tables, benchmark output directories, and repository-root discovery consistent
-without adding notebook presentation utilities to the installed package.
+without adding notebook presentation utilities to the installed package. The
+result-regeneration helper exposes the repository root and `src/` tree to each
+fresh kernel, so the documented command does not require manual path setup.
 
 ## Tutorial notebooks
 

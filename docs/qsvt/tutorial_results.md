@@ -10,7 +10,7 @@ This generated page displays the embedded plots and text outputs from every tuto
 - Source notebooks: `notebooks/tutorials/`
 - Notebooks displayed: `20`
 - Embedded plot artefacts displayed: `38`
-- Plain-text notebook results displayed: `83`
+- Plain-text notebook results displayed: `86`
 
 ## Related Pages
 
@@ -43,7 +43,7 @@ Source: [`notebooks/tutorials/01_QSVT_Scalar_and_Diagonal_Matrix.ipynb`](../../n
 :width: 520px
 ```
 
-Output 1 (cell 6):
+Output 1 (cell 7):
 
 ```text
 coeffs = [0. 0. 1.]
@@ -51,7 +51,7 @@ x_demo = [-1.  -0.5  0.   0.5  1. ]
 f(x_demo) = [1.   0.25 0.   0.25 1.  ]
 ```
 
-Output 2 (cell 11):
+Output 2 (cell 12):
 
 ```text
 a0 = 0.6
@@ -60,7 +60,7 @@ Exact f(a0) = 0.36
 Absolute error = 3.598e-13
 ```
 
-Output 3 (cell 17):
+Output 3 (cell 18):
 
 ```text
 scalar_abs_error: 3.598e-13
@@ -82,7 +82,7 @@ Source: [`notebooks/tutorials/02_QSVT_Singular_Value_Filter.ipynb`](../../notebo
 :width: 520px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 A = [[1.  0.  0.  0. ]
@@ -91,21 +91,21 @@ A = [[1.  0.  0.  0. ]
  [0.  0.  0.  0.1]]
 ```
 
-Output 2 (cell 6):
+Output 2 (cell 7):
 
 ```text
 Filter coefficients: [0. 0. 1.]
 Bounded on [-1,1]: True
 ```
 
-Output 3 (cell 8):
+Output 3 (cell 9):
 
 ```text
 Original singular values: [1.  0.7 0.3 0.1]
 Transformed singular values: [1.   0.49 0.09 0.01]
 ```
 
-Output 4 (cell 13):
+Output 4 (cell 14):
 
 ```text
 Comparison helper output
@@ -118,7 +118,7 @@ Input σ | QSVT output | Classical output | abs. error
 0.1 | 0.01 | 0.01 | 9.83e-15
 ```
 
-Output 5 (cell 15):
+Output 5 (cell 16):
 
 ```text
 max_abs_error: 1.000e-12
@@ -140,7 +140,7 @@ Source: [`notebooks/tutorials/03_QSP_Polynomial_Demo.ipynb`](../../notebooks/tut
 :width: 520px
 ```
 
-Output 1 (cell 10):
+Output 1 (cell 11):
 
 ```text
 qsvt_scan_max_error: 9.999e-13
@@ -162,14 +162,14 @@ Source: [`notebooks/tutorials/04_QSVT_Exact_Linear_Solver_Toy_Cases.ipynb`](../.
 :width: 760px
 ```
 
-Output 1 (cell 5):
+Output 1 (cell 6):
 
 ```text
 Polynomial coefficients: [0. 1.]
 Polynomial parity: odd
 ```
 
-Output 2 (cell 9):
+Output 2 (cell 10):
 
 ```text
 2x2 Pauli-X system
@@ -181,7 +181,7 @@ QSVT block real-part error: 1.414e-12
 normalized solution-state error: 9.998e-13
 ```
 
-Output 3 (cell 11):
+Output 3 (cell 12):
 
 ```text
 4x4 diagonal involutory system
@@ -212,12 +212,12 @@ Source: [`notebooks/tutorials/05_QSVT_Polynomial_Design_and_Approximation.ipynb`
 :width: 520px
 ```
 
-Output 1 (cell 13):
+Output 1 (cell 14):
 
 ```text
 best_degree [polynomial degree]: 13
 best_inverse_error: 1.775e-01
-max_bounded_value: 1.000000
+max_bounded_value: 0.999999
 validation: passed
 ```
 
@@ -240,7 +240,7 @@ Source: [`notebooks/tutorials/06_QSVT_Matrix_Functions_Powers_and_Roots.ipynb`](
 :width: 520px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 A = [[ 0.391293 -0.279612]
@@ -249,7 +249,7 @@ A = [[ 0.391293 -0.279612]
 Eigenvalues = [0.2 0.8]
 ```
 
-Output 2 (cell 7):
+Output 2 (cell 8):
 
 ```text
 A^2 via spectral map:
@@ -257,13 +257,13 @@ A^2 via spectral map:
  [-0.279612  0.448707]]
 ```
 
-Output 3 (cell 9):
+Output 3 (cell 10):
 
 ```text
 Bounded on [a,1] [boolean]: True
 ```
 
-Output 4 (cell 12):
+Output 4 (cell 13):
 
 ```text
 sqrt(A) exact:
@@ -275,7 +275,7 @@ sqrt(A) polynomial:
  [-0.208365  0.751864]]
 ```
 
-Output 5 (cell 15):
+Output 5 (cell 16):
 
 ```text
 A^0.5 via spectral routine:
@@ -283,7 +283,7 @@ A^0.5 via spectral routine:
  [-0.20841   0.751846]]
 ```
 
-Output 6 (cell 18):
+Output 6 (cell 19):
 
 ```text
 sqrt_poly_max_error: 5.293e-05
@@ -305,14 +305,14 @@ Source: [`notebooks/tutorials/07_QSVT_Sign_Function_and_Projectors.ipynb`](../..
 :width: 520px
 ```
 
-Output 1 (cell 5):
+Output 1 (cell 6):
 
 ```text
 Parity [polynomial parity]: odd
 Bounded [boolean]: True
 ```
 
-Output 2 (cell 7):
+Output 2 (cell 8):
 
 ```text
 Degree  1 → [0.316228 0.948683]
@@ -322,7 +322,7 @@ Degree  7 → [0.316228 0.948683]
 Degree  9 → [1. 0.]
 ```
 
-Output 3 (cell 9):
+Output 3 (cell 10):
 
 ```text
 A = [[-0.08498357 -0.49272486]
@@ -331,7 +331,7 @@ A = [[-0.08498357 -0.49272486]
 Eigenvalues = [-0.5  0.5]
 ```
 
-Output 4 (cell 12):
+Output 4 (cell 13):
 
 ```text
 Positive projector:
@@ -343,7 +343,7 @@ Negative projector:
  [0.492725 0.415016]]
 ```
 
-Output 5 (cell 15):
+Output 5 (cell 16):
 
 ```text
 projector_completeness_error: 0.000e+00
@@ -380,103 +380,103 @@ Source: [`notebooks/tutorials/08_QSVT_Design_and_Presets.ipynb`](../../notebooks
 :width: 520px
 ```
 
-Output 1 (cell 8):
+Output 1 (cell 11):
 
 ```text
 Sign preset
-  Degree [polynomial degree]:   13
-  Parity [polynomial parity]:   odd
-  Bounded [boolean]:  True
+  Degree [polynomial degree]: 13
+  Parity [polynomial parity]: odd
+  Bounded [boolean]: True
   Coeffs[:6]: [  0.         6.129262   0.       -50.716      0.       251.527514]
 
 Sign design
-  Degree [polynomial degree]:   13
-  Parity [polynomial parity]:   odd
-  Bounded [boolean]:  True
+  Degree [polynomial degree]: 13
+  Parity [polynomial parity]: odd
+  Bounded [boolean]: True
   Coeffs[:6]: [  0.         6.457019   0.       -57.235917   0.       292.840318]
 ```
 
-Output 2 (cell 10):
+Output 2 (cell 13):
 
 ```text
 Sign approximation errors on |x| >= gamma [dimensionless x]
-  Preset max error: 0.0934552831696136
-  Design   max error: 0.1154179522161527
-  Preset RMS error: 0.06614683867917648
-  Design   RMS error: 0.08075997225292844
+  Preset max error: 0.0934552831704778
+  Design   max error: 0.1154179522172386
+  Preset RMS error: 0.0661468386800502
+  Design   RMS error: 0.0807599722539769
 ```
 
-Output 3 (cell 12):
+Output 3 (cell 15):
 
 ```text
 Inverse-like preset
-  Degree [polynomial degree]:   13
-  Parity [polynomial parity]:   odd
-  Bounded [boolean]:  True
-  Coeffs[:6]: [  0.         6.728973   0.       -58.268765   0.       273.617565]
+  Degree [polynomial degree]: 13
+  Parity [polynomial parity]: odd
+  Bounded [boolean]: True
+  Coeffs[:6]: [  0.         6.728973   0.       -58.268764   0.       273.617562]
 
 Inverse-like design
-  Degree [polynomial degree]:   13
-  Parity [polynomial parity]:   odd
-  Bounded [boolean]:  True
-  Coeffs[:6]: [   0.          8.358813    0.       -104.680547    0.        576.087771]
+  Degree [polynomial degree]: 13
+  Parity [polynomial parity]: odd
+  Bounded [boolean]: True
+  Coeffs[:6]: [   0.          8.358806    0.       -104.680456    0.        576.087266]
 ```
 
-Output 4 (cell 14):
+Output 4 (cell 17):
 
 ```text
 Inverse-like approximation errors against gamma/x on |x| >= gamma [dimensionless x]
-  Preset max error: 0.2880707591425103
-  Design   max error: 0.16259666800719208
-  Preset rms error: 0.23148195494558868
-  Design   rms error: 0.08536905981807905
+  Preset max error: 0.28807075306467406
+  Design   max error: 0.16259704346707593
+  Preset rms error: 0.23148194925914078
+  Design   rms error: 0.08536933652103348
 ```
 
-Output 5 (cell 16):
+Output 5 (cell 19):
 
 ```text
 Filter preset
-  Degree [polynomial degree]:   12
-  Parity [polynomial parity]:   even
-  Bounded [boolean]:  True
-  Coeffs[:6]: [ 0.048935  0.       -5.137833  0.       73.671274  0.      ]
+  Degree [polynomial degree]: 12
+  Parity [polynomial parity]: even
+  Bounded [boolean]: True
+  Coeffs[:6]: [ 0.048935  0.       -5.137832  0.       73.671252  0.      ]
 
 Filter design
-  Degree [polynomial degree]:   12
-  Parity [polynomial parity]:   even
-  Bounded [boolean]:  True
-  Coeffs[:6]: [ 0.048935  0.       -5.137833  0.       73.671274  0.      ]
+  Degree [polynomial degree]: 12
+  Parity [polynomial parity]: even
+  Bounded [boolean]: True
+  Coeffs[:6]: [ 0.048935  0.       -5.137832  0.       73.671252  0.      ]
 ```
 
-Output 6 (cell 18):
+Output 6 (cell 21):
 
 ```text
 Filter approximation errors on [-1, 1] [dimensionless x]
-  Preset max error: 0.09099962265482087
-  Design   max error: 0.09099962265482087
-  Preset rms error: 0.04297312621293089
-  Design   rms error: 0.04297312621293089
+  Preset max error: 0.09099984674911066
+  Design   max error: 0.09099984674911066
+  Preset rms error: 0.042973219876119545
+  Design   rms error: 0.042973219876119545
 ```
 
-Output 7 (cell 20):
+Output 7 (cell 23):
 
 ```text
 Projector design
-  Degree [polynomial degree]:   13
-  Parity [polynomial parity]:   mixed
-  Bounded [boolean]:  True
+  Degree [polynomial degree]: 13
+  Parity [polynomial parity]: mixed
+  Bounded [boolean]: True
   Coeffs[:6]: [  0.5        3.228509   0.       -28.617959   0.       146.420159]
 ```
 
-Output 8 (cell 22):
+Output 8 (cell 25):
 
 ```text
 Projector approximation errors on |x| >= gamma [dimensionless x]
-  Max error: 0.05770897610807635
-  RMS error: 0.04037998612646422
+  Max error: 0.05770897610861936
+  RMS error: 0.04037998612698845
 ```
 
-Output 9 (cell 24):
+Output 9 (cell 27):
 
 ```text
 A = [[-0.9   0.    0.    0.    0.    0.    0.    0.  ]
@@ -489,7 +489,7 @@ A = [[-0.9   0.    0.    0.    0.    0.    0.    0.  ]
  [ 0.    0.    0.    0.    0.    0.    0.    0.9 ]]
 ```
 
-Output 10 (cell 25):
+Output 10 (cell 28):
 
 ```text
 Diag entries:
@@ -500,17 +500,17 @@ Design sign on diag:
   0.9488  ]
 
 Design inverse-like on diag:
-[-0.293721 -0.41768  -0.774708 -0.736804  0.736804  0.774708  0.41768
-  0.293721]
+[-0.29372  -0.41768  -0.774707 -0.736804  0.736804  0.774707  0.41768
+  0.29372 ]
 
 Design filter on diag:
-[0.979311 0.841569 0.023234 0.004676 0.004676 0.023234 0.841569 0.979311]
+[0.97931  0.841569 0.023234 0.004676 0.004676 0.023234 0.841569 0.97931 ]
 
 Design projector on diag:
 [0.0256   0.03295  0.024108 0.204342 0.795658 0.975892 0.96705  0.9744  ]
 ```
 
-Output 11 (cell 27):
+Output 11 (cell 30):
 
 ```text
 Diag(sign_design(A)) via spectral helper:
@@ -518,95 +518,103 @@ Diag(sign_design(A)) via spectral helper:
   0.9488  ]
 
 Diag(filter_design(A)) via spectral helper:
-[0.979311 0.841569 0.023234 0.004676 0.004676 0.023234 0.841569 0.979311]
+[0.97931  0.841569 0.023234 0.004676 0.004676 0.023234 0.841569 0.97931 ]
 
 Diag(projector_design(A)) via spectral helper:
 [0.0256   0.03295  0.024108 0.204342 0.795658 0.975892 0.96705  0.9744  ]
 ```
 
-Output 12 (cell 31):
+Output 12 (cell 34):
 
 ```text
 Sign preset
   Degree [polynomial degree]: 13
   Parity [polynomial parity]: odd
-  bounded [boolean]: True
-  max_abs_on_grid: 0.9999999999999876
+  Bounded [boolean]: True
+  Max absolute grid value: 0.9999999999988685
 
 Sign design
   Degree [polynomial degree]: 13
   Parity [polynomial parity]: odd
-  bounded [boolean]: True
-  max_abs_on_grid: 0.9999999999999538
+  Bounded [boolean]: True
+  Max absolute grid value: 0.9999999999989866
 
 Inverse preset
   Degree [polynomial degree]: 13
   Parity [polynomial parity]: odd
-  bounded [boolean]: True
-  max_abs_on_grid: 1.0
+  Bounded [boolean]: True
+  Max absolute grid value: 0.9999999913333939
 
 Inverse design
   Degree [polynomial degree]: 13
   Parity [polynomial parity]: odd
-  bounded [boolean]: True
-  max_abs_on_grid: 1.0
+  Bounded [boolean]: True
+  Max absolute grid value: 0.9999991236170338
 
 Filter preset
   Degree [polynomial degree]: 12
   Parity [polynomial parity]: even
-  bounded [boolean]: True
-  max_abs_on_grid: 0.9999996169147369
+  Bounded [boolean]: True
+  Max absolute grid value: 0.9999993162962317
 
 Filter design
   Degree [polynomial degree]: 12
   Parity [polynomial parity]: even
-  bounded [boolean]: True
-  max_abs_on_grid: 0.9999996169147369
+  Bounded [boolean]: True
+  Max absolute grid value: 0.9999993162962317
 
 Projector design
   Degree [polynomial degree]: 13
   Parity [polynomial parity]: mixed
-  bounded [boolean]: True
-  max_abs_on_grid: 0.9999999999999769
+  Bounded [boolean]: True
+  Max absolute grid value: 0.9999999999994933
+```
 
---- safe-region scalar checks ---
-Sign preset max err on |x| >= gamma [dimensionless x]: 0.0934552831696136
-Sign design   max err on |x| >= gamma [dimensionless x]: 0.1154179522161527
-Inverse preset max err vs gamma/x on |x| >= gamma [dimensionless x]: 0.2880707591425103
-Inverse design   max err vs gamma/x on |x| >= gamma [dimensionless x]: 0.16259666800719208
-Filter preset max err on [-1,1]: 0.09099962265482087
-Filter design   max err on [-1,1]: 0.09099962265482087
-Projector design max err on |x| >= gamma [dimensionless x]: 0.05770897610807635
+Output 13 (cell 36):
 
---- projector checkpoints ---
-x=-0.80 -> value  0.048090
-x=-0.50 -> value  0.047393
-x=-0.25 -> value  0.019036
-x=+0.25 -> value  0.980964
-x=+0.50 -> value  0.952607
-x=+0.80 -> value  0.951910
+```text
+Sign preset max error [dimensionless]: 0.0934552831704778
+Sign design max error [dimensionless]: 0.1154179522172386
+Inverse preset max error [dimensionless]: 0.28807075306467406
+Inverse design max error [dimensionless]: 0.16259704346707593
+Filter preset max error [dimensionless]: 0.09099984674911066
+Filter design max error [dimensionless]: 0.09099984674911066
+Projector design max error [dimensionless]: 0.05770897610861936
+```
 
---- Diagonal outputs ---
-Diag entries:
+Output 14 (cell 38):
+
+```text
+Projector checkpoints
+  x=-0.80 -> value  0.048090
+  x=-0.50 -> value  0.047393
+  x=-0.25 -> value  0.019036
+  x=+0.25 -> value  0.980964
+  x=+0.50 -> value  0.952607
+  x=+0.80 -> value  0.951910
+Diagonal entries:
 [-0.9  -0.55 -0.3  -0.1   0.1   0.3   0.55  0.9 ]
 Design sign:
 [-0.9488   -0.9341   -0.951784 -0.591317  0.591317  0.951784  0.9341
   0.9488  ]
 Design inverse-like:
-[-0.293721 -0.41768  -0.774708 -0.736804  0.736804  0.774708  0.41768
-  0.293721]
+[-0.29372  -0.41768  -0.774707 -0.736804  0.736804  0.774707  0.41768
+  0.29372 ]
 Design filter:
-[0.979311 0.841569 0.023234 0.004676 0.004676 0.023234 0.841569 0.979311]
+[0.97931  0.841569 0.023234 0.004676 0.004676 0.023234 0.841569 0.97931 ]
 Design projector:
 [0.0256   0.03295  0.024108 0.204342 0.795658 0.975892 0.96705  0.9744  ]
-
---- Spectral consistency checks ---
-Sign diag consistency [boolean]: True
-Filter diag consistency [boolean]: True
-Projector diag consistency [boolean]: True
 ```
 
-Output 13 (cell 33):
+Output 15 (cell 40):
+
+```text
+Sign diagonal consistency [boolean]: True
+Filter diagonal consistency [boolean]: True
+Projector diagonal consistency [boolean]: True
+```
+
+Output 16 (cell 42):
 
 ```text
 Sign_design_max_error: 1.154e-01
@@ -624,27 +632,27 @@ Source: [`notebooks/tutorials/09_QSVT_Algorithm_Workflows.ipynb`](../../notebook
 :width: 520px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 Eigenvalues: [-1.1405 -0.258   0.7399  1.6086]
 ```
 
-Output 2 (cell 6):
+Output 2 (cell 7):
 
 ```text
 Polynomial residual: 0.06293240930104763
 Relative error: 0.04364138573090729
 ```
 
-Output 3 (cell 8):
+Output 3 (cell 9):
 
 ```text
 SVD pseudoinverse residual: 0.2565206117883862
 SVD pseudoinverse relative error: 0.20781082242140675
 ```
 
-Output 4 (cell 10):
+Output 4 (cell 11):
 
 ```text
 Ground state overlap [probability]: 9.855e-01
@@ -656,7 +664,7 @@ Thermal density error: 6.412e-08
 Hamiltonian acceptance: accepted_for_stated_scope (scope=finite_qsvt, full_qsvt=True)
 ```
 
-Output 5 (cell 14):
+Output 5 (cell 15):
 
 ```text
 thermal-gibbs-workflow
@@ -672,16 +680,16 @@ Source: [`notebooks/tutorials/10_QSVT_Reports_CLI_and_Artifacts.ipynb`](../../no
 :width: 760px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 design-workflow sign design_sign_polynomial
 Degree [polynomial degree]: 9
-Max error: 0.24846221549762104
-Bounded margin: -8.881784197001252e-15
+Max error: 0.24846221549809866
+Bounded margin: 9.983125437429408e-13
 ```
 
-Output 2 (cell 6):
+Output 2 (cell 7):
 
 ```text
 JSON exists [boolean]: True
@@ -690,7 +698,7 @@ Loaded mode [string]: design-workflow
 Loaded coeff count [count]: 10
 ```
 
-Output 3 (cell 8):
+Output 3 (cell 9):
 
 ```text
 CLI design-workflow summary
@@ -703,12 +711,12 @@ Report kind [string]    : sign
 Coefficients [count]   : 10
 ```
 
-Output 4 (cell 10):
+Output 4 (cell 11):
 
 ```text
-Sign               max_error=2.485e-01, margin=-8.882e-15, parity [polynomial parity]=odd
-Filter             max_error=2.284e-01, margin=-1.998e-15, parity [polynomial parity]=even
-Interval Projector max_error=1.968e-01, margin=0.000e+00, parity [polynomial parity]=mixed
+Sign               max_error=2.485e-01, margin=9.983e-13, parity [polynomial parity]=odd
+Filter             max_error=2.284e-01, margin=1.000e-12, parity [polynomial parity]=even
+Interval Projector max_error=1.968e-01, margin=2.196e-08, parity [polynomial parity]=mixed
 ```
 
 ### `11_QSVT_Design_Tradeoffs.ipynb`
@@ -725,7 +733,7 @@ Source: [`notebooks/tutorials/11_QSVT_Design_Tradeoffs.ipynb`](../../notebooks/t
 :width: 520px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 Representative degree-3 designs
@@ -733,22 +741,22 @@ Representative degree-3 designs
 Family   : sign | inverse | sqrt | filter | interval
 Degree : 3 | 3 | 3 | 3 | 3
 Max error : 0.5479 | 0.9892 | 0.06978 | 0.5407 | 0.4328
-Bounded margin : 0 | 0.1963 | 0 | 0 | 0.3587
+Bounded margin : 8.48e-08 | 0.1963 | 1.00e-12 | 1.00e-12 | 0.3587
 Parity : odd | odd | mixed | even | mixed
 Bounded : True | True | True | True | True
 ```
 
-Output 2 (cell 6):
+Output 2 (cell 7):
 
 ```text
-<matplotlib.legend.Legend at 0x700140cecad0>
+<matplotlib.legend.Legend at 0x78804c6bf3e0>
 ```
 
-Output 3 (cell 8):
+Output 3 (cell 9):
 
 ```text
-Max error: 0.1632978061045941
-Bounded margin: 1.1102230246251565e-16
+Max error: 0.1632978388565094
+Bounded margin: 4.7561331761869496e-08
 ```
 
 ### `12_QSVT_Resource_Proxy_Limits.ipynb`
@@ -765,7 +773,7 @@ Source: [`notebooks/tutorials/12_QSVT_Resource_Proxy_Limits.ipynb`](../../notebo
 :width: 760px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 Degree [polynomial degree]= 5 , Signal_calls [operator calls]= 5 , Encoding_qubits [qubits]= 4
@@ -774,7 +782,7 @@ Degree [polynomial degree]= 13 , Signal_calls [operator calls]= 13 , Encoding_qu
 Degree [polynomial degree]= 17 , Signal_calls [operator calls]= 17 , Encoding_qubits [qubits]= 4
 ```
 
-Output 2 (cell 7):
+Output 2 (cell 8):
 
 ```text
 Exact rank [states]: 2
@@ -797,7 +805,7 @@ Source: [`notebooks/tutorials/13_Block_Encoded_QSVT_Workflow.ipynb`](../../noteb
 :width: 760px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 alpha: 2.166226041207235
@@ -808,16 +816,16 @@ unitarity_error: 1.275387486109542e-15
 reconstruction_error: 0.0
 ```
 
-Output 2 (cell 7):
+Output 2 (cell 8):
 
 ```text
 workflow: block-encoded-qsvt-workflow
 pennylane_qsvt_check: succeeded
-operator_relative_error: 1.000085679496161e-12
-state_relative_error: 1.0000638768158241e-12
+operator_relative_error: 1.0001155884483869e-12
+state_relative_error: 1.0000914132912342e-12
 ```
 
-Output 3 (cell 9):
+Output 3 (cell 10):
 
 ```text
 execution_kind: pennylane-qnode-statevector-qsvt-execution
@@ -827,7 +835,7 @@ qnode_real_error: 9.771e-13
 qnode_max_imag: 5.830e-02
 ```
 
-Output 4 (cell 12):
+Output 4 (cell 13):
 
 ```text
 validation: passed
@@ -842,7 +850,7 @@ Source: [`notebooks/tutorials/14_Sparse_Oracle_Assumptions.ipynb`](../../noteboo
 :width: 760px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 model                          implemented_here  visible_cost                           omitted_cost
@@ -853,7 +861,7 @@ sparse-access block encoding   no                degree and signal-call proxy on
 end-to-end quantum workflow    no                not estimated                          state preparation, readout, amplification
 ```
 
-Output 2 (cell 6):
+Output 2 (cell 7):
 
 ```text
 dimension= 8 degree= 4 signal_calls= 4 encoding_qubits= 3
@@ -862,7 +870,7 @@ dimension= 32 degree= 13 signal_calls= 13 encoding_qubits= 5
 dimension= 64 degree= 16 signal_calls= 16 encoding_qubits= 6
 ```
 
-Output 3 (cell 9):
+Output 3 (cell 10):
 
 ```text
 implementation_kind: polynomial-resource-proxy
@@ -877,7 +885,7 @@ omitted_costs:
  - hardware_compilation
 ```
 
-Output 4 (cell 11):
+Output 4 (cell 12):
 
 ```text
 validation: passed
@@ -892,7 +900,7 @@ Source: [`notebooks/tutorials/15_QSVT_Compatibility_Failure_Cases.ipynb`](../../
 :width: 760px
 ```
 
-Output 1 (cell 5):
+Output 1 (cell 6):
 
 ```text
 Compatibility and synthesis diagnostics
@@ -904,7 +912,7 @@ bounded mixed parity       1       mixed   0.75     0.25    multiple-parity-sequ
 interior peak violation    2       mixed   1.001    -0.001  classical-polynomial-only         False
 ```
 
-Output 2 (cell 7):
+Output 2 (cell 8):
 
 ```text
 coarse-grid max |P|: 0.996000
@@ -912,7 +920,7 @@ certified max |P|: 1.001000
 maximizing point: 0.100000
 ```
 
-Output 3 (cell 9):
+Output 3 (cell 10):
 
 ```text
 phase count: 4
@@ -926,7 +934,7 @@ bounded mixed parity     PolynomialRealizabilityError  The polynomial is extrema
 interior peak violation  PolynomialRealizabilityError  The polynomial can be evaluated classically but is not bounded by one on the sampled QSP/QSVT signal domain.
 ```
 
-Output 4 (cell 11):
+Output 4 (cell 12):
 
 ```text
 validation: passed
@@ -941,7 +949,7 @@ Source: [`notebooks/tutorials/16_QSVT_Linear_System_Comparisons.ipynb`](../../no
 :width: 520px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
 solver                         implementation_kind                 degree  iterations  residual_norm  relative_solution_error
@@ -951,7 +959,7 @@ conjugate_gradient             classical-iterative-reference       8       2    
 qsvt_style_polynomial_inverse  dense-spectral-polynomial-workflow  8       -           0.0575533      0.0571796
 ```
 
-Output 2 (cell 6):
+Output 2 (cell 7):
 
 ```text
 quantity                   value
@@ -963,7 +971,7 @@ gamma_condition_proxy      1.76759
 polynomial_relative_error  0.0571796
 ```
 
-Output 3 (cell 7):
+Output 3 (cell 8):
 
 ```text
 degree  relative_solution_error  residual_norm
@@ -988,7 +996,7 @@ Source: [`notebooks/tutorials/17_HHL_Linear_System_Solver.ipynb`](../../notebook
 :width: 760px
 ```
 
-Output 1 (cell 8):
+Output 1 (cell 12):
 
 ```text
 A =
@@ -1007,7 +1015,7 @@ state error = 2.2893289068207046e-16
 fidelity = 0.9999999999999998
 ```
 
-Output 2 (cell 10):
+Output 2 (cell 14):
 
 ```text
 m  grid_size  phase_indices  success_probability  state_error  fidelity
@@ -1019,7 +1027,7 @@ m  grid_size  phase_indices  success_probability  state_error  fidelity
 5  32         8, 16          0.997308             1.118e-16    1
 ```
 
-Output 3 (cell 13):
+Output 3 (cell 17):
 
 ```text
 A_sweep eigenvalues = [1.       1.414214]
@@ -1036,7 +1044,7 @@ m  phase_indices  estimated_eigenvalues  state_error  best_scaled_residual_norm 
 8  41, 58         1.00629, 1.42353       0.00101394   0.0019596                  0.532957
 ```
 
-Output 4 (cell 15):
+Output 4 (cell 20):
 
 ```text
 method              implementation_kind                        state_error  success_probability  residual_norm  relative_vector_error  phase_qubits  degree  gamma
@@ -1051,7 +1059,7 @@ dense_solve                    classical-dense-reference           8       0    
 qsvt_style_polynomial_inverse  dense-spectral-polynomial-workflow  8       0.0512108      0.0367455
 ```
 
-Output 5 (cell 17):
+Output 5 (cell 22):
 
 ```text
 HHL non-exact phase-estimation sweep:
@@ -1069,7 +1077,7 @@ QSVT-style degree sweep:
 degree  state_error  residual_norm  relative_vector_error
 ------  -----------  -------------  ---------------------
 4       0.00304798   0.0756114      0.052888
-6       0.00241537   0.0767715      0.0538402
+6       0.00241537   0.0767716      0.0538403
 8       0.00966862   0.0512108      0.0367455
 10      0.0105851    0.049006       0.0350409
 12      0.00197623   0.0390797      0.0279143
@@ -1090,7 +1098,7 @@ Source: [`notebooks/tutorials/18_Quantum_Walk_Search_Workflow.ipynb`](../../note
 :width: 520px
 ```
 
-Output 1 (cell 6):
+Output 1 (cell 7):
 
 ```text
 Adjacency matrix:
@@ -1100,22 +1108,22 @@ Adjacency matrix:
  [1. 1. 1. 0.]]
 ```
 
-Output 2 (cell 8):
+Output 2 (cell 9):
 
 ```text
 gamma = 0.250
 best sampled time = 3.141593
 best marked probability = 1.000000000000
-polynomial marked probability = 1.000000000061
-probability error = 6.125e-11
-state relative error = 3.520e-11
+polynomial marked probability = 1.000000000060
+probability error = 5.990e-11
+state relative error = 3.449e-11
 ```
 
-Output 3 (cell 14):
+Output 3 (cell 15):
 
 ```text
 mode: quantum-walk-search-workflow
-truth status: validated_polynomial_core
+truth status: validated_qsvt_compatible_polynomial_core
 resource proxy:
   proxy_kind: quantum-walk-search-resource-proxy
   graph_vertices: 4
@@ -1142,7 +1150,7 @@ Source: [`notebooks/tutorials/19_Accuracy_Driven_QSVT_Planning.ipynb`](../../not
 :width: 520px
 ```
 
-Output 1 (cell 7):
+Output 1 (cell 8):
 
 ```text
 Accuracy-driven plans
@@ -1155,7 +1163,7 @@ BlockEncodingSpec   block-encoding:pennylane-operator  7       0.07202          
 phase cache: {'size': 2, 'hits': 4, 'misses': 2}
 ```
 
-Output 2 (cell 8):
+Output 2 (cell 9):
 
 ```text
 Degree candidates for the matrix input
@@ -1167,7 +1175,7 @@ requested degree  error    single sequence  selected
 7                 0.07202  True             True
 ```
 
-Output 3 (cell 10):
+Output 3 (cell 11):
 
 ```text
 Executed error ledger
@@ -1185,7 +1193,7 @@ circuit logical-output relative error: 3.351e-08
 population_0 (circuit): 0.745669
 ```
 
-Output 4 (cell 12):
+Output 4 (cell 13):
 
 ```text
 validation: passed
@@ -1200,7 +1208,7 @@ Source: [`notebooks/tutorials/20_Finite_Shot_Device_Preflight_and_Circuit_Audit.
 :width: 520px
 ```
 
-Output 1 (cell 5):
+Output 1 (cell 6):
 
 ```text
 encoding wires: (0, 1, 2)
@@ -1208,7 +1216,7 @@ block-encoding method: fable
 normalization alpha: 1.6
 ```
 
-Output 2 (cell 7):
+Output 2 (cell 8):
 
 ```text
 Local device preflight
@@ -1226,7 +1234,7 @@ logical operations: ('PauliX', 'QSVT')
 measurements: ('ProbabilityMP',)
 ```
 
-Output 3 (cell 9):
+Output 3 (cell 10):
 
 ```text
 Circuit audit
@@ -1239,7 +1247,7 @@ decomposition status: succeeded
 executed by audit: False
 ```
 
-Output 4 (cell 11):
+Output 4 (cell 12):
 
 ```text
 Finite-shot comparison
@@ -1251,7 +1259,7 @@ logical probability L2 error  0.004    0
 reported success standard error: 0.0097
 ```
 
-Output 5 (cell 13):
+Output 5 (cell 14):
 
 ```text
 validation: passed

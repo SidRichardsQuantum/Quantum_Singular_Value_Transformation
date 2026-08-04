@@ -311,7 +311,7 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.2.24`
+Current release: `0.2.25`
 
 ## Notebooks
 
@@ -328,6 +328,12 @@ logical/decomposed circuit auditing, sampling uncertainty, and an ideal
 reference. The workflow tutorial and three corresponding real examples also
 show the versioned flagship acceptance checks and distinguish stated-scope
 acceptance from full-QSVT acceptance.
+
+Every maintained notebook begins with a compact guide containing its learning
+objective, prerequisites, expected local runtime, and collection navigation,
+and ends with result, interpretation-boundary, and continuation guidance.
+These visible sections and the machine-readable notebook role metadata are
+kept consistent by `python scripts/normalize_notebooks.py --check`.
 
 Real physics examples live in `notebooks/real_examples/`. The curated
 eight-notebook gallery covers Poisson inversion, Hamiltonian simulation,

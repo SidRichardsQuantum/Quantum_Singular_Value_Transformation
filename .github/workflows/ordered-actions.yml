@@ -144,6 +144,9 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e ".[dev,docs]"
 
+      - name: Check notebook contract
+        run: python scripts/normalize_notebooks.py --check
+
       - name: Execute notebooks
         run: pytest -m notebook tests/test_real_example_notebooks.py
 

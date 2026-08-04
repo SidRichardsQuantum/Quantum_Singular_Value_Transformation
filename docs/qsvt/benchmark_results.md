@@ -10,7 +10,7 @@ This generated page displays embedded plots and text outputs from the repository
 - Source notebooks: `notebooks/benchmarks/`
 - Notebooks displayed: `7`
 - Embedded plot artefacts displayed: `15`
-- Plain-text notebook results displayed: `14`
+- Plain-text notebook results displayed: `15`
 - Plot manifest: [`results/tables/benchmark_plot_manifest.csv`](../../results/tables/benchmark_plot_manifest.csv)
 
 ## Related Pages
@@ -49,7 +49,7 @@ Source: [`notebooks/benchmarks/01_linear_system_classical_vs_qsvt_proxy.ipynb`](
 :width: 760px
 ```
 
-Output 1 (cell 7):
+Output 1 (cell 8):
 
 ```text
 Poisson system
@@ -60,7 +60,7 @@ Scaled spectral gap gamma : 0.01474
 Inverse polynomial degree : 9
 ```
 
-Output 2 (cell 11):
+Output 2 (cell 12):
 
 ```text
 Finite HHL/QSVT/classical comparison
@@ -75,7 +75,7 @@ HHL success probability : n/a | n/a | n/a | 0.625
 Circuit depth : n/a | n/a | n/a | 11
 ```
 
-Output 3 (cell 13):
+Output 3 (cell 14):
 
 ```text
 Benchmark readout
@@ -105,7 +105,7 @@ Source: [`notebooks/benchmarks/02_matrix_functions_spectral_baselines.ipynb`](..
 :width: 760px
 ```
 
-Output 1 (cell 8):
+Output 1 (cell 9):
 
 ```text
 Matrix-function benchmark readout
@@ -135,7 +135,7 @@ Source: [`notebooks/benchmarks/03_scaling_sweeps.ipynb`](../../notebooks/benchma
 :width: 760px
 ```
 
-Output 1 (cell 8):
+Output 1 (cell 11):
 
 ```text
 Scaling sweep readout
@@ -143,6 +143,12 @@ Scaling sweep readout
 Reports : 6
 Matrix dimensions : 6, 10, 14
 Max QSVT signal calls : 9
+```
+
+Output 2 (cell 15):
+
+```text
+<BarContainer object of 3 artists>
 ```
 
 ### `04_classical_baseline_assumptions.ipynb`
@@ -164,7 +170,7 @@ Source: [`notebooks/benchmarks/04_classical_baseline_assumptions.ipynb`](../../n
 :width: 760px
 ```
 
-Output 1 (cell 8):
+Output 1 (cell 9):
 
 ```text
 Linear-system baseline readout
@@ -177,15 +183,15 @@ CGS   qsvt.benchmarks.conjugate_gradient_solve  4          1.77e-16           9 
 DLS times a dense direct solve. CGS reports iterative-solver diagnostics, but this educational benchmark still uses dense NumPy matrix-vector products.
 ```
 
-Output 2 (cell 10):
+Output 2 (cell 11):
 
 ```text
 Matrix-function baseline readout
 ================================
 Case  Classical algorithm             QSVT degree [polynomial degree]  Signal calls [operator calls]  Best time (s)
 ----  ------------------------------  -------------------------------  -----------------------------  -------------
-DSMF  dense-spectral-matrix-function  n/a                              n/a                            1.46e-04
-PME   spectral-polynomial-evaluation  2                                2                              1.44e-04
+DSMF  dense-spectral-matrix-function  n/a                              n/a                            1.22e-04
+PME   spectral-polynomial-evaluation  2                                2                              1.52e-04
 
 DSMF is the exact dense spectral reference. PME applies the supplied polynomial classically and is the closest fixed-polynomial comparison to a QSVT sequence.
 ```
@@ -199,7 +205,7 @@ Source: [`notebooks/benchmarks/05_quantum_walk_search_scaling.ipynb`](../../note
 :width: 760px
 ```
 
-Output 1 (cell 6):
+Output 1 (cell 7):
 
 ```text
 Quantum walk search scaling
@@ -208,8 +214,8 @@ Vertices : 4 | 4 | 8 | 8 | 16 | 16
 Degree : 8 | 14 | 8 | 14 | 10 | 18
 Best probability : 1 | 1 | 1 | 1 | 1 | 1
 Polynomial probability : 0.9999 | 1 | 0.9998 | 1 | 0.9999 | 1
-Probability error : 6.28e-05 | 6.18e-11 | 1.89e-04 | 5.21e-10 | 1.35e-04 | 1.19e-11
-State error : 3.96e-05 | 3.55e-11 | 2.05e-04 | 1.02e-09 | 9.39e-05 | 1.07e-11
+Probability error : 6.28e-05 | 5.99e-11 | 1.89e-04 | 5.20e-10 | 1.35e-04 | 1.09e-11
+State error : 3.96e-05 | 3.45e-11 | 2.05e-04 | 1.02e-09 | 9.39e-05 | 1.04e-11
 Signal calls : 8 | 14 | 8 | 14 | 10 | 18
 JSON: /workspaces/Quantum_Singular_Value_Transformation/results/benchmarks/quantum_walk_search_scaling.json
 CSV: /workspaces/Quantum_Singular_Value_Transformation/results/tables/quantum_walk_search_scaling_summary.csv
@@ -224,7 +230,7 @@ Source: [`notebooks/benchmarks/06_encoding_aware_resources.ipynb`](../../noteboo
 :width: 760px
 ```
 
-Output 1 (cell 7):
+Output 1 (cell 8):
 
 ```text
 Encoding-aware logical resources
@@ -253,14 +259,14 @@ qubitization     7       0.9     4              3              67             29
 qubitization     9       0.9     5              4              67             37332          pauli-lcu-qubitization
 ```
 
-Output 2 (cell 10):
+Output 2 (cell 11):
 
 ```text
 wrote results/benchmarks/encoding_aware_resource_sweep.json
 wrote results/tables/encoding_aware_resource_summary.csv
 ```
 
-Output 3 (cell 12):
+Output 3 (cell 13):
 
 ```text
 validation: passed
@@ -275,27 +281,27 @@ Source: [`notebooks/benchmarks/07_phase_synthesis_stress_matrix.ipynb`](../../no
 :width: 760px
 ```
 
-Output 1 (cell 5):
+Output 1 (cell 6):
 
 ```text
 Phase-synthesis stress rows
 ---------------------------
 case                 degree  coefficient range  margin  converged  phase count  max reconstruction error  mean time (s)
 -------------------  ------  -----------------  ------  ---------  -----------  ------------------------  -------------
-linear-margin        1       1                  0.5     True       2            5.00e-13                  8.79e-04
-cubic-moderate       3       1                  0.2     True       4            8.00e-13                  8.11e-04
-scaled-chebyshev-7   7       16                 0.05    True       8            9.52e-13                  0.01728
-nonic-near-boundary  9       1                  0.05    True       10           9.49e-13                  0.001309
+linear-margin        1       1                  0.5     True       2            5.00e-13                  0.001294
+cubic-moderate       3       1                  0.2     True       4            8.00e-13                  0.001423
+scaled-chebyshev-7   7       16                 0.05    True       8            9.52e-13                  0.00163
+nonic-near-boundary  9       1                  0.05    True       10           9.49e-13                  0.001792
 ```
 
-Output 2 (cell 9):
+Output 2 (cell 10):
 
 ```text
 wrote results/benchmarks/phase_synthesis_stress_matrix.json
 wrote results/tables/phase_synthesis_stress_summary.csv
 ```
 
-Output 3 (cell 11):
+Output 3 (cell 12):
 
 ```text
 validation: passed

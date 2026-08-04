@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Any, Literal
@@ -25,14 +26,19 @@ def find_repo_root(start: str | Path | None = None) -> Path:
 
 def benchmark_output_dirs(root: str | Path | None = None) -> tuple[Path, Path, Path]:
     """
-    Return ``(root, artifact_dir, table_dir)`` and create the output directories.
+    Return ``(output_root, artifact_dir, table_dir)`` and create directories.
+
+    ``QSVT_NOTEBOOK_OUTPUT_ROOT`` redirects every notebook-produced artifact
+    away from committed result directories during clean-kernel tests.
     """
     repo_root = find_repo_root(root)
-    artifact_dir = repo_root / "results/benchmarks"
-    table_dir = repo_root / "results/tables"
+    configured_root = os.environ.get("QSVT_NOTEBOOK_OUTPUT_ROOT")
+    output_root = Path(configured_root).resolve() if configured_root else repo_root
+    artifact_dir = output_root / "results/benchmarks"
+    table_dir = output_root / "results/tables"
     artifact_dir.mkdir(parents=True, exist_ok=True)
     table_dir.mkdir(parents=True, exist_ok=True)
-    return repo_root, artifact_dir, table_dir
+    return output_root, artifact_dir, table_dir
 
 
 def format_value(

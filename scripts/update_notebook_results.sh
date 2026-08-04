@@ -4,6 +4,7 @@ set -euo pipefail
 export MPLCONFIGDIR="${MPLCONFIGDIR:-/tmp/matplotlib-qsvt}"
 
 python scripts/extract_notebook_plots.py --preset all --execute --write-docs
+python scripts/normalize_notebooks.py
 
 git diff --stat -- \
   notebooks \

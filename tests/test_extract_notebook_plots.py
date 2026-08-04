@@ -1,4 +1,5 @@
 import importlib.util
+import os
 import sys
 from pathlib import Path
 
@@ -16,6 +17,7 @@ NotebookResult = extract_notebook_plots.NotebookResult
 PlotOutput = extract_notebook_plots.PlotOutput
 _doc_image_width = extract_notebook_plots._doc_image_width
 _format_text_output = extract_notebook_plots._format_text_output
+_notebook_execution_env = extract_notebook_plots._notebook_execution_env
 write_plot_manifest = extract_notebook_plots.write_plot_manifest
 
 
@@ -81,3 +83,15 @@ def test_format_text_output_removes_noisy_numpy_reprs():
     assert _format_text_output("(array([[1, 2], [3, 4]]), np.float64(0.5))") == (
         "([[1, 2], [3, 4]], 0.5)"
     )
+
+
+def test_notebook_execution_env_exposes_package_and_repository_helpers(monkeypatch):
+    monkeypatch.setenv("PYTHONPATH", "/external/pythonpath")
+
+    python_paths = _notebook_execution_env()["PYTHONPATH"].split(os.pathsep)
+
+    assert python_paths[:2] == [
+        str(SCRIPT_PATH.parents[1]),
+        str(SCRIPT_PATH.parents[1] / "src"),
+    ]
+    assert python_paths[2] == "/external/pythonpath"

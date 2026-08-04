@@ -70,7 +70,7 @@ from the package CLI.
 | `results/tables/design_sweep_summary.csv` | design sweep summary table | n/a | n/a | tabular summary of committed design-sweep JSON reports |
 | `results/tables/qsvt-error-summary.csv` | release summary table | n/a | n/a | compact index over the generated JSON reports |
 
-These snapshots were refreshed for package version `0.2.24`.
+These snapshots were refreshed for package version `0.2.25`.
 
 ## Benchmark Artefacts
 
@@ -103,7 +103,7 @@ The benchmark notebook set also includes
 executable assumption-check notebook rather than a committed timing-artifact
 generator.
 
-Benchmark artefacts were refreshed for package version `0.2.24`.
+Benchmark artefacts were refreshed for package version `0.2.25`.
 
 ## Real-Example Artefacts
 
@@ -134,11 +134,13 @@ scripts/update_notebook_results.sh
 Then commit the updated notebooks, extracted plots, manifests, and generated
 result pages together.
 
-The helper executes notebooks, extracts their embedded outputs, and regenerates
-the rendered result pages. The underlying command is:
+The helper executes notebooks, extracts their embedded outputs, regenerates the
+rendered result pages, and restores canonical notebook metadata. Its underlying
+commands are:
 
 ```bash
 python scripts/extract_notebook_plots.py --preset all --execute --write-docs
+python scripts/normalize_notebooks.py
 ```
 
 Refresh the pages from already-saved notebook outputs without re-executing:

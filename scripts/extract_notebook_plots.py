@@ -13,6 +13,7 @@ import argparse
 import base64
 import csv
 import json
+import os
 import re
 import struct
 import subprocess
@@ -27,6 +28,7 @@ REAL_EXAMPLES_DOC = Path("docs/qsvt/real_example_results.md")
 BENCHMARK_DOC = Path("docs/qsvt/benchmark_results.md")
 REAL_EXAMPLES_MANIFEST = Path("results/tables/real_examples_plot_manifest.csv")
 BENCHMARK_MANIFEST = Path("results/tables/benchmark_plot_manifest.csv")
+REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 @dataclass(frozen=True)
@@ -238,6 +240,17 @@ def extract_notebook_plots(
     return results
 
 
+def _notebook_execution_env() -> dict[str, str]:
+    """Return an environment that exposes package and repository-only helpers."""
+    env = os.environ.copy()
+    python_paths = [str(REPO_ROOT), str(REPO_ROOT / "src")]
+    existing_pythonpath = env.get("PYTHONPATH")
+    if existing_pythonpath:
+        python_paths.append(existing_pythonpath)
+    env["PYTHONPATH"] = os.pathsep.join(python_paths)
+    return env
+
+
 def execute_notebooks(notebook_glob: str) -> None:
     notebooks = sorted(Path().glob(notebook_glob))
     if not notebooks:
@@ -258,6 +271,7 @@ def execute_notebooks(notebook_glob: str) -> None:
                 str(notebook),
             ],
             check=True,
+            env=_notebook_execution_env(),
         )
 
 
