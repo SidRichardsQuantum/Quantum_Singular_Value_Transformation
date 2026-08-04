@@ -481,9 +481,8 @@ def _preset_args(preset: str) -> list[tuple[str, str, Path, str, str, Path | Non
                 BENCHMARK_DOC,
                 "Benchmark Results",
                 (
-                    "This generated page displays embedded benchmark plots "
-                    "and text outputs from the classical-baseline benchmark "
-                    "notebooks."
+                    "This generated page displays embedded plots and text "
+                    "outputs from the repository's benchmark notebooks."
                 ),
                 BENCHMARK_MANIFEST,
             )

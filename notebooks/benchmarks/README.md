@@ -21,3 +21,4 @@ evaluation (PME).
 | Classical baseline assumptions | `04_classical_baseline_assumptions.ipynb` |
 | Quantum walk search scaling | `05_quantum_walk_search_scaling.ipynb` |
 | Encoding-aware logical resources | `06_encoding_aware_resources.ipynb` |
+| Phase-synthesis stress matrix | `07_phase_synthesis_stress_matrix.ipynb` |

@@ -138,3 +138,5 @@ benchmark outputs.
 - For polynomial builders, see [Polynomial design helpers](design.md) and
   [Polynomial presets](presets.md).
 - For resource interpretation, see [QSVT resource model](qsvt_resource_model.md).
+- For the executed extrema, reconstruction, and structured-failure tutorial,
+  see [Notebooks](notebooks.md).

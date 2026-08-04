@@ -21,8 +21,9 @@ notebooks.
 | QSVT resource-proxy limits | `12_QSVT_Resource_Proxy_Limits.ipynb` |
 | Block-encoded QSVT workflow | `13_Block_Encoded_QSVT_Workflow.ipynb` |
 | Sparse operators and oracle assumptions | `14_Sparse_Oracle_Assumptions.ipynb` |
-| QSVT compatibility failure cases | `15_QSVT_Compatibility_Failure_Cases.ipynb` |
+| QSVT compatibility and synthesis failure cases | `15_QSVT_Compatibility_Failure_Cases.ipynb` |
 | QSVT linear-system comparisons | `16_QSVT_Linear_System_Comparisons.ipynb` |
 | HHL linear-system solver | `17_HHL_Linear_System_Solver.ipynb` |
 | Quantum walk search workflow | `18_Quantum_Walk_Search_Workflow.ipynb` |
 | Accuracy-driven QSVT planning | `19_Accuracy_Driven_QSVT_Planning.ipynb` |
+| Finite-shot device preflight and circuit audit | `20_Finite_Shot_Device_Preflight_and_Circuit_Audit.ipynb` |

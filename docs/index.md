@@ -144,7 +144,7 @@
       <article class="project-card">
         <div>
           <h3>Notebooks</h3>
-          <p>Browse the introductory and real physics notebook sequence, including PDE inversion, Hamiltonian dynamics, spectral filtering, topology, inverse imaging, and graph entropy.</p>
+          <p>Browse tutorials, benchmarks, and real physics workflows, including phase-synthesis diagnostics, finite-shot circuit auditing, PDE inversion, dynamics, filtering, topology, imaging, and graph entropy.</p>
         </div>
         <div class="tags">
           <span>Notebooks</span>

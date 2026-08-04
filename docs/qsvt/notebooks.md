@@ -61,11 +61,12 @@ domain-specific implementation logic.
 | `tutorials/12_QSVT_Resource_Proxy_Limits.ipynb` | block-encoding assumptions and QSVT resource-proxy limits | [QSVT resource model](qsvt_resource_model.md) |
 | `tutorials/13_Block_Encoded_QSVT_Workflow.ipynb` | finite block-encoded QSVT workflow | [Block encodings](block_encoding.md) |
 | `tutorials/14_Sparse_Oracle_Assumptions.ipynb` | sparse operators, oracle assumptions, and omitted costs | [QSVT resource model](qsvt_resource_model.md) |
-| `tutorials/15_QSVT_Compatibility_Failure_Cases.ipynb` | boundedness, parity, and QSVT compatibility failures | [QSVT compatibility](compatibility.md) |
+| `tutorials/15_QSVT_Compatibility_Failure_Cases.ipynb` | extrema boundedness, parity, phase reconstruction, and structured synthesis failures | [QSVT compatibility](compatibility.md), [Polynomial realizability and phase synthesis](synthesis.md) |
 | `tutorials/16_QSVT_Linear_System_Comparisons.ipynb` | dense, CG, and QSVT-style linear-system comparison rows | [Linear systems](linear_systems.md) |
 | `tutorials/17_HHL_Linear_System_Solver.ipynb` | experimental finite HHL comparison/tutorial | [Linear systems](linear_systems.md) |
 | `tutorials/18_Quantum_Walk_Search_Workflow.ipynb` | continuous-time quantum walk search and polynomial phase approximation | [Time evolution and response](time_evolution_and_response.md) |
 | `tutorials/19_Accuracy_Driven_QSVT_Planning.ipynb` | tolerance-driven degree search, synthesis caching, access models, logical resources, and circuit execution | [Accuracy-driven planning](planning.md) |
+| `tutorials/20_Finite_Shot_Device_Preflight_and_Circuit_Audit.ipynb` | local device preflight, logical/decomposed circuit audit, finite-shot uncertainty, and ideal-reference comparison | [Block encodings](block_encoding.md), [Implementation notes](implementation.md) |
 
 ## Benchmark notebooks
 
@@ -83,6 +84,7 @@ or polynomial matrix evaluation.
 | `benchmarks/04_classical_baseline_assumptions.ipynb` | what classical benchmark helpers time versus what QSVT proxy fields estimate | [Classical baseline details](classical_baselines.md) |
 | `benchmarks/05_quantum_walk_search_scaling.ipynb` | quantum walk search success, polynomial error, and QSVT signal-call proxies | [Time evolution and response](time_evolution_and_response.md) |
 | `benchmarks/06_encoding_aware_resources.ipynb` | embedding, FABLE, PrepSelPrep, and qubitization logical-resource comparison | [QSVT resource model](qsvt_resource_model.md), [Block encodings](block_encoding.md) |
+| `benchmarks/07_phase_synthesis_stress_matrix.ipynb` | phase-solver convergence, conditioning proxies, reconstruction accuracy, and environment-qualified timing | [Polynomial realizability and phase synthesis](synthesis.md) |
 
 ## Real physics examples
 

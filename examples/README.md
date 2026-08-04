@@ -8,6 +8,8 @@ Run them from the repository root:
 
 ```bash
 python examples/design_apply_report.py --output /tmp/qsvt-design-apply.json
+python examples/synthesis_diagnostics.py \
+  --output /tmp/qsvt-synthesis-diagnostics.json
 python examples/linear_system_compare.py \
   --output /tmp/qsvt-linear-system.json \
   --rows-output /tmp/qsvt-linear-system.csv
@@ -51,11 +53,14 @@ resource estimation, finite QNode execution, and classical-reference checks.
 Hamiltonian simulation coherently combines cosine and sine QSVT sequences,
 executes the finite selector-LCU circuit, and reports full stated-scope
 finite-QSVT acceptance with a concrete circuit-resource ledger.
-The additional cookbook scripts show the same APIs in isolation: planning from
-an accuracy target, supplying a custom circuit and signal projectors, checking
-a credential-free finite-shot FABLE run against an ideal reference, and
-comparing four access models for one logical operator. The finite-shot example
-uses a seeded local simulator and does not claim real-hardware execution.
+The additional cookbook scripts show the same APIs in isolation: extrema
+certification, realizability, successful and structured-failure phase
+synthesis, planning from an accuracy target, supplying a custom circuit and
+signal projectors, checking a credential-free finite-shot FABLE run against an
+ideal reference, and comparing four access models for one logical operator.
+The finite-shot example also audits logical and decomposed operations without
+submitting a provider job. It uses a seeded local simulator and does not claim
+real-hardware execution.
 
 Compatibility and benchmark reporting already have direct CLI commands:
 

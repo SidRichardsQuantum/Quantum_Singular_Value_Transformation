@@ -13,6 +13,7 @@ BENCHMARK_JSON = [
     Path("results/benchmarks/scaling_sweep_reports.json"),
     Path("results/benchmarks/quantum_walk_search_scaling.json"),
     Path("results/benchmarks/encoding_aware_resource_sweep.json"),
+    Path("results/benchmarks/phase_synthesis_stress_matrix.json"),
 ]
 
 BENCHMARK_CSV = [
@@ -21,6 +22,7 @@ BENCHMARK_CSV = [
     Path("results/tables/benchmark_scaling_summary.csv"),
     Path("results/tables/quantum_walk_search_scaling_summary.csv"),
     Path("results/tables/encoding_aware_resource_summary.csv"),
+    Path("results/tables/phase_synthesis_stress_summary.csv"),
 ]
 
 ALGORITHM_JSON = [
@@ -52,6 +54,24 @@ def test_committed_benchmark_json_artifacts_are_well_formed():
                 report["mode"] == "encoding-aware-qsvt-resource-report"
                 for reports in payload["reports"].values()
                 for report in reports
+            )
+            continue
+        if path.name == "phase_synthesis_stress_matrix.json":
+            assert payload["mode"] == "phase-solver-stress-matrix"
+            assert payload["summary"]["all_converged"] is True
+            assert (
+                payload["notebook_truth_contract"]["is_quantum_runtime_benchmark"]
+                is False
+            )
+            assert (
+                payload["notebook_truth_contract"]["timing_is_environment_specific"]
+                is True
+            )
+            assert payload["solver_policy"]["selected_solvers"] == ["root-finding"]
+            assert payload["rows"]
+            assert all(row["converged"] for row in payload["rows"])
+            assert all(
+                row["max_reconstruction_error"] < 1e-9 for row in payload["rows"]
             )
             continue
         if path.name == "quantum_walk_search_scaling.json":
@@ -143,6 +163,20 @@ def test_committed_benchmark_csv_artifacts_have_expected_columns():
                 "total_wires",
                 "total_gates",
                 "estimator_model",
+            }.issubset(rows[0])
+        elif path.name == "phase_synthesis_stress_summary.csv":
+            assert {
+                "case",
+                "degree",
+                "coefficient_dynamic_range",
+                "boundedness_margin",
+                "angle_solver",
+                "attempts",
+                "successes",
+                "converged",
+                "phase_count",
+                "max_reconstruction_error",
+                "mean_time_seconds",
             }.issubset(rows[0])
         else:
             assert required.issubset(rows[0])

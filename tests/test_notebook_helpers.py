@@ -46,7 +46,7 @@ def test_every_notebook_defines_markdown_variables_and_parameters():
         path for directory in NOTEBOOK_DIRS for path in directory.glob("*.ipynb")
     )
 
-    assert len(notebook_paths) == 33
+    assert len(notebook_paths) == 35
     for path in notebook_paths:
         notebook = json.loads(path.read_text(encoding="utf-8"))
         markdown_cells = [

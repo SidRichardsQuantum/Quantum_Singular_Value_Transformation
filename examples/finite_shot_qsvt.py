@@ -10,7 +10,7 @@ import pennylane as qml
 
 from qsvt.block_encoding import matrix_block_encoding_spec
 from qsvt.execution import execute_qsvt_from_spec
-from qsvt.hardware import execute_qsvt_on_device
+from qsvt.hardware import execute_qsvt_on_device, qsvt_hardware_circuit_report
 from qsvt.reports import save_report
 
 
@@ -40,6 +40,13 @@ def build_report(*, shots: int = 2000, seed: int = 12345) -> dict[str, object]:
         device,
         shots=shots,
     )
+    circuit_audit = qsvt_hardware_circuit_report(
+        spec,
+        poly,
+        prepare_basis_one,
+        device,
+        shots=shots,
+    )
     ideal = execute_qsvt_from_spec(spec, poly, [0.0, 1.0])
     if not sampled.succeeded or sampled.logical_probabilities is None:
         raise RuntimeError(sampled.error or "finite-shot execution failed")
@@ -55,6 +62,7 @@ def build_report(*, shots: int = 2000, seed: int = 12345) -> dict[str, object]:
         "shots": shots,
         "seed": seed,
         "sampled_execution": sampled.as_report(),
+        "circuit_audit": circuit_audit.as_report(),
         "ideal_execution": ideal.as_report(),
         "comparison": {
             "logical_probability_l2_error": probability_error,
@@ -67,11 +75,13 @@ def build_report(*, shots: int = 2000, seed: int = 12345) -> dict[str, object]:
         "truth_contract": {
             "uses_local_simulator": True,
             "uses_finite_shots": True,
+            "includes_nonexecuting_circuit_audit": True,
             "uses_real_hardware": False,
             "requires_provider_credentials": False,
             "purpose": (
-                "Validate preflight, finite-shot probabilities, uncertainty, and "
-                "ideal-reference agreement before selecting a provider device."
+                "Validate preflight, logical and decomposed circuit resources, "
+                "finite-shot probabilities, uncertainty, and ideal-reference "
+                "agreement before selecting a provider device."
             ),
         },
     }

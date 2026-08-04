@@ -23,6 +23,8 @@ The package provides small, explicit utilities for:
 - reproducing repository accuracy/resource studies with experimental sweep
   tooling
 - comparing finite accuracy with encoding-aware logical resources
+- auditing finite-shot local-device circuits before provider execution
+- benchmarking phase-synthesis convergence and reconstruction diagnostics
 
 The repository also includes a sequence of notebooks that introduce QSVT concepts step-by-step.
 
@@ -46,9 +48,10 @@ The repository also includes a sequence of notebooks that introduce QSVT concept
 | Reproduce repository parameter sweeps and frontiers | [Research sweeps](research.md) |
 | Classify polynomials and synthesize phases | [Phase synthesis](synthesis.md) |
 | Interpret QSVT compatibility failures | [QSVT compatibility](compatibility.md) |
+| Audit a finite-shot local-device circuit | [Block encodings](block_encoding.md) |
 | Explore executable examples | [Notebooks](notebooks.md) |
 | Inspect notebook-generated outputs | [Results](results.md) |
-| Compare classical baselines and QSVT proxies | [Classical benchmarks](benchmarks.md) |
+| Compare baselines, resources, and phase synthesis | [Benchmarks](benchmarks.md) |
 | Understand baseline assumptions | [Classical baseline details](classical_baselines.md) |
 | Interpret QSVT resource proxies | [QSVT resource model](qsvt_resource_model.md) |
 | See where the package is going next | [Roadmap](roadmap.md) |
@@ -109,14 +112,16 @@ Practical workflows and command line examples:
 
 See: [Usage guide](usage.md)
 
-### Classical benchmarks
+### Benchmarks
 
-Classical benchmark reports cover dense eigensolvers, dense linear solves,
-conjugate gradients, spectral matrix functions, and polynomial matrix-function
-references. They can attach QSVT resource proxies for degree and signal-call
-comparison.
+Benchmark reports cover dense eigensolvers, dense linear solves, conjugate
+gradients, spectral matrix functions, polynomial matrix-function references,
+encoding-aware logical resources, and phase-synthesis stress diagnostics.
+Classical baseline reports can attach QSVT resource proxies for degree and
+signal-call comparison; phase-synthesis timing remains explicitly
+environment-qualified.
 
-See: [Classical benchmarks](benchmarks.md)
+See: [Benchmark overview](benchmarks.md)
 
 For the assumptions behind each classical timing path, see
 [Classical baseline details](classical_baselines.md). For the proxy quantities
@@ -124,10 +129,11 @@ attached to QSVT-style comparisons, see [QSVT resource model](qsvt_resource_mode
 
 ### Notebooks
 
-Notebook-first examples cover the core QSVT path and real physics workflows,
-including matrix functions, spectral filters, PDE operators, Hamiltonian
-simulation, electronic occupations, topology, inverse imaging, and graph
-entropy.
+Notebook-first examples cover the core QSVT path, phase-synthesis success and
+failure diagnostics, finite-shot device preflight and circuit auditing,
+encoding/resource benchmarks, and real physics workflows including matrix
+functions, spectral filters, PDE operators, Hamiltonian simulation, electronic
+occupations, topology, inverse imaging, and graph entropy.
 
 See: [Notebooks](notebooks.md)
 

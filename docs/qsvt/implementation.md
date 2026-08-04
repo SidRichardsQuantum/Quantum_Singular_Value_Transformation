@@ -144,6 +144,11 @@ Provider credentials, paid job submission, native compilation, job persistence,
 calibration capture, mitigation, and provider-specific result objects remain
 outside the portable package report.
 
+The finite-shot tutorial applies these boundaries to one local FABLE circuit
+and compares preflight, logical/decomposed audit evidence, sampled
+probabilities, uncertainty, and an ideal reference; see
+[Notebooks](notebooks.md).
+
 ## Reports And JSON
 
 Diagnostics often contain NumPy arrays, complex numbers, and NumPy scalars.

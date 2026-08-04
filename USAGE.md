@@ -559,6 +559,8 @@ They keep common workflows visible without requiring a notebook:
 
 ```bash
 python examples/design_apply_report.py --output /tmp/qsvt-design-apply.json
+python examples/synthesis_diagnostics.py \
+  --output /tmp/qsvt-synthesis-diagnostics.json
 python examples/linear_system_compare.py \
   --output /tmp/qsvt-linear-system.json \
   --rows-output /tmp/qsvt-linear-system.csv
@@ -595,13 +597,15 @@ The three flagship examples use `qsvt.stable` and persist acceptance reports.
 Poisson inversion and spectral filtering additionally search degree from a
 tolerance, synthesize phases with reconstruction validation, execute concrete
 block encodings, and report encoding-aware logical resources. Hamiltonian
-simulation reports accepted `polynomial_core` evidence alongside the
-intentionally incomplete full-QSVT status.
-The focused additions demonstrate accuracy-driven planning, explicit custom
-block-encoding/projector contracts, seeded finite-shot validation on a local
-FABLE circuit, and an encoding-aware resource sweep across dense embedding,
-FABLE, PrepSelPrep, and qubitization. The finite-shot script requires no
-provider credentials and deliberately makes no real-hardware claim.
+simulation coherently combines its cosine and sine phase sequences, executes a
+finite selector-LCU circuit, and reports accepted finite-QSVT evidence with a
+concrete circuit-resource ledger.
+The focused additions demonstrate certification and structured phase-synthesis
+failures, accuracy-driven planning, explicit custom block-encoding/projector
+contracts, seeded finite-shot validation and circuit auditing on a local FABLE
+circuit, and an encoding-aware resource sweep across dense embedding, FABLE,
+PrepSelPrep, and qubitization. The finite-shot script requires no provider
+credentials and deliberately makes no real-hardware claim.
 
 ## Common Tasks
 

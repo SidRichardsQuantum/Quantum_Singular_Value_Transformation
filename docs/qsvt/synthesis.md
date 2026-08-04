@@ -103,6 +103,26 @@ qsvt phase-synthesis \
   --angle-solver root-finding
 ```
 
+Run the compact cookbook client to compare a successful definite-parity
+synthesis with bounded mixed-parity and interior-extrema failure cases:
+
+```bash
+python examples/synthesis_diagnostics.py \
+  --output /tmp/qsvt-synthesis-diagnostics.json
+```
+
+The saved report keeps boundedness, realizability, phase convention,
+reconstruction error, and structured failure metadata separate for every
+case. It measures classical phase synthesis and does not claim circuit or
+hardware execution.
+
+The companion compatibility tutorial visualizes the extrema case and executes
+the same success and structured-failure paths:
+
+```text
+notebooks/tutorials/15_QSVT_Compatibility_Failure_Cases.ipynb
+```
+
 ## Designed Polynomials
 
 Every `DesignWorkflowResult` can invoke the synthesis layer directly:
@@ -170,6 +190,17 @@ qsvt phase-solver-stress \
 The flat stress rows retain the case name, conditioning proxies, convergence,
 classical synthesis timing, phase count, and reconstruction errors. This is a
 phase-synthesis diagnostic, not a device benchmark.
+
+The committed stress-matrix benchmark fixes the base-install `root-finding`
+solver across increasing degree, shrinking boundedness margin, and a scaled
+Chebyshev polynomial with a larger monomial-coefficient range:
+
+```text
+notebooks/benchmarks/07_phase_synthesis_stress_matrix.ipynb
+```
+
+Its JSON/CSV artifacts keep timing environment-qualified and use convergence,
+phase count, and reconstruction error as the portable regression checks.
 
 ## Mixed-Parity Synthesis
 

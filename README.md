@@ -170,6 +170,8 @@ Run copy-pasteable cookbook scripts from the repository root:
 
 ```bash
 python examples/design_apply_report.py --output /tmp/qsvt-design-apply.json
+python examples/synthesis_diagnostics.py \
+  --output /tmp/qsvt-synthesis-diagnostics.json
 python examples/linear_system_compare.py \
   --output /tmp/qsvt-linear-system.json \
   --rows-output /tmp/qsvt-linear-system.csv
@@ -304,7 +306,7 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.2.22`
+Current release: `0.2.23`
 
 ## Notebooks
 
@@ -314,9 +316,13 @@ projectors, matrix functions, reusable design workflows, end-to-end algorithm
 workflows, reproducible reports, degree/error tradeoff studies, and
 resource-proxy limitations. The accuracy-driven planning tutorial connects a
 requested error to degree search, phase synthesis, access-model selection,
-logical resources, and finite circuit execution. The workflow tutorial and
-three corresponding real examples also show the versioned flagship acceptance
-checks and distinguish stated-scope acceptance from full-QSVT acceptance.
+logical resources, and finite circuit execution. The compatibility tutorial
+now compares extrema certificates with sampled checks and runs real phase
+synthesis, while the finite-shot tutorial covers local device preflight,
+logical/decomposed circuit auditing, sampling uncertainty, and an ideal
+reference. The workflow tutorial and three corresponding real examples also
+show the versioned flagship acceptance checks and distinguish stated-scope
+acceptance from full-QSVT acceptance.
 
 Real physics examples live in `notebooks/real_examples/`. The curated
 eight-notebook gallery covers Poisson inversion, Hamiltonian simulation,
@@ -329,7 +335,9 @@ Benchmark notebooks live in `notebooks/benchmarks/` and compare classical
 linear-system, spectral, and polynomial matrix-function baselines against
 QSVT-oriented resource proxies and their underlying assumptions. The
 encoding-aware resource benchmark compares embedding, FABLE, PrepSelPrep, and
-qubitization for the same logical operator.
+qubitization for the same logical operator. The phase-synthesis stress notebook
+records convergence, conditioning proxies, phase counts, reconstruction errors,
+and environment-qualified classical timing.
 
 See [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md) for the full notebook map.
 

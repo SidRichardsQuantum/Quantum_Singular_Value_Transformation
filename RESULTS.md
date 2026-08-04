@@ -28,11 +28,12 @@ Rendered result pages:
 | `notebooks/tutorials/12_QSVT_Resource_Proxy_Limits.ipynb` | embedded plots | block-encoding assumptions and resource-proxy limits |
 | `notebooks/tutorials/13_Block_Encoded_QSVT_Workflow.ipynb` | embedded plots | finite dense block-encoded QSVT workflow |
 | `notebooks/tutorials/14_Sparse_Oracle_Assumptions.ipynb` | embedded plot | sparse-oracle and access-model assumptions |
-| `notebooks/tutorials/15_QSVT_Compatibility_Failure_Cases.ipynb` | embedded plot | boundedness, parity, and synthesis failure cases |
+| `notebooks/tutorials/15_QSVT_Compatibility_Failure_Cases.ipynb` | embedded plot | extrema boundedness, parity, phase reconstruction, and structured synthesis failures |
 | `notebooks/tutorials/16_QSVT_Linear_System_Comparisons.ipynb` | embedded plots | dense, CG, and QSVT-style linear-system comparison rows |
 | `notebooks/tutorials/17_HHL_Linear_System_Solver.ipynb` | embedded plots | finite simulator-scale HHL linear-system solver |
 | `notebooks/tutorials/18_Quantum_Walk_Search_Workflow.ipynb` | embedded plots | continuous-time quantum-walk search workflow |
 | `notebooks/tutorials/19_Accuracy_Driven_QSVT_Planning.ipynb` | embedded plots | accuracy-driven degree selection, access models, logical resources, and finite execution |
+| `notebooks/tutorials/20_Finite_Shot_Device_Preflight_and_Circuit_Audit.ipynb` | embedded plot | device preflight, logical/decomposed audit, finite-shot uncertainty, and ideal comparison |
 
 ## Real-Example Notebook Results
 
@@ -69,7 +70,7 @@ from the package CLI.
 | `results/tables/design_sweep_summary.csv` | design sweep summary table | n/a | n/a | tabular summary of committed design-sweep JSON reports |
 | `results/tables/qsvt-error-summary.csv` | release summary table | n/a | n/a | compact index over the generated JSON reports |
 
-These snapshots were refreshed for package version `0.2.22`.
+These snapshots were refreshed for package version `0.2.23`.
 
 ## Benchmark Artefacts
 
@@ -87,11 +88,13 @@ baselines with QSVT-oriented resource proxies. The generated output page is
 | `results/benchmarks/scaling_sweep_reports.json` | combined DLS/CGS scaling-sweep reports |
 | `results/benchmarks/quantum_walk_search_scaling.json` | quantum-walk search success and QSVT proxy scaling |
 | `results/benchmarks/encoding_aware_resource_sweep.json` | embedding, FABLE, PrepSelPrep, and qubitization logical-resource sweep |
+| `results/benchmarks/phase_synthesis_stress_matrix.json` | phase-solver convergence, conditioning, reconstruction, and environment-qualified timing |
 | `results/tables/linear_system_benchmark_summary.csv` | compact linear-system benchmark table |
 | `results/tables/matrix_function_benchmark_summary.csv` | compact matrix-function benchmark table |
 | `results/tables/benchmark_scaling_summary.csv` | compact scaling-sweep benchmark table |
 | `results/tables/quantum_walk_search_scaling_summary.csv` | compact quantum-walk search scaling table |
 | `results/tables/encoding_aware_resource_summary.csv` | compact encoding-aware logical-resource comparison |
+| `results/tables/phase_synthesis_stress_summary.csv` | compact phase-synthesis stress matrix |
 | `results/tables/benchmark_plot_manifest.csv` | manifest for extracted benchmark notebook plots |
 | `results/plots/benchmarks/` | extracted benchmark timing and QSVT-proxy PNG plots |
 
@@ -100,7 +103,7 @@ The benchmark notebook set also includes
 executable assumption-check notebook rather than a committed timing-artifact
 generator.
 
-Benchmark artefacts were refreshed for package version `0.2.22`.
+Benchmark artefacts were refreshed for package version `0.2.23`.
 
 ## Real-Example Artefacts
 

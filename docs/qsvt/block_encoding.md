@@ -191,8 +191,17 @@ python examples/finite_shot_qsvt.py \
 
 The finite-shot example uses a seeded local `default.qubit` device and a
 decomposable FABLE access model. It validates preflight, uncertainty, and
-agreement with an ideal finite reference; it does not submit to real hardware
-or require provider credentials.
+agreement with an ideal finite reference. The same report embeds a
+non-executing audit of logical and decomposed operations, wire order, gate
+counts, and unsupported operations. It does not submit to real hardware or
+require provider credentials.
+
+For a notebook walkthrough with preflight tables, logical/decomposed operation
+ledgers, finite-shot error bars, and an ideal-reference plot, see:
+
+```text
+notebooks/tutorials/20_Finite_Shot_Device_Preflight_and_Circuit_Audit.ipynb
+```
 
 ## What Is Verified
 

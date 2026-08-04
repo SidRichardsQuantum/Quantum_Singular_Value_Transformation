@@ -50,6 +50,7 @@ from examples import (
     problem_workflow,
     rectangular_execution,
     spectral_filter_qsvt,
+    synthesis_diagnostics,
     threshold_filter,
 )
 
@@ -93,6 +94,9 @@ finite_shot_qsvt.main([
     "--output", str(output_dir / "finite-shot-qsvt.json"),
     "--shots", "2000",
     "--seed", "12345",
+])
+synthesis_diagnostics.main([
+    "--output", str(output_dir / "synthesis-diagnostics.json"),
 ])
 encoding_aware_resources.main([
     "--output", str(output_dir / "encoding-aware-resources.json"),
@@ -146,6 +150,9 @@ encoding_aware_resources.main([
     )
     finite_shot = json.loads(
         (tmp_path / "finite-shot-qsvt.json").read_text(encoding="utf-8")
+    )
+    synthesis = json.loads(
+        (tmp_path / "synthesis-diagnostics.json").read_text(encoding="utf-8")
     )
     encoding_resources = json.loads(
         (tmp_path / "encoding-aware-resources.json").read_text(encoding="utf-8")
@@ -258,9 +265,40 @@ encoding_aware_resources.main([
     assert finite_shot["sampled_execution"]["succeeded"] is True
     assert finite_shot["sampled_execution"]["preflight"]["passed"] is True
     assert finite_shot["sampled_execution"]["shots"] == 2000
+    assert finite_shot["circuit_audit"]["schema_name"] == "hardware-qsvt-circuit"
+    assert finite_shot["circuit_audit"]["executed"] is False
+    assert finite_shot["circuit_audit"]["preflight"]["passed"] is True
+    assert finite_shot["circuit_audit"]["decomposition_status"] == "succeeded"
+    assert "QSVT" in finite_shot["circuit_audit"]["logical_operations"]
+    assert (
+        finite_shot["circuit_audit"]["decomposed_resource_summary"]["num_gates"]
+        > finite_shot["circuit_audit"]["logical_resource_summary"]["num_gates"]
+    )
     assert finite_shot["ideal_execution"]["succeeded"] is True
     assert finite_shot["comparison"]["logical_probability_l2_error"] < 0.08
     assert finite_shot["truth_contract"]["uses_real_hardware"] is False
+
+    assert synthesis["example"] == "synthesis-diagnostics"
+    assert synthesis["summary"] == {
+        "case_count": 3,
+        "successful_syntheses": 1,
+        "structured_failures": 2,
+    }
+    single = synthesis["cases"]["single-sequence-odd"]
+    assert single["realizability"]["realizability_kind"] == ("single-sequence-qsp-qsvt")
+    assert single["synthesis"]["succeeded"] is True
+    assert single["synthesis"]["reconstruction_max_error"] < 1e-9
+    assert "projector-phase convention" in single["synthesis"]["convention"]
+    mixed = synthesis["cases"]["bounded-mixed-parity"]
+    assert mixed["boundedness"]["is_bounded"] is True
+    assert mixed["realizability"]["requires_parity_decomposition"] is True
+    assert mixed["synthesis"]["succeeded"] is False
+    assert mixed["synthesis"]["error_type"] == "PolynomialRealizabilityError"
+    interior_peak = synthesis["cases"]["interior-peak-violation"]
+    assert interior_peak["boundedness"]["is_bounded"] is False
+    assert interior_peak["boundedness"]["maximizing_point"] == pytest.approx(0.1)
+    assert interior_peak["boundedness"]["max_abs_value"] > 1.0
+    assert interior_peak["synthesis"]["succeeded"] is False
 
     assert encoding_resources["example"] == "encoding-aware-resources"
     assert encoding_resources["mode"] == "encoding-aware-resource-cookbook"

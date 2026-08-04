@@ -1,0 +1,589 @@
+{
+  "mode": "phase-solver-stress-matrix",
+  "implementation_kind": "pennylane-phase-solver-stress-matrix",
+  "cases": {
+    "linear-margin": {
+      "mode": "phase-solver-benchmark",
+      "implementation_kind": "pennylane-phase-solver-microbenchmark",
+      "coeffs": [
+        0.0,
+        0.5
+      ],
+      "routine": "QSVT",
+      "repeats": 2,
+      "rows": [
+        {
+          "angle_solver": "root-finding",
+          "attempts": 2,
+          "successes": 2,
+          "converged": true,
+          "best_time_seconds": 0.0006055009998817695,
+          "mean_time_seconds": 0.0008792429998720763,
+          "max_reconstruction_error": 5.002664948960955e-13,
+          "mean_reconstruction_error": 5.002664948960955e-13,
+          "phase_count": 2,
+          "error_types": []
+        }
+      ],
+      "realizability": {
+        "mode": "polynomial-realizability-report",
+        "coeffs": [
+          0.0,
+          0.5
+        ],
+        "degree": 1,
+        "parity": "odd",
+        "bounded": true,
+        "max_abs_value": 0.5,
+        "bounded_domain": [
+          -1.0,
+          1.0
+        ],
+        "bounded_num_points": 4001,
+        "realizability_kind": "single-sequence-qsp-qsvt",
+        "single_sequence_realizable": true,
+        "requires_parity_decomposition": false,
+        "even_coeffs": [
+          0.0,
+          0.0
+        ],
+        "odd_coeffs": [
+          0.0,
+          0.5
+        ],
+        "reasons": [],
+        "boundedness_certificate": {
+          "mode": "polynomial-boundedness-certificate",
+          "certification_kind": "numerical-polynomial-extrema",
+          "coeffs": [
+            0.0,
+            0.5
+          ],
+          "domain": [
+            -1.0,
+            1.0
+          ],
+          "bound": 1.0,
+          "tolerance": 1e-10,
+          "critical_points": [],
+          "evaluated_points": [
+            -1.0,
+            1.0
+          ],
+          "values": [
+            -0.5,
+            0.5
+          ],
+          "max_abs_value": 0.5,
+          "maximizing_point": -1.0,
+          "margin": 0.5,
+          "is_bounded": true,
+          "derivative_root_residual": 0.0,
+          "interpretation": "All interval endpoints and numerically real derivative roots were evaluated. This is a floating-point extrema certificate, not an interval-arithmetic proof."
+        },
+        "interpretation": "The polynomial is extrema-bounded and has definite parity, so it is eligible for one standard QSP/QSVT phase sequence."
+      },
+      "conditioning_proxies": {
+        "degree": 1,
+        "coefficient_dynamic_range": 1.0,
+        "boundedness_margin": 0.5
+      },
+      "truth_contract": {
+        "timing_kind": "python_wall_clock_microbenchmark",
+        "is_hardware_runtime": false,
+        "measured_component": "classical_phase_synthesis"
+      }
+    },
+    "cubic-moderate": {
+      "mode": "phase-solver-benchmark",
+      "implementation_kind": "pennylane-phase-solver-microbenchmark",
+      "coeffs": [
+        0.0,
+        0.0,
+        0.0,
+        0.8
+      ],
+      "routine": "QSVT",
+      "repeats": 2,
+      "rows": [
+        {
+          "angle_solver": "root-finding",
+          "attempts": 2,
+          "successes": 2,
+          "converged": true,
+          "best_time_seconds": 0.0008102530000542174,
+          "mean_time_seconds": 0.0008112205000543327,
+          "max_reconstruction_error": 7.998046669399628e-13,
+          "mean_reconstruction_error": 7.998046669399628e-13,
+          "phase_count": 4,
+          "error_types": []
+        }
+      ],
+      "realizability": {
+        "mode": "polynomial-realizability-report",
+        "coeffs": [
+          0.0,
+          0.0,
+          0.0,
+          0.8
+        ],
+        "degree": 3,
+        "parity": "odd",
+        "bounded": true,
+        "max_abs_value": 0.8,
+        "bounded_domain": [
+          -1.0,
+          1.0
+        ],
+        "bounded_num_points": 4001,
+        "realizability_kind": "single-sequence-qsp-qsvt",
+        "single_sequence_realizable": true,
+        "requires_parity_decomposition": false,
+        "even_coeffs": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "odd_coeffs": [
+          0.0,
+          0.0,
+          0.0,
+          0.8
+        ],
+        "reasons": [],
+        "boundedness_certificate": {
+          "mode": "polynomial-boundedness-certificate",
+          "certification_kind": "numerical-polynomial-extrema",
+          "coeffs": [
+            0.0,
+            0.0,
+            0.0,
+            0.8
+          ],
+          "domain": [
+            -1.0,
+            1.0
+          ],
+          "bound": 1.0,
+          "tolerance": 1e-10,
+          "critical_points": [
+            0.0
+          ],
+          "evaluated_points": [
+            -1.0,
+            0.0,
+            1.0
+          ],
+          "values": [
+            -0.8,
+            0.0,
+            0.8
+          ],
+          "max_abs_value": 0.8,
+          "maximizing_point": -1.0,
+          "margin": 0.19999999999999996,
+          "is_bounded": true,
+          "derivative_root_residual": 0.0,
+          "interpretation": "All interval endpoints and numerically real derivative roots were evaluated. This is a floating-point extrema certificate, not an interval-arithmetic proof."
+        },
+        "interpretation": "The polynomial is extrema-bounded and has definite parity, so it is eligible for one standard QSP/QSVT phase sequence."
+      },
+      "conditioning_proxies": {
+        "degree": 3,
+        "coefficient_dynamic_range": 1.0,
+        "boundedness_margin": 0.19999999999999996
+      },
+      "truth_contract": {
+        "timing_kind": "python_wall_clock_microbenchmark",
+        "is_hardware_runtime": false,
+        "measured_component": "classical_phase_synthesis"
+      }
+    },
+    "scaled-chebyshev-7": {
+      "mode": "phase-solver-benchmark",
+      "implementation_kind": "pennylane-phase-solver-microbenchmark",
+      "coeffs": [
+        0.0,
+        -6.65,
+        0.0,
+        53.2,
+        0.0,
+        -106.4,
+        0.0,
+        60.8
+      ],
+      "routine": "QSVT",
+      "repeats": 2,
+      "rows": [
+        {
+          "angle_solver": "root-finding",
+          "attempts": 2,
+          "successes": 2,
+          "converged": true,
+          "best_time_seconds": 0.001135231000262138,
+          "mean_time_seconds": 0.017281609500514605,
+          "max_reconstruction_error": 9.523493105234593e-13,
+          "mean_reconstruction_error": 9.523493105234593e-13,
+          "phase_count": 8,
+          "error_types": []
+        }
+      ],
+      "realizability": {
+        "mode": "polynomial-realizability-report",
+        "coeffs": [
+          0.0,
+          -6.65,
+          0.0,
+          53.2,
+          0.0,
+          -106.4,
+          0.0,
+          60.8
+        ],
+        "degree": 7,
+        "parity": "odd",
+        "bounded": true,
+        "max_abs_value": 0.9500000000000135,
+        "bounded_domain": [
+          -1.0,
+          1.0
+        ],
+        "bounded_num_points": 4001,
+        "realizability_kind": "single-sequence-qsp-qsvt",
+        "single_sequence_realizable": true,
+        "requires_parity_decomposition": false,
+        "even_coeffs": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "odd_coeffs": [
+          0.0,
+          -6.65,
+          0.0,
+          53.2,
+          0.0,
+          -106.4,
+          0.0,
+          60.8
+        ],
+        "reasons": [],
+        "boundedness_certificate": {
+          "mode": "polynomial-boundedness-certificate",
+          "certification_kind": "numerical-polynomial-extrema",
+          "coeffs": [
+            0.0,
+            -6.65,
+            0.0,
+            53.2,
+            0.0,
+            -106.4,
+            0.0,
+            60.8
+          ],
+          "domain": [
+            -1.0,
+            1.0
+          ],
+          "bound": 1.0,
+          "tolerance": 1e-10,
+          "critical_points": [
+            -0.9009688679024188,
+            -0.6234898018587323,
+            -0.22252093395631484,
+            0.2225209339563147,
+            0.6234898018587319,
+            0.9009688679024197
+          ],
+          "evaluated_points": [
+            -1.0,
+            -0.9009688679024188,
+            -0.6234898018587323,
+            -0.22252093395631484,
+            0.2225209339563147,
+            0.6234898018587319,
+            0.9009688679024197,
+            1.0
+          ],
+          "values": [
+            -0.9499999999999957,
+            0.9500000000000028,
+            -0.949999999999998,
+            0.9500000000000001,
+            -0.9500000000000001,
+            0.9499999999999984,
+            -0.9500000000000135,
+            0.9499999999999957
+          ],
+          "max_abs_value": 0.9500000000000135,
+          "maximizing_point": 0.9009688679024197,
+          "margin": 0.0499999999999865,
+          "is_bounded": true,
+          "derivative_root_residual": 1.6076029396572267e-13,
+          "interpretation": "All interval endpoints and numerically real derivative roots were evaluated. This is a floating-point extrema certificate, not an interval-arithmetic proof."
+        },
+        "interpretation": "The polynomial is extrema-bounded and has definite parity, so it is eligible for one standard QSP/QSVT phase sequence."
+      },
+      "conditioning_proxies": {
+        "degree": 7,
+        "coefficient_dynamic_range": 16.0,
+        "boundedness_margin": 0.0499999999999865
+      },
+      "truth_contract": {
+        "timing_kind": "python_wall_clock_microbenchmark",
+        "is_hardware_runtime": false,
+        "measured_component": "classical_phase_synthesis"
+      }
+    },
+    "nonic-near-boundary": {
+      "mode": "phase-solver-benchmark",
+      "implementation_kind": "pennylane-phase-solver-microbenchmark",
+      "coeffs": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.95
+      ],
+      "routine": "QSVT",
+      "repeats": 2,
+      "rows": [
+        {
+          "angle_solver": "root-finding",
+          "attempts": 2,
+          "successes": 2,
+          "converged": true,
+          "best_time_seconds": 0.0012907609998364933,
+          "mean_time_seconds": 0.0013088849996165663,
+          "max_reconstruction_error": 9.494627306594339e-13,
+          "mean_reconstruction_error": 9.494627306594339e-13,
+          "phase_count": 10,
+          "error_types": []
+        }
+      ],
+      "realizability": {
+        "mode": "polynomial-realizability-report",
+        "coeffs": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.95
+        ],
+        "degree": 9,
+        "parity": "odd",
+        "bounded": true,
+        "max_abs_value": 0.95,
+        "bounded_domain": [
+          -1.0,
+          1.0
+        ],
+        "bounded_num_points": 4001,
+        "realizability_kind": "single-sequence-qsp-qsvt",
+        "single_sequence_realizable": true,
+        "requires_parity_decomposition": false,
+        "even_coeffs": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "odd_coeffs": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.95
+        ],
+        "reasons": [],
+        "boundedness_certificate": {
+          "mode": "polynomial-boundedness-certificate",
+          "certification_kind": "numerical-polynomial-extrema",
+          "coeffs": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.95
+          ],
+          "domain": [
+            -1.0,
+            1.0
+          ],
+          "bound": 1.0,
+          "tolerance": 1e-10,
+          "critical_points": [
+            0.0
+          ],
+          "evaluated_points": [
+            -1.0,
+            0.0,
+            1.0
+          ],
+          "values": [
+            -0.95,
+            0.0,
+            0.95
+          ],
+          "max_abs_value": 0.95,
+          "maximizing_point": -1.0,
+          "margin": 0.050000000000000044,
+          "is_bounded": true,
+          "derivative_root_residual": 0.0,
+          "interpretation": "All interval endpoints and numerically real derivative roots were evaluated. This is a floating-point extrema certificate, not an interval-arithmetic proof."
+        },
+        "interpretation": "The polynomial is extrema-bounded and has definite parity, so it is eligible for one standard QSP/QSVT phase sequence."
+      },
+      "conditioning_proxies": {
+        "degree": 9,
+        "coefficient_dynamic_range": 1.0,
+        "boundedness_margin": 0.050000000000000044
+      },
+      "truth_contract": {
+        "timing_kind": "python_wall_clock_microbenchmark",
+        "is_hardware_runtime": false,
+        "measured_component": "classical_phase_synthesis"
+      }
+    }
+  },
+  "rows": [
+    {
+      "case": "linear-margin",
+      "degree": 1,
+      "coefficient_dynamic_range": 1.0,
+      "boundedness_margin": 0.5,
+      "angle_solver": "root-finding",
+      "attempts": 2,
+      "successes": 2,
+      "converged": true,
+      "best_time_seconds": 0.0006055009998817695,
+      "mean_time_seconds": 0.0008792429998720763,
+      "max_reconstruction_error": 5.002664948960955e-13,
+      "mean_reconstruction_error": 5.002664948960955e-13,
+      "phase_count": 2,
+      "error_types": []
+    },
+    {
+      "case": "cubic-moderate",
+      "degree": 3,
+      "coefficient_dynamic_range": 1.0,
+      "boundedness_margin": 0.19999999999999996,
+      "angle_solver": "root-finding",
+      "attempts": 2,
+      "successes": 2,
+      "converged": true,
+      "best_time_seconds": 0.0008102530000542174,
+      "mean_time_seconds": 0.0008112205000543327,
+      "max_reconstruction_error": 7.998046669399628e-13,
+      "mean_reconstruction_error": 7.998046669399628e-13,
+      "phase_count": 4,
+      "error_types": []
+    },
+    {
+      "case": "scaled-chebyshev-7",
+      "degree": 7,
+      "coefficient_dynamic_range": 16.0,
+      "boundedness_margin": 0.0499999999999865,
+      "angle_solver": "root-finding",
+      "attempts": 2,
+      "successes": 2,
+      "converged": true,
+      "best_time_seconds": 0.001135231000262138,
+      "mean_time_seconds": 0.017281609500514605,
+      "max_reconstruction_error": 9.523493105234593e-13,
+      "mean_reconstruction_error": 9.523493105234593e-13,
+      "phase_count": 8,
+      "error_types": []
+    },
+    {
+      "case": "nonic-near-boundary",
+      "degree": 9,
+      "coefficient_dynamic_range": 1.0,
+      "boundedness_margin": 0.050000000000000044,
+      "angle_solver": "root-finding",
+      "attempts": 2,
+      "successes": 2,
+      "converged": true,
+      "best_time_seconds": 0.0012907609998364933,
+      "mean_time_seconds": 0.0013088849996165663,
+      "max_reconstruction_error": 9.494627306594339e-13,
+      "mean_reconstruction_error": 9.494627306594339e-13,
+      "phase_count": 10,
+      "error_types": []
+    }
+  ],
+  "summary": {
+    "case_count": 4,
+    "row_count": 4,
+    "total_attempts": 8,
+    "total_successes": 8,
+    "all_converged": true
+  },
+  "truth_contract": {
+    "timing_kind": "python_wall_clock_microbenchmark",
+    "is_hardware_runtime": false,
+    "measured_component": "classical_phase_synthesis",
+    "conditioning_proxies": [
+      "degree",
+      "coefficient_dynamic_range",
+      "boundedness_margin"
+    ]
+  },
+  "notebook": "notebooks/benchmarks/07_phase_synthesis_stress_matrix.ipynb",
+  "solver_policy": {
+    "selected_solvers": [
+      "root-finding"
+    ],
+    "optional_iterative_solvers_excluded": true,
+    "reason": "base-install reproducibility across supported PennyLane versions"
+  },
+  "environment": {
+    "python": "3.12.1",
+    "qsvt_pennylane": "0.2.23",
+    "pennylane": "0.45.0",
+    "numpy": "2.5.0"
+  },
+  "notebook_truth_contract": {
+    "measured_component": "classical_phase_synthesis",
+    "is_quantum_runtime_benchmark": false,
+    "is_hardware_runtime_benchmark": false,
+    "timing_is_environment_specific": true,
+    "portable_checks": [
+      "convergence",
+      "phase_count",
+      "reconstruction_error"
+    ]
+  }
+}

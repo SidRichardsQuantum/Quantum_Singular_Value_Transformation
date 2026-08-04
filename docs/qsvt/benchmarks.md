@@ -76,6 +76,8 @@ Benchmark notebooks live in `notebooks/benchmarks/`:
 | `03_scaling_sweeps.ipynb` | dimension and inverse-degree benchmark sweeps |
 | `04_classical_baseline_assumptions.ipynb` | timed baseline assumptions versus QSVT proxy fields |
 | `05_quantum_walk_search_scaling.ipynb` | quantum walk search success, polynomial error, and QSVT signal-call proxies |
+| `06_encoding_aware_resources.ipynb` | embedding, FABLE, PrepSelPrep, and qubitization logical-resource comparison |
+| `07_phase_synthesis_stress_matrix.ipynb` | root-finding convergence, conditioning proxies, phase counts, reconstruction errors, and environment-qualified timing |
 
 The generated notebook outputs are published on the
 [Benchmark notebook outputs](benchmark_results.md) page.
@@ -96,10 +98,14 @@ the same compact table directory.
 | [`matrix_function_filter_polynomial.json`](../../results/benchmarks/matrix_function_filter_polynomial.json) | polynomial filter matrix-function baseline |
 | [`scaling_sweep_reports.json`](../../results/benchmarks/scaling_sweep_reports.json) | combined dense/CG scaling sweep reports |
 | [`quantum_walk_search_scaling.json`](../../results/benchmarks/quantum_walk_search_scaling.json) | quantum walk search scaling and polynomial approximation report |
+| [`encoding_aware_resource_sweep.json`](../../results/benchmarks/encoding_aware_resource_sweep.json) | access-model-aware logical resource comparison |
+| [`phase_synthesis_stress_matrix.json`](../../results/benchmarks/phase_synthesis_stress_matrix.json) | multi-polynomial root-finding convergence and reconstruction stress report |
 | [`linear_system_benchmark_summary.csv`](../../results/tables/linear_system_benchmark_summary.csv) | compact linear-system benchmark table |
 | [`matrix_function_benchmark_summary.csv`](../../results/tables/matrix_function_benchmark_summary.csv) | compact matrix-function benchmark table |
 | [`benchmark_scaling_summary.csv`](../../results/tables/benchmark_scaling_summary.csv) | compact scaling-sweep benchmark table |
 | [`quantum_walk_search_scaling_summary.csv`](../../results/tables/quantum_walk_search_scaling_summary.csv) | compact quantum walk search scaling table |
+| [`encoding_aware_resource_summary.csv`](../../results/tables/encoding_aware_resource_summary.csv) | compact encoding-aware logical-resource table |
+| [`phase_synthesis_stress_summary.csv`](../../results/tables/phase_synthesis_stress_summary.csv) | flat phase-synthesis conditioning and convergence matrix |
 | [`benchmark_plot_manifest.csv`](../../results/tables/benchmark_plot_manifest.csv) | generated plot manifest for benchmark notebooks |
 | [`linear_system_comparison.json`](../../results/algorithms/linear_system_comparison.json) | dense, CG, and QSVT-style linear-system comparison report |
 | [`linear_system_comparison_summary.csv`](../../results/tables/linear_system_comparison_summary.csv) | compact linear-system comparison rows |

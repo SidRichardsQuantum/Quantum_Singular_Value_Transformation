@@ -116,7 +116,7 @@ Dense spectral matrix functions remain the exact small-system reference.
 ## Related Pages
 
 - [Classical baseline details](classical_baselines.md)
-- [Classical benchmarks](benchmarks.md)
+- [Benchmark overview](benchmarks.md)
 - [Algorithm notes](algorithms.md)
 - [Block encodings](block_encoding.md)
 - [QSVT compatibility](compatibility.md)

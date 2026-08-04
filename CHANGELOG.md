@@ -1,5 +1,49 @@
 # Changelog
 
+## [0.2.23] – 4th August 2026
+
+### Added
+
+- added `examples/synthesis_diagnostics.py`, a stable-facade cookbook client
+  that records extrema boundedness, realizability classification, phase
+  convention, reconstruction accuracy, and structured synthesis failures for
+  definite-parity, mixed-parity, and interior-peak cases
+- added logical and decomposed circuit-audit evidence to the seeded local
+  finite-shot FABLE cookbook report, including operation sequences, gate
+  summaries, unsupported operations, wire order, and explicit non-execution
+  boundaries
+- added a finite-shot device tutorial covering caller-supplied local-device
+  preflight, logical and decomposed circuit ledgers, sampling uncertainty, and
+  ideal-reference agreement without provider or real-hardware claims
+- added a phase-synthesis stress benchmark notebook with a reproducible
+  root-finding case matrix, conditioning proxies, convergence, phase counts,
+  reconstruction errors, environment-qualified timing, and JSON/CSV artifacts
+
+### Changed
+
+- advanced the package and synchronized release-documentation markers to
+  `0.2.23`; the frozen 20-name `qsvt.stable` facade and versioned hardware
+  report schemas remain unchanged
+- extended cookbook integration coverage to validate synthesis success and
+  failure diagnostics alongside finite-shot sampling, decomposition, and
+  ideal-reference agreement
+- upgraded the compatibility-failure tutorial from sampled checks with
+  synthesis disabled to extrema certificates, actual phase synthesis,
+  reconstruction validation, and structured mixed-parity and boundedness
+  failures
+
+### Documentation
+
+- updated the README, usage guide, cookbook index, synthesis guide,
+  block-encoding guide, and result-ledger release markers for the new synthesis
+  client and embedded circuit audit
+- updated tutorial and benchmark indexes, committed-result inventories,
+  generated notebook ledgers, artifact tests, and the validated notebook count
+  from 33 to 35 for the two new notebooks
+- refreshed the documentation landing pages and corrected the usage guide's
+  stale Hamiltonian-simulation scope description to reflect coherent
+  finite-QSVT acceptance
+
 ## [0.2.22] – 4th August 2026
 
 ### Added

@@ -8,9 +8,9 @@ This generated page displays the embedded plots and text outputs from every tuto
 ## Current Status
 
 - Source notebooks: `notebooks/tutorials/`
-- Notebooks displayed: `19`
-- Embedded plot artefacts displayed: `37`
-- Plain-text notebook results displayed: `77`
+- Notebooks displayed: `20`
+- Embedded plot artefacts displayed: `38`
+- Plain-text notebook results displayed: `83`
 
 ## Related Pages
 
@@ -888,33 +888,45 @@ validation: passed
 Source: [`notebooks/tutorials/15_QSVT_Compatibility_Failure_Cases.ipynb`](../../notebooks/tutorials/15_QSVT_Compatibility_Failure_Cases.ipynb)
 
 ```{image} ../../results/plots/notebooks/15_QSVT_Compatibility_Failure_Cases-plot-01.png
-:alt: QSVT Compatibility Failure Cases plot 1
+:alt: QSVT Compatibility and Synthesis Failure Cases plot 1
 :width: 760px
 ```
 
-Output 1 (cell 4):
+Output 1 (cell 5):
 
 ```text
-candidate                         degree  parity  bounded  compatible  reasons
-----------------------------------------------------------------------------------------
-compatible_even_x_squared       2       even    True     True        none
-compatible_odd_half_x           1       odd     True     True        none
-mixed_parity_one_plus_x         1       mixed   False    False       mixed_parity, out_of_bounds
-out_of_bounds_two_x             1       odd     False    False       out_of_bounds
-bounded_mixed_offset_slope      1       mixed   True     False       mixed_parity
+Compatibility and synthesis diagnostics
+---------------------------------------
+case                       degree  parity  max |P|  margin  realizability                     synthesized
+-------------------------  ------  ------  -------  ------  --------------------------------  -----------
+single-sequence odd cubic  3       odd     0.5      0.5     single-sequence-qsp-qsvt          True
+bounded mixed parity       1       mixed   0.75     0.25    multiple-parity-sequences-or-lcu  False
+interior peak violation    2       mixed   1.001    -0.001  classical-polynomial-only         False
 ```
 
 Output 2 (cell 7):
 
 ```text
-compatible_even_x_squared: max_abs=1.000, parity=even, compatible=True, reasons=[]
-compatible_odd_half_x: max_abs=0.500, parity=odd, compatible=True, reasons=[]
-mixed_parity_one_plus_x: max_abs=2.000, parity=mixed, compatible=False, reasons=['mixed_parity', 'out_of_bounds']
-out_of_bounds_two_x: max_abs=2.000, parity=odd, compatible=False, reasons=['out_of_bounds']
-bounded_mixed_offset_slope: max_abs=0.500, parity=mixed, compatible=False, reasons=['mixed_parity']
+coarse-grid max |P|: 0.996000
+certified max |P|: 1.001000
+maximizing point: 0.100000
 ```
 
 Output 3 (cell 9):
+
+```text
+phase count: 4
+phase convention: PennyLane QSVT projector-phase convention; polynomial coefficients are in ascending monomial order.
+reconstruction max error: 5.000e-13
+Structured failures
+-------------------
+case                     error type                    reason
+-----------------------  ----------------------------  --------------------------------------------------------------------------------------------------------------------------------------------------------------------
+bounded mixed parity     PolynomialRealizabilityError  The polynomial is extrema-bounded but has mixed parity. Realize its even and odd components separately and combine them, for example with an LCU-style construction.
+interior peak violation  PolynomialRealizabilityError  The polynomial can be evaluated classically but is not bounded by one on the sampled QSP/QSVT signal domain.
+```
+
+Output 4 (cell 11):
 
 ```text
 validation: passed
@@ -1174,6 +1186,72 @@ population_0 (circuit): 0.745669
 ```
 
 Output 4 (cell 12):
+
+```text
+validation: passed
+```
+
+### `20_Finite_Shot_Device_Preflight_and_Circuit_Audit.ipynb`
+
+Source: [`notebooks/tutorials/20_Finite_Shot_Device_Preflight_and_Circuit_Audit.ipynb`](../../notebooks/tutorials/20_Finite_Shot_Device_Preflight_and_Circuit_Audit.ipynb)
+
+```{image} ../../results/plots/notebooks/20_Finite_Shot_Device_Preflight_and_Circuit_Audit-plot-01.png
+:alt: Finite-Shot Device Preflight and Circuit Audit plot 1
+:width: 520px
+```
+
+Output 1 (cell 5):
+
+```text
+encoding wires: (0, 1, 2)
+block-encoding method: fable
+normalization alpha: 1.6
+```
+
+Output 2 (cell 7):
+
+```text
+Local device preflight
+----------------------
+check                              passed
+---------------------------------  ------
+finite_shots                       True
+device_wires_cover_circuit         True
+preparation_is_callable            True
+shots_within_device_limits         True
+stateprep_allowed                  True
+operations_supported_when_known    True
+measurements_supported_when_known  True
+logical operations: ('PauliX', 'QSVT')
+measurements: ('ProbabilityMP',)
+```
+
+Output 3 (cell 9):
+
+```text
+Circuit audit
+-------------
+level       gate count  operations                                unsupported
+----------  ----------  ----------------------------------------  -----------
+logical     2           PauliX, QSVT
+decomposed  5           RX, GlobalPhase, PCPhase, FABLE, PCPhase
+decomposition status: succeeded
+executed by audit: False
+```
+
+Output 4 (cell 11):
+
+```text
+Finite-shot comparison
+----------------------
+metric                        sampled  ideal/reference
+----------------------------  -------  ---------------
+logical success probability   0.254    0.25
+logical probability L2 error  0.004    0
+reported success standard error: 0.0097
+```
+
+Output 5 (cell 13):
 
 ```text
 validation: passed

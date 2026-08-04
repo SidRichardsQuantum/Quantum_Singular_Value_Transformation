@@ -128,6 +128,6 @@ not to claim end-to-end quantum speedups.
 
 ## Related Pages
 
-- [Classical benchmarks](benchmarks.md)
+- [Benchmark overview](benchmarks.md)
 - [Benchmark notebook outputs](benchmark_results.md)
 - [QSVT resource model](qsvt_resource_model.md)
