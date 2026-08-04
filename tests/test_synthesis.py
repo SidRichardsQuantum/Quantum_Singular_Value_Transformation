@@ -6,7 +6,9 @@ from qsvt.synthesis import (
     BoundednessCertificate,
     MixedParitySynthesisResult,
     PhaseSolverBenchmarkResult,
+    PhaseSolverStressResult,
     PhaseSynthesisResult,
+    benchmark_phase_solver_stress_matrix,
     benchmark_phase_solvers,
     certify_polynomial_boundedness,
     classify_polynomial_realizability,
@@ -144,6 +146,37 @@ def test_phase_solver_benchmark_reports_convergence_timing_and_conditioning():
     assert report["rows"][0]["max_reconstruction_error"] < 1e-9
     assert report["rows"][1]["converged"] is False
     assert report["rows"][1]["error_types"] == ["ValueError"]
+
+
+def test_phase_solver_stress_matrix_compares_conditioning_regimes():
+    stress = benchmark_phase_solver_stress_matrix(
+        {
+            "linear-margin": [0.0, 0.5],
+            "quintic-near-boundary": [0.0, 0.0, 0.0, 0.0, 0.0, 0.95],
+        },
+        solvers=["root-finding"],
+        repeats=1,
+        reconstruction_num_points=17,
+    )
+    report = stress.as_report()
+
+    assert isinstance(stress, PhaseSolverStressResult)
+    assert report["mode"] == "phase-solver-stress-matrix"
+    assert report["summary"] == {
+        "case_count": 2,
+        "row_count": 2,
+        "total_attempts": 2,
+        "total_successes": 2,
+        "all_converged": True,
+    }
+    assert [row["degree"] for row in report["rows"]] == [1, 5]
+    assert all(row["max_reconstruction_error"] < 1e-9 for row in report["rows"])
+    assert report["truth_contract"]["is_hardware_runtime"] is False
+
+
+def test_phase_solver_stress_matrix_requires_named_cases():
+    with pytest.raises(ValueError, match="at least one named polynomial"):
+        benchmark_phase_solver_stress_matrix({})
 
 
 def test_mixed_parity_synthesis_reports_components_and_lcu_proxy():

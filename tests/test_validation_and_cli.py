@@ -140,6 +140,10 @@ def test_top_level_public_api_exports_are_resolvable():
         qsvt.api_status("execute_qsvt_component_lcu_from_spec")
         == qsvt.API_STATUS_EXPERIMENTAL
     )
+    assert (
+        qsvt.api_status("benchmark_phase_solver_stress_matrix")
+        == qsvt.API_STATUS_EXPERIMENTAL
+    )
     assert "execute_mixed_parity_qsvt_from_spec" not in qsvt.STABLE_API_NAMES
     assert qsvt.api_status("unknown_future_name") == qsvt.API_STATUS_EXPERIMENTAL
     assert set(qsvt.__api_statuses__.values()) <= {
@@ -1154,6 +1158,30 @@ def test_cli_phase_solver_benchmark(capsys):
 
     assert payload["mode"] == "phase-solver-benchmark"
     assert payload["rows"][0]["converged"] is True
+
+
+def test_cli_phase_solver_stress_matrix(capsys):
+    main(
+        [
+            "phase-solver-stress",
+            "--case",
+            "linear=0,0.5",
+            "--case",
+            "quintic=0,0,0,0,0,0.95",
+            "--solvers",
+            "root-finding",
+            "--repeats",
+            "1",
+            "--reconstruction-num-points",
+            "17",
+        ]
+    )
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["mode"] == "phase-solver-stress-matrix"
+    assert payload["summary"]["case_count"] == 2
+    assert payload["summary"]["all_converged"] is True
+    assert [row["degree"] for row in payload["rows"]] == [1, 5]
 
 
 def test_cli_mixed_parity_synthesis(capsys):

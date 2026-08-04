@@ -382,6 +382,7 @@ def test_cli_facade_preserves_public_command_handler_exports():
         "cmd_matrix_report",
         "cmd_mixed_parity_synthesis",
         "cmd_phase_solver_benchmark",
+        "cmd_phase_solver_stress",
         "cmd_phase_synthesis",
         "cmd_poly",
         "cmd_preset_report",

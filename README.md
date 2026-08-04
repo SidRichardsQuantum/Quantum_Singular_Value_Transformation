@@ -139,6 +139,8 @@ qsvt scalar --x 0.5 --poly "0,0,1"
 qsvt phase-synthesis --poly "0,1,0,-0.5,0,0.333333"
 qsvt boundedness-certificate --poly "0.996,0.1,-0.5"
 qsvt phase-solver-benchmark --poly "0,1" --solvers root-finding --repeats 3
+qsvt phase-solver-stress --case "linear=0,0.5" \
+  --case "quintic=0,0,0,0,0,0.95" --solvers root-finding --repeats 1
 qsvt mixed-parity-synthesis --poly "0.5,0.5"
 qsvt design-workflow --kind sign --gamma 0.2 --degree 13
 qsvt design-sweep --kind sign --degrees "5,9,13,17" --gamma 0.2 \
@@ -302,7 +304,7 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.2.21`
+Current release: `0.2.22`
 
 ## Notebooks
 

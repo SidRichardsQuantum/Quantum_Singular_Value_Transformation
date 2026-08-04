@@ -1,5 +1,38 @@
 # Changelog
 
+## [0.2.22] – 4th August 2026
+
+### Added
+
+- added component-specific signal-projector factories to experimental coherent
+  component-LCU execution so caller-supplied block encodings can state their
+  projector convention for every independently synthesized component
+- added `benchmark_phase_solver_stress_matrix`, `PhaseSolverStressResult`, and
+  the `qsvt phase-solver-stress` command for named multi-polynomial comparisons
+  across degree, coefficient dynamic range, boundedness margin, convergence,
+  synthesis time, phase count, and reconstruction error
+- added coherent execution contract coverage for FABLE, PrepSelPrep,
+  qubitization, caller-supplied circuits, complex component weights, LCU
+  normalization, selector postselection, and invalid projector factories
+
+### Changed
+
+- broadened the documented coherent component-LCU contract from the initial
+  dense matrix path to square Hermitian FABLE and PennyLane-operator access
+  models where the selected backend can decompose the circuit
+- made coherent execution verify finite PennyLane-operator Hermiticity and
+  return unsupported logical transforms as structured execution failures
+- recorded inferred versus caller-supplied projector conventions in each
+  component resource ledger
+- kept coherent execution and the stress-matrix diagnostic experimental and
+  left the frozen 20-name `qsvt.stable` facade unchanged
+
+### Documentation
+
+- updated the usage, synthesis, block-encoding, API, roadmap, and release
+  documentation for the broadened access-model contract, custom projector hook,
+  and multi-polynomial phase-solver stress workflow
+
 ## [0.2.21] – 23rd July 2026
 
 ### Added

@@ -9,7 +9,7 @@ the QSVT unitary with ``qml.matrix``.
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Mapping, Sequence, Sized
+from collections.abc import Callable, Iterable, Mapping, Sequence, Sized
 from dataclasses import dataclass
 from typing import Any, cast
 
@@ -207,6 +207,12 @@ class CoherentQSVTComponent:
     coefficient: complex = 1.0 + 0.0j
 
 
+CoherentProjectorFactory = Callable[
+    [CoherentQSVTComponent, np.ndarray],
+    Sequence[qml.operation.Operator],
+]
+
+
 @dataclass(frozen=True)
 class CoherentQSVTExecutionResult:
     """Result of coherently combining real QSVT polynomial components."""
@@ -307,6 +313,7 @@ class CoherentQSVTExecutionResult:
                 "implemented_components": [
                     "definite_parity_component_phase_synthesis",
                     "real_part_extraction_with_forward_and_adjoint_sequences",
+                    "component_specific_signal_projector_resolution",
                     "lcu_selector_state_preparation",
                     "controlled_selection_between_qsvt_sequences",
                     "selector_uncomputation",
@@ -651,6 +658,7 @@ def execute_qsvt_component_lcu_from_spec(
     *,
     wire_order: Iterable[Any] | None = None,
     selection_wires: Iterable[Any] | None = None,
+    projector_factory: CoherentProjectorFactory | None = None,
     angle_solver: str = "root-finding",
     device_name: str = "default.qubit",
     shots: int | None = None,
@@ -665,7 +673,11 @@ def execute_qsvt_component_lcu_from_spec(
     synthesized independently. The circuit selects both its QSVT sequence and
     its adjoint, implementing the Hermitian part ``(U + U†) / 2`` that contains
     the requested real polynomial. A selector LCU then combines those Hermitian
-    parts with the supplied complex component coefficients.
+    parts with the supplied complex component coefficients. ``projector_factory``
+    can provide component-specific signal projectors for caller-supplied block
+    encodings whose signal convention cannot be inferred from the specification.
+    The factory receives the normalized component and its synthesized PennyLane
+    QSVT angles.
     """
     if not isinstance(spec, BlockEncodingSpec):
         raise TypeError("spec must be a BlockEncodingSpec.")
@@ -701,7 +713,7 @@ def execute_qsvt_component_lcu_from_spec(
     normalized_components: list[CoherentQSVTComponent] = []
     component_weights: list[tuple[str, float]] = []
     component_syntheses: list[tuple[str, PhaseSynthesisResult]] = []
-    operation_factories: list[tuple[str, object, int, int, complex]] = []
+    operation_factories: list[tuple[str, object, int, int, complex, str]] = []
     seen_names: set[str] = set()
     error_type: str | None = None
     error: str | None = None
@@ -712,12 +724,17 @@ def execute_qsvt_component_lcu_from_spec(
                 "coherent component-LCU execution currently requires a square "
                 "logical transform."
             )
-        if spec.kind in {"dense-matrix", "sparse-matrix"} and not bool(
-            spec.metadata.get("hermitian", False)
+        finite_matrix = _finite_normalized_spec_matrix(spec)
+        if finite_matrix is not None and not np.allclose(
+            finite_matrix,
+            finite_matrix.conj().T,
+            atol=1e-10,
+            rtol=1e-10,
         ):
             raise ValueError(
                 "coherent component-LCU execution currently requires a Hermitian "
-                "matrix specification."
+                "logical transform for finite matrix and PennyLane-operator "
+                "specifications."
             )
         for component in raw_components:
             name = str(component.name).strip()
@@ -771,17 +788,30 @@ def execute_qsvt_component_lcu_from_spec(
             normalized_components.append(normalized_component)
             component_weights.append((name, weight))
             component_syntheses.append((name, synthesis))
+            component_projectors = None
+            projector_source = "inferred-from-block-encoding-spec"
+            if projector_factory is not None:
+                component_projectors = _validate_component_projectors(
+                    projector_factory(
+                        normalized_component,
+                        np.asarray(synthesis.angles, dtype=float).copy(),
+                    ),
+                    expected_count=int(synthesis.angles.size),
+                    component_name=name,
+                )
+                projector_source = "caller-supplied-projector-factory"
             operation_factories.append(
                 (
                     name,
                     _spec_qsvt_operation_factory(
                         spec,
                         angles=np.asarray(synthesis.angles, dtype=float),
-                        projectors=None,
+                        projectors=component_projectors,
                     ),
                     polynomial_degree(normalized_coeffs),
                     int(synthesis.angles.size),
                     coefficient * weight,
+                    projector_source,
                 )
             )
         if not operation_factories:
@@ -811,7 +841,14 @@ def execute_qsvt_component_lcu_from_spec(
     term_coefficients: list[complex] = []
     term_factories: list[tuple[object, bool]] = []
     component_ledger: list[dict[str, object]] = []
-    for name, factory, degree, phase_count, weighted_coefficient in operation_factories:
+    for (
+        name,
+        factory,
+        degree,
+        phase_count,
+        weighted_coefficient,
+        projector_source,
+    ) in operation_factories:
         half_coefficient = weighted_coefficient / 2.0
         term_coefficients.extend((half_coefficient, half_coefficient))
         term_factories.extend(((factory, False), (factory, True)))
@@ -821,6 +858,7 @@ def execute_qsvt_component_lcu_from_spec(
                 "polynomial_degree": degree,
                 "phase_count_per_sequence": phase_count,
                 "selected_unitary_branches": 2,
+                "projector_source": projector_source,
                 "forward_signal_operator_calls": degree,
                 "adjoint_signal_operator_calls": degree,
                 "total_signal_operator_calls": 2 * degree,
@@ -1164,6 +1202,32 @@ def _projectors_from_angles(
         qml.PCPhase(float(angle), dim=int(dimension), wires=wires)
         for angle, dimension in zip(angles, dimensions, strict=True)
     ]
+
+
+def _validate_component_projectors(
+    projectors: Sequence[qml.operation.Operator],
+    *,
+    expected_count: int,
+    component_name: str,
+) -> list[qml.operation.Operator]:
+    try:
+        resolved = list(projectors)
+    except TypeError as exc:
+        raise TypeError(
+            f"projector_factory for component {component_name!r} must return "
+            "a sequence of PennyLane operators."
+        ) from exc
+    if len(resolved) != expected_count:
+        raise ValueError(
+            f"projector_factory for component {component_name!r} returned "
+            f"{len(resolved)} projectors; expected {expected_count}."
+        )
+    if not all(isinstance(projector, qml.operation.Operator) for projector in resolved):
+        raise TypeError(
+            f"projector_factory for component {component_name!r} must return "
+            "only PennyLane operators."
+        )
+    return resolved
 
 
 def _execute_spec_state_qnode(
@@ -1639,19 +1703,7 @@ def _spec_classical_reference_output(
     coeffs: np.ndarray,
     state: np.ndarray,
 ) -> np.ndarray | None:
-    matrix: np.ndarray | None = None
-    if spec.kind in {"dense-matrix", "sparse-matrix"}:
-        matrix = spec.dense_matrix() / spec.alpha
-    elif spec.kind == "pennylane-operator":
-        source = cast(Any, spec.source)
-        system_wires = list(source.wires)
-        matrix = (
-            np.asarray(
-                qml.matrix(source, wire_order=system_wires),
-                dtype=complex,
-            )
-            / spec.alpha
-        )
+    matrix = _finite_normalized_spec_matrix(spec)
     if matrix is None:
         return None
     if matrix.shape[0] == matrix.shape[1] and np.allclose(
@@ -1670,6 +1722,23 @@ def _spec_classical_reference_output(
             left * np.polynomial.polynomial.polyval(singular_values, coeffs)
         ) @ right_adjoint
     return np.real_if_close(transformed @ state)
+
+
+def _finite_normalized_spec_matrix(spec: BlockEncodingSpec) -> np.ndarray | None:
+    """Return a finite normalized logical matrix when the access model exposes one."""
+    if spec.kind in {"dense-matrix", "sparse-matrix"}:
+        return np.asarray(spec.dense_matrix(), dtype=complex) / spec.alpha
+    if spec.kind == "pennylane-operator":
+        source = cast(Any, spec.source)
+        system_wires = list(source.wires)
+        return (
+            np.asarray(
+                qml.matrix(source, wire_order=system_wires),
+                dtype=complex,
+            )
+            / spec.alpha
+        )
+    return None
 
 
 def _real_output_errors(

@@ -197,18 +197,31 @@ certificate = certify_polynomial_boundedness([0.996, 0.1, -0.5])
 Compare angle solvers and synthesize mixed-parity components:
 
 ```python
-from qsvt import benchmark_phase_solvers, synthesize_mixed_parity
+from qsvt import (
+    benchmark_phase_solver_stress_matrix,
+    benchmark_phase_solvers,
+    synthesize_mixed_parity,
+)
 
 benchmark = benchmark_phase_solvers(
     [0.0, 1.0],
     solvers=["root-finding", "iterative"],
 )
 mixed = synthesize_mixed_parity([0.5, 0.5])
+stress = benchmark_phase_solver_stress_matrix(
+    {
+        "linear-margin": [0.0, 0.5],
+        "quintic-near-boundary": [0.0, 0.0, 0.0, 0.0, 0.0, 0.95],
+    },
+    solvers=["root-finding", "iterative"],
+)
 ```
 
 ```bash
 qsvt boundedness-certificate --poly "0.996,0.1,-0.5"
 qsvt phase-solver-benchmark --poly "0,1" --solvers root-finding --repeats 3
+qsvt phase-solver-stress --case "linear=0,0.5" \
+  --case "quintic=0,0,0,0,0,0.95" --solvers root-finding --repeats 1
 qsvt mixed-parity-synthesis --poly "0.5,0.5"
 ```
 
@@ -301,6 +314,38 @@ LCU. Its `coherent-qsvt-execution` `1.0` report records the normalization,
 selector ancillas, measured success probabilities, circuit error, and
 component resource ledger. Amplitude amplification remains omitted and is
 reported separately.
+
+The coherent path covers square Hermitian embedding, compatible FABLE,
+PrepSelPrep, qubitization, and caller-supplied circuit specifications where the
+backend can decompose the selected operations. Custom signal conventions can
+be supplied per component:
+
+```python
+import pennylane as qml
+from qsvt import circuit_block_encoding_spec
+
+custom_spec = circuit_block_encoding_spec(
+    lambda: qml.Hadamard(0),
+    logical_shape=(1, 1),
+    encoding_wires=[0],
+)
+
+def projector_factory(component, angles):
+    return [
+        qml.PCPhase(float(angle), dim=1, wires=[0]) for angle in angles
+    ]
+
+result = execute_mixed_parity_qsvt_from_spec(
+    custom_spec,
+    [0.2, 0.3, 0.1],
+    [1.0],
+    projector_factory=projector_factory,
+)
+```
+
+The factory receives the normalized definite-parity component and its
+synthesized PennyLane QSVT angles. Invalid projector counts and unsupported
+finite non-Hermitian transforms are returned as structured failures.
 
 ### Hardware-Oriented Device Execution
 

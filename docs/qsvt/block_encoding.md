@@ -145,9 +145,13 @@ Mixed-parity or complex multi-component transforms use
 real-part extraction with forward and adjoint QSVT sequences, coherently select
 the weighted components, uncompute the selector, and emit
 `coherent-qsvt-execution` `1.0` reports with measured postselection and circuit
-resource ledgers. The initial coherent-combination contract requires a square
-Hermitian logical transform. Rectangular single-sequence execution remains
-available through `execute_qsvt_from_spec`.
+resource ledgers. The coherent contract covers square Hermitian embedding,
+compatible FABLE, PrepSelPrep, qubitization, and caller-supplied circuits where
+backend decomposition permits. Caller-supplied encodings can provide a
+component-specific `projector_factory` when their signal convention cannot be
+inferred. Finite matrix and PennyLane-operator inputs are checked for
+Hermiticity; unsupported combinations return structured failures. Rectangular
+single-sequence execution remains available through `execute_qsvt_from_spec`.
 
 For a complete rectangular example, run:
 

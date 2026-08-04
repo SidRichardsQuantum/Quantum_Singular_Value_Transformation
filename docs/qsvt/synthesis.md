@@ -143,6 +143,34 @@ qsvt phase-solver-benchmark \
 Timings cover classical angle synthesis only. They are not quantum-circuit or
 hardware runtime measurements.
 
+Use `benchmark_phase_solver_stress_matrix` when solver behavior must be
+compared across several degrees or numerical regimes in one report:
+
+```python
+from qsvt import benchmark_phase_solver_stress_matrix
+
+stress = benchmark_phase_solver_stress_matrix(
+    {
+        "linear-margin": [0.0, 0.5],
+        "quintic-near-boundary": [0.0, 0.0, 0.0, 0.0, 0.0, 0.95],
+    },
+    solvers=["root-finding", "iterative"],
+    repeats=3,
+)
+```
+
+```bash
+qsvt phase-solver-stress \
+  --case "linear-margin=0,0.5" \
+  --case "quintic-near-boundary=0,0,0,0,0,0.95" \
+  --solvers "root-finding,iterative" \
+  --repeats 3
+```
+
+The flat stress rows retain the case name, conditioning proxies, convergence,
+classical synthesis timing, phase count, and reconstruction errors. This is a
+phase-synthesis diagnostic, not a device benchmark.
+
 ## Mixed-Parity Synthesis
 
 `synthesize_mixed_parity` separates a bounded mixed-parity polynomial into even
@@ -180,7 +208,11 @@ execution = execute_mixed_parity_qsvt_from_spec(
 )
 ```
 
-The executor remains experimental and is not exported by `qsvt.stable`.
+The executor remains experimental and is not exported by `qsvt.stable`. It
+supports square Hermitian embedding, compatible FABLE, PrepSelPrep,
+qubitization, and caller-supplied circuit specifications where backend
+decomposition permits. The lower-level component executor accepts a
+`projector_factory` for component-specific custom signal conventions.
 
 ```bash
 qsvt mixed-parity-synthesis --poly "0.5,0.5"

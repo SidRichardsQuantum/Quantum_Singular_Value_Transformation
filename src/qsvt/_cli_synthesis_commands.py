@@ -13,6 +13,7 @@ from .reports import (
 )
 from .resources import qsvt_resource_report
 from .synthesis import (
+    benchmark_phase_solver_stress_matrix,
     benchmark_phase_solvers,
     certify_polynomial_boundedness,
     synthesize_mixed_parity,
@@ -62,6 +63,31 @@ def cmd_phase_solver_benchmark(args: argparse.Namespace) -> dict:
     )
     return benchmark_phase_solvers(
         parse_poly(args.poly),
+        solvers=solvers,
+        routine=args.routine,
+        repeats=args.repeats,
+        reconstruction_num_points=args.reconstruction_num_points,
+    ).as_report()
+
+
+def cmd_phase_solver_stress(args: argparse.Namespace) -> dict:
+    """Benchmark phase solvers across named polynomial stress cases."""
+    cases: dict[str, list[float]] = {}
+    for value in args.case:
+        name, separator, poly = value.partition("=")
+        resolved_name = name.strip()
+        if not separator or not resolved_name or not poly.strip():
+            raise ValueError(
+                "each --case must use NAME=COEFFICIENTS, for example linear=0,1."
+            )
+        if resolved_name in cases:
+            raise ValueError(f"duplicate phase-solver stress case: {resolved_name!r}.")
+        cases[resolved_name] = parse_poly(poly)
+    solvers = tuple(
+        solver.strip() for solver in args.solvers.split(",") if solver.strip()
+    )
+    return benchmark_phase_solver_stress_matrix(
+        cases,
         solvers=solvers,
         routine=args.routine,
         repeats=args.repeats,
@@ -228,6 +254,43 @@ def register_synthesis_commands(sub) -> None:
     add_report_output_args(p_solver_benchmark, include_plot=False)
 
     p_solver_benchmark.set_defaults(func=cmd_phase_solver_benchmark)
+
+    p_solver_stress = sub.add_parser(
+        "phase-solver-stress",
+        help="Compare phase-synthesis solvers across named polynomials",
+    )
+
+    p_solver_stress.add_argument(
+        "--case",
+        action="append",
+        required=True,
+        help='Named polynomial case as NAME=COEFFICIENTS, e.g. "linear=0,1".',
+    )
+
+    p_solver_stress.add_argument(
+        "--solvers",
+        type=str,
+        default="root-finding,iterative",
+        help="Comma-separated PennyLane angle solvers.",
+    )
+
+    p_solver_stress.add_argument(
+        "--routine",
+        choices=["QSP", "QSVT"],
+        default="QSVT",
+    )
+
+    p_solver_stress.add_argument("--repeats", type=int, default=3)
+
+    p_solver_stress.add_argument(
+        "--reconstruction-num-points",
+        type=int,
+        default=65,
+    )
+
+    add_report_output_args(p_solver_stress, include_plot=False)
+
+    p_solver_stress.set_defaults(func=cmd_phase_solver_stress)
 
     p_mixed = sub.add_parser(
         "mixed-parity-synthesis",

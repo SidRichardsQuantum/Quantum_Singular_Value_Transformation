@@ -7,7 +7,7 @@ from polynomials that one standard QSP/QSVT phase sequence can realize.
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from time import perf_counter
 from typing import Any, Literal, cast
@@ -225,6 +225,56 @@ class PhaseSolverBenchmarkResult:
                 "timing_kind": "python_wall_clock_microbenchmark",
                 "is_hardware_runtime": False,
                 "measured_component": "classical_phase_synthesis",
+            },
+        }
+
+
+@dataclass(frozen=True)
+class PhaseSolverStressResult:
+    """Phase-solver comparisons across a named polynomial stress matrix."""
+
+    cases: tuple[tuple[str, PhaseSolverBenchmarkResult], ...]
+
+    def as_report(self) -> dict[str, object]:
+        """Return per-case reports and a flat solver/conditioning matrix."""
+        case_reports: dict[str, dict[str, object]] = {}
+        rows: list[dict[str, object]] = []
+        for name, benchmark in self.cases:
+            report = benchmark.as_report()
+            case_reports[name] = report
+            conditioning = cast(dict[str, object], report["conditioning_proxies"])
+            rows.extend(
+                {
+                    "case": name,
+                    **conditioning,
+                    **row,
+                }
+                for row in benchmark.rows
+            )
+        total_attempts = sum(int(cast(Any, row["attempts"])) for row in rows)
+        total_successes = sum(int(cast(Any, row["successes"])) for row in rows)
+        return {
+            "mode": "phase-solver-stress-matrix",
+            "implementation_kind": "pennylane-phase-solver-stress-matrix",
+            "cases": case_reports,
+            "rows": rows,
+            "summary": {
+                "case_count": len(self.cases),
+                "row_count": len(rows),
+                "total_attempts": total_attempts,
+                "total_successes": total_successes,
+                "all_converged": bool(rows)
+                and all(bool(row["converged"]) for row in rows),
+            },
+            "truth_contract": {
+                "timing_kind": "python_wall_clock_microbenchmark",
+                "is_hardware_runtime": False,
+                "measured_component": "classical_phase_synthesis",
+                "conditioning_proxies": [
+                    "degree",
+                    "coefficient_dynamic_range",
+                    "boundedness_margin",
+                ],
             },
         }
 
@@ -873,6 +923,43 @@ def benchmark_phase_solvers(
     )
 
 
+def benchmark_phase_solver_stress_matrix(
+    cases: Mapping[str, Any],
+    *,
+    solvers: tuple[str, ...] | list[str] = ("root-finding", "iterative"),
+    routine: SynthesisRoutine = "QSVT",
+    repeats: int = 3,
+    reconstruction_num_points: int = 65,
+    solver_kwargs: dict[str, dict[str, Any]] | None = None,
+) -> PhaseSolverStressResult:
+    """Benchmark phase solvers across named polynomials and conditioning regimes."""
+    if not cases:
+        raise ValueError("cases must contain at least one named polynomial.")
+    resolved: list[tuple[str, PhaseSolverBenchmarkResult]] = []
+    seen_names: set[str] = set()
+    for raw_name, poly in cases.items():
+        name = str(raw_name).strip()
+        if not name:
+            raise ValueError("phase-solver stress case names must be non-empty.")
+        if name in seen_names:
+            raise ValueError(f"duplicate phase-solver stress case name: {name!r}.")
+        seen_names.add(name)
+        resolved.append(
+            (
+                name,
+                benchmark_phase_solvers(
+                    poly,
+                    solvers=solvers,
+                    routine=routine,
+                    repeats=repeats,
+                    reconstruction_num_points=reconstruction_num_points,
+                    solver_kwargs=solver_kwargs,
+                ),
+            )
+        )
+    return PhaseSolverStressResult(cases=tuple(resolved))
+
+
 def synthesize_mixed_parity(
     poly: Any,
     *,
@@ -1072,11 +1159,13 @@ __all__ = [
     "PhaseSynthesisResult",
     "PhaseSolverAdapter",
     "PhaseSolverBenchmarkResult",
+    "PhaseSolverStressResult",
     "PolynomialRealizability",
     "RealizabilityKind",
     "SynthesisRoutine",
     "available_phase_solver_adapters",
     "benchmark_phase_solvers",
+    "benchmark_phase_solver_stress_matrix",
     "certify_polynomial_boundedness",
     "classify_polynomial_realizability",
     "clear_phase_synthesis_cache",

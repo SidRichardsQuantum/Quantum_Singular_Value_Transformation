@@ -242,6 +242,7 @@ Related workflow-level helpers are:
 
 - `certify_polynomial_boundedness`
 - `benchmark_phase_solvers`
+- `benchmark_phase_solver_stress_matrix`
 - `synthesize_mixed_parity`
 - `synthesize_phases_cached`
 - `phase_synthesis_cache_info`
@@ -1335,6 +1336,15 @@ result = execute_mixed_parity_qsvt_from_spec(
 named `CoherentQSVTComponent` objects with real definite-parity coefficient
 arrays and complex combination coefficients, which is used for the cosine and
 sine branches of Hamiltonian simulation.
+
+Both coherent helpers support square Hermitian embedding, compatible FABLE,
+PrepSelPrep, qubitization, and caller-supplied circuit specifications when the
+backend can decompose the circuit. The lower-level helper accepts
+`projector_factory(component, angles)` for a custom component-specific signal
+subspace convention. The component is normalized for synthesis and `angles`
+use PennyLane's QSVT projector-phase convention. Invalid projectors and finite
+non-Hermitian logical transforms are retained as structured failures unless
+`raise_on_failure=True`.
 
 Both functions return `CoherentQSVTExecutionResult`. Its
 `coherent-qsvt-execution` `1.0` report contains:

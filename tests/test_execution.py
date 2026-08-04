@@ -302,6 +302,147 @@ def test_coherent_qsvt_matches_a_nondiagonal_hermitian_reference():
     assert result.logical_output_relative_error < 1e-6
 
 
+@pytest.mark.parametrize(
+    ("name", "spec"),
+    [
+        (
+            "fable",
+            matrix_block_encoding_spec(
+                np.diag([0.1, 0.2]),
+                alpha=1.0,
+                block_encoding="fable",
+            ),
+        ),
+        (
+            "prepselprep",
+            pennylane_operator_block_encoding_spec(
+                qml.dot([0.3, 0.7], [qml.Z(1), qml.X(1)]),
+                encoding_wires=[0],
+                block_encoding="prepselprep",
+            ),
+        ),
+        (
+            "qubitization",
+            pennylane_operator_block_encoding_spec(
+                qml.dot([0.3, 0.7], [qml.Z(1), qml.X(1)]),
+                encoding_wires=[0],
+                block_encoding="qubitization",
+            ),
+        ),
+    ],
+)
+def test_coherent_qsvt_covers_decomposable_access_models(name, spec):
+    result = execute_mixed_parity_qsvt_from_spec(
+        spec,
+        [0.2, 0.3, 0.1],
+        [1.0, 0.0],
+    )
+
+    assert result.succeeded is True
+    assert result.logical_output_relative_error is not None
+    assert result.logical_output_relative_error < 1e-6
+    assert result.resource_summary["block_encoding_method"] == name
+    assert {
+        row["projector_source"]
+        for row in result.resource_summary["component_resource_ledger"]
+    } == {"inferred-from-block-encoding-spec"}
+
+
+def test_coherent_qsvt_preserves_complex_component_weights_and_normalization():
+    spec = matrix_block_encoding_spec(np.diag([0.2, 0.8]), alpha=1.0)
+    components = (
+        CoherentQSVTComponent(
+            "even",
+            np.array([0.2, 0.0, 0.1]),
+            coefficient=1.0 + 0.5j,
+        ),
+        CoherentQSVTComponent(
+            "odd",
+            np.array([0.0, 0.3]),
+            coefficient=-0.25j,
+        ),
+    )
+
+    result = execute_qsvt_component_lcu_from_spec(spec, components, [1.0, 0.0])
+
+    assert result.succeeded is True
+    assert result.logical_output is not None
+    assert result.classical_reference_output is not None
+    assert result.logical_output_relative_error is not None
+    assert result.logical_output_relative_error < 1e-6
+    expected_normalization = sum(
+        abs(component.coefficient) * dict(result.component_weights)[component.name]
+        for component in components
+    )
+    assert result.lcu_normalization == pytest.approx(expected_normalization)
+    assert result.selection_success_probability is not None
+    assert 0.0 <= result.selection_success_probability <= 1.0
+
+
+def test_coherent_qsvt_accepts_component_specific_custom_projectors():
+    spec = circuit_block_encoding_spec(
+        lambda: qml.Hadamard(0),
+        logical_shape=(1, 1),
+        encoding_wires=[0],
+    )
+    requested_components = []
+
+    def projector_factory(component, angles):
+        requested_components.append(component.name)
+        return [qml.PCPhase(float(angle), dim=1, wires=[0]) for angle in angles]
+
+    result = execute_mixed_parity_qsvt_from_spec(
+        spec,
+        [0.2, 0.3, 0.1],
+        [1.0],
+        projector_factory=projector_factory,
+    )
+
+    assert result.succeeded is True
+    assert requested_components == ["even", "odd"]
+    assert result.classical_reference_output is None
+    assert {
+        row["projector_source"]
+        for row in result.resource_summary["component_resource_ledger"]
+    } == {"caller-supplied-projector-factory"}
+
+
+def test_coherent_qsvt_rejects_invalid_custom_projector_count_structurally():
+    spec = circuit_block_encoding_spec(
+        lambda: qml.Hadamard(0),
+        logical_shape=(1, 1),
+        encoding_wires=[0],
+    )
+
+    result = execute_mixed_parity_qsvt_from_spec(
+        spec,
+        [0.0, 0.3],
+        [1.0],
+        projector_factory=lambda component, angles: [],
+    )
+
+    assert result.succeeded is False
+    assert result.error_type == "ValueError"
+    assert result.error is not None
+    assert "returned 0 projectors; expected 2" in result.error
+
+
+def test_coherent_qsvt_rejects_nonhermitian_pennylane_operator_structurally():
+    operator = qml.dot([0.5, 0.5j], [qml.X(1), qml.Y(1)])
+    spec = pennylane_operator_block_encoding_spec(operator, encoding_wires=[0])
+
+    result = execute_mixed_parity_qsvt_from_spec(
+        spec,
+        [0.2, 0.3, 0.1],
+        [1.0, 0.0],
+    )
+
+    assert result.succeeded is False
+    assert result.error_type == "ValueError"
+    assert result.error is not None
+    assert "requires a Hermitian logical transform" in result.error
+
+
 def test_coherent_qsvt_reports_even_odd_combination_resource_overhead():
     spec = matrix_block_encoding_spec(np.diag([0.2, 0.8]), alpha=1.0)
 

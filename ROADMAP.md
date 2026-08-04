@@ -40,6 +40,11 @@ problems, imaging, and data-analysis tasks are package-client examples. They
 demonstrate how general QSVT interfaces apply to real problems; they do not
 define domain libraries that the core package must maintain.
 
+Selected applications are also acceptance clients for the package. They should
+drive reusable requirements back into the core and prove that the same public
+interfaces cover polynomial design, synthesis, block encoding, execution,
+validation, and reporting for a complete finite problem.
+
 Code should move from an example into `src/qsvt` only when it is a reusable
 QSVT primitive, diagnostic, or report component. Generic domain constructors,
 classical solvers, plotting code, and application-specific analysis should stay
@@ -98,113 +103,100 @@ not imply that QSVT research or all possible applications are complete.
 
 ## Priorities
 
-### Now — General executable QSVT core
+### Now — Complete reusable QSVT implementations through flagship clients
 
-Finite coherent mixed-parity execution landed in `0.2.21`. The immediate goal
-is to harden that execution contract while improving phase synthesis and block
-encoding support across numerical regimes and access models.
+Finite coherent mixed-parity execution landed in `0.2.21`; `0.2.22` broadened
+its tested contract to FABLE, PrepSelPrep, qubitization, and caller-supplied
+projector conventions. The immediate goal is to connect those reusable core
+interfaces to complete physics and mathematics workflows instead of growing
+parallel, application-specific execution paths.
 
-#### Mixed-parity execution hardening
+#### Shared implementation and execution interfaces
 
-- extend coherent component-LCU execution beyond the initial finite
-  matrix-encoding path where backend decomposability permits,
-- validate normalization, selector postselection, complex component weights,
-  and circuit-resource ledgers across additional access models,
+- make `BlockEncodingSpec` the common lower-level input for the three flagship
+  workflows, including caller-supplied block encodings, signal projectors, and
+  explicit wire contracts,
+- publish a tested support matrix for embedding, FABLE, PrepSelPrep,
+  qubitization, and custom circuits, distinguishing representation, logical
+  resource estimation, simulator execution, and backend decomposition,
+- support statevector and finite-shot execution through consistent validation,
+  result, error, and resource schemas,
+- extend coherent component-LCU execution to additional signal conventions and
+  rectangular singular-value transformations only where the mathematical
+  construction and backend decomposition are explicit,
 - preserve classification of classical-only, single-sequence, and mixed-parity
-  constructions,
-- reject or clearly diagnose bounded polynomials that are not realizable by the
-  requested construction,
-- add QSVT-valid full-domain extensions for targets currently designed only on
-  positive singular values or spectra.
+  constructions and return structured failures for unsupported combinations,
+- prioritize decomposable, auditable circuits over additional dense spectral
+  proxy demonstrations.
 
-#### Phase synthesis and certification
+#### Phase synthesis, interoperability, and certification
 
 - improve robustness for high degree, small boundedness margins, and poorly
-  conditioned phase synthesis,
-- add adapters for stable structured-factorization and fast fixed-point phase
-  methods where they provide a maintained, convention-safe interface,
-- compare supported phase solvers across degree, coefficient range,
-  convergence, runtime, and reconstruction error,
+  conditioned phase synthesis using failures observed on real workflow
+  polynomials,
+- provide convention-safe import, conversion, and adapter interfaces for
+  maintained phase-synthesis implementations without making optional solvers
+  mandatory dependencies,
+- use the multi-polynomial stress matrix to compare supported solvers across
+  degree, coefficient range, boundedness margin, convergence, classical
+  runtime, phase count, and reconstruction error,
+- add QSVT-valid full-domain extensions for targets currently designed only on
+  positive singular values or spectra,
 - quantify how phase rounding, synthesis residuals, and coherent perturbations
   affect output states, success probabilities, and observables,
 - continue certification and reconstruction checks that do not rely only on
-  sampled grids,
-- document phase conventions and conversions beside every synthesis interface.
+  sampled grids and document the phase convention beside every synthesis
+  interface.
 
-#### Block encodings and signal conventions
+#### Flagship acceptance clients
 
-- maintain consistent specifications for dense, sparse-like, rectangular,
-  PennyLane-operator, Pauli-LCU, and caller-supplied circuit access models,
-- verify normalization, encoded blocks, signal subspaces, dimensions, wire
-  contracts, and unitarity wherever finite verification is possible,
-- strengthen diagnostics and resource reports for embedding, FABLE,
-  PrepSelPrep, qubitization, and custom encodings,
-- keep scalable-oracle assumptions separate from finite matrix constructions,
-- make unsupported backend and encoding combinations fail with structured,
-  informative reports.
-
-#### Evidence and numerical reliability
-
-- derive each workflow's truth contract from the exact polynomial, synthesis
-  result, access model, circuit, and execution artifacts returned by that run,
-- use execution tiers such as `classical_reference`, `polynomial_core`,
-  `qsvt_circuit`, and `hardware_execution` independently of scalability and
-  resource completeness,
-- record design and certification domains, normalization or prefactors,
-  boundedness, parity, realizability, required combination mechanisms,
-  synthesis status, QNode execution, and device execution where applicable,
-- report approximation, synthesis, block-encoding, state, observable, and
-  sampling errors separately,
-- validate every finite executable workflow against dense spectral or
-  singular-value references,
-- maintain regression cases for known synthesis and backend failures,
-- keep full statevectors and solution vectors as simulator validation data
-  rather than presenting them as efficient quantum outputs.
-
-### Next — Stabilize three complete flagship workflows
-
-The three representative workflows now have finite accepted paths. Stabilize
-their contracts and broaden their supported access models:
+The following workflows are the primary acceptance clients for the reusable
+package interfaces:
 
 1. quantum linear systems through a Poisson-type finite problem,
 2. spectral or ground-state filtering through a Pauli-LCU problem,
 3. Hamiltonian simulation through a finite Hermitian problem.
 
-Each flagship must provide:
+Each flagship must use the same package path from problem input through design,
+synthesis, block encoding, execution, validation, and reporting. Each must
+provide:
 
 - a short Python entry point, CLI command, cookbook script, notebook client, and
   focused documentation page,
-- matrix, operator, or block-encoding problem input with explicit spectral and
-  normalization assumptions,
+- matrix, operator, or `BlockEncodingSpec` input with explicit spectral,
+  normalization, access-model, signal-subspace, and wire assumptions,
 - target-polynomial design, boundedness certification, realizability
   classification, and phase synthesis,
 - finite QSVT execution, or a precisely labeled incomplete tier when a required
   mechanism is unavailable,
 - an appropriate classical reference and application-level observable,
-- component error and resource ledgers,
-- a JSON-safe, schema-versioned report with acceptance results,
-- regression tests with numerical tolerances and explicit supported access
-  models.
+- separate approximation, synthesis, block-encoding, state, observable,
+  sampling, and resource ledgers,
+- a JSON-safe, schema-versioned report with versioned acceptance results,
+- regression tests with numerical tolerances and an explicit access-model
+  support matrix.
 
-#### Execution and resource interfaces
+#### Evidence and resource contracts
 
-- extend lower-level execution from `BlockEncodingSpec` inputs, including
-  caller-supplied block encodings and signal projectors,
-- support statevector and finite-shot execution with consistent validation and
-  report schemas,
-- expand rectangular singular-value transformation beyond dense references and
-  small embedding demonstrations,
-- prioritize decomposable, auditable circuits over additional dense spectral
-  proxy demonstrations,
+- derive each claim from the exact polynomial, synthesis result, access model,
+  circuit, execution, and measurement artifacts returned by that run,
+- keep execution tier, scalability, and resource completeness independent so a
+  finite QSVT circuit is not mislabeled as a scalable oracle implementation,
 - report polynomial degree, phase count, signal-operator calls, encoding width,
-  gates, depth, wires, shots, and postselection or sampling costs where
-  available,
+  gates, depth, wires, shots, postselection, and sampling costs where available,
 - separate polynomial transformation, block encoding, state preparation,
   parity combination, amplitude amplification, readout, and compilation costs,
 - mark resource reports as partial whenever a required layer is assumed,
   omitted, or lacks a concrete estimate,
-- compare encoding-specific logical resources without presenting simulator
-  timings as hardware runtime.
+- validate every finite executable workflow against dense spectral or
+  singular-value references while treating full statevectors and solution
+  vectors as simulator validation data rather than efficient quantum outputs.
+
+### Next — Stabilize problem-solving workflows and reach beta readiness
+
+After the three flagships share the reusable implementation path, stabilize the
+supported problem-solving surface and use additional applications to test
+distinct QSVT capabilities.
 
 #### Package and release readiness
 
@@ -212,12 +204,29 @@ Each flagship must provide:
   clearly experimental,
 - use shared result and report types across Python, CLI, examples, and
   notebooks,
-- keep type annotations, API-status metadata, report schemas, and generated API
-  documentation synchronized,
-- maintain compatibility fixtures and intentional migrations for stable report
-  schemas,
-- keep workflow-family implementation and CLI modules separated as the
-  supported surface grows.
+- document stable input shapes, error semantics, supported access models,
+  report schemas, examples, and deprecation guarantees,
+- keep type annotations, API-status metadata, report schemas, compatibility
+  fixtures, migrations, and generated API documentation synchronized,
+- pass lint, formatting, typing, tests, documentation, notebook, build,
+  distribution, and fresh-wheel checks from a clean checkout,
+- consider a beta-quality `0.3` line only after the three flagship acceptance
+  clients pass their versioned contracts across every advertised access model.
+
+#### Additional validation clients
+
+- promote existing resolvent, regularized pseudoinverse, deblurring, spectral
+  density, band-projector, thermal, and graph-matrix-function studies to
+  acceptance clients only when they exercise a distinct QSVT construction,
+  access model, validation method, or observable,
+- keep application clients thin: domain construction, classical solvers,
+  plotting, and interpretation remain in examples or notebooks while reusable
+  QSVT logic moves into the package,
+- compare each QSVT workflow with an appropriate classical method for the same
+  finite task and state all normalization, input-loading, postselection,
+  readout, and scalability assumptions,
+- generate application tables and plots from saved, reproducible reports
+  rather than notebook-local calculations.
 
 ### Later / Experimental
 
@@ -251,21 +260,15 @@ records, or provider-specific mitigation.
 - report repeated seeded trials and confidence intervals for finite-shot or
   noisy studies.
 
-#### Broader application examples
+#### Exploratory application gallery
 
-After the three flagship workflows are complete, examples may cover:
-
-- regularized pseudoinverses, deblurring, denoising, and inverse problems,
-- band projectors, topological subspaces, and density-of-states estimation,
-- resolvents, Green's functions, and response functions,
-- wave propagation, Gibbs weights, imaginary-time transforms, and
-  finite-temperature occupations,
-- graph-Laplacian, condensed-matter, quantum-chemistry, and other
-  matrix-function studies.
-
-These remain thin clients of domain-general QSVT APIs. New examples should be
-added only when they exercise a distinct QSVT construction, access model,
-validation method, or observable.
+After reusable interfaces and acceptance clients are stable, the repository
+may add broader educational studies in quantum chemistry, higher-dimensional
+PDEs, imaging, data analysis, graph problems, and condensed-matter systems.
+These studies remain thin clients of domain-general QSVT APIs and do not create
+new core-package tracks. Prefer deeper validation of an existing client over a
+new survey example unless the example demonstrates a genuinely new QSVT
+construction, access model, measurement strategy, or scientific observable.
 
 ## Repository and Documentation Policies
 
