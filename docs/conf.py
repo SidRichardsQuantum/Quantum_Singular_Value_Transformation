@@ -12,6 +12,7 @@ copyright = "2026, Sid Richards"
 
 extensions = [
     "myst_parser",
+    "sphinx.ext.autodoc",
     "sphinx.ext.mathjax",
     "sphinx.ext.napoleon",
 ]

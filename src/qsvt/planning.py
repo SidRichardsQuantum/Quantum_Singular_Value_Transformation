@@ -229,17 +229,24 @@ class QSVTPlanRunResult:
         }
 
 
-def plan_qsvt(
+@dataclass(frozen=True)
+class _DegreeSelection:
+    """Internal result of the planner's degree-search phase."""
+
+    candidates: tuple[DegreeSearchCandidate, ...]
+    selected_candidate: DegreeSearchCandidate
+    workflow: QSVTProblemWorkflowResult
+    metric_name: str
+
+
+def _validate_planning_request(
     problem: QSVTProblemSpec,
     transform: QSVTTransformSpec,
-    execution: QSVTExecutionConfig | None = None,
-) -> QSVTPlan:
-    """Plan a finite QSVT workflow from target tolerance through resources."""
+) -> float:
     if not isinstance(problem, QSVTProblemSpec):
         raise TypeError("problem must be a QSVTProblemSpec.")
     if not isinstance(transform, QSVTTransformSpec):
         raise TypeError("transform must be a QSVTTransformSpec.")
-    config = execution or QSVTExecutionConfig()
     tolerance = float(transform.tolerance)
     if not np.isfinite(tolerance) or tolerance <= 0.0:
         raise ValueError("tolerance must be positive and finite.")
@@ -257,51 +264,78 @@ def plan_qsvt(
             "transform.parameters must not override planner-managed arguments: "
             + ", ".join(conflicts)
         )
-    matrix, provided_spec, input_kind = _resolve_problem_operator(problem)
+    return tolerance
 
+
+def _evaluate_degree_candidate(
+    problem: QSVTProblemSpec,
+    transform: QSVTTransformSpec,
+    config: QSVTExecutionConfig,
+    matrix: np.ndarray,
+    metric_name: str,
+    tolerance: float,
+    degree: int,
+) -> tuple[DegreeSearchCandidate, QSVTProblemWorkflowResult]:
+    workflow = qsvt_problem_workflow(
+        transform.target,
+        matrix,
+        rhs=problem.rhs,
+        state=problem.state,
+        source=problem.source,
+        degree=degree,
+        attempt_synthesis=False,
+        apply_qsvt=False,
+        **transform.parameters,
+    )
+    error = _workflow_error(workflow.result, metric_name)
+    coeff_sets = _coefficient_sets(workflow.result)
+    single_sequence = all(
+        _single_sequence_realizable(coeffs) for _, coeffs in coeff_sets
+    )
+    usable = single_sequence or not config.execute
+    candidate = DegreeSearchCandidate(
+        requested_degree=int(degree),
+        polynomial_degree=max(polynomial_degree(coeffs) for _, coeffs in coeff_sets),
+        error=error,
+        met_tolerance=error <= tolerance and usable,
+        metadata={
+            "coefficient_components": [name for name, _ in coeff_sets],
+            "single_sequence_realizable": single_sequence,
+        },
+        error_type=(None if usable else "PolynomialRealizabilityError"),
+        error_message=(
+            None
+            if usable
+            else "execution requires single-sequence-realizable components"
+        ),
+    )
+    return candidate, workflow
+
+
+def _search_degree_candidates(
+    problem: QSVTProblemSpec,
+    transform: QSVTTransformSpec,
+    config: QSVTExecutionConfig,
+    matrix: np.ndarray,
+    tolerance: float,
+) -> _DegreeSelection:
     candidates: list[DegreeSearchCandidate] = []
     successful: list[tuple[DegreeSearchCandidate, QSVTProblemWorkflowResult]] = []
     selected: tuple[DegreeSearchCandidate, QSVTProblemWorkflowResult] | None = None
     metric_name = _metric_name(transform.target, problem)
     for degree in transform.degrees():
         try:
-            workflow = qsvt_problem_workflow(
-                transform.target,
+            candidate, workflow = _evaluate_degree_candidate(
+                problem,
+                transform,
+                config,
                 matrix,
-                rhs=problem.rhs,
-                state=problem.state,
-                source=problem.source,
-                degree=degree,
-                attempt_synthesis=False,
-                apply_qsvt=False,
-                **transform.parameters,
-            )
-            error = _workflow_error(workflow.result, metric_name)
-            coeff_sets = _coefficient_sets(workflow.result)
-            single_sequence = all(
-                _single_sequence_realizable(coeffs) for _, coeffs in coeff_sets
-            )
-            usable = single_sequence or not config.execute
-            candidate = DegreeSearchCandidate(
-                requested_degree=int(degree),
-                polynomial_degree=max(
-                    polynomial_degree(coeffs) for _, coeffs in coeff_sets
-                ),
-                error=error,
-                met_tolerance=error <= tolerance and usable,
-                metadata={
-                    "coefficient_components": [name for name, _ in coeff_sets],
-                    "single_sequence_realizable": single_sequence,
-                },
-                error_type=(None if usable else "PolynomialRealizabilityError"),
-                error_message=(
-                    None
-                    if usable
-                    else "execution requires single-sequence-realizable components"
-                ),
+                metric_name,
+                tolerance,
+                degree,
             )
             candidates.append(candidate)
-            if usable:
+            if candidate.error_type is None:
                 successful.append((candidate, workflow))
             if candidate.met_tolerance:
                 selected = (candidate, workflow)
@@ -335,48 +369,45 @@ def plan_qsvt(
         raise ValueError(f"no degree candidate produced a workflow: {failures}")
 
     selected_candidate, workflow = selected
-    coeff_sets = _coefficient_sets(workflow.result)
-    synthesis_results = tuple(
-        (name, _synthesize_with_fallback(coeffs, config)) for name, coeffs in coeff_sets
+    return _DegreeSelection(
+        candidates=tuple(candidates),
+        selected_candidate=selected_candidate,
+        workflow=workflow,
+        metric_name=metric_name,
     )
-    selected_spec, access_status, access_reason = _select_execution_spec(
-        workflow.result,
-        provided_spec,
-        config,
-    )
-    resources = (
-        tuple(
-            (
-                name,
-                estimate_encoding_aware_resources(
-                    selected_spec,
-                    coeffs,
-                    gate_set=config.gate_set,
-                ),
-            )
-            for name, coeffs in coeff_sets
+
+
+def _plan_resource_estimates(
+    spec: BlockEncodingSpec | None,
+    coeff_sets: tuple[tuple[str, np.ndarray], ...],
+    config: QSVTExecutionConfig,
+) -> tuple[tuple[str, EncodingAwareResourceEstimate], ...]:
+    if spec is None:
+        return ()
+    return tuple(
+        (
+            name,
+            estimate_encoding_aware_resources(
+                spec,
+                coeffs,
+                gate_set=config.gate_set,
+            ),
         )
-        if selected_spec is not None
-        else ()
+        for name, coeffs in coeff_sets
     )
-    coherent_resources = _coherent_resource_plan(
-        transform.target,
-        coeff_sets,
-        synthesis_results,
-        resources,
-    )
+
+
+def _planning_warnings(
+    selected_candidate: DegreeSearchCandidate,
+    synthesis_ok: bool,
+    access_status: str,
+) -> tuple[str, ...]:
     warnings: list[str] = []
     if not selected_candidate.met_tolerance:
         warnings.append(
             "No candidate met the requested tolerance; the lowest-error candidate "
             "was selected."
         )
-    synthesis_ok = all(
-        result.succeeded
-        and result.reconstruction_max_error is not None
-        and result.reconstruction_max_error <= config.phase_reconstruction_tolerance
-        for _, result in synthesis_results
-    )
     if not synthesis_ok:
         warnings.append(
             "At least one polynomial component did not meet the phase "
@@ -387,6 +418,49 @@ def plan_qsvt(
             "Execution uses a finite matrix block encoding rather than the supplied "
             "application access model."
         )
+    return tuple(warnings)
+
+
+def plan_qsvt(
+    problem: QSVTProblemSpec,
+    transform: QSVTTransformSpec,
+    execution: QSVTExecutionConfig | None = None,
+) -> QSVTPlan:
+    """Plan a finite QSVT workflow from target tolerance through resources."""
+    config = execution or QSVTExecutionConfig()
+    tolerance = _validate_planning_request(problem, transform)
+    matrix, provided_spec, input_kind = _resolve_problem_operator(problem)
+    selection = _search_degree_candidates(
+        problem,
+        transform,
+        config,
+        matrix,
+        tolerance,
+    )
+    selected_candidate = selection.selected_candidate
+    workflow = selection.workflow
+    coeff_sets = _coefficient_sets(workflow.result)
+    synthesis_results = tuple(
+        (name, _synthesize_with_fallback(coeffs, config)) for name, coeffs in coeff_sets
+    )
+    selected_spec, access_status, access_reason = _select_execution_spec(
+        workflow.result,
+        provided_spec,
+        config,
+    )
+    resources = _plan_resource_estimates(selected_spec, coeff_sets, config)
+    coherent_resources = _coherent_resource_plan(
+        transform.target,
+        coeff_sets,
+        synthesis_results,
+        resources,
+    )
+    synthesis_ok = all(
+        result.succeeded
+        and result.reconstruction_max_error is not None
+        and result.reconstruction_max_error <= config.phase_reconstruction_tolerance
+        for _, result in synthesis_results
+    )
     state = _execution_input(problem, transform.target)
     ready = bool(selected_spec is not None and state is not None and synthesis_ok)
     return QSVTPlan(
@@ -396,10 +470,10 @@ def plan_qsvt(
         input_kind=input_kind,
         matrix=matrix,
         workflow=workflow,
-        degree_candidates=tuple(candidates),
+        degree_candidates=selection.candidates,
         selected_degree=selected_candidate.requested_degree,
         achieved_error=cast(float, selected_candidate.error),
-        error_metric=metric_name,
+        error_metric=selection.metric_name,
         met_tolerance=selected_candidate.met_tolerance,
         coefficient_sets=coeff_sets,
         synthesis_results=synthesis_results,
@@ -409,7 +483,11 @@ def plan_qsvt(
         resource_estimates=resources,
         coherent_resource_estimate=coherent_resources,
         execution_ready=ready,
-        planning_warnings=tuple(warnings),
+        planning_warnings=_planning_warnings(
+            selected_candidate,
+            synthesis_ok,
+            access_status,
+        ),
     )
 
 

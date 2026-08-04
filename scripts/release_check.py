@@ -17,15 +17,99 @@ import shutil
 import subprocess
 import sys
 import tempfile
-from collections.abc import Sequence
+import time
+from collections.abc import Callable, Sequence
 from pathlib import Path
+from typing import NamedTuple, TypeVar
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+_VERBOSE = False
+_T = TypeVar("_T")
 
 
-def _run(command: Sequence[str]) -> None:
-    print("+", " ".join(command), flush=True)
-    subprocess.run(command, cwd=REPO_ROOT, check=True)
+class _CheckResult(NamedTuple):
+    """One completed release-preflight check."""
+
+    label: str
+    duration_seconds: float
+
+
+def _format_duration(seconds: float) -> str:
+    if seconds < 60.0:
+        return f"{seconds:.1f}s"
+    minutes, remaining = divmod(int(round(seconds)), 60)
+    return f"{minutes}m {remaining:02d}s"
+
+
+def _run(
+    command: Sequence[str],
+    *,
+    env: dict[str, str] | None = None,
+) -> str:
+    """Run a command quietly by default, replaying its output on failure."""
+    rendered = " ".join(command)
+    if _VERBOSE:
+        print("+", rendered, flush=True)
+        subprocess.run(command, cwd=REPO_ROOT, check=True, env=env)
+        return ""
+
+    result = subprocess.run(
+        command,
+        cwd=REPO_ROOT,
+        check=False,
+        env=env,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    if result.returncode:
+        print(f"\nCommand failed: {rendered}", flush=True)
+        if result.stdout:
+            print(result.stdout.rstrip(), flush=True)
+        raise subprocess.CalledProcessError(
+            result.returncode,
+            command,
+            output=result.stdout,
+        )
+    return result.stdout
+
+
+def _run_check(
+    label: str,
+    action: Callable[[], _T],
+    *,
+    summarize: Callable[[_T], str] | None = None,
+) -> _CheckResult:
+    """Run one named check and print a compact progress/result pair."""
+    print(f"[ RUN ] {label}", flush=True)
+    started = time.perf_counter()
+    try:
+        value = action()
+    except (Exception, SystemExit):
+        duration = _format_duration(time.perf_counter() - started)
+        print(f"[FAIL] {label} ({duration})", flush=True)
+        raise
+
+    duration_seconds = time.perf_counter() - started
+    detail = summarize(value) if summarize is not None else ""
+    suffix = f" — {detail}" if detail else ""
+    print(
+        f"[PASS] {label}{suffix} ({_format_duration(duration_seconds)})",
+        flush=True,
+    )
+    return _CheckResult(label=label, duration_seconds=duration_seconds)
+
+
+def _pytest_summary(output: str) -> str:
+    """Extract the useful pass and coverage totals from successful pytest output."""
+    if not output:
+        return ""
+    passed = re.search(r"(\d+) passed(?:, \d+ deselected)? in", output)
+    coverage = re.search(r"Total coverage: ([0-9.]+)%", output)
+    parts = [f"{passed.group(1)} passed"] if passed is not None else []
+    if coverage is not None:
+        parts.append(f"coverage {coverage.group(1)}%")
+    return "; ".join(parts)
 
 
 def _python_module(module: str, *args: str) -> list[str]:
@@ -101,7 +185,7 @@ def _check_git_hygiene() -> None:
         raise SystemExit(f"Generated release artifacts are tracked:\n{paths}")
 
 
-def _check_report_schema_fixtures() -> None:
+def _check_report_schema_fixtures() -> int:
     fixture_dir = REPO_ROOT / "tests" / "fixtures" / "reports"
     fixtures = sorted(fixture_dir.glob("*.json"))
     if not fixtures:
@@ -129,8 +213,8 @@ def _check_report_schema_fixtures() -> None:
         + os.pathsep
         + os.environ.get("PYTHONPATH", ""),
     }
-    print("+", " ".join(command), flush=True)
-    subprocess.run(command, cwd=REPO_ROOT, check=True, env=env)
+    _run(command, env=env)
+    return len(fixtures)
 
 
 def _check_algorithm_truth_contract_semantics() -> None:
@@ -301,56 +385,147 @@ def main(argv: Sequence[str] | None = None) -> None:
         action="store_true",
         help="Smoke-test the current-version wheel already present in dist/.",
     )
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Stream complete command output instead of the concise progress view.",
+    )
     args = parser.parse_args(argv)
+    global _VERBOSE
+    _VERBOSE = args.verbose
+
+    started = time.perf_counter()
+    checks: list[_CheckResult] = []
+    version = _project_version()
+    print(f"Release preflight: qsvt-pennylane {version}", flush=True)
 
     if args.wheel_smoke_only:
-        _run_wheel_smoke()
+        checks.append(_run_check("Fresh-wheel smoke test", _run_wheel_smoke))
+        print(
+            f"\nRelease preflight passed in "
+            f"{_format_duration(time.perf_counter() - started)}.",
+            flush=True,
+        )
         return
 
-    _check_git_hygiene()
-    _check_report_schema_fixtures()
-    _check_algorithm_truth_contract_semantics()
-    _require_module("ruff", "lint")
-    _run(_python_module("ruff", "check", "."))
-    _require_module("black", "lint")
-    _run(_python_module("black", "--check", "."))
-    if not args.skip_type:
-        _require_module("mypy", "type")
-        _run(_python_module("mypy", "src/qsvt"))
-    _run(
-        _python_module(
-            "pytest",
-            "-m",
-            "not notebook and not integration",
-            "--cov=qsvt",
-            "--cov-report=term-missing",
-            "--cov-report=xml",
+    checks.append(_run_check("Generated-artifact hygiene", _check_git_hygiene))
+    checks.append(
+        _run_check(
+            "Report schema fixtures",
+            _check_report_schema_fixtures,
+            summarize=lambda count: f"{count} supported",
         )
     )
-    _run(
-        _python_module(
-            "pytest",
-            "-m",
-            "integration",
-            "tests/test_cookbook_examples.py",
+    checks.append(
+        _run_check(
+            "Algorithm truth contracts",
+            _check_algorithm_truth_contract_semantics,
+        )
+    )
+
+    def run_ruff() -> str:
+        _require_module("ruff", "lint")
+        return _run(_python_module("ruff", "check", "."))
+
+    def run_black() -> str:
+        _require_module("black", "lint")
+        return _run(_python_module("black", "--check", "."))
+
+    checks.append(_run_check("Ruff lint", run_ruff))
+    checks.append(_run_check("Black formatting", run_black))
+    if not args.skip_type:
+
+        def run_mypy() -> str:
+            _require_module("mypy", "type")
+            return _run(_python_module("mypy", "src/qsvt"))
+
+        checks.append(_run_check("Mypy type checking", run_mypy))
+    checks.append(
+        _run_check(
+            "Unit/regression tests and branch coverage",
+            lambda: _run(
+                _python_module(
+                    "pytest",
+                    "-m",
+                    "not notebook and not integration",
+                    "--cov=qsvt",
+                    "--cov-report=term-missing",
+                    "--cov-report=xml",
+                )
+            ),
+            summarize=_pytest_summary,
+        )
+    )
+    checks.append(
+        _run_check(
+            "Cookbook integration",
+            lambda: _run(
+                _python_module(
+                    "pytest",
+                    "-m",
+                    "integration",
+                    "tests/test_cookbook_examples.py",
+                )
+            ),
+            summarize=_pytest_summary,
         )
     )
     if args.include_notebooks:
-        _run(
-            _python_module(
-                "pytest",
-                "-m",
-                "notebook",
-                "tests/test_real_example_notebooks.py",
+        checks.append(
+            _run_check(
+                "Notebook execution",
+                lambda: _run(
+                    _python_module(
+                        "pytest",
+                        "-m",
+                        "notebook",
+                        "tests/test_real_example_notebooks.py",
+                    )
+                ),
+                summarize=_pytest_summary,
             )
         )
     if not args.skip_docs:
-        _run(_python_module("sphinx", "-W", "-b", "html", "docs", "docs/_build/html"))
+        checks.append(
+            _run_check(
+                "Sphinx documentation",
+                lambda: _run(
+                    _python_module(
+                        "sphinx",
+                        "-W",
+                        "-b",
+                        "html",
+                        "docs",
+                        "docs/_build/html",
+                    )
+                ),
+            )
+        )
     if not args.skip_build:
-        _run(_build_command(no_isolation=args.no_build_isolation))
-        _run(_python_module("twine", "check", *_dist_artifacts()))
+        checks.append(
+            _run_check(
+                "Distribution build",
+                lambda: _run(_build_command(no_isolation=args.no_build_isolation)),
+            )
+        )
+        checks.append(
+            _run_check(
+                "Distribution metadata",
+                lambda: _run(_python_module("twine", "check", *_dist_artifacts())),
+            )
+        )
         if not args.skip_wheel_smoke:
-            _run_wheel_smoke()
+            checks.append(_run_check("Fresh-wheel smoke test", _run_wheel_smoke))
+
+    print(
+        f"\nRelease preflight passed: {len(checks)} checks in "
+        f"{_format_duration(time.perf_counter() - started)}.",
+        flush=True,
+    )
+    if not args.skip_build:
+        print("Artifacts:", flush=True)
+        for artifact in _dist_artifacts():
+            print(f"  - {artifact}", flush=True)
 
 
 if __name__ == "__main__":

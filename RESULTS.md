@@ -70,7 +70,7 @@ from the package CLI.
 | `results/tables/design_sweep_summary.csv` | design sweep summary table | n/a | n/a | tabular summary of committed design-sweep JSON reports |
 | `results/tables/qsvt-error-summary.csv` | release summary table | n/a | n/a | compact index over the generated JSON reports |
 
-These snapshots were refreshed for package version `0.2.23`.
+These snapshots were refreshed for package version `0.2.24`.
 
 ## Benchmark Artefacts
 
@@ -103,7 +103,7 @@ The benchmark notebook set also includes
 executable assumption-check notebook rather than a committed timing-artifact
 generator.
 
-Benchmark artefacts were refreshed for package version `0.2.23`.
+Benchmark artefacts were refreshed for package version `0.2.24`.
 
 ## Real-Example Artefacts
 

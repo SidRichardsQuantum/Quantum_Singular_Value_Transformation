@@ -1,6 +1,8 @@
 # API Reference
 
 This page documents the public Python API for the `qsvt-pennylane` package.
+Exact signatures and docstrings for the frozen facade are also available from
+the source-generated [stable API](stable_api.md).
 
 The package provides lightweight utilities for:
 
@@ -1124,7 +1126,7 @@ Apply a scalar function directly to the eigenvalues of a Hermitian matrix.
 
 Thin PennyLane-facing wrappers for explicit QSVT calculations.
 
-### `qsvt_operator(operator, poly, encoding_wires=None, block_encoding="embedding")`
+### `qsvt_operator(operator, poly, encoding_wires=None, block_encoding="embedding", angle_solver="root-finding")`
 
 Construct the PennyLane `qml.qsvt(...)` operator.
 

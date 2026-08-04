@@ -56,6 +56,76 @@ assert loaded == {"qsvt", "qsvt.api"}, loaded
     assert result.returncode == 0, result.stderr
 
 
+def test_missing_package_root_attribute_does_not_probe_public_modules():
+    code = """
+import sys
+import qsvt
+
+before = set(sys.modules)
+try:
+    qsvt.definitely_missing
+except AttributeError:
+    pass
+else:
+    raise AssertionError("missing package attribute unexpectedly resolved")
+
+loaded = {
+    name
+    for name in set(sys.modules) - before
+    if name == "qsvt" or name.startswith("qsvt.")
+}
+assert loaded == set(), loaded
+"""
+    result = subprocess.run(
+        [sys.executable, "-c", code],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stderr
+
+
+def test_direct_lazy_export_registry_covers_public_module_exports():
+    import importlib
+
+    rebuilt_registry = {}
+    for module_name, names in qsvt.api._ROOT_EXPORT_GROUPS:
+        assert module_name
+        assert names
+        rebuilt_registry.update(dict.fromkeys(names, module_name))
+    assert rebuilt_registry == dict(qsvt.api.ROOT_EXPORTS)
+
+    modules = {
+        module_name: importlib.import_module(f"qsvt.{module_name}")
+        for module_name in set(qsvt.api.ROOT_EXPORTS.values())
+    }
+    exported_names = set()
+    for module in modules.values():
+        exported_names.update(module.__all__)
+
+    assert exported_names <= set(qsvt.api.ROOT_EXPORTS)
+    for name, module_name in qsvt.api.ROOT_EXPORTS.items():
+        owner = modules[module_name]
+        assert name in owner.__all__
+        assert getattr(qsvt, name) is getattr(owner, name)
+
+    metadata_exports = {
+        "__version__",
+        "__api_status__",
+        "__api_statuses__",
+        "__public_api_policy__",
+        "API_STATUS_COMPATIBILITY",
+        "API_STATUS_EXPERIMENTAL",
+        "API_STATUS_STABLE",
+        "COMPATIBILITY_API_NAMES",
+        "DEPRECATION_POLICY",
+        "STABLE_API_NAMES",
+        "api_status",
+    }
+    assert set(qsvt.__all__) - metadata_exports <= set(qsvt.api.ROOT_EXPORTS)
+
+
 def test_consolidated_namespaces_preserve_compatibility_imports():
     from qsvt import algorithms, comparisons, design, hhl, matrix_functions, presets
     from qsvt import templates as legacy_templates

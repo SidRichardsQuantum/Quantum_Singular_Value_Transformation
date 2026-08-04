@@ -45,6 +45,12 @@ and documented fields are part of the corresponding workflow contract.
 The complete manifests are available as `qsvt.STABLE_API_NAMES` and
 `qsvt.COMPATIBILITY_API_NAMES`.
 
+Package-root access uses a static export registry: a requested name imports
+only its owning module, while an unknown name raises `AttributeError` without
+probing the rest of the package. Importing `qsvt` itself remains limited to
+package metadata and the lightweight API registry. Exact stable-facade
+signatures are generated from source in the [stable API](stable_api.md).
+
 ## Deprecation policy
 
 A compatibility name may be removed only after:

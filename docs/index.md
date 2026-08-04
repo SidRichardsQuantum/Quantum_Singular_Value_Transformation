@@ -454,6 +454,7 @@ QSVT Resource Model <qsvt/qsvt_resource_model>
 Polynomial Presets <qsvt/presets>
 Implementation Notes <qsvt/implementation>
 API Reference <qsvt/api_reference>
+Generated Stable API <qsvt/stable_api>
 ```
 
 ```{toctree}

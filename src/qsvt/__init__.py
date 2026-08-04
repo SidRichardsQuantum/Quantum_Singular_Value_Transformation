@@ -38,40 +38,6 @@ __public_api_policy__ = (
     "for the required deprecation window."
 )
 
-# Ordered from focused public facades to lower-level compatibility modules.
-# A requested object is cached in this module after the first successful lookup.
-_EXPORT_MODULES = (
-    "stable",
-    "algorithms",
-    "approximation",
-    "benchmarks",
-    "block_encoding",
-    "degree",
-    "design",
-    "diagnostics",
-    "execution",
-    "flagship",
-    "hamiltonians",
-    "hardware",
-    "comparisons",
-    "matrices",
-    "operators",
-    "pde",
-    "planning",
-    "polynomials",
-    "presets",
-    "qsvt",
-    "reports",
-    "rescaling",
-    "research",
-    "research_frontier",
-    "resources",
-    "spectral",
-    "synthesis",
-    "templates",
-    "workflow",
-)
-
 _METADATA_EXPORTS = (
     "__version__",
     "__api_status__",
@@ -97,14 +63,13 @@ __all__ = [
 
 def __getattr__(name: str) -> Any:
     """Resolve a public object without importing the full package eagerly."""
-    for module_name in _EXPORT_MODULES:
-        module = import_module(f".{module_name}", __name__)
-        if name not in getattr(module, "__all__", ()):
-            continue
-        value = getattr(module, name)
-        globals()[name] = value
-        return value
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    module_name = _api.ROOT_EXPORTS.get(name)
+    if module_name is None:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    module = import_module(f".{module_name}", __name__)
+    value = getattr(module, name)
+    globals()[name] = value
+    return value
 
 
 def __dir__() -> list[str]:

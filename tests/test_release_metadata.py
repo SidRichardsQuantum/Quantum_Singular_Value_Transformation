@@ -1,6 +1,10 @@
 import importlib.util
 import re
+import subprocess
+import sys
 from pathlib import Path
+
+import pytest
 
 try:
     import tomllib
@@ -124,6 +128,45 @@ def test_release_preflight_exposes_full_notebook_gate():
     assert '"tests/test_real_example_notebooks.py"' in source
 
 
+def test_release_preflight_concise_commands_replay_failures(capsys):
+    module_path = REPO_ROOT / "scripts" / "release_check.py"
+    spec = importlib.util.spec_from_file_location("release_check_output", module_path)
+    assert spec is not None
+    assert spec.loader is not None
+    release_check = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = release_check
+    spec.loader.exec_module(release_check)
+
+    output = release_check._run([sys.executable, "-c", "print('successful detail')"])
+    assert "successful detail" in output
+    assert capsys.readouterr().out == ""
+
+    with pytest.raises(subprocess.CalledProcessError):
+        release_check._run(
+            [sys.executable, "-c", "print('actionable failure'); raise SystemExit(3)"]
+        )
+    displayed = capsys.readouterr().out
+    assert "Command failed:" in displayed
+    assert "actionable failure" in displayed
+
+
+def test_release_preflight_summarizes_tests_and_coverage():
+    module_path = REPO_ROOT / "scripts" / "release_check.py"
+    spec = importlib.util.spec_from_file_location("release_check_summary", module_path)
+    assert spec is not None
+    assert spec.loader is not None
+    release_check = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = release_check
+    spec.loader.exec_module(release_check)
+
+    output = (
+        "386 passed, 4 deselected in 84.19s\n"
+        "Required test coverage of 85.0% reached. Total coverage: 87.01%\n"
+    )
+    assert release_check._pytest_summary(output) == "386 passed; coverage 87.01%"
+    assert release_check._format_duration(91.2) == "1m 31s"
+
+
 def test_release_preflight_runs_built_wheel_smoke_by_default():
     source = _read_text("scripts/release_check.py")
 
@@ -171,15 +214,42 @@ def test_release_extra_includes_no_isolation_build_requirements():
 
 def test_publish_gated_ci_runs_compatibility_notebooks_and_wheel_smoke():
     ordered = _read_text(".github/workflows/ordered-actions.yml")
+    package = _read_text(".github/workflows/package.yml")
     pull_request = _read_text(".github/workflows/tests.yml")
     publish = _read_text(".github/workflows/publish.yml")
+    release_check = _read_text(".github/workflows/release-check.yml")
 
     assert "dependency-compatibility:" in ordered
     assert 'pennylane-constraint: "pennylane>=0.42,<0.43"' in ordered
     assert 'pennylane-constraint: "pennylane>=0.42,<0.43"' in pull_request
     assert "pytest -m notebook tests/test_real_example_notebooks.py" in ordered
-    assert "python scripts/release_check.py --wheel-smoke-only" in ordered
+    assert "uses: ./.github/workflows/package.yml" in ordered
+    assert "uses: ./.github/workflows/package.yml" in release_check
+    assert "workflow_call:" in package
+    assert "python scripts/release_check.py --wheel-smoke-only" in package
     assert 'workflow_id: "ordered-actions.yml"' in publish
+
+
+def test_pull_request_and_publish_compatibility_smoke_suites_match():
+    command_pattern = r'run: (pytest -m "not notebook"[^\n]+)'
+    ordered = re.findall(
+        command_pattern,
+        _read_text(".github/workflows/ordered-actions.yml"),
+    )
+    pull_request = re.findall(
+        command_pattern,
+        _read_text(".github/workflows/tests.yml"),
+    )
+
+    assert ordered == pull_request
+
+
+def test_coverage_configuration_enforces_branch_regressions():
+    config = tomllib.loads(_read_text("pyproject.toml"))["tool"]["coverage"]
+
+    assert config["run"]["branch"] is True
+    assert config["run"]["source"] == ["qsvt"]
+    assert config["report"]["fail_under"] >= 85
 
 
 def test_runtime_dependencies_are_bounded_to_supported_major_ranges():
@@ -223,9 +293,9 @@ def test_sdist_manifest_keeps_large_repo_artifacts_out_of_package():
     assert "include ROADMAP.md" not in manifest
     assert "include RELEASING.md" not in manifest
     assert "include requirements.txt" not in manifest
-    assert "exclude ROADMAP.md" in manifest
-    assert "exclude RELEASING.md" in manifest
-    assert "exclude requirements.txt" in manifest
+    assert "exclude ROADMAP.md" not in manifest
+    assert "exclude RELEASING.md" not in manifest
+    assert "exclude requirements.txt" not in manifest
     assert "prune notebooks" in manifest
     assert "prune results" in manifest
     assert "prune docs" in manifest

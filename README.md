@@ -44,6 +44,7 @@ would be needed to turn the polynomial core into a complete algorithm.
 - Roadmap: [ROADMAP.md](ROADMAP.md)
 - Release checklist: [RELEASING.md](RELEASING.md)
 - API reference: [docs/qsvt/api_reference.md](docs/qsvt/api_reference.md)
+- Generated stable API: [docs/qsvt/stable_api.md](docs/qsvt/stable_api.md)
 
 ## Installation
 
@@ -106,6 +107,8 @@ Plan from a finite problem and a requested error instead of choosing a degree
 manually:
 
 ```python
+import numpy as np
+
 from qsvt.stable import QSVTProblemSpec, QSVTTransformSpec, plan_qsvt
 
 plan = plan_qsvt(
@@ -235,7 +238,9 @@ The public package lives under `src/qsvt`.
 | `qsvt.diagnostics` | application-level validation metrics |
 
 For detailed function-level documentation, use
-[docs/qsvt/api_reference.md](docs/qsvt/api_reference.md).
+[docs/qsvt/api_reference.md](docs/qsvt/api_reference.md). Exact signatures and
+docstrings for the frozen facade are generated from source in
+[docs/qsvt/stable_api.md](docs/qsvt/stable_api.md).
 
 The package includes a `py.typed` marker so type checkers can consume the
 inline type annotations shipped with the public modules.
@@ -306,7 +311,7 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.2.23`
+Current release: `0.2.24`
 
 ## Notebooks
 

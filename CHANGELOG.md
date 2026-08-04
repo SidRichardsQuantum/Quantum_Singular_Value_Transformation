@@ -1,5 +1,60 @@
 # Changelog
 
+## [0.2.24] – 4th August 2026
+
+### Added
+
+- added a source-generated stable-API page backed by Sphinx autodoc so the
+  frozen facade's signatures and docstrings stay synchronized with the
+  implementation
+- added executable regression coverage for every standalone Python snippet in
+  the README quick-start section, including accuracy-driven planning
+- added a static package-root export registry and regression checks that keep
+  all public module exports covered without probing unrelated modules
+- added branch-coverage measurement with an enforced 85 percent project floor
+  so coverage regressions fail locally and in CI
+
+### Changed
+
+- replaced sequential package-root module probing with direct name-to-module
+  lazy resolution; missing attribute lookups now fail without importing the
+  PennyLane, plotting, research, or workflow stacks
+- split accuracy-driven planning into request validation, degree evaluation and
+  selection, resource estimation, and warning-construction phases
+- split block-encoding execution preparation, coherent component synthesis,
+  and LCU selector construction into focused internal helpers while preserving
+  the public execution results and versioned report schemas
+- consolidated distribution build, metadata validation, wheel smoke testing,
+  and optional artifact upload into one reusable package workflow called by PR
+  release checks and the ordered publish gate
+- made the local release preflight show named progress checks, concise test and
+  coverage totals, elapsed time, validated artifacts, and a final pass summary;
+  `--verbose` retains complete successful command output, while failures always
+  replay their captured diagnostics
+- reorganized the static package-root export registry into owner-first module
+  groups so ownership and intentional compatibility overrides are easier to
+  review without changing lazy-import behavior
+- synchronized the pull-request and publish-gated dependency-compatibility
+  smoke suites to prevent workflow drift
+- advanced the package and synchronized release-documentation markers to
+  `0.2.24`; the frozen 20-name `qsvt.stable` facade remains unchanged
+
+### Fixed
+
+- corrected the README planning example so it imports NumPy when copied as a
+  standalone snippet
+- corrected the hand-written `qsvt_operator` API signature to include its
+  `angle_solver` keyword
+- removed redundant source-distribution exclusions that emitted misleading
+  "not previously included" warnings during successful package builds
+
+### Documentation
+
+- linked the generated stable API from the documentation navigation, package
+  overview, and hand-written API reference
+- documented direct root-export resolution and the reusable release/coverage
+  gates used for v0.2.24
+
 ## [0.2.23] – 4th August 2026
 
 ### Added

@@ -98,6 +98,15 @@ The execution helper deliberately does not call `qml.matrix` internally. Tests
 guard that boundary so the circuit path cannot silently regress into explicit
 unitary extraction.
 
+Block-encoding execution is organized into explicit internal phases: common
+spec/state/wire validation and embedding, per-component normalization and
+phase synthesis, coherent selector/LCU construction, QNode execution, and
+metric/result assembly. Accuracy-driven planning similarly separates request
+validation, degree-candidate evaluation and selection, synthesis, access-model
+selection, resource estimation, and warning construction. These boundaries
+keep the public result and report schemas stable while making failure paths
+independently testable.
+
 The circuit report still marks `is_end_to_end_quantum_algorithm = false`
 because scalable block-encoding construction, problem-specific state
 preparation cost, postselection/amplitude amplification, readout/tomography,
@@ -216,6 +225,19 @@ Classical benchmark payloads use
 
 This is stricter than prose-only documentation: if a report is serialized, the
 assumptions travel with the numbers.
+
+## Import and API registry
+
+Importing `qsvt` loads only package metadata and `qsvt.api`. Package-root names
+are resolved through a static registry grouped as owning module followed by its
+exported names. Accessing one export imports only its implementation module,
+and an unknown attribute does not probe the scientific, plotting, workflow, or
+research stacks. Later groups record the few deliberate compatibility-owner
+overrides explicitly. Regression tests compare the registry with every public
+module's `__all__` surface.
+
+The frozen facade remains `qsvt.stable`; its exact signatures and docstrings
+are rendered by Sphinx autodoc in the [generated stable API](stable_api.md).
 
 ## Resource Proxy Reports
 

@@ -58,7 +58,7 @@ The repository also includes a sequence of notebooks that introduce QSVT concept
 | Compare tutorial outputs directly | [Tutorial notebook outputs](tutorial_results.md) |
 | Browse real-example outputs | [Real-example notebook outputs](real_example_results.md) |
 | Inspect benchmark outputs | [Benchmark notebook outputs](benchmark_results.md) |
-| Use package APIs | [API reference](api_reference.md) |
+| Use package APIs | [API reference](api_reference.md) and [generated stable API](stable_api.md) |
 | Prepare a package release | [Release checklist](releasing.md) |
 
 ---

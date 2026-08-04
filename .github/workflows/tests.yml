@@ -83,4 +83,4 @@ jobs:
           python -m pip install "${{ matrix.numpy-constraint }}" "${{ matrix.pennylane-constraint }}"
 
       - name: Run compatibility smoke tests
-        run: pytest -m "not notebook" tests/test_qsvt_smoke.py tests/test_execution.py tests/test_hhl_execution.py tests/test_block_encoding.py
+        run: pytest -m "not notebook" tests/test_qsvt_smoke.py tests/test_execution.py tests/test_hhl_execution.py tests/test_block_encoding.py tests/test_algorithm_workflow_regressions.py tests/test_reports.py

@@ -214,6 +214,19 @@ CoherentProjectorFactory = Callable[
 
 
 @dataclass(frozen=True)
+class _PreparedSpecExecution:
+    """Validated logical input embedded into a block-encoding register."""
+
+    rows: int
+    columns: int
+    logical_state: np.ndarray
+    wire_order: list[Any]
+    data_dimension: int
+    prepared_state: np.ndarray
+    shots: int | None
+
+
+@dataclass(frozen=True)
 class CoherentQSVTExecutionResult:
     """Result of coherently combining real QSVT polynomial components."""
 
@@ -337,6 +350,45 @@ class CoherentQSVTExecutionResult:
                 ],
             },
         }
+
+
+def _prepare_spec_execution(
+    spec: BlockEncodingSpec,
+    state: Iterable[float | complex],
+    wire_order: Iterable[Any] | None,
+    *,
+    shots: int | None,
+    normalize_state: bool,
+) -> _PreparedSpecExecution:
+    """Validate common spec execution inputs and embed the logical state."""
+    if not isinstance(spec, BlockEncodingSpec):
+        raise TypeError("spec must be a BlockEncodingSpec.")
+    rows, columns = spec.logical_shape
+    logical_state = _validate_logical_state(
+        state,
+        dimension=columns,
+        normalize=normalize_state,
+    )
+    order = _resolve_spec_wire_order(spec, wire_order)
+    data_dimension = 2 ** len(order)
+    if data_dimension < max(rows, columns):
+        raise ValueError("wire_order does not provide enough amplitudes.")
+    if shots is not None:
+        shots = int(shots)
+        if shots <= 0:
+            raise ValueError("shots must be positive when supplied.")
+
+    prepared = np.zeros(data_dimension, dtype=complex)
+    prepared[:columns] = logical_state
+    return _PreparedSpecExecution(
+        rows=rows,
+        columns=columns,
+        logical_state=logical_state,
+        wire_order=order,
+        data_dimension=data_dimension,
+        prepared_state=prepared,
+        shots=shots,
+    )
 
 
 def execute_qsvt_circuit(
@@ -486,26 +538,19 @@ def execute_qsvt_from_spec(
     Backend or construction failures are returned as structured result data
     unless ``raise_on_failure=True``.
     """
-    if not isinstance(spec, BlockEncodingSpec):
-        raise TypeError("spec must be a BlockEncodingSpec.")
     coeffs = _validate_coefficients(poly)
-    rows, columns = spec.logical_shape
-    logical_state = _validate_logical_state(
+    prepared_input = _prepare_spec_execution(
+        spec,
         state,
-        dimension=columns,
-        normalize=normalize_state,
+        wire_order,
+        shots=shots,
+        normalize_state=normalize_state,
     )
-    order = _resolve_spec_wire_order(spec, wire_order)
-    full_dimension = 2 ** len(order)
-    if full_dimension < max(rows, columns):
-        raise ValueError("wire_order does not provide enough amplitudes.")
-    if shots is not None:
-        shots = int(shots)
-        if shots <= 0:
-            raise ValueError("shots must be positive when supplied.")
-
-    prepared = np.zeros(full_dimension, dtype=complex)
-    prepared[:columns] = logical_state
+    rows = prepared_input.rows
+    logical_state = prepared_input.logical_state
+    order = prepared_input.wire_order
+    prepared = prepared_input.prepared_state
+    shots = prepared_input.shots
     explicit_projectors = None if projectors is None else tuple(projectors)
     projector_source = (
         "pennylane-poly-to-angles"
@@ -651,6 +696,202 @@ def execute_qsvt_from_spec(
     )
 
 
+@dataclass(frozen=True)
+class _CoherentComponentPreparation:
+    """Normalized, synthesized components ready for coherent selection."""
+
+    normalized_components: tuple[CoherentQSVTComponent, ...]
+    component_weights: tuple[tuple[str, float], ...]
+    component_syntheses: tuple[tuple[str, PhaseSynthesisResult], ...]
+    operation_factories: tuple[tuple[str, object, int, int, complex, str], ...]
+
+
+@dataclass(frozen=True)
+class _CoherentLCUPreparation:
+    """Selector registers, branches, and resource ledger for one coherent LCU."""
+
+    term_factories: tuple[tuple[object, bool], ...]
+    component_ledger: tuple[dict[str, object], ...]
+    normalization: float
+    selection_wires: tuple[Any, ...]
+    selection_state: np.ndarray
+    branch_phases: np.ndarray
+
+
+def _prepare_coherent_components(
+    spec: BlockEncodingSpec,
+    components: tuple[CoherentQSVTComponent, ...],
+    *,
+    projector_factory: CoherentProjectorFactory | None,
+    angle_solver: str,
+    reconstruction_num_points: int,
+    phase_tolerance: float,
+) -> _CoherentComponentPreparation:
+    rows, columns = spec.logical_shape
+    if rows != columns:
+        raise ValueError(
+            "coherent component-LCU execution currently requires a square "
+            "logical transform."
+        )
+    finite_matrix = _finite_normalized_spec_matrix(spec)
+    if finite_matrix is not None and not np.allclose(
+        finite_matrix,
+        finite_matrix.conj().T,
+        atol=1e-10,
+        rtol=1e-10,
+    ):
+        raise ValueError(
+            "coherent component-LCU execution currently requires a Hermitian "
+            "logical transform for finite matrix and PennyLane-operator "
+            "specifications."
+        )
+
+    normalized_components: list[CoherentQSVTComponent] = []
+    component_weights: list[tuple[str, float]] = []
+    component_syntheses: list[tuple[str, PhaseSynthesisResult]] = []
+    operation_factories: list[tuple[str, object, int, int, complex, str]] = []
+    seen_names: set[str] = set()
+    for component in components:
+        name = str(component.name).strip()
+        if not name:
+            raise ValueError("component names must be non-empty.")
+        if name in seen_names:
+            raise ValueError(f"duplicate coherent component name: {name!r}.")
+        seen_names.add(name)
+        coeffs = _validate_coefficients(component.coeffs)
+        coefficient = complex(component.coefficient)
+        if not np.isfinite(coefficient.real) or not np.isfinite(coefficient.imag):
+            raise ValueError(f"component {name!r} coefficient must be finite.")
+        classification = classify_polynomial_realizability(coeffs)
+        if not classification.single_sequence_realizable:
+            raise ValueError(
+                f"component {name!r} must have definite parity and be "
+                "single-sequence realizable."
+            )
+        extrema_weight = float(certify_polynomial_boundedness(coeffs).max_abs_value)
+        if coefficient == 0.0 or extrema_weight <= 1e-15:
+            continue
+        # Leave a small synthesis margin at |P| = 1. The compensating LCU
+        # weight preserves the requested polynomial exactly while avoiding
+        # root-finding failures at a numerically saturated boundary.
+        weight = extrema_weight / (1.0 - 1e-8)
+        normalized_coeffs = coeffs / weight
+        synthesis = _synthesize_component_with_fallback(
+            normalized_coeffs,
+            angle_solver=angle_solver,
+            reconstruction_num_points=reconstruction_num_points,
+            phase_reconstruction_tolerance=phase_tolerance,
+        )
+        if not synthesis.succeeded or synthesis.angles is None:
+            raise ValueError(
+                f"phase synthesis failed for component {name!r}: "
+                f"{synthesis.error or synthesis.error_type}"
+            )
+        if (
+            synthesis.reconstruction_max_error is None
+            or synthesis.reconstruction_max_error > phase_tolerance
+        ):
+            raise ValueError(
+                f"phase reconstruction for component {name!r} exceeds "
+                f"the tolerance {phase_tolerance}."
+            )
+        normalized_component = CoherentQSVTComponent(
+            name=name,
+            coeffs=normalized_coeffs,
+            coefficient=coefficient,
+        )
+        normalized_components.append(normalized_component)
+        component_weights.append((name, weight))
+        component_syntheses.append((name, synthesis))
+        component_projectors = None
+        projector_source = "inferred-from-block-encoding-spec"
+        if projector_factory is not None:
+            component_projectors = _validate_component_projectors(
+                projector_factory(
+                    normalized_component,
+                    np.asarray(synthesis.angles, dtype=float).copy(),
+                ),
+                expected_count=int(synthesis.angles.size),
+                component_name=name,
+            )
+            projector_source = "caller-supplied-projector-factory"
+        operation_factories.append(
+            (
+                name,
+                _spec_qsvt_operation_factory(
+                    spec,
+                    angles=np.asarray(synthesis.angles, dtype=float),
+                    projectors=component_projectors,
+                ),
+                polynomial_degree(normalized_coeffs),
+                int(synthesis.angles.size),
+                coefficient * weight,
+                projector_source,
+            )
+        )
+    if not operation_factories:
+        raise ValueError("components must define a nonzero coherent transform.")
+    return _CoherentComponentPreparation(
+        normalized_components=tuple(normalized_components),
+        component_weights=tuple(component_weights),
+        component_syntheses=tuple(component_syntheses),
+        operation_factories=tuple(operation_factories),
+    )
+
+
+def _prepare_coherent_lcu(
+    operation_factories: tuple[tuple[str, object, int, int, complex, str], ...],
+    data_wires: Sequence[Any],
+    selection_wires: Iterable[Any] | None,
+) -> _CoherentLCUPreparation:
+    term_coefficients: list[complex] = []
+    term_factories: list[tuple[object, bool]] = []
+    component_ledger: list[dict[str, object]] = []
+    for (
+        name,
+        factory,
+        degree,
+        phase_count,
+        weighted_coefficient,
+        projector_source,
+    ) in operation_factories:
+        half_coefficient = weighted_coefficient / 2.0
+        term_coefficients.extend((half_coefficient, half_coefficient))
+        term_factories.extend(((factory, False), (factory, True)))
+        component_ledger.append(
+            {
+                "name": name,
+                "polynomial_degree": degree,
+                "phase_count_per_sequence": phase_count,
+                "selected_unitary_branches": 2,
+                "projector_source": projector_source,
+                "forward_signal_operator_calls": degree,
+                "adjoint_signal_operator_calls": degree,
+                "total_signal_operator_calls": 2 * degree,
+            }
+        )
+
+    normalization = float(sum(abs(value) for value in term_coefficients))
+    selector_count = max(1, (len(term_coefficients) - 1).bit_length())
+    selectors = tuple(
+        _resolve_selection_wires(data_wires, selector_count, selection_wires)
+    )
+    selector_dimension = 2**selector_count
+    selection_state = np.zeros(selector_dimension, dtype=complex)
+    branch_phases = np.zeros(selector_dimension, dtype=float)
+    for index, coefficient in enumerate(term_coefficients):
+        selection_state[index] = np.sqrt(abs(coefficient) / normalization)
+        branch_phases[index] = float(np.angle(coefficient))
+    return _CoherentLCUPreparation(
+        term_factories=tuple(term_factories),
+        component_ledger=tuple(component_ledger),
+        normalization=normalization,
+        selection_wires=selectors,
+        selection_state=selection_state,
+        branch_phases=branch_phases,
+    )
+
+
 def execute_qsvt_component_lcu_from_spec(
     spec: BlockEncodingSpec,
     components: Sequence[CoherentQSVTComponent],
@@ -679,8 +920,6 @@ def execute_qsvt_component_lcu_from_spec(
     The factory receives the normalized component and its synthesized PennyLane
     QSVT angles.
     """
-    if not isinstance(spec, BlockEncodingSpec):
-        raise TypeError("spec must be a BlockEncodingSpec.")
     if reconstruction_num_points < 2:
         raise ValueError("reconstruction_num_points must be at least 2.")
     phase_tolerance = float(phase_reconstruction_tolerance)
@@ -689,133 +928,35 @@ def execute_qsvt_component_lcu_from_spec(
             "phase_reconstruction_tolerance must be finite and non-negative."
         )
 
-    rows, columns = spec.logical_shape
-    logical_state = _validate_logical_state(
+    prepared_input = _prepare_spec_execution(
+        spec,
         state,
-        dimension=columns,
-        normalize=normalize_state,
+        wire_order,
+        shots=shots,
+        normalize_state=normalize_state,
     )
-    order = _resolve_spec_wire_order(spec, wire_order)
-    data_dimension = 2 ** len(order)
-    if data_dimension < max(rows, columns):
-        raise ValueError("wire_order does not provide enough amplitudes.")
-    if shots is not None:
-        shots = int(shots)
-        if shots <= 0:
-            raise ValueError("shots must be positive when supplied.")
-
-    prepared = np.zeros(data_dimension, dtype=complex)
-    prepared[:columns] = logical_state
+    rows = prepared_input.rows
+    logical_state = prepared_input.logical_state
+    order = prepared_input.wire_order
+    data_dimension = prepared_input.data_dimension
+    prepared = prepared_input.prepared_state
+    shots = prepared_input.shots
     raw_components = tuple(components)
     if not raw_components:
         raise ValueError("components must contain at least one nonzero polynomial.")
 
-    normalized_components: list[CoherentQSVTComponent] = []
-    component_weights: list[tuple[str, float]] = []
-    component_syntheses: list[tuple[str, PhaseSynthesisResult]] = []
-    operation_factories: list[tuple[str, object, int, int, complex, str]] = []
-    seen_names: set[str] = set()
     error_type: str | None = None
     error: str | None = None
-
+    component_preparation: _CoherentComponentPreparation | None = None
     try:
-        if rows != columns:
-            raise ValueError(
-                "coherent component-LCU execution currently requires a square "
-                "logical transform."
-            )
-        finite_matrix = _finite_normalized_spec_matrix(spec)
-        if finite_matrix is not None and not np.allclose(
-            finite_matrix,
-            finite_matrix.conj().T,
-            atol=1e-10,
-            rtol=1e-10,
-        ):
-            raise ValueError(
-                "coherent component-LCU execution currently requires a Hermitian "
-                "logical transform for finite matrix and PennyLane-operator "
-                "specifications."
-            )
-        for component in raw_components:
-            name = str(component.name).strip()
-            if not name:
-                raise ValueError("component names must be non-empty.")
-            if name in seen_names:
-                raise ValueError(f"duplicate coherent component name: {name!r}.")
-            seen_names.add(name)
-            coeffs = _validate_coefficients(component.coeffs)
-            coefficient = complex(component.coefficient)
-            if not np.isfinite(coefficient.real) or not np.isfinite(coefficient.imag):
-                raise ValueError(f"component {name!r} coefficient must be finite.")
-            classification = classify_polynomial_realizability(coeffs)
-            if not classification.single_sequence_realizable:
-                raise ValueError(
-                    f"component {name!r} must have definite parity and be "
-                    "single-sequence realizable."
-                )
-            extrema_weight = float(certify_polynomial_boundedness(coeffs).max_abs_value)
-            if coefficient == 0.0 or extrema_weight <= 1e-15:
-                continue
-            # Leave a small synthesis margin at |P| = 1. The compensating LCU
-            # weight preserves the requested polynomial exactly while avoiding
-            # root-finding failures at a numerically saturated boundary.
-            weight = extrema_weight / (1.0 - 1e-8)
-            normalized_coeffs = coeffs / weight
-            synthesis = _synthesize_component_with_fallback(
-                normalized_coeffs,
-                angle_solver=angle_solver,
-                reconstruction_num_points=reconstruction_num_points,
-                phase_reconstruction_tolerance=phase_tolerance,
-            )
-            if not synthesis.succeeded or synthesis.angles is None:
-                raise ValueError(
-                    f"phase synthesis failed for component {name!r}: "
-                    f"{synthesis.error or synthesis.error_type}"
-                )
-            if (
-                synthesis.reconstruction_max_error is None
-                or synthesis.reconstruction_max_error > phase_tolerance
-            ):
-                raise ValueError(
-                    f"phase reconstruction for component {name!r} exceeds "
-                    f"the tolerance {phase_tolerance}."
-                )
-            normalized_component = CoherentQSVTComponent(
-                name=name,
-                coeffs=normalized_coeffs,
-                coefficient=coefficient,
-            )
-            normalized_components.append(normalized_component)
-            component_weights.append((name, weight))
-            component_syntheses.append((name, synthesis))
-            component_projectors = None
-            projector_source = "inferred-from-block-encoding-spec"
-            if projector_factory is not None:
-                component_projectors = _validate_component_projectors(
-                    projector_factory(
-                        normalized_component,
-                        np.asarray(synthesis.angles, dtype=float).copy(),
-                    ),
-                    expected_count=int(synthesis.angles.size),
-                    component_name=name,
-                )
-                projector_source = "caller-supplied-projector-factory"
-            operation_factories.append(
-                (
-                    name,
-                    _spec_qsvt_operation_factory(
-                        spec,
-                        angles=np.asarray(synthesis.angles, dtype=float),
-                        projectors=component_projectors,
-                    ),
-                    polynomial_degree(normalized_coeffs),
-                    int(synthesis.angles.size),
-                    coefficient * weight,
-                    projector_source,
-                )
-            )
-        if not operation_factories:
-            raise ValueError("components must define a nonzero coherent transform.")
+        component_preparation = _prepare_coherent_components(
+            spec,
+            raw_components,
+            projector_factory=projector_factory,
+            angle_solver=angle_solver,
+            reconstruction_num_points=reconstruction_num_points,
+            phase_tolerance=phase_tolerance,
+        )
     except Exception as exc:
         error_type = type(exc).__name__
         error = str(exc)
@@ -826,9 +967,9 @@ def execute_qsvt_component_lcu_from_spec(
         return _failed_coherent_execution_result(
             spec,
             raw_components,
-            tuple(normalized_components),
-            tuple(component_weights),
-            tuple(component_syntheses),
+            (),
+            (),
+            (),
             logical_state,
             order,
             angle_solver=angle_solver,
@@ -838,41 +979,21 @@ def execute_qsvt_component_lcu_from_spec(
             error=error,
         )
 
-    term_coefficients: list[complex] = []
-    term_factories: list[tuple[object, bool]] = []
-    component_ledger: list[dict[str, object]] = []
-    for (
-        name,
-        factory,
-        degree,
-        phase_count,
-        weighted_coefficient,
-        projector_source,
-    ) in operation_factories:
-        half_coefficient = weighted_coefficient / 2.0
-        term_coefficients.extend((half_coefficient, half_coefficient))
-        term_factories.extend(((factory, False), (factory, True)))
-        component_ledger.append(
-            {
-                "name": name,
-                "polynomial_degree": degree,
-                "phase_count_per_sequence": phase_count,
-                "selected_unitary_branches": 2,
-                "projector_source": projector_source,
-                "forward_signal_operator_calls": degree,
-                "adjoint_signal_operator_calls": degree,
-                "total_signal_operator_calls": 2 * degree,
-            }
-        )
-    lcu_normalization = float(sum(abs(value) for value in term_coefficients))
-    selector_count = max(1, (len(term_coefficients) - 1).bit_length())
-    selectors = _resolve_selection_wires(order, selector_count, selection_wires)
-    selector_dimension = 2**selector_count
-    selection_state = np.zeros(selector_dimension, dtype=complex)
-    branch_phases = np.zeros(selector_dimension, dtype=float)
-    for index, coefficient in enumerate(term_coefficients):
-        selection_state[index] = np.sqrt(abs(coefficient) / lcu_normalization)
-        branch_phases[index] = float(np.angle(coefficient))
+    assert component_preparation is not None
+    lcu = _prepare_coherent_lcu(
+        component_preparation.operation_factories,
+        order,
+        selection_wires,
+    )
+    normalized_components = component_preparation.normalized_components
+    component_weights = component_preparation.component_weights
+    component_syntheses = component_preparation.component_syntheses
+    term_factories = lcu.term_factories
+    component_ledger = lcu.component_ledger
+    lcu_normalization = lcu.normalization
+    selectors = lcu.selection_wires
+    selection_state = lcu.selection_state
+    branch_phases = lcu.branch_phases
 
     final_state: np.ndarray | None = None
     probabilities: np.ndarray | None = None

@@ -6,9 +6,6 @@ include THEORY.md
 include USAGE.md
 include pyproject.toml
 include src/qsvt/py.typed
-exclude RELEASING.md
-exclude ROADMAP.md
-exclude requirements.txt
 
 graft src
 

@@ -1,7 +1,13 @@
 name: Package
 
 on:
-  pull_request:
+  workflow_call:
+    inputs:
+      upload_artifact:
+        description: Upload distributions for a later publish job.
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -30,3 +36,10 @@ jobs:
 
       - name: Smoke-test built wheel
         run: python scripts/release_check.py --wheel-smoke-only
+
+      - name: Upload distribution artifacts
+        if: inputs.upload_artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-artifacts
+          path: dist/
