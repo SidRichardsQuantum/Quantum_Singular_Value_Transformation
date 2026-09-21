@@ -29,4 +29,4 @@ jobs:
         run: black --check .
 
       - name: Run mypy
-        run: mypy src/qsvt
+        run: mypy src/qsvt studio

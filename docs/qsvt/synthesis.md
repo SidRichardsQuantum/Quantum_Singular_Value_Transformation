@@ -94,6 +94,42 @@ The iterative solvers may require additional dependencies supplied by
 PennyLane. A polynomial can pass structural realizability checks and still fail
 numerical synthesis; the result preserves that distinction.
 
+### Solver completion and reconstruction quality
+
+`succeeded` records whether synthesis returned phases. It does not assert that
+their sampled response matches the polynomial to any particular tolerance:
+
+```python
+quality = result.quality_report(tolerance=1e-6)
+print(quality["solver_returned_phases"])
+print(quality["reconstruction_passed"])
+print(quality["status"])
+```
+
+The statuses are `solver_failed`, `reconstruction_unavailable`,
+`reconstruction_failed`, and `passed`. Non-finite phases cannot pass; absent or
+non-finite reconstruction errors remain unvalidated. QSP results without
+package reconstruction therefore cannot pass this assessment. The method
+does not change the synthesis result, polynomial, or application acceptance
+thresholds. Its tolerance must be finite and non-negative. A passing sampled
+reconstruction is not a uniform error certificate or an approximation bound
+against the original target function.
+
+The Studio investigation reproduced root-finding failures for the degree-13
+sign and normalized-reciprocal designs in PennyLane 0.45.1. The exception arose
+when assembling the polynomial and complementary-polynomial arrays with
+different lengths; these designs also have small boundedness margins. The
+degree-10 soft filter returned phases but had about `0.075` reconstruction
+error. These observations are backend/version-dependent, not guarantees that
+root-finding always fails on those inputs.
+
+Regression tests verify that the iterative solver reconstructs the same,
+unmodified polynomials within `1e-6`. The Studio exposes this method explicitly
+and preserves root-finding failures and reconstruction residuals. It does not
+patch PennyLane internals, rescale coefficients to hide failures, or change the
+stable facade's default solver. Mixed-parity interval designs still need a
+multi-sequence construction; switching solvers does not remove that condition.
+
 The CLI exposes the same workflow:
 
 ```bash

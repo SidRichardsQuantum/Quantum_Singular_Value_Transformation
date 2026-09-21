@@ -65,6 +65,14 @@ tooling. Existing experimental helpers may support the repository, but this
 infrastructure is not part of the stable QSVT facade and should not grow into a
 general experiment-management framework.
 
+### Experiment Studio
+
+The Studio is a local, single-user repository client of the public package
+APIs. It owns configuration, saved-run browsing, comparison, and visualization
+of package reports. Numerical algorithms, acceptance criteria, and scientific
+claims remain owned by the package. The Studio is not shipped in the package
+distributions and does not introduce hosted services or provider management.
+
 ### Hardware and providers
 
 Experimental hardware support is limited to finite-shot execution on a
@@ -103,13 +111,14 @@ not imply that QSVT research or all possible applications are complete.
 
 ## Priorities
 
-### Now — Complete reusable QSVT implementations through flagship clients
+### Now — Harden reusable QSVT implementations through flagship clients
 
 Finite coherent mixed-parity execution landed in `0.2.21`; `0.2.22` broadened
 its tested contract to FABLE, PrepSelPrep, qubitization, and caller-supplied
-projector conventions. The immediate goal is to connect those reusable core
-interfaces to complete physics and mathematics workflows instead of growing
-parallel, application-specific execution paths.
+projector conventions. All three flagship workflows now have finite executable
+acceptance paths, and the repository Studio exposes each through public package
+APIs. The immediate goal is to harden synthesis, access-model support, and
+execution/report contracts across those workflows.
 
 #### Shared implementation and execution interfaces
 
@@ -251,25 +260,6 @@ The package will not manage provider credentials, provider-native job
 lifecycles, submission costs, queues, retries, cancellation, calibration
 records, or provider-specific mitigation.
 
-#### Noise-aware planning
-
-- consume noise behavior exposed by caller-configured PennyLane devices rather
-  than implementing a general noise-model library,
-- investigate joint selection of polynomial degree, phase solver, access model,
-  and shot budget under an approximation-and-noise target,
-- report repeated seeded trials and confidence intervals for finite-shot or
-  noisy studies.
-
-#### Exploratory application gallery
-
-After reusable interfaces and acceptance clients are stable, the repository
-may add broader educational studies in quantum chemistry, higher-dimensional
-PDEs, imaging, data analysis, graph problems, and condensed-matter systems.
-These studies remain thin clients of domain-general QSVT APIs and do not create
-new core-package tracks. Prefer deeper validation of an existing client over a
-new survey example unless the example demonstrates a genuinely new QSVT
-construction, access model, measurement strategy, or scientific observable.
-
 ## Repository and Documentation Policies
 
 ### Examples and notebooks
@@ -283,6 +273,10 @@ construction, access model, measurement strategy, or scientific observable.
   cases,
 - reusable QSVT algorithm, validation, and reporting logic belongs in the
   package; domain and presentation logic stays in the client.
+
+Prefer deeper validation of an existing client over a new survey example
+unless the example demonstrates a new QSVT construction, access model,
+measurement strategy, or scientific observable.
 
 Reserve “QSVT implementation” for an executed or explicitly constructible QSVT
 path. Use “classical polynomial surrogate” or “QSVT-compatible polynomial core”

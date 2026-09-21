@@ -1,0 +1,73 @@
+name: Studio
+
+on:
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      MPLCONFIGDIR: /tmp/qsvt-studio-matplotlib
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node for syntax validation
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+
+      - name: Install package and browser check dependencies
+        run: |
+          python -m pip install -e ".[plot]" playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Check frontend syntax
+        run: node --check studio/static/app.js
+
+      - name: Run browser smoke check with disposable storage
+        shell: bash
+        run: |
+          studio_data=$(mktemp -d)
+          python -m studio --port 8765 --data-dir "$studio_data" > /tmp/qsvt-studio-server.log 2>&1 &
+          studio_pid=$!
+          trap 'kill "$studio_pid" 2>/dev/null || true; wait "$studio_pid" 2>/dev/null || true' EXIT
+          ready=false
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:8765/api/catalogue > /dev/null; then
+              ready=true
+              break
+            fi
+            if ! kill -0 "$studio_pid" 2>/dev/null; then
+              cat /tmp/qsvt-studio-server.log
+              exit 1
+            fi
+            sleep 1
+          done
+          if [ "$ready" != true ]; then
+            cat /tmp/qsvt-studio-server.log
+            exit 1
+          fi
+          python -m studio.check_browser --url http://127.0.0.1:8765
+
+      - name: Upload browser screenshots and server log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: studio-browser
+          path: |
+            /tmp/qsvt-studio*.png
+            /tmp/qsvt-studio-server.log
+          if-no-files-found: ignore

@@ -167,6 +167,7 @@ def _check_git_hygiene() -> None:
         ".venv/**",
         "venv/**",
         "env/**",
+        ".qsvt-studio/**",
         "**/__pycache__/**",
         "**/*.pyc",
         "**/*.pyo",
@@ -437,7 +438,7 @@ def main(argv: Sequence[str] | None = None) -> None:
 
         def run_mypy() -> str:
             _require_module("mypy", "type")
-            return _run(_python_module("mypy", "src/qsvt"))
+            return _run(_python_module("mypy", "src/qsvt", "studio"))
 
         checks.append(_run_check("Mypy type checking", run_mypy))
     checks.append(

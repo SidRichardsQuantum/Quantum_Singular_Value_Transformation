@@ -199,3 +199,49 @@ def test_mixed_parity_synthesis_reports_components_and_lcu_proxy():
     assert report["component_resource_proxy"]["sequence_count"] == 2
     assert report["component_resource_proxy"]["total_signal_operator_calls"] == 1
     assert report["truth_contract"]["lcu_circuit_implemented"] is False
+
+
+def test_synthesis_quality_does_not_confuse_returned_phases_with_accuracy():
+    from dataclasses import replace
+
+    result = synthesize_phases([0.0, 0.5], reconstruction_num_points=33)
+    assert result.quality_report(1e-6)["status"] == "passed"
+    inaccurate = replace(result, reconstruction_max_error=0.075)
+    assert inaccurate.succeeded is True
+    quality = inaccurate.quality_report(1e-6)
+    assert quality["solver_returned_phases"] is True
+    assert quality["reconstruction_passed"] is False
+    assert quality["status"] == "reconstruction_failed"
+    assert (
+        replace(result, reconstruction_max_error=None).quality_report()["status"]
+        == "reconstruction_unavailable"
+    )
+    assert (
+        replace(result, reconstruction_max_error=float("nan")).quality_report()[
+            "reconstruction_passed"
+        ]
+        is False
+    )
+    assert (
+        replace(result, angles=np.array([float("nan")])).quality_report()["status"]
+        == "solver_failed"
+    )
+    assert synthesize_phases([0.5, 0.5]).quality_report()["status"] == "solver_failed"
+    for tolerance in (-1, float("nan"), float("inf")):
+        with pytest.raises(ValueError):
+            result.quality_report(tolerance)
+
+
+@pytest.mark.parametrize("kind", ["sign", "inverse", "filter"])
+def test_iterative_synthesis_reconstructs_studio_boundary_polynomials(kind):
+    # These unchanged polynomials expose root-finding failures or poor
+    # reconstruction on supported PennyLane versions. Do not rescale them.
+    result = design_workflow(
+        kind,
+        degree=13 if kind != "filter" else 10,
+        num_points=401,
+        attempt_synthesis=False,
+    )
+    synthesis = result.synthesize(angle_solver="iterative")
+    np.testing.assert_array_equal(synthesis.coeffs, result.coeffs)
+    assert synthesis.quality_report(1e-6)["reconstruction_passed"] is True

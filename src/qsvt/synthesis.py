@@ -135,6 +135,52 @@ class PhaseSynthesisResult:
     error: str | None = None
     implementation_kind: str = "pennylane-poly-to-angles"
 
+    def quality_report(self, tolerance: float = 1e-6) -> dict[str, object]:
+        """Assess sampled reconstruction separately from solver completion.
+
+        This does not alter ``succeeded`` or certify unsampled signal values.
+        QSP results without package reconstruction remain unvalidated.
+        """
+        if not np.isfinite(tolerance) or tolerance < 0:
+            raise ValueError(
+                "reconstruction tolerance must be finite and non-negative."
+            )
+        returned = bool(
+            self.succeeded
+            and self.angles is not None
+            and self.angles.size
+            and np.all(np.isfinite(self.angles))
+        )
+        error = self.reconstruction_max_error
+        measured = error is not None and bool(np.isfinite(error))
+        passed = bool(
+            returned and measured and error is not None and error <= tolerance
+        )
+        status = (
+            "solver_failed"
+            if not returned
+            else (
+                "reconstruction_unavailable"
+                if not measured
+                else "passed" if passed else "reconstruction_failed"
+            )
+        )
+        return {
+            "status": status,
+            "solver_returned_phases": returned,
+            "reconstruction_passed": passed,
+            "tolerance": float(tolerance),
+            "reconstruction_max_error": error,
+            "reconstruction_num_points": self.reconstruction_num_points,
+            "angle_solver": self.angle_solver,
+            "error_type": self.error_type,
+            "error": self.error,
+            "interpretation": (
+                "Sampled scalar reconstruction of the requested polynomial; "
+                "not an approximation guarantee or circuit acceptance result."
+            ),
+        }
+
     def as_report(self) -> dict[str, object]:
         """Return a machine-readable phase-synthesis report."""
         return {

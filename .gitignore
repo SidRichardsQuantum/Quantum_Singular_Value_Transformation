@@ -82,3 +82,6 @@ coverage.xml
 # -----------------------------
 *.tar.gz
 *.whl
+
+# Local experiment studio records
+.qsvt-studio/

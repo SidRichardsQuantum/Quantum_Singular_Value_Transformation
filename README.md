@@ -74,6 +74,27 @@ Plotting helpers are optional:
 pip install "qsvt-pennylane[plot]"
 ```
 
+## Optional QSVT Experiment Studio
+
+Explore polynomial designs and finite Poisson/Pauli-filter workflows with a
+local composer (including coherent Hamiltonian simulation), scientific run
+gallery, exact configuration reuse, favorites,
+and comparison. Numerical results and acceptance checks come from the existing
+Python package. No Node build or AI service is needed.
+
+Start with a recommended quick demonstration or accuracy study, inspect an
+expected-failure preset, or restore the package defaults. Advanced controls
+expose tested phase solvers; reports distinguish returned phases from
+reconstruction that meets the requested tolerance.
+
+```bash
+python -m pip install -e ".[plot]"
+python -m studio --port 8765
+```
+
+Open forwarded port **8765** in Codespaces. See the
+[Studio guide](docs/qsvt/studio.md) for scope, storage, and reproducibility.
+
 ## Quick Example
 
 Apply a scalar polynomial transform:
@@ -257,8 +278,8 @@ warning before removal. See
 Finite coherent mixed-parity execution and all three flagship acceptance paths
 are now implemented. The immediate priorities are phase-synthesis robustness,
 block-encoding verification across access models, and hardening the coherent
-execution/report contracts. Hardware execution, noise-aware planning, and
-broader applications remain experimental or later work.
+execution/report contracts. Broader finite-shot measurement and local device
+auditing remain experimental or later work.
 
 Physics and mathematics applications are thin clients of domain-general QSVT
 interfaces, not domain libraries maintained by the core package. HHL and
@@ -311,7 +332,7 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.2.25`
+Current release: `0.2.26`
 
 ## Notebooks
 

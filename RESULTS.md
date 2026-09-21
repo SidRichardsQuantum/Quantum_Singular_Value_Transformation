@@ -1,5 +1,10 @@
 # Results
 
+Current release: `0.2.26`
+
+The current release retains the notebook and benchmark snapshots from
+`0.2.25`; their refresh versions below describe artifact provenance.
+
 This repository is notebook-first: executable notebooks are the source of truth
 for demonstrations, plots, and numerical checks. Use this page as the root
 index for result-producing workflows and committed reproducibility artefacts.

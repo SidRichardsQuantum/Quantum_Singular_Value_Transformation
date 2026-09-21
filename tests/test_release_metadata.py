@@ -40,15 +40,10 @@ def test_release_metadata_markers_match_project_version():
             _read_text("README.md"),
             "README.md",
         ),
-        "RESULTS.md snapshots": _single_match(
-            r"^These snapshots were refreshed for package version `([^`]+)`\.$",
+        "RESULTS.md": _single_match(
+            r"^Current release: `([^`]+)`$",
             _read_text("RESULTS.md"),
-            "RESULTS.md snapshots",
-        ),
-        "RESULTS.md benchmarks": _single_match(
-            r"^Benchmark artefacts were refreshed for package version `([^`]+)`\.$",
-            _read_text("RESULTS.md"),
-            "RESULTS.md benchmarks",
+            "RESULTS.md",
         ),
         "docs/qsvt/results.md": _single_match(
             r'<span class="metric-value">([^<]+)</span>\n'

@@ -1,5 +1,48 @@
 # Changelog
 
+## [0.2.26] – 21st September 2026
+
+### Added
+
+- added the repository-only QSVT Experiment Studio with seven workflow entries,
+  published presets, saved reports, provenance, exact configuration reuse,
+  favorites, and compatible-run comparisons
+- exposed polynomial design, Poisson inversion, Pauli spectral filtering, and
+  coherent Hamiltonian simulation through existing public package APIs, with
+  package acceptance checks, error ledgers, and execution evidence preserved
+- added Studio regression tests and a reusable browser smoke workflow for
+  pull requests and the ordered release gate
+- added recommended, fully specified Studio presets for quick demonstrations,
+  accuracy studies, and expected scientific failures, with separate access to
+  unchanged package defaults
+- added package-owned `PhaseSynthesisResult.quality_report()` assessments that
+  distinguish solver completion from sampled reconstruction accuracy, including
+  per-component Studio views for Hamiltonian simulation
+
+### Changed
+
+- included the Studio in CI and local release type checks, explicitly excluded
+  it and local experiment records from source distributions, and documented
+  its scope and validation workflow
+- focused the roadmap on hardening the implemented flagship workflows and
+  removed the noise-aware planning and exploratory gallery expansion tracks
+- advanced the package and current-release documentation markers to `0.2.26`;
+  the frozen 20-name `qsvt.stable` facade remains unchanged
+- exposed tested root-finding/iterative solver choices and flagship fallback
+  policies in advanced Studio controls, with parity-aware design degree inputs,
+  tolerance explanations, and fixed backend information
+- versioned Studio requests as `1.1`, preserving saved `1.0` settings through
+  explicit upgrades that retain their original implicit solver choices
+
+### Documentation
+
+- documented Studio launch, scientific scope, storage, reproducibility,
+  comparison, and browser validation, with links from the README and website
+- retained the `0.2.25` provenance of existing notebook and benchmark snapshots;
+  this release does not regenerate those artifacts
+- documented synthesis failure investigation and iterative reconstruction
+  regressions for the unchanged sign, inverse, and soft-filter polynomials
+
 ## [0.2.25] – 4th August 2026
 
 ### Added

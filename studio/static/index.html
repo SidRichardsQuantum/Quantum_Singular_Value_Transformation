@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>QSVT Experiment Studio</title><link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+<header><div class="mark" aria-hidden="true">Q</div><div><h1>QSVT <span>Experiment Studio</span></h1><p>Configure · execute · inspect · reproduce</p></div><span class="local">LOCAL SCIENTIFIC WORKBENCH</span></header>
+<div id="notice" role="status" aria-live="polite"></div>
+<main>
+<aside>
+  <div class="section-title"><span>01 / COMPOSE</span><span>Python engine</span></div>
+  <form id="composer">
+    <label>Workflow<select id="workflow"></select></label>
+    <p id="description" class="muted"></p>
+    <label>Starting configuration<select id="preset"><option value="">Custom configuration</option></select></label>
+    <p id="preset-source" class="muted"></p>
+    <button id="package-defaults" type="button">Use package defaults</button>
+    <div id="controls"></div>
+    <button class="primary" type="submit" id="run">Run experiment →</button>
+    <div class="actions"><button id="export-draft" type="button">Export configuration</button><label class="file-button">Import configuration<input id="import" type="file" accept=".json,application/json"></label></div>
+  </form>
+  <p class="boundary">Numerical results come from qsvt. Completed means the pipeline returned a report; scientific acceptance is evaluated separately by the package.</p>
+</aside>
+<section class="workspace">
+  <div class="section-title"><span>02 / EXPERIMENTS</span><span id="count">Loading…</span></div>
+  <div class="toolbar">
+    <input id="search" aria-label="Search experiments" placeholder="Search configuration, metrics, or run ID…">
+    <select id="workflow-filter" aria-label="Filter workflow"><option value="">All workflows</option></select>
+    <select id="status-filter" aria-label="Filter status"><option value="">All states</option><option>completed</option><option>failed</option><option value="active">active</option></select>
+    <select id="encoding-filter" aria-label="Filter encoding"><option value="">All encodings</option></select>
+    <select id="execution-filter" aria-label="Filter execution"><option value="">All execution</option><option value="true">Finite QNode requested</option><option value="false">No QNode requested</option></select>
+    <select id="sort" aria-label="Sort history"><option value="newest">Newest first</option><option value="oldest">Oldest first</option></select>
+    <label class="inline"><input type="checkbox" id="favorites"> Favorites</label>
+  </div>
+  <div class="compare-bar"><span id="selection-count">Select compatible runs to compare</span><button id="compare">Compare selected</button><button id="clear-selection">Clear selection</button></div>
+  <div id="gallery" class="gallery"></div>
+</section>
+</main>
+<dialog id="viewer"><div class="dialog-header"><h2 id="viewer-title">Experiment</h2><button id="close-viewer" aria-label="Close viewer">Close ×</button></div><div id="viewer-body"></div></dialog>
+<dialog id="comparison"><div class="dialog-header"><h2>Experiment comparison</h2><button id="close-comparison">Close ×</button></div><div id="comparison-body"></div></dialog>
+<footer>Finite-instance evidence · explicit claim boundaries · reproducible configurations</footer>
+</body>
+</html>

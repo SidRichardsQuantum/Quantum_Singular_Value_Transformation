@@ -36,7 +36,7 @@ jobs:
         run: black --check .
 
       - name: Run mypy
-        run: mypy src/qsvt
+        run: mypy src/qsvt studio
 
   tests:
     runs-on: ubuntu-latest
@@ -119,9 +119,13 @@ jobs:
       - name: Run cookbook integration tests
         run: pytest -m integration tests/test_cookbook_examples.py
 
+  studio:
+    needs: lint
+    uses: ./.github/workflows/studio.yml
+
   pages:
     runs-on: ubuntu-latest
-    needs: integration
+    needs: [integration, studio]
 
     env:
       MPLCONFIGDIR: /tmp/matplotlib

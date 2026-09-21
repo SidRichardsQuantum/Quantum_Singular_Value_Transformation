@@ -35,6 +35,7 @@ The repository also includes a sequence of notebooks that introduce QSVT concept
 | goal | start here |
 | --- | --- |
 | Install the package and run a transform | [Usage guide](usage.md) |
+| Configure, inspect, and compare local experiments | [Experiment Studio](studio.md) |
 | Run short cookbook scripts | [Cookbook examples](https://github.com/SidRichardsQuantum/Quantum_Singular_Value_Transformation/tree/main/examples) |
 | Understand the mathematical setup | [Theory](theory.md) |
 | Inspect experimental HHL or quantum-walk comparisons | [Algorithm comparisons](comparisons.md) |
