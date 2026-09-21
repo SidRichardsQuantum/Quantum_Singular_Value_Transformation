@@ -31,6 +31,7 @@ def main():
         page.on("pageerror", lambda error: errors.append(str(error)))
         page.goto(args.url)
         expect(page.locator("#workflow option")).to_have_count(7)
+        expect(page.locator("#workflow")).to_have_value("sign")
         expect(page.locator("#preset")).to_have_value("sign-cookbook")
         expect(page.locator("#setting-attempt_synthesis")).not_to_be_checked()
         page.click("#package-defaults")

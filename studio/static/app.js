@@ -211,7 +211,8 @@ async function init() {
   for (const entry of Object.values(state.catalogue.workflows)) for (const key of ["access_model", "block_encoding"]) (entry.settings[key]?.values || []).forEach(v => encodings.add(v));
   encodings.forEach(v => option($("encoding-filter"), v, v));
   state.catalogue.presets.forEach(p => option($("preset"), p.id, p.name));
-  loadPreset(workflow($("workflow").value).recommended_preset); selection();
+  // JSON object key order is not a presentation default (the API sorts keys).
+  loadPreset(workflow("sign").recommended_preset); selection();
   $("workflow").addEventListener("change", () => loadPreset(workflow($("workflow").value).recommended_preset));
   $("package-defaults").addEventListener("click", () => {
     renderComposer(); $("preset").value = "";
