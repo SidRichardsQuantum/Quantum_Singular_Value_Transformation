@@ -158,6 +158,63 @@ class Store:
                     },
                 )
 
+    def history_page(self, query):
+        """Filter before paging so searches include every saved experiment."""
+        limit = int(query.get("limit", "24"))
+        offset = int(query.get("offset", "0"))
+        if not 1 <= limit <= 100 or offset < 0:
+            raise ValueError("History limit must be 1–100; offset must be nonnegative.")
+        records = self.history()
+        total = len(records)
+        active = sum(r["status"] not in TERMINAL for r in records)
+        workflows = catalogue()["workflows"]
+
+        def matches(record):
+            request = record["request"]
+            settings = request["settings"]
+            execution_key = workflows[request["workflow"]].get("execution_setting")
+            execution = str(bool(settings.get(execution_key))).lower()
+            status = query.get("status")
+            return (
+                (
+                    not query.get("search")
+                    or query["search"].lower() in json.dumps(record).lower()
+                )
+                and (
+                    not query.get("workflow")
+                    or request["workflow"] == query["workflow"]
+                )
+                and (
+                    not status
+                    or (
+                        record["status"] not in TERMINAL
+                        if status == "active"
+                        else record["status"] == status
+                    )
+                )
+                and (
+                    not query.get("encoding")
+                    or (settings.get("access_model") or settings.get("block_encoding"))
+                    == query["encoding"]
+                )
+                and (not query.get("execution") or execution == query["execution"])
+                and (query.get("favorites") != "true" or record["favorite"])
+            )
+
+        records = [record for record in records if matches(record)]
+        if query.get("sort") == "oldest":
+            records.reverse()
+        # Keep the last page usable if a filter or favorite mutation shrinks it.
+        offset = min(offset, ((len(records) - 1) // limit) * limit) if records else 0
+        return {
+            "runs": records[offset : offset + limit],
+            "total": total,
+            "matching": len(records),
+            "active": active,
+            "offset": offset,
+            "limit": limit,
+        }
+
     def reuse(self, run_id):
         return copy.deepcopy(self.read(run_id)["request"])
 

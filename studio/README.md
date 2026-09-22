@@ -19,6 +19,11 @@ and 1.1 configurations remain reusable through an explicit upgrade to schema
 1.2. Queued and executing runs can be cancelled; applicable reports gain phase,
 operator-response, and resource plots.
 
+The Studio remembers per-workflow drafts and history filters in this browser.
+Run cards separate execution, reconstruction, and scientific acceptance;
+linked report sections retain complete JSON and reproducibility details.
+History is filtered on the server and displayed in pages of 24 experiments.
+
 See [the complete guide](../docs/qsvt/studio.md) for scientific scope,
 architecture, storage, reproducibility, comparison, acceptance interpretation,
 and catalogue extension instructions.

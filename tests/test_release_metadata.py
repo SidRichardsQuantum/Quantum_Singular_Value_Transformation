@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 import pytest
+import yaml
 
 try:
     import tomllib
@@ -237,6 +238,19 @@ def test_pull_request_and_publish_compatibility_smoke_suites_match():
     )
 
     assert ordered == pull_request
+
+
+def test_release_artifacts_require_every_ordered_validation_to_succeed():
+    jobs = yaml.safe_load(_read_text(".github/workflows/ordered-actions.yml"))["jobs"]
+    package = jobs["package"]
+
+    # Explicit success dependencies prevent parallel checks from being bypassed
+    # when one fails, is cancelled, or is skipped.
+    assert set(package["needs"]) == set(jobs) - {"package"}
+    assert "if" not in package
+    assert package["with"]["upload_artifact"] is True
+    for job in jobs.values():
+        assert not job.get("continue-on-error", False)
 
 
 def test_coverage_configuration_enforces_branch_regressions():

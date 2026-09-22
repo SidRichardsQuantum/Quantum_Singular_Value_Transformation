@@ -25,6 +25,8 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: pyproject.toml
 
       - name: Install package and lint/type dependencies
         run: python -m pip install -e ".[lint,type]"
@@ -54,6 +56,8 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
+          cache: "pip"
+          cache-dependency-path: pyproject.toml
 
       - name: Install package and test dependencies
         run: python -m pip install -e ".[test]"
@@ -91,18 +95,19 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
+          cache: "pip"
+          cache-dependency-path: pyproject.toml
 
       - name: Install package and constrained dependencies
         run: |
-          python -m pip install -e ".[test]"
-          python -m pip install "${{ matrix.numpy-constraint }}" "${{ matrix.pennylane-constraint }}"
+          python -m pip install -e ".[test]" "${{ matrix.numpy-constraint }}" "${{ matrix.pennylane-constraint }}"
 
       - name: Run compatibility smoke tests
         run: pytest -m "not notebook" tests/test_qsvt_smoke.py tests/test_execution.py tests/test_hhl_execution.py tests/test_block_encoding.py tests/test_algorithm_workflow_regressions.py tests/test_reports.py
 
   integration:
     runs-on: ubuntu-latest
-    needs: [tests, dependency-compatibility]
+    needs: lint
 
     steps:
       - name: Check out repository
@@ -112,6 +117,8 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: pyproject.toml
 
       - name: Install package and test dependencies
         run: python -m pip install -e ".[test]"
@@ -125,7 +132,7 @@ jobs:
 
   pages:
     runs-on: ubuntu-latest
-    needs: [integration, studio]
+    needs: lint
 
     env:
       MPLCONFIGDIR: /tmp/matplotlib
@@ -164,7 +171,8 @@ jobs:
           python -m sphinx -W -b html docs docs/_build/html
 
   package:
-    needs: pages
+    # Release artifacts are built only after every validation job succeeds.
+    needs: [lint, tests, dependency-compatibility, integration, studio, pages]
     uses: ./.github/workflows/package.yml
     with:
       upload_artifact: true

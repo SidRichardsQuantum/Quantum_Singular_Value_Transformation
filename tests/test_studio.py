@@ -508,6 +508,47 @@ def test_http_api_validation_artifacts_and_mutations(tmp_path, real_reports):
         studio.close()
 
 
+def test_history_pagination_filters_before_slicing(tmp_path):
+    studio = Studio(tmp_path)
+    try:
+        ids = [studio.store.create(request(), {}) for _ in range(27)]
+        for index, run_id in enumerate(ids):
+            studio.store.update(
+                run_id,
+                created_at=f"2026-09-22T00:00:{index:02d}+00:00",
+                status="completed" if index < 26 else "executing",
+                favorite=index == 0,
+            )
+
+        def page(query):
+            status, body = http(studio, "GET", f"/api/runs?{query}")
+            assert status == 200
+            return json.loads(body)
+
+        first = page("limit=24")
+        assert len(first["runs"]) == 24
+        assert first["total"] == first["matching"] == 27
+        assert first["active"] == 1
+        second = page("limit=24&offset=24")
+        assert [run["id"] for run in second["runs"]] == ids[2::-1]
+        assert page("limit=24&sort=oldest")["runs"][0]["id"] == ids[0]
+        assert page(f"limit=24&search={ids[0]}")["runs"][0]["id"] == ids[0]
+        favorite = page("limit=24&favorites=true&offset=24")
+        assert favorite["offset"] == 0
+        assert [run["id"] for run in favorite["runs"]] == [ids[0]]
+        active = page("limit=24&status=active")
+        assert [run["id"] for run in active["runs"]] == [ids[-1]]
+        empty = page("limit=24&workflow=hamiltonian_simulation")
+        assert empty["matching"] == 0 and empty["active"] == 1
+        assert page("limit=24&execution=false")["matching"] == 27
+        assert page("limit=24&execution=true")["matching"] == 0
+        assert page("limit=24&encoding=unknown")["matching"] == 0
+        for query in ("limit=0", "limit=101", "offset=-1", "limit=invalid"):
+            assert http(studio, "GET", f"/api/runs?{query}")[0] == 400
+    finally:
+        studio.close()
+
+
 def test_studio_is_not_in_distribution_and_has_no_frontend_science():
     pyproject = Path("pyproject.toml").read_text()
     assert 'where = ["src"]' in pyproject

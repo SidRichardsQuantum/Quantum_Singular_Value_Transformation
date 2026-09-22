@@ -74,6 +74,21 @@ components. Fixed simulator and Hamiltonian-encoding choices are displayed as
 information rather than dropdowns. Field help separates target approximation
 tolerances from sampled phase reconstruction and application acceptance.
 
+### Browser-local drafts
+
+The composer retains a separate draft for each workflow, including unfinished
+numeric inputs and the expanded advanced-settings panel. Switching workflows
+restores that workflow's draft when one exists; otherwise it opens the
+recommended preset. Selecting a preset or **Use package defaults**, importing,
+or reusing a configuration explicitly replaces the current workflow's draft.
+
+Drafts and history filters survive reloads using browser-local storage for this
+Studio origin. They are not saved scientific records, are not shared between
+browsers or different origins/ports, and may disappear when browser storage is
+cleared. If storage is unavailable, workflow drafts still work within the open
+page. Export a configuration to keep a portable copy; normal package request
+validation still applies when exporting or running a draft.
+
 ## Scientific scope
 
 | Catalogue entry | Package entrypoint | Evidence |
@@ -272,11 +287,39 @@ scientific report. Studio elapsed time additionally includes artifact work.
 ## Gallery, viewer, reuse, and comparison
 
 The gallery supports text search, workflow, run state, requested execution,
-encoding, favorite filtering, and chronological sorting. Preview images are
+encoding, favorite filtering, and chronological sorting. Filters apply on the
+server before pagination, so searches cover the entire saved history. Pages
+contain up to 24 experiments and show matching and total counts; Previous/Next
+navigate the results. Comparison selections remain selected across pages.
+The unparameterized `/api/runs` endpoint retains its full-history response for
+existing clients; paginated requests accept `limit` (1–100), `offset`, `search`,
+`workflow`, `status`, `encoding`, `execution`, `favorites`, and `sort`.
+Storage still scans the file-backed history; pagination bounds network payloads
+and browser rendering rather than adding a database or history index.
+
+Polling runs every two seconds while any saved run is active, including runs
+outside the current filters, and every 15 seconds when idle. Hidden tabs pause
+polling and refresh when visible; connection failures retry after 30 seconds.
+Search input is debounced, and stale responses cannot replace newer filters.
+
+Preview images are
 actual scientific plots. Cards show package error metrics with their report
 field names, configuration, wall time, and lifecycle state.
 
-**View** exposes resolved configuration, numerical metrics, phase values,
+Cards and the viewer show separate **Execution**, **Phase reconstruction**, and
+**Scientific acceptance** summaries. A requested QNode is not reported as a
+successful execution without saved execution evidence. Missing historical
+assessments remain explicitly unavailable, and completion is not a scientific
+acceptance verdict. Status descriptions come from saved package fields; the
+browser does not calculate new acceptance checks.
+
+**View** has linked **Overview**, **Accuracy**, **Phases**, **Resources**, and
+**Reproducibility** sections. Unchanged sections remain in place as history
+updates; changed sections preserve expanded details and keyboard focus where
+the corresponding control remains available, and retain the viewer's scroll
+position. Full JSON reports and artifact downloads remain available.
+
+The sections expose resolved configuration, numerical metrics, phase values,
 compatibility, degree search, execution outputs, resource model assumptions,
 acceptance checks, truth contracts, complete report, provenance, and lifecycle.
 Unavailable report fields are omitted. Artifact links and configuration/result
@@ -378,10 +421,13 @@ python -m playwright install --with-deps chromium
 python -m studio.check_browser --url http://127.0.0.1:8765
 ```
 
-The check creates seven real runs and verifies the viewer, export, reuse,
-comparison, incompatible-target rejection, favorites after reload, search,
+The check creates real runs and verifies the viewer, export, reuse,
+comparison, incompatible-target rejection, favorites and filters after reload,
+per-workflow drafts and unfinished inputs, stable viewer focus/expansion, search,
 Hamiltonian execution filtering and reuse, recommended versus package defaults,
-legacy import, solver selection, quality/failure panels, and mobile layout. It saves
+legacy import, solver selection, quality/failure panels, and mobile layout.
+Deterministic browser fixtures additionally check pagination, cross-page
+selection, changing-report focus/expansion, and idle/active/hidden/error polling. It saves
 screenshots under `/tmp`. Browser tooling is not a studio runtime dependency.
 
 The reusable `.github/workflows/studio.yml` runs this browser check on pull

@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+from urllib.parse import parse_qs, urlsplit
 
 from playwright.sync_api import expect, sync_playwright
 
@@ -20,6 +21,131 @@ def check_image(page, selector):
         image = images.nth(index)
         expect(image).to_have_js_property("complete", True, timeout=30000)
         assert image.evaluate("element => element.naturalWidth") > 0
+
+
+def check_history_browser(browser, url):
+    """Exercise paging and polling with deterministic saved-record fixtures."""
+    page = browser.new_page()
+    page.clock.install()
+    catalogue = page.request.get(f"{url}/api/catalogue").json()
+    preset = next(p for p in catalogue["presets"] if p["id"] == "sign-cookbook")
+    records = [
+        {
+            "id": f"{index:032x}",
+            "request": {
+                "workflow": preset["workflow"],
+                "settings": preset["settings"],
+                "schema_version": catalogue["schema_version"],
+            },
+            "status": "completed",
+            "created_at": "2026-09-22T00:00:00+00:00",
+            "favorite": False,
+            "artifacts": [],
+            "metrics": {},
+        }
+        for index in range(27)
+    ]
+    calls = []
+    mode = {"active": 0, "failed": False}
+
+    def history(route):
+        query = parse_qs(urlsplit(route.request.url).query)
+        offset = int(query.get("offset", ["0"])[0])
+        calls.append(offset)
+        if mode["failed"]:
+            route.fulfill(status=503, json={"error": "Test connection failure"})
+            return
+        route.fulfill(
+            json={
+                "runs": records[offset : offset + 24],
+                "total": 27,
+                "matching": 27,
+                "active": mode["active"],
+                "offset": offset,
+                "limit": 24,
+            }
+        )
+
+    page.route("**/api/runs?*", history)
+    page.goto(url)
+    expect(page.locator(".card")).to_have_count(24)
+    page.locator(".card").first.get_by_role(
+        "button", name="Compare", exact=True
+    ).click()
+    page.click("#next-page")
+    expect(page.locator(".card")).to_have_count(3)
+    expect(page.locator("#page-status")).to_have_text("25–27 of 27")
+    expect(page.locator("#next-page")).to_be_disabled()
+    page.locator(".card").first.get_by_role(
+        "button", name="Compare", exact=True
+    ).click()
+    expect(page.locator("#selection-count")).to_contain_text("2 selected")
+    page.click("#previous-page")
+    expect(page.locator(".card")).to_have_count(24)
+    expect(
+        page.locator(".card").first.get_by_role("button", name="✓ Selected")
+    ).to_be_visible()
+    assert calls[:3] == [0, 24, 0]
+
+    # An active report can change without losing expanded details or focus.
+    records[0]["status"] = "executing"
+    records[0]["events"] = []
+    page.route(
+        f"**/api/runs/{records[0]['id']}",
+        lambda route: route.fulfill(json={**records[0], "report": {}}),
+    )
+    page.locator(".card").first.get_by_role("button", name="View", exact=True).click()
+    page.evaluate("""() => {
+      const section = document.querySelector('#report-reproducibility');
+      const summary = section.querySelector('details:last-of-type summary');
+      summary.click(); summary.focus();
+      window.savedScroll = document.querySelector('#viewer').scrollTop;
+      window.phaseSection = document.querySelector('#report-phases');
+    }""")
+    records[0]["events"] = [{"status": "saving_artifacts"}]
+    records[0]["status"] = "saving_artifacts"
+    page.evaluate("refresh()")
+    assert page.evaluate("""() => {
+      const section = document.querySelector('#report-reproducibility');
+      const details = section.querySelector('details:last-of-type');
+      const summary = details.querySelector('summary');
+      return details.open && document.activeElement === summary;
+    }""")
+    assert page.evaluate("document.querySelector('#viewer').scrollTop === savedScroll")
+    assert page.evaluate("document.querySelector('#report-phases') === phaseSection")
+    page.click("#close-viewer")
+
+    # Idle refresh discovers activity; subsequent refreshes use two seconds.
+    mode["active"] = 1
+    with page.expect_response("**/api/runs?*"):
+        page.clock.fast_forward(15000)
+    page.wait_for_function("state.active === 1")
+    with page.expect_response("**/api/runs?*"):
+        page.clock.fast_forward(2000)
+    page.evaluate("""() => {
+      Object.defineProperty(document, 'hidden', {configurable: true, value: true});
+      document.dispatchEvent(new Event('visibilitychange'));
+    }""")
+    before = len(calls)
+    page.clock.fast_forward(60000)
+    assert len(calls) == before
+    with page.expect_response("**/api/runs?*"):
+        page.evaluate("""() => {
+          Object.defineProperty(document, 'hidden', {configurable: true, value: false});
+          document.dispatchEvent(new Event('visibilitychange'));
+        }""")
+    mode["failed"] = True
+    with page.expect_response("**/api/runs?*"):
+        page.clock.fast_forward(2000)
+    expect(page.locator("#notice")).to_contain_text("Test connection failure")
+    before = len(calls)
+    page.clock.fast_forward(29000)
+    assert len(calls) == before
+    mode["failed"] = False
+    with page.expect_response("**/api/runs?*"):
+        page.clock.fast_forward(1000)
+    expect(page.locator("#notice")).to_be_empty()
+    page.close()
 
 
 def main():
@@ -42,6 +168,17 @@ def main():
         page.select_option("#preset", "sign-cookbook")
         expect(page.locator("#setting-degree")).to_have_attribute("step", "2")
         expect(page.locator("#setting-degree")).to_have_value("13")
+        # Retain distinct drafts, including unfinished input, across reloads.
+        page.fill("#setting-degree", "")
+        page.select_option("#workflow", "inverse")
+        page.fill("#setting-degree", "15")
+        page.select_option("#workflow", "sign")
+        expect(page.locator("#setting-degree")).to_have_value("")
+        page.reload()
+        expect(page.locator("#setting-degree")).to_have_value("")
+        page.select_option("#workflow", "inverse")
+        expect(page.locator("#setting-degree")).to_have_value("15")
+        page.select_option("#preset", "sign-cookbook")
         page.click("#run")
         expect(page.locator(".card .status.completed")).to_have_count(1, timeout=60000)
         card = page.locator(".card").first
@@ -50,6 +187,32 @@ def main():
         card.get_by_role("button", name="View", exact=True).click()
         expect(page.locator("#viewer")).to_be_visible()
         expect(page.locator("#viewer-body")).to_contain_text("diagnostics.max_error")
+        expect(page.locator("#report-overview")).to_contain_text(
+            "Execution: Not requested"
+        )
+        expect(page.locator("#report-overview")).to_contain_text(
+            "No acceptance verdict recorded"
+        )
+        expect(page.locator(".report-nav a")).to_have_count(5)
+        # Metadata-only history changes must leave the reader's DOM and focus intact.
+        page.evaluate("""() => {
+          const section = document.querySelector('#report-reproducibility');
+          const summary = section.querySelector('details:last-of-type summary');
+          summary.click(); summary.focus();
+          window.readerNode = summary;
+          window.readerScroll = document.querySelector('#viewer').scrollTop;
+        }""")
+        page.evaluate("""async () => {
+          await api(`/api/runs/${state.viewing}/favorite`, {favorite: false});
+          await refresh();
+          await api(`/api/runs/${state.viewing}/favorite`, {favorite: true});
+          await refresh();
+        }""")
+        assert page.evaluate("document.activeElement === window.readerNode")
+        assert page.evaluate("window.readerNode.parentElement.open")
+        assert page.evaluate(
+            "document.querySelector('#viewer').scrollTop === window.readerScroll"
+        )
         with page.expect_download() as downloaded:
             page.get_by_role(
                 "button", name="Export configuration", exact=True
@@ -84,6 +247,9 @@ def main():
         page.reload()
         page.check("#favorites")
         expect(page.locator(".card")).to_have_count(1)
+        page.reload()
+        expect(page.locator("#favorites")).to_be_checked()
+        expect(page.locator(".card")).to_have_count(1)
         expect(page.locator(".card")).to_contain_text("★ Saved")
         page.uncheck("#favorites")
         page.fill("#search", "no-such-experiment")
@@ -117,6 +283,7 @@ def main():
         expect(page.locator(".card")).to_have_count(1)
         expect(page.locator(".card")).to_contain_text("Analytic QNode requested")
         page.select_option("#execution-filter", "")
+        expect(page.locator(".card")).to_have_count(2)
         for card in page.locator(".card").all():
             card.get_by_role("button", name="Compare", exact=True).click()
         page.click("#compare")
@@ -200,6 +367,7 @@ def main():
         expect(page.locator(".card")).to_have_count(1)
         page.select_option("#status-filter", "")
         page.select_option("#workflow-filter", "")
+        expect(page.locator(".card")).to_have_count(9)
         page.screenshot(path=str(args.screenshot), full_page=True)
         page.set_viewport_size({"width": 390, "height": 844})
         assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
@@ -208,6 +376,7 @@ def main():
             full_page=True,
         )
         assert not errors, errors
+        check_history_browser(browser, args.url)
         browser.close()
     print(
         "Browser smoke passed: run, viewer, export, exact reuse, comparison, "

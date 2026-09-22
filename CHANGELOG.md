@@ -1,5 +1,48 @@
 # Changelog
 
+## [0.2.29] – 22nd September 2026
+
+### Added
+
+- show separate Studio execution, sampled phase-reconstruction, and scientific
+  acceptance summaries from saved package evidence, including absent verdicts
+- organize run reports into linked Overview, Accuracy, Phases, Resources, and
+  Reproducibility sections, retaining raw reports and artifact downloads
+- preserve per-workflow drafts, unfinished inputs, advanced-control expansion,
+  and history filters in browser-local storage across reloads
+- paginate Studio history with server-side search and filters across all saved
+  runs, 24 cards per page, and matching/total counts
+
+### Fixed
+
+- retain unchanged viewer sections, expanded details, focus, and scroll position
+  during history refreshes; avoid refetching unchanged visible reports
+- poll active work every two seconds and idle history every 15 seconds, pause
+  polling in hidden tabs, and back off to 30 seconds after connection failures
+- report the actual source and destination schema versions when reusing legacy
+  configurations
+
+### Tests
+
+- run independent Ordered Actions validation jobs concurrently after lint,
+  keeping package creation gated on every validation job succeeding
+- cache pip downloads across CI workflows and resolve compatibility constraints
+  in a single installation; retain all test matrices and release checks
+- add a regression check that release artifacts require every validation job
+  and cannot bypass failures, cancellations, or skipped dependencies
+- cover history page boundaries, filtering before pagination, global active-run
+  counts, invalid pagination requests, and page correction after filtering
+- extend browser checks for separate workflow drafts, unfinished-input recovery,
+  filter persistence, outcome summaries, report navigation, viewer stability,
+  cross-page selection, and idle/active/hidden/error polling
+
+### Documentation
+
+- document browser-local draft storage, report navigation, pagination, polling,
+  and scientific outcome interpretation; update current-release markers
+- keep the stable package facade, numerical defaults, and authoritative saved
+  scientific requests and reports unchanged
+
 ## [0.2.28] – 22nd September 2026
 
 ### Added

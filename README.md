@@ -333,7 +333,14 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.2.28`
+Current release: `0.2.29`
+
+On `main`, Ordered Actions runs lint first, then runs the Python test matrix,
+dependency compatibility, integration, Studio browser, and notebook/documentation
+checks in parallel. Packaging and wheel validation require all checks to pass.
+Tagged releases publish the artifacts from a successful Ordered Actions push run
+for the same commit. CI caches pip downloads while still installing dependencies
+and executing every check on each run.
 
 ## Notebooks
 

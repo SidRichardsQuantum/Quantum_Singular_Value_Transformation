@@ -304,6 +304,9 @@ def handler(studio):
             if path == "/api/catalogue":
                 return self.send(200, catalogue())
             if path == "/api/runs":
+                query = {key: values[-1] for key, values in parse_qs(url.query).items()}
+                if query:
+                    return self.send(200, studio.store.history_page(query))
                 return self.send(200, {"runs": studio.store.history()})
             if path == "/api/compare.png":
                 from .plots import render
