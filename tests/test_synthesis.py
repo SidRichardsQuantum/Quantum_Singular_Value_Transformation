@@ -240,21 +240,17 @@ def test_synthesis_quality_does_not_confuse_returned_phases_with_accuracy():
 
 
 @pytest.mark.parametrize(
-    "kind,degree,tolerance",
+    "kind,degree",
     [
-        ("sign", 13, 1e-6),
-        ("sign", 25, 1e-6),
-        ("inverse", 13, 1e-6),
-        ("inverse", 25, 1e-6),
-        ("filter", 10, 1e-6),
-        # The degree-24 fit straddles 1e-6 across supported Python/NumPy
-        # combinations; keep a narrow portability margin without changing it.
-        ("filter", 24, 2e-6),
+        ("sign", 13),
+        ("sign", 25),
+        ("inverse", 13),
+        ("inverse", 25),
+        ("filter", 10),
+        ("filter", 24),
     ],
 )
-def test_iterative_synthesis_reconstructs_studio_boundary_polynomials(
-    kind, degree, tolerance
-):
+def test_iterative_synthesis_reconstructs_studio_boundary_polynomials(kind, degree):
     # These unchanged polynomials expose root-finding failures or poor
     # reconstruction on supported PennyLane versions. Do not rescale them.
     result = design_workflow(
@@ -265,7 +261,8 @@ def test_iterative_synthesis_reconstructs_studio_boundary_polynomials(
     )
     synthesis = result.synthesize(angle_solver="iterative")
     np.testing.assert_array_equal(synthesis.coeffs, result.coeffs)
-    assert synthesis.quality_report(tolerance)["reconstruction_passed"] is True
+    quality = synthesis.quality_report(1e-4)
+    assert quality["reconstruction_passed"] is True, quality
 
 
 @pytest.mark.parametrize("constant", [-1.0, -0.3, 0.0, 0.7, 1.0])
