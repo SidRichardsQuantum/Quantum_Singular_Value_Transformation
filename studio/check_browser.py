@@ -14,9 +14,12 @@ from playwright.sync_api import expect, sync_playwright
 
 
 def check_image(page, selector):
-    image = page.locator(selector)
-    expect(image).to_have_js_property("complete", True, timeout=30000)
-    assert image.evaluate("image => image.naturalWidth") > 0
+    images = page.locator(selector)
+    assert images.count() > 0
+    for index in range(images.count()):
+        image = images.nth(index)
+        expect(image).to_have_js_property("complete", True, timeout=30000)
+        assert image.evaluate("element => element.naturalWidth") > 0
 
 
 def main():
@@ -94,7 +97,7 @@ def main():
         expect(page.locator(".card .status.completed")).to_have_count(4, timeout=60000)
         page.select_option("#workflow-filter", "hamiltonian_simulation")
         expect(page.locator(".card")).to_have_count(1)
-        expect(page.locator(".card")).to_contain_text("Finite analytic QNode requested")
+        expect(page.locator(".card")).to_contain_text("Analytic QNode requested")
         page.locator(".card").get_by_role("button", name="View", exact=True).click()
         expect(page.locator("#viewer-body")).to_contain_text(
             "full_qsvt_acceptance: true"
@@ -112,7 +115,7 @@ def main():
         expect(page.locator(".card")).to_contain_text("no QNode or phase synthesis")
         page.select_option("#execution-filter", "true")
         expect(page.locator(".card")).to_have_count(1)
-        expect(page.locator(".card")).to_contain_text("Finite analytic QNode requested")
+        expect(page.locator(".card")).to_contain_text("Analytic QNode requested")
         page.select_option("#execution-filter", "")
         for card in page.locator(".card").all():
             card.get_by_role("button", name="Compare", exact=True).click()
@@ -139,7 +142,7 @@ def main():
                 "buffer": json.dumps(legacy).encode(),
             }
         )
-        expect(page.locator("#notice")).to_contain_text("upgraded to 1.1")
+        expect(page.locator("#notice")).to_contain_text("upgraded to 1.2")
         expect(page.locator("#setting-degree")).to_have_value("13")
         expect(page.locator("#setting-angle_solver")).to_have_value('"root-finding"')
         page.select_option("#workflow-filter", "sign")
@@ -169,6 +172,33 @@ def main():
         expect(page.locator("#setting-block_encoding")).to_have_attribute(
             "type", "hidden"
         )
+        # Exercise finite-shot controls and report artifacts through the real UI.
+        page.select_option("#workflow", "spectral_filter")
+        page.select_option("#workflow-filter", "spectral_filter")
+        page.select_option("#setting-shots", "100")
+        page.select_option("#setting-input_state", '"basis-01"')
+        page.click("#run")
+        expect(page.locator(".card .status.completed")).to_have_count(1, timeout=60000)
+        expect(page.locator(".card")).to_contain_text("100 shots")
+        page.locator(".card").get_by_role("button", name="View", exact=True).click()
+        expect(page.locator('#viewer-body img[src$="phases.png"]')).to_be_visible()
+        expect(page.locator('#viewer-body img[src$="spectrum.png"]')).to_be_visible()
+        check_image(page, "#viewer-body img")
+        page.click("#close-viewer")
+        # Cancel while the isolated worker starts, then check terminal filtering.
+        page.click("#run")
+        page.locator(".card").first.get_by_role(
+            "button", name="Cancel", exact=True
+        ).click()
+        expect(page.locator(".card .status.cancelled")).to_have_count(1, timeout=30000)
+        page.select_option("#status-filter", "active")
+        expect(page.locator(".card")).to_have_count(0)
+        page.select_option("#status-filter", "cancelled")
+        expect(page.locator(".card")).to_have_count(1)
+        page.reload()
+        page.select_option("#status-filter", "cancelled")
+        expect(page.locator(".card")).to_have_count(1)
+        page.select_option("#status-filter", "")
         page.select_option("#workflow-filter", "")
         page.screenshot(path=str(args.screenshot), full_page=True)
         page.set_viewport_size({"width": 390, "height": 844})
@@ -181,7 +211,8 @@ def main():
         browser.close()
     print(
         "Browser smoke passed: run, viewer, export, exact reuse, comparison, "
-        "incompatibility, favorites, search, refresh, and mobile layout."
+        "incompatibility, favorites, sampling, report plots, cancellation, "
+        "search, refresh, and mobile layout."
     )
 
 

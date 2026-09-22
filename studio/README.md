@@ -15,7 +15,9 @@ Each workflow opens with a recommended preset. Choose quick demonstrations,
 accuracy studies, or expected failures, or select **Use package defaults**.
 Advanced controls expose tested phase solvers and reconstruction tolerances;
 results distinguish returned phases from validated reconstruction. Saved 1.0
-configurations remain reusable through an explicit upgrade to schema 1.1.
+and 1.1 configurations remain reusable through an explicit upgrade to schema
+1.2. Queued and executing runs can be cancelled; applicable reports gain phase,
+operator-response, and resource plots.
 
 See [the complete guide](../docs/qsvt/studio.md) for scientific scope,
 architecture, storage, reproducibility, comparison, acceptance interpretation,

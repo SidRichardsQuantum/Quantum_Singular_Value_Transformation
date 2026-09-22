@@ -7,6 +7,7 @@ import hashlib
 import importlib.metadata
 import json
 import mimetypes
+import multiprocessing
 import os
 import platform
 import subprocess
@@ -15,6 +16,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from typing import Any
 from urllib.parse import parse_qs, urlsplit
 
 from .adapter import execute_request
@@ -22,6 +24,19 @@ from .catalogue import catalogue, validate_request
 from .records import Store, canonical_json, compare, metrics
 
 STATIC = Path(__file__).parent / "static"
+
+
+def _package_worker(request, result_path, error_path):
+    """Execute one package call in a process that can be safely terminated."""
+    try:
+        Path(result_path).write_text(
+            canonical_json(execute_request(request)), encoding="utf-8"
+        )
+    except BaseException as exc:  # Preserve a useful child-process failure record.
+        Path(error_path).write_text(
+            canonical_json({"type": type(exc).__name__, "message": str(exc)}),
+            encoding="utf-8",
+        )
 
 
 def environment():
@@ -48,18 +63,22 @@ def environment():
 
 
 class Studio:
-    def __init__(self, root):
+    def __init__(self, root, *, process_start_method="spawn"):
         self.store = Store(root)
         self.store.recover()
         self.worker = ThreadPoolExecutor(max_workers=1, thread_name_prefix="qsvt")
         self.submission_lock = threading.Lock()
+        self.process_lock = threading.Lock()
+        self.cancel_requested: set[str] = set()
+        self.processes: dict[str, Any] = {}
+        self.process_context = multiprocessing.get_context(process_start_method)
 
     def submit(self, raw):
         request = validate_request(raw)
         with self.submission_lock:
             if (
                 sum(
-                    r["status"] not in {"completed", "failed"}
+                    r["status"] not in {"completed", "failed", "cancelled"}
                     for r in self.store.history()
                 )
                 >= 8
@@ -72,15 +91,65 @@ class Studio:
     def run(self, run_id):
         started = time.perf_counter()
         try:
-            self.store.update(run_id, status="validating")
+            with self.store.lock:
+                if self.store.read(run_id)["status"] == "cancelled":
+                    return
+                self.store.update(run_id, status="validating")
             request = validate_request(self.store.reuse(run_id))
-            self.store.update(run_id, status="executing")
-            scientific_start = time.perf_counter()
-            report = execute_request(request)
-            runtime = time.perf_counter() - scientific_start
+            with self.store.lock:
+                if self._cancelled(run_id):
+                    return self._finish_cancel(run_id, started)
+                self.store.update(run_id, status="executing")
             self.store.update(
-                run_id, status="saving_artifacts", package_call_seconds=runtime
+                run_id,
+                progress={
+                    "stage": "package_call",
+                    "message": self._package_message(request),
+                    "started_at": time.time(),
+                },
             )
+            scientific_start = time.perf_counter()
+            directory = self.store.directory(run_id)
+            result_path = directory / ".worker-result.json"
+            error_path = directory / ".worker-error.json"
+            process = self.process_context.Process(
+                target=_package_worker,
+                args=(request, result_path, error_path),
+                name=f"qsvt-{run_id[:8]}",
+            )
+            with self.process_lock:
+                self.processes[run_id] = process
+            process.start()
+            while process.is_alive():
+                process.join(0.1)
+                if self._cancelled(run_id):
+                    process.terminate()
+                    process.join()
+                    return self._finish_cancel(run_id, started)
+            with self.store.lock:
+                if self._cancelled(run_id):
+                    return self._finish_cancel(run_id, started)
+                self.store.update(run_id, status="saving_artifacts")
+            with self.process_lock:
+                self.processes.pop(run_id, None)
+            if error_path.exists():
+                error = json.loads(error_path.read_text(encoding="utf-8"))
+                error_path.unlink()
+                self.store.update(
+                    run_id,
+                    status="failed",
+                    error=error,
+                    studio_elapsed_seconds=time.perf_counter() - started,
+                )
+                return
+            if process.exitcode != 0 or not result_path.exists():
+                raise RuntimeError(
+                    f"Scientific worker exited unexpectedly ({process.exitcode})."
+                )
+            report = json.loads(result_path.read_text(encoding="utf-8"))
+            result_path.unlink()
+            runtime = time.perf_counter() - scientific_start
+            self.store.update(run_id, package_call_seconds=runtime)
             directory = self.store.directory(run_id)
             self.store.write(directory / "report.json", report)
             stored = self.store.read(run_id, report=True)
@@ -88,10 +157,19 @@ class Studio:
             artifacts = ["request.json", "report.json"]
             warnings = []
             try:
-                from .plots import render
+                from .plots import render_artifacts
 
-                (directory / "preview.png").write_bytes(render([stored]))
-                artifacts.append("preview.png")
+                self.store.update(
+                    run_id,
+                    progress={
+                        "stage": "rendering_artifacts",
+                        "message": "Rendering plots from the saved package report.",
+                        "started_at": time.time(),
+                    },
+                )
+                for filename, content in render_artifacts(stored).items():
+                    (directory / filename).write_bytes(content)
+                    artifacts.append(filename)
             except Exception as exc:
                 warnings.append(f"Preview unavailable: {type(exc).__name__}: {exc}")
             self.store.update(
@@ -101,6 +179,7 @@ class Studio:
                 metrics=metrics(stored["report"]),
                 warnings=warnings,
                 studio_elapsed_seconds=time.perf_counter() - started,
+                progress={"stage": "completed", "message": "Run completed."},
             )
         except Exception as exc:
             self.store.update(
@@ -112,6 +191,79 @@ class Studio:
                 },
                 studio_elapsed_seconds=time.perf_counter() - started,
             )
+        finally:
+            with self.process_lock:
+                process = self.processes.pop(run_id, None)
+                self.cancel_requested.discard(run_id)
+            if process is not None and process.pid is not None:
+                if process.is_alive():
+                    process.terminate()
+                process.join()
+            for filename in (".worker-result.json", ".worker-error.json"):
+                (self.store.directory(run_id) / filename).unlink(missing_ok=True)
+
+    def _cancelled(self, run_id):
+        with self.process_lock:
+            return run_id in self.cancel_requested
+
+    def _finish_cancel(self, run_id, started):
+        self.store.update(
+            run_id,
+            status="cancelled",
+            progress={"stage": "cancelled", "message": "Cancelled by the user."},
+            studio_elapsed_seconds=time.perf_counter() - started,
+        )
+
+    def cancel(self, run_id):
+        with self.store.lock:
+            return self._cancel_locked(run_id)
+
+    def _cancel_locked(self, run_id):
+        run = self.store.read(run_id)
+        if run["status"] not in {"configured", "validating", "executing"}:
+            raise ValueError("Only queued or executing runs can be cancelled.")
+        with self.process_lock:
+            self.cancel_requested.add(run_id)
+        if run["status"] == "configured":
+            self.store.update(
+                run_id,
+                status="cancelled",
+                progress={
+                    "stage": "cancelled",
+                    "message": "Cancelled before execution.",
+                },
+            )
+        else:
+            self.store.update(
+                run_id,
+                status="cancelling",
+                progress={
+                    "stage": "cancelling",
+                    "message": "Stopping the scientific worker.",
+                },
+            )
+        return self.store.read(run_id)
+
+    @staticmethod
+    def _package_message(request):
+        labels = {
+            "poisson": (
+                "Searching degree, synthesizing phases, and evaluating the "
+                "Poisson workflow."
+            ),
+            "spectral_filter": (
+                "Searching degree, synthesizing phases, and evaluating the "
+                "spectral filter."
+            ),
+            "hamiltonian_simulation": (
+                "Designing component polynomials and evaluating Hamiltonian "
+                "evolution."
+            ),
+        }
+        return labels.get(
+            request["workflow"],
+            "Designing and validating the requested polynomial with the package.",
+        )
 
     def close(self):
         self.worker.shutdown(wait=True)
@@ -166,7 +318,14 @@ def handler(studio):
                 filename = parts[3]
                 if filename == "reuse":
                     return self.send(200, studio.store.reuse(run_id))
-                if filename not in {"request.json", "report.json", "preview.png"}:
+                if filename not in {
+                    "request.json",
+                    "report.json",
+                    "preview.png",
+                    "phases.png",
+                    "spectrum.png",
+                    "resources.png",
+                }:
                     raise FileNotFoundError
                 file = studio.store.directory(run_id) / filename
                 if file.is_symlink():
@@ -232,6 +391,12 @@ def handler(studio):
                 ):
                     studio.store.favorite(parts[2], raw.get("favorite"))
                     return self.send(200, studio.store.read(parts[2]))
+                if (
+                    len(parts) == 4
+                    and parts[:2] == ["api", "runs"]
+                    and parts[3] == "cancel"
+                ):
+                    return self.send(200, studio.cancel(parts[2]))
                 self.send(404, {"error": "Unknown endpoint."})
             except (ValueError, TypeError, AttributeError, KeyError) as exc:
                 self.send(400, {"error": str(exc)})

@@ -39,7 +39,7 @@ function renderComposer(request) {
       const fieldset = el("fieldset"); fieldset.append(el("legend", spec.group));
       groups.set(groupKey, fieldset); (spec.advanced ? advanced : $("controls")).append(fieldset);
     }
-    const value = request ? request.settings[key] : spec.default;
+    const value = request && Object.hasOwn(request.settings, key) ? request.settings[key] : spec.default;
     const label = el("label", spec.label);
     let input;
     if (spec.fixed) {
@@ -70,6 +70,11 @@ function loadPreset(id) {
 }
 function executionRequested(request) {
   return Boolean(request.settings[workflow(request.workflow).execution_setting]);
+}
+function executionLabel(request, entry) {
+  if (!entry.circuit_execution) return "Polynomial design · no QNode";
+  if (!executionRequested(request)) return entry.no_execution_label;
+  return request.settings.shots == null ? "Analytic QNode requested" : `Finite QNode requested · ${request.settings.shots} shots`;
 }
 function draft() {
   const entry = workflow($("workflow").value), settings = {};
@@ -104,7 +109,7 @@ function renderGallery() {
     const s = r.request.settings;
     return (!search || JSON.stringify(r).toLowerCase().includes(search)) &&
       (!$("workflow-filter").value || r.request.workflow === $("workflow-filter").value) &&
-      (!filter || (filter === "active" ? !["completed", "failed"].includes(r.status) : r.status === filter)) &&
+      (!filter || (filter === "active" ? !["completed", "failed", "cancelled"].includes(r.status) : r.status === filter)) &&
       (!$("encoding-filter").value || (s.access_model || s.block_encoding) === $("encoding-filter").value) &&
       (!$("execution-filter").value || String(executionRequested(r.request)) === $("execution-filter").value) &&
       (!$("favorites").checked || r.favorite);
@@ -125,7 +130,8 @@ function renderGallery() {
     } else card.append(el("div", run.error ? `${run.error.type}: ${run.error.message}` : "Scientific preview appears after execution", `pending${run.error ? " error" : ""}`));
     const body = el("div", undefined, "card-body");
     const config = Object.entries(settings).filter(([k]) => ["degree", "tolerance", "access_model", "block_encoding", "min_degree", "max_degree", "time", "acceptance_tolerance"].includes(k)).map(([k,v]) => `${k} = ${format(v)}`).join(" · ");
-    body.append(el("div", config, "meta"), el("div", entry.circuit_execution ? (executionRequested(run.request) ? "Finite analytic QNode requested" : entry.no_execution_label) : "Polynomial design · no QNode", "meta"));
+    body.append(el("div", config, "meta"), el("div", executionLabel(run.request, entry), "meta"));
+    if (run.progress?.message && !["completed", "failed", "cancelled"].includes(run.status)) body.append(el("div", run.progress.message, "progress meta"));
     const keys = ["synthesis_quality.status", "synthesis.angle_solver", "component_synthesis_quality.cosine.status", "component_synthesis_quality.sine.status", "diagnostics.max_error", "degree_search.achieved_error", "synthesis.reconstruction_max_error", "state_relative_error", "operator_relative_error", "acceptance.status"];
     keys.filter(k => run.metrics?.[k] !== undefined).forEach(k => body.append(el("div", `${k}: ${format(run.metrics[k])}`, "meta")));
     if (run.package_call_seconds !== undefined) body.append(el("div", `Package wall time: ${format(run.package_call_seconds)} s`, "meta"));
@@ -134,6 +140,7 @@ function renderGallery() {
     actions.append(button("View", () => showRun(run.id)), button("Reuse", () => reuse(run.id)));
     const favorite = button(run.favorite ? "★ Saved" : "☆ Save", async () => { await api(`/api/runs/${run.id}/favorite`, {favorite: !run.favorite}); await refresh(); }); favorite.setAttribute("aria-pressed", run.favorite); actions.append(favorite);
     if (run.status === "completed") { const compare = button(state.selected.has(run.id) ? "✓ Selected" : "Compare", () => toggleSelection(run.id)); compare.setAttribute("aria-pressed", state.selected.has(run.id)); actions.append(compare); }
+    if (["configured", "validating", "executing"].includes(run.status)) actions.append(button("Cancel", async () => { await api(`/api/runs/${run.id}/cancel`, {}); notice(`Cancellation requested for ${run.id.slice(0,8)}.`); await refresh(); }));
     body.append(actions); card.append(body); $("gallery").append(card);
   }
 }
@@ -163,6 +170,7 @@ async function showRun(id) {
   if (run.report) actions.append(button("Export results", () => download(`${id}-report.json`, run.report)));
   if (run.status === "completed") actions.append(button("Select for comparison", () => { toggleSelection(id); notice("Run selection updated."); }));
   body.append(actions, el("p", `Lifecycle: ${run.status}. Completion and acceptance are separate.`, "muted"));
+  if (run.progress?.message) body.append(el("p", run.progress.message, "progress"));
   if (run.error) body.append(el("p", `${run.error.type}: ${run.error.message}`, "error"));
   (run.warnings || []).forEach(w => body.append(el("p", w, "error")));
   if (run.report?.acceptance) {
@@ -174,6 +182,11 @@ async function showRun(id) {
   if (run.report?.synthesis && !run.report.synthesis_quality) body.append(el("p", "Historical synthesis report: no reconstruction-quality assessment was saved. Inspect its error and original acceptance checks.", "muted"));
   if (run.artifacts.includes("preview.png")) {
     const plot = el("img", undefined, "large-plot"); plot.src = `/api/runs/${id}/preview.png`; plot.alt = "Scientific diagnostics from the saved package report"; body.append(plot);
+  }
+  for (const [filename, title] of [["phases.png", "Synthesized phases"], ["spectrum.png", "Spectral response"], ["resources.png", "Resource report"]]) {
+    if (!run.artifacts.includes(filename)) continue;
+    body.append(el("h3", title));
+    const plot = el("img", undefined, "large-plot"); plot.src = `/api/runs/${id}/${filename}`; plot.alt = `${title} from the saved package report`; body.append(plot);
   }
   if (run.metrics) body.append(metricTable(run.metrics));
   body.append(detail("Problem / resolved configuration", run.request, true));
@@ -236,7 +249,7 @@ async function init() {
     if (file.size > 65536) throw new Error("Configuration file exceeds 64 KiB.");
     const original = JSON.parse(await file.text()), resolved = await api("/api/validate", original);
     renderComposer(resolved); $("preset").value=""; $("preset-source").textContent=`Imported ${file.name}`;
-    notice(original.schema_version === resolved.schema_version ? "Configuration imported." : "Configuration imported; schema 1.0 upgraded to 1.1 with its original solver defaults."); event.target.value="";
+    notice(original.schema_version === resolved.schema_version ? "Configuration imported." : `Configuration imported; schema ${original.schema_version} upgraded to ${resolved.schema_version} with compatible defaults.`); event.target.value="";
   }));
   for (const id of ["search", "workflow-filter", "status-filter", "encoding-filter", "execution-filter", "sort", "favorites"]) $(id).addEventListener("input", renderGallery);
   $("compare").addEventListener("click", guard(showComparison));

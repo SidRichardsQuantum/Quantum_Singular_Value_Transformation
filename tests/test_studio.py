@@ -4,14 +4,15 @@ import copy
 import inspect
 import io
 import json
+import time
 from pathlib import Path
 from unittest.mock import Mock
 
 import numpy as np
 import pytest
 from studio import adapter
-from studio.catalogue import FUNCTIONS, catalogue, validate_request
-from studio.plots import render
+from studio.catalogue import FUNCTIONS, SCHEMA_VERSION, catalogue, validate_request
+from studio.plots import render, render_artifacts
 from studio.records import Store, canonical_json, compare, json_safe, metrics
 from studio.server import Studio, handler
 
@@ -21,7 +22,7 @@ from qsvt.stable import design_workflow, report_to_jsonable
 def request(workflow="sign", **settings):
     return validate_request(
         {
-            "schema_version": "1.1",
+            "schema_version": SCHEMA_VERSION,
             "workflow": workflow,
             "settings": (
                 {
@@ -46,7 +47,7 @@ def cookbook_reports():
             continue
         req = validate_request(
             {
-                "schema_version": "1.1",
+                "schema_version": SCHEMA_VERSION,
                 "workflow": preset["workflow"],
                 "settings": preset["settings"],
             }
@@ -282,7 +283,8 @@ def test_flagship_evidence_preserved_in_storage_and_plots(
 
 
 def test_worker_lifecycle_failure_and_retry(tmp_path, monkeypatch):
-    studio = Studio(tmp_path)
+    # Fork keeps this test's monkeypatched adapter visible in the child process.
+    studio = Studio(tmp_path, process_start_method="fork")
     try:
         run_id = studio.store.create(request(), {})
         studio.run(run_id)
@@ -304,6 +306,150 @@ def test_worker_lifecycle_failure_and_retry(tmp_path, monkeypatch):
         assert studio.store.reuse(failed) == request()
     finally:
         studio.close()
+
+
+@pytest.mark.filterwarnings(
+    "ignore:This process .* is multi-threaded:DeprecationWarning"
+)
+def test_executing_run_can_be_cancelled(tmp_path, monkeypatch):
+    def slow_request(_request):
+        time.sleep(10)
+        return {"mode": "should-not-complete"}
+
+    monkeypatch.setattr("studio.server.execute_request", slow_request)
+    studio = Studio(tmp_path, process_start_method="fork")
+    try:
+        run = studio.submit(request())
+        deadline = time.monotonic() + 5
+        while studio.store.read(run["id"])["status"] != "executing":
+            assert time.monotonic() < deadline
+            time.sleep(0.02)
+        studio.cancel(run["id"])
+        while studio.store.read(run["id"])["status"] != "cancelled":
+            assert time.monotonic() < deadline
+            time.sleep(0.02)
+        stored = studio.store.read(run["id"])
+        assert stored["progress"]["stage"] == "cancelled"
+        assert not (studio.store.directory(run["id"]) / "report.json").exists()
+    finally:
+        studio.close()
+
+
+def test_additional_report_artifacts_are_rendered(tmp_path, real_reports):
+    request_, report = real_reports["spectral_filter"]
+    store = Store(tmp_path)
+    run_id = save_run(store, request_, report)
+    artifacts = render_artifacts(store.read(run_id, report=True))
+    assert {"preview.png", "phases.png", "spectrum.png", "resources.png"} <= set(
+        artifacts
+    )
+    assert all(content.startswith(b"\x89PNG") for content in artifacts.values())
+
+
+def test_cancelled_queue_and_interrupted_cancellation_recover(tmp_path):
+    studio = Studio(tmp_path)
+    try:
+        queued = studio.store.create(request(), {})
+        studio.cancel(queued)
+        studio.run(queued)
+        assert studio.store.read(queued)["status"] == "cancelled"
+        assert queued not in studio.cancel_requested
+        interrupted = studio.store.create(request(), {})
+        studio.store.update(interrupted, status="cancelling")
+        studio.store.recover()
+        assert studio.store.read(queued)["status"] == "cancelled"
+        assert studio.store.read(interrupted)["error"]["type"] == "InterruptedRun"
+    finally:
+        studio.close()
+
+
+@pytest.mark.parametrize("version", ["1.0", "1.1"])
+def test_legacy_schema_rejects_new_fields(version):
+    with pytest.raises(ValueError, match="requires request schema 1.2"):
+        validate_request(
+            {
+                "schema_version": version,
+                "workflow": "poisson",
+                "settings": {"source_kind": "constant"},
+            }
+        )
+
+
+def test_poisson_comparison_requires_matching_source(tmp_path):
+    store = Store(tmp_path)
+    runs = [
+        save_run(store, request("poisson", source_kind=source), {})
+        for source in ("sine", "constant")
+    ]
+    with pytest.raises(ValueError, match="Incompatible"):
+        compare(store, runs)
+
+
+@pytest.mark.parametrize(
+    ("workflow", "settings", "mode"),
+    [
+        (
+            "poisson",
+            {
+                "source_kind": "gaussian",
+                "execute": False,
+                "min_degree": 5,
+                "max_degree": 5,
+                "tolerance": 1.0,
+                "num_points": 101,
+            },
+            "poisson-qsvt-flagship",
+        ),
+        (
+            "spectral_filter",
+            {
+                "z0_coefficient": 0.2,
+                "z1_coefficient": -0.1,
+                "x0_coefficient": 0.3,
+                "input_state": "basis-01",
+                "execute": False,
+                "min_degree": 2,
+                "max_degree": 2,
+                "tolerance": 1.0,
+                "num_points": 101,
+            },
+            "spectral-filter-qsvt-flagship",
+        ),
+        (
+            "hamiltonian_simulation",
+            {
+                "n_sites": 4,
+                "initial_site": 2,
+                "hopping": 0.7,
+                "onsite": 0.1,
+                "periodic": True,
+                "execute_qsvt": False,
+                "degree": 4,
+                "num_points": 101,
+                "acceptance_tolerance": 0.01,
+            },
+            "hamiltonian-simulation-workflow",
+        ),
+    ],
+)
+def test_configurable_problem_families_execute(workflow, settings, mode):
+    assert adapter.execute_request(request(workflow, **settings))["mode"] == mode
+
+
+def test_finite_shot_studio_setting_reaches_package_execution():
+    report = adapter.execute_request(
+        request(
+            "spectral_filter",
+            shots=100,
+            execute=True,
+            min_degree=2,
+            max_degree=2,
+            tolerance=1.0,
+            num_points=101,
+            phase_reconstruction_tolerance=1e-3,
+        )
+    )
+    assert report["execution"]["shots"] == 100
 
 
 class Socket:
@@ -382,7 +528,12 @@ def test_hamiltonian_adapter_uses_published_problem_and_public_api(monkeypatch):
     matrix, state = execute.call_args.args
     np.testing.assert_array_equal(matrix, tight_binding_chain(6))
     np.testing.assert_array_equal(state, [0, 1, 0, 0, 0, 0])
-    assert execute.call_args.kwargs == req["settings"]
+    expected = {
+        key: value
+        for key, value in req["settings"].items()
+        if key in inspect.signature(FUNCTIONS["hamiltonian_simulation"]).parameters
+    }
+    assert execute.call_args.kwargs == expected
 
 
 def test_hamiltonian_cookbook_acceptance_and_report_preservation(
@@ -468,7 +619,7 @@ def test_presets_are_complete_and_meet_their_declared_outcome(preset, real_repor
     fields = catalogue()["workflows"][preset["workflow"]]["settings"]
     assert set(preset["settings"]) == set(fields)
     raw = {
-        "schema_version": "1.1",
+        "schema_version": SCHEMA_VERSION,
         "workflow": preset["workflow"],
         "settings": preset["settings"],
     }
@@ -514,28 +665,45 @@ def test_recommendations_do_not_replace_api_defaults():
     assert recommended["settings"]["attempt_synthesis"] is False
 
 
+@pytest.mark.parametrize("version", ["1.0", "1.1"])
 @pytest.mark.parametrize("workflow", list(catalogue()["workflows"]))
 def test_legacy_configuration_upgrade_preserves_saved_values_and_reports(
-    tmp_path, workflow
+    tmp_path, workflow, version
 ):
     resolved = request(workflow)
     settings = copy.deepcopy(resolved["settings"])
-    additions = {"angle_solver", "angle_solvers"}
-    if catalogue()["workflows"][workflow]["api"] == "design":
+    additions = {
+        "shots",
+        "source_kind",
+        "z0_coefficient",
+        "z1_coefficient",
+        "x0_coefficient",
+        "input_state",
+        "n_sites",
+        "initial_site",
+        "hopping",
+        "onsite",
+        "periodic",
+    }
+    if version == "1.0":
+        additions |= {"angle_solver", "angle_solvers"}
+    if version == "1.0" and catalogue()["workflows"][workflow]["api"] == "design":
         additions |= {"reconstruction_num_points", "phase_reconstruction_tolerance"}
     for key in additions:
         settings.pop(key, None)
-    legacy = {"schema_version": "1.0", "workflow": workflow, "settings": settings}
+    legacy = {"schema_version": version, "workflow": workflow, "settings": settings}
     original = copy.deepcopy(legacy)
     store = Store(tmp_path)
     run_id = save_run(store, legacy, {"historical": True})
     upgraded = validate_request(store.reuse(run_id))
-    assert upgraded["schema_version"] == "1.1"
+    assert upgraded["schema_version"] == SCHEMA_VERSION
     assert all(upgraded["settings"][k] == v for k, v in settings.items())
     assert upgraded == resolved
     assert legacy == original
     assert store.reuse(run_id) == original
     assert store.read(run_id, report=True)["report"] == {"historical": True}
+    modern_id = save_run(store, resolved, {"historical": False})
+    assert len(compare(store, [run_id, modern_id])) == 2
 
 
 @pytest.mark.parametrize(
@@ -577,7 +745,7 @@ def test_iterative_flagship_method_is_validated_on_the_same_problem(workflow):
     key = "angle_solver" if workflow == "hamiltonian_simulation" else "angle_solvers"
     settings[key] = "iterative" if key == "angle_solver" else ["iterative"]
     report = adapter.execute_request(
-        {"schema_version": "1.1", "workflow": workflow, "settings": settings}
+        {"schema_version": SCHEMA_VERSION, "workflow": workflow, "settings": settings}
     )
     assert report["acceptance"]["full_qsvt_acceptance"] is True
     qualities = report.get(

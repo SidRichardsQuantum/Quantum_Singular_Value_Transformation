@@ -1,5 +1,40 @@
 # Changelog
 
+## [0.2.28] – 22nd September 2026
+
+### Added
+
+- add cancellation for queued and executing Studio runs, with isolated local
+  scientific workers and visible execution and artifact-rendering stages
+- expose analytic or finite-shot execution and configurable Poisson sources,
+  Pauli coefficients/input states, and finite tight-binding chain parameters
+- render phase sequences, operator-response comparisons, and resource plots
+  from saved package reports where the corresponding evidence is available
+- version Studio requests as `1.2`, with explicit upgrades for saved `1.0` and
+  `1.1` configurations that preserve their original settings and reports
+
+### Fixed
+
+- synchronize cancellation with worker lifecycle transitions, clean temporary
+  worker outputs, and exclude cancelled runs from the active gallery filter
+- require matching problem-family settings for comparisons and resolve legacy
+  comparison settings without rewriting historical requests
+- reject schema-1.2-only fields in older request schemas
+
+### Tests
+
+- cover cancellation and restart recovery, legacy configuration comparisons,
+  source-profile compatibility, configurable problems, and finite-shot forwarding
+- extend browser smoke coverage to sampling controls, auxiliary report images,
+  cancellation, and cancelled-run filtering
+
+### Documentation
+
+- document Studio sampling, problem families, cancellation, report plots, and
+  configuration migration; synchronize current-release markers with `0.2.28`
+- retain existing notebook and benchmark snapshots with their `0.2.25`
+  provenance; the stable package facade and numerical defaults are unchanged
+
 ## [0.2.27] – 22nd September 2026
 
 ### Fixed

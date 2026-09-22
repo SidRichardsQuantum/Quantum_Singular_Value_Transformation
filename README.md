@@ -79,7 +79,8 @@ pip install "qsvt-pennylane[plot]"
 Explore polynomial designs and finite Poisson/Pauli-filter workflows with a
 local composer (including coherent Hamiltonian simulation), scientific run
 gallery, exact configuration reuse, favorites,
-and comparison. Numerical results and acceptance checks come from the existing
+comparison, cancellable execution, finite-shot studies, configurable local
+problem families, and phase/operator/resource plots. Numerical results and acceptance checks come from the existing
 Python package. No Node build or AI service is needed.
 
 Start with a recommended quick demonstration or accuracy study, inspect an
@@ -332,7 +333,7 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.2.27`
+Current release: `0.2.28`
 
 ## Notebooks
 

@@ -17,7 +17,7 @@ from qsvt.stable import (
 
 from .presets import presets
 
-SCHEMA_VERSION = "1.1"
+SCHEMA_VERSION = "1.2"
 FUNCTIONS: dict[str, Callable[..., Any]] = {
     "design": design_workflow,
     "hamiltonian_simulation": hamiltonian_simulation_workflow,
@@ -144,6 +144,24 @@ def catalogue() -> dict[str, Any]:
                 api, "phase_reconstruction_tolerance", "Validation", 1e-10, 1e-3
             ),
             "execute": field(api, "execute", "Execution", control="boolean"),
+            "shots": {
+                "label": "Sampling",
+                "group": "Execution",
+                "control": "select",
+                "values": [None, 100, 1000, 10000],
+                "value_labels": [
+                    "Analytic statevector",
+                    "100 shots",
+                    "1,000 shots",
+                    "10,000 shots",
+                ],
+                "default": None,
+                "default_source": "package signature",
+                "help": (
+                    "Finite shots return sampled probabilities; analytic execution "
+                    "returns amplitudes."
+                ),
+            },
             "device_name": field(
                 api,
                 "device_name",
@@ -166,10 +184,23 @@ def catalogue() -> dict[str, Any]:
                         control="select",
                         values=["dense", "fable", "prepselprep", "qubitization"],
                     ),
+                    "source_kind": {
+                        "label": "Source profile",
+                        "group": "Problem",
+                        "control": "select",
+                        "values": ["sine", "constant", "gaussian"],
+                        "value_labels": [
+                            "Sine (published example)",
+                            "Constant",
+                            "Centered Gaussian",
+                        ],
+                        "default": "sine",
+                        "default_source": "studio bounded problem family",
+                    },
                 }
             )
             problem = "Dirichlet 1D Laplacian with the package's default sine source."
-            comparison_fields = ["n_points", "length"]
+            comparison_fields = ["n_points", "length", "source_kind"]
         else:
             settings.update(
                 {
@@ -183,20 +214,69 @@ def catalogue() -> dict[str, Any]:
                         control="select",
                         values=["prepselprep", "qubitization"],
                     ),
+                    "z0_coefficient": {
+                        "label": "Z₀ coefficient",
+                        "group": "Problem",
+                        "control": "number",
+                        "min": -1.0,
+                        "max": 1.0,
+                        "default": 0.4,
+                        "default_source": "published example",
+                    },
+                    "z1_coefficient": {
+                        "label": "Z₁ coefficient",
+                        "group": "Problem",
+                        "control": "number",
+                        "min": -1.0,
+                        "max": 1.0,
+                        "default": 0.3,
+                        "default_source": "published example",
+                    },
+                    "x0_coefficient": {
+                        "label": "X₀ coefficient",
+                        "group": "Problem",
+                        "control": "number",
+                        "min": -1.0,
+                        "max": 1.0,
+                        "default": 0.2,
+                        "default_source": "published example",
+                    },
+                    "input_state": {
+                        "label": "Input state",
+                        "group": "Problem",
+                        "control": "select",
+                        "values": [
+                            "uniform",
+                            "basis-00",
+                            "basis-01",
+                            "basis-10",
+                            "basis-11",
+                        ],
+                        "value_labels": ["Uniform", "|00⟩", "|01⟩", "|10⟩", "|11⟩"],
+                        "default": "uniform",
+                        "default_source": "published example",
+                    },
                 }
             )
             problem = (
                 "Cookbook Hamiltonian 0.4 Z₀ + 0.3 Z₁ + 0.2 X₀; "
                 "uniform four-component input state."
             )
-            comparison_fields = ["lower", "upper"]
+            comparison_fields = [
+                "lower",
+                "upper",
+                "z0_coefficient",
+                "z1_coefficient",
+                "x0_coefficient",
+                "input_state",
+            ]
         workflows[api] = {
             "id": api,
             "name": title,
             "api": api,
             "settings": settings,
             "description": problem
-            + " Execute enables finite, analytic statevector QNode validation.",
+            + " Execute enables local analytic or finite-shot QNode validation.",
             "execution_setting": "execute",
             "no_execution_label": "Polynomial + synthesis · no QNode requested",
             "circuit_execution": True,
@@ -221,9 +301,55 @@ def catalogue() -> dict[str, Any]:
             "Published six-site tight-binding chain, initially at site 1 "
             "(zero-based). "
             "Cosine/sine polynomial evolution with optional coherent finite QNode "
-            "execution; default.qubit, analytic statevector, dense embedding."
+            "execution; default.qubit, analytic or finite-shot sampling, dense "
+            "embedding."
         ),
         "settings": {
+            "n_sites": {
+                "label": "Chain sites",
+                "group": "Problem",
+                "control": "number",
+                "min": 2,
+                "max": 8,
+                "integer": True,
+                "default": 6,
+                "default_source": "published example",
+            },
+            "initial_site": {
+                "label": "Initial site",
+                "group": "Problem",
+                "control": "number",
+                "min": 0,
+                "max": 7,
+                "integer": True,
+                "default": 1,
+                "default_source": "published example",
+            },
+            "hopping": {
+                "label": "Hopping",
+                "group": "Problem",
+                "control": "number",
+                "min": -2.0,
+                "max": 2.0,
+                "default": 1.0,
+                "default_source": "qsvt.hamiltonians.tight_binding_chain",
+            },
+            "onsite": {
+                "label": "Uniform onsite energy",
+                "group": "Problem",
+                "control": "number",
+                "min": -1.0,
+                "max": 1.0,
+                "default": 0.0,
+                "default_source": "studio bounded problem family",
+            },
+            "periodic": {
+                "label": "Periodic boundary",
+                "group": "Problem",
+                "control": "boolean",
+                "default": False,
+                "default_source": "qsvt.hamiltonians.tight_binding_chain",
+            },
             "time": number(api, "time", "Problem", -5, 5, default=1.4),
             "degree": number(
                 api, "degree", "Polynomial", 1, 24, integer=True, default=12
@@ -238,6 +364,24 @@ def catalogue() -> dict[str, Any]:
                 api, "phase_reconstruction_tolerance", "Validation", 0, 1e-3
             ),
             "execute_qsvt": field(api, "execute_qsvt", "Execution", control="boolean"),
+            "shots": {
+                "label": "Sampling",
+                "group": "Execution",
+                "control": "select",
+                "values": [None, 100, 1000, 10000],
+                "value_labels": [
+                    "Analytic statevector",
+                    "100 shots",
+                    "1,000 shots",
+                    "10,000 shots",
+                ],
+                "default": None,
+                "default_source": "package signature",
+                "help": (
+                    "Finite shots return sampled probabilities; analytic execution "
+                    "returns amplitudes."
+                ),
+            },
             "block_encoding": field(
                 api,
                 "block_encoding",
@@ -268,7 +412,14 @@ def catalogue() -> dict[str, Any]:
             "component error ledger",
             "circuit resource ledger",
         ],
-        "comparison_fields": ["time"],
+        "comparison_fields": [
+            "time",
+            "n_sites",
+            "initial_site",
+            "hopping",
+            "onsite",
+            "periodic",
+        ],
     }
     for entry in workflows.values():
         fields = entry["settings"]
@@ -422,8 +573,10 @@ def validate_request(raw: Any) -> dict[str, Any]:
         )
     if not isinstance(raw.get("schema_version"), str) or raw.get(
         "schema_version"
-    ) not in {"1.0", SCHEMA_VERSION}:
-        raise ValueError("Unsupported request schema_version; expected 1.0 or 1.1.")
+    ) not in {"1.0", "1.1", SCHEMA_VERSION}:
+        raise ValueError(
+            "Unsupported request schema_version; expected 1.0, 1.1, or 1.2."
+        )
     workflow = raw.get("workflow")
     entries = catalogue()["workflows"]
     if not isinstance(workflow, str) or workflow not in entries:
@@ -432,24 +585,50 @@ def validate_request(raw: Any) -> dict[str, Any]:
     fields = entries[workflow]["settings"]
     if not isinstance(settings, dict) or set(settings) - set(fields):
         raise ValueError("Unsupported settings for this workflow.")
-    if raw["schema_version"] == "1.0":
+    if raw["schema_version"] in {"1.0", "1.1"}:
         settings = dict(settings)
         additions = (
-            {
-                "angle_solver": "root-finding",
-                "phase_reconstruction_tolerance": 1e-6,
-                "reconstruction_num_points": 257,
-            }
-            if entries[workflow]["api"] == "design"
-            else (
-                {"angle_solver": "root-finding"}
-                if workflow == "hamiltonian_simulation"
-                else {"angle_solvers": ["root-finding", "iterative"]}
+            (
+                {
+                    "angle_solver": "root-finding",
+                    "phase_reconstruction_tolerance": 1e-6,
+                    "reconstruction_num_points": 257,
+                }
+                if entries[workflow]["api"] == "design"
+                else (
+                    {"angle_solver": "root-finding"}
+                    if workflow == "hamiltonian_simulation"
+                    else {"angle_solvers": ["root-finding", "iterative"]}
+                )
             )
+            if raw["schema_version"] == "1.0"
+            else {}
         )
         for name, value in additions.items():
             if name in settings:
                 raise ValueError(f"{name} requires request schema 1.1.")
+            settings[name] = value
+        modern_defaults: dict[str, dict[str, Any]] = {
+            "poisson": {"source_kind": "sine", "shots": None},
+            "spectral_filter": {
+                "z0_coefficient": 0.4,
+                "z1_coefficient": 0.3,
+                "x0_coefficient": 0.2,
+                "input_state": "uniform",
+                "shots": None,
+            },
+            "hamiltonian_simulation": {
+                "n_sites": 6,
+                "initial_site": 1,
+                "hopping": 1.0,
+                "onsite": 0.0,
+                "periodic": False,
+                "shots": None,
+            },
+        }
+        for name, value in modern_defaults.get(workflow, {}).items():
+            if name in settings:
+                raise ValueError(f"{name} requires request schema 1.2.")
             settings[name] = value
     resolved = {}
     for name, spec in fields.items():
@@ -479,6 +658,16 @@ def validate_request(raw: Any) -> dict[str, Any]:
         raise ValueError("This odd design requires an odd degree.")
     if workflow == "filter" and resolved["degree"] % 2:
         raise ValueError("This even filter design requires an even degree.")
+    if (
+        workflow == "hamiltonian_simulation"
+        and resolved["initial_site"] >= resolved["n_sites"]
+    ):
+        raise ValueError("initial_site must be smaller than n_sites.")
+    if workflow == "spectral_filter" and not any(
+        resolved[name] != 0
+        for name in ("z0_coefficient", "z1_coefficient", "x0_coefficient")
+    ):
+        raise ValueError("At least one Pauli coefficient must be non-zero.")
     return copy.deepcopy(
         {"schema_version": SCHEMA_VERSION, "workflow": workflow, "settings": resolved}
     )

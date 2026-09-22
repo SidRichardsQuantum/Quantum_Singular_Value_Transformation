@@ -97,20 +97,25 @@ from reconstruction that meets the requested tolerance. Resources from
 
 The Poisson and Pauli flagship workflows synthesize phases even with
 `execute=False`.
-`execute=True` requests the package's analytic statevector QNode path on
-`default.qubit`; it does not mean physical hardware. Finite shots, arbitrary
-matrices, custom sources, external devices, and external phase-solver plugins are not
-exposed in this MVP. Pauli filtering fixes the problem to
-`0.4 Z₀ + 0.3 Z₁ + 0.2 X₀` with uniform input. Poisson exposes 2, 4, or 8
-interior points and its supported access models.
+`execute=True` requests the package's local `default.qubit` path; it does not
+mean physical hardware. Sampling may be analytic or use 100, 1,000, or 10,000
+finite shots through the package execution API. Poisson exposes sine, constant,
+and centered-Gaussian sources, 2, 4, or 8 interior points, and its supported
+access models. Pauli filtering exposes bounded coefficients for `Z₀`, `Z₁`,
+and `X₀`, plus the uniform state or any two-qubit computational-basis input.
+Arbitrary matrices, external devices, and external phase-solver plugins remain
+outside the local Studio.
 
-Hamiltonian simulation uses `tight_binding_chain(6)` with the initial state
-localized at site 1 (zero-based), exactly as in the cookbook. It exposes time,
-degree, fitting grid size, package acceptance and phase-reconstruction tolerances,
-and `execute_qsvt`. Required time/degree defaults come from the published
+Hamiltonian simulation defaults to `tight_binding_chain(6)` with the initial
+state localized at site 1 (zero-based), exactly as in the cookbook. The chain
+may be configured with 2–8 sites, initial site, hopping, uniform onsite energy,
+and open or periodic boundaries. It also exposes time, degree, fitting grid
+size, package acceptance and phase-reconstruction tolerances, finite-shot
+sampling, and `execute_qsvt`. Required time/degree defaults come from the published
 example (1.4 and 12); other defaults come from the package signature. The
 preset uses 401 fitting points. The local service supports time in [-5, 5]
-and degree 1–24, with dense embedding and analytic `default.qubit` execution.
+and degree 1–24, with dense embedding and analytic or finite-shot
+`default.qubit` execution.
 FABLE is not offered for this preset because the package uses fixed alpha=1
 and the normalized chain does not satisfy the FABLE normalization condition.
 
@@ -139,7 +144,7 @@ inconsistent degree ranges are rejected before work is queued.
 ## Architecture and request contract
 
 ```text
-Catalogue → resolved request → one serial worker → public qsvt API
+Catalogue → resolved request → serial queue → cancellable process → public qsvt API
                                                  ↓
 Browser gallery ← run metadata + plots ← complete package report
 ```
@@ -160,11 +165,11 @@ Browser gallery ← run metadata + plots ← complete package report
 - `studio/static/`: responsive dark workbench. Form controls are generated
   from `/api/catalogue`. The browser contains only presentation and UI state.
 
-A canonical request has schema version `1.1`:
+A canonical request has schema version `1.2`:
 
 ```json
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "workflow": "sign",
   "settings": {
     "degree": 13,
@@ -189,12 +194,14 @@ Reproduction across different package versions is not promised; use the saved
 provenance and the same checkout/environment. Exports can be imported through
 **Import configuration**. Unsupported schema versions are rejected explicitly.
 
-Schema `1.0` configurations remain importable and reusable. Validation upgrades
-them to `1.1` by retaining every saved setting and making the old implicit
+Schema `1.0` and `1.1` configurations remain importable and reusable.
+Validation upgrades them to `1.2` by retaining every saved setting and making
+the old implicit
 solver choices explicit: root-finding for designs/Hamiltonian evolution, and
 root-finding → iterative for Poisson/Pauli. Design reconstruction retains 257
 samples and adds a separate quality-assessment tolerance of `1e-6`. Newly
-exposed fields require schema `1.1`. The UI announces an upgrade; old request
+exposed problem-family and sampling fields receive the published-example
+defaults. Newly exposed fields require schema `1.2`. The UI announces an upgrade; old request
 and report files are never rewritten. Historical reports without a quality
 assessment retain their original evidence rather than receiving a new verdict.
 
@@ -231,10 +238,17 @@ naturally vary between runs; deterministic serialization is not a promise of
 bit-identical runtime reports.
 
 Lifecycle states are **configured → validating → executing → saving_artifacts
-→ completed**, or **failed** with the actual exception type and message.
+→ completed**, **cancelled**, or **failed** with the actual exception type and message.
 Configured runs wait in the serial queue. The `executing` stage includes the
 entire public package call because the package does not expose progress
-callbacks. No percentages or fictional internal stages are shown.
+callbacks. Runs display a workflow-specific description of that real package
+operation, followed by report-saving and artifact-rendering stages. No
+percentages or fictional package-internal stages are shown.
+
+Queued runs can be cancelled immediately. Executing package calls run in a
+dedicated local process, so cancellation terminates that process and records a
+`cancelled` lifecycle event without publishing a partial report. Completed and
+failed runs are immutable and cannot be cancelled.
 
 A report that fails scientific acceptance still completes as an experiment;
 the acceptance failure remains visible. Failed executions retain their
@@ -250,8 +264,8 @@ original files are preserved for repair or backup, and repaired runs reappear
 on the next history refresh. Scientific report files are loaded only when
 requested, so a damaged report does not prevent browsing other runs.
 
-The displayed **package wall time** measures the full adapter call, including
-classical references, phase synthesis, simulation and package diagnostics.
+The displayed **package wall time** includes worker startup and the full adapter
+call, including classical references, phase synthesis, simulation and package diagnostics.
 It is not quantum runtime. Package-native synthesis timings remain in the
 scientific report. Studio elapsed time additionally includes artifact work.
 
@@ -276,10 +290,10 @@ report untouched.
 Select **2–6 completed runs**, then **Compare selected**. Compatibility requires
 an identical workflow and target/problem settings. Sign/inverse must have the
 same gamma; smooth filters must have the same cutoff/sharpness or interval;
-Poisson must have the same grid size and length; the fixed Pauli problem must
-have the same physical interval; the fixed Hamiltonian chain must have the
-same evolution time. Degree, tolerance, access model, synthesis,
-and execution choices may vary. Comparing different physical problems is
+Poisson must have the same grid size, length, and source profile; Pauli runs must
+have the same physical interval, coefficients, and input state; Hamiltonian
+chains must have the same structure, initial site, and evolution time. Degree,
+tolerance, access model, synthesis, and execution choices may vary. Comparing different physical problems is
 rejected with a clear error. There is no overall score.
 
 The comparison includes stored polynomial/error overlays, Poisson solution
@@ -289,6 +303,11 @@ request settings and available stored metrics. Missing
 values appear as em dashes. Logical resource estimates retain their model
 names; no conversion to physical gate cost is made. Comparison JSON is
 exportable.
+
+Individual runs also produce applicable auxiliary artifacts: synthesized phase
+sequences, stored hard-projector versus polynomial-operator response maps, and
+model-labelled resource count charts. These plots use values already present
+in the saved package report; the complete JSON remains authoritative.
 
 ## Interpreting acceptance and truth metadata
 
@@ -381,10 +400,12 @@ structured reuse records, lifecycle cards, and persistent favorites informed
 the architecture. No branding, generative workflows, or source assets are
 copied. See its `src/generation/catalog` and `src/openhiggsfield` directories.
 
-This is a single-user local MVP with serial execution, a bounded queue, and no
-job cancellation, live internal stage instrumentation, or multi-user access.
+This is a single-user local workbench with serial execution, a bounded queue,
+cancellable queued and executing work, and no multi-user access. Package calls
+do not expose fine-grained callbacks, so progress is limited to truthful
+Studio/package boundaries.
 It does not import legacy repository reports lacking canonical requests.
-There is no automatic artifact deletion. Finite-shot sampling, additional
-problem presets, spectrum-response plots, phase plots,
-and resource sweep charts are follow-up work; all relevant existing raw
-report data remain available in the viewer and JSON exports.
+There is no automatic artifact deletion. Fully arbitrary matrices and states,
+remote devices, plugin solvers, and multi-run resource sweep charts remain
+follow-up work; all relevant existing raw report data remain available in the
+viewer and JSON exports.

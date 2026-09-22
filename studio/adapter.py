@@ -57,6 +57,15 @@ def execute_request(raw: dict[str, Any]) -> dict[str, Any]:
     if "angle_solvers" in settings:
         settings["angle_solvers"] = tuple(settings["angle_solvers"])
     if workflow == "poisson":
+        source_kind = settings.pop("source_kind")
+        if source_kind != "sine":
+            grid = np.linspace(0.0, settings["length"], settings["n_points"] + 2)[1:-1]
+            if source_kind == "constant":
+                settings["source"] = np.ones(settings["n_points"])
+            else:
+                center = settings["length"] / 2.0
+                width = max(settings["length"] / 6.0, np.finfo(float).eps)
+                settings["source"] = np.exp(-0.5 * ((grid - center) / width) ** 2)
         poisson = poisson_qsvt_workflow(**settings)
         report = poisson.as_report()
         report["synthesis_quality"] = poisson.synthesis.quality_report(
@@ -64,10 +73,19 @@ def execute_request(raw: dict[str, Any]) -> dict[str, Any]:
         )
         return report
     if workflow == "hamiltonian_simulation":
-        # Keep the problem identical to examples/hamiltonian_simulation.py.
-        matrix = tight_binding_chain(6)
-        initial_state = np.zeros(6, dtype=complex)
-        initial_state[1] = 1.0
+        n_sites = settings.pop("n_sites")
+        initial_site = settings.pop("initial_site")
+        hopping = settings.pop("hopping")
+        onsite = settings.pop("onsite")
+        periodic = settings.pop("periodic")
+        matrix = tight_binding_chain(
+            n_sites,
+            hopping=hopping,
+            onsite=np.full(n_sites, onsite),
+            periodic=periodic,
+        )
+        initial_state = np.zeros(n_sites, dtype=complex)
+        initial_state[initial_site] = 1.0
         evolved = hamiltonian_simulation_workflow(matrix, initial_state, **settings)
         report = evolved.as_report()
         if settings["execute_qsvt"] and evolved.qsvt_execution is not None:
@@ -78,9 +96,19 @@ def execute_request(raw: dict[str, Any]) -> dict[str, Any]:
                 for name, synthesis in evolved.qsvt_execution.component_syntheses
             }
         return report
-    # Exactly the published spectral_filter_qsvt.py problem, not a UI-created toy.
-    operator = qml.dot([0.4, 0.3, 0.2], [qml.Z(0), qml.Z(1), qml.X(0)])
-    filtered = spectral_filter_qsvt_workflow(operator, np.ones(4) / 2, **settings)
+    coefficients = [
+        settings.pop("z0_coefficient"),
+        settings.pop("z1_coefficient"),
+        settings.pop("x0_coefficient"),
+    ]
+    state_name = settings.pop("input_state")
+    operator = qml.dot(coefficients, [qml.Z(0), qml.Z(1), qml.X(0)])
+    if state_name == "uniform":
+        state = np.ones(4) / 2
+    else:
+        state = np.zeros(4)
+        state[int(state_name.removeprefix("basis-"), 2)] = 1.0
+    filtered = spectral_filter_qsvt_workflow(operator, state, **settings)
     report = filtered.as_report()
     report["synthesis_quality"] = filtered.synthesis.quality_report(
         settings["phase_reconstruction_tolerance"]

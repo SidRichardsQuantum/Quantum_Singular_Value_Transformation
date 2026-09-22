@@ -17,7 +17,7 @@ from qsvt.stable import report_to_jsonable
 
 from .catalogue import SCHEMA_VERSION, catalogue, validate_request
 
-TERMINAL = {"completed", "failed"}
+TERMINAL = {"completed", "failed", "cancelled"}
 LOGGER = logging.getLogger(__name__)
 
 
@@ -102,6 +102,8 @@ class Store:
                     "saving_artifacts",
                     "completed",
                     "failed",
+                    "cancelling",
+                    "cancelled",
                 }
                 or type(record.get("favorite")) is not bool
                 or not isinstance(record.get("events"), list)
@@ -260,7 +262,7 @@ def compare(store: Store, ids):
     for run in runs:
         if run["status"] != "completed" or "report" not in run:
             raise ValueError("Only completed runs with reports can be compared.")
-        request = run["request"]
+        request = validate_request(run["request"])
         fields = catalogue()["workflows"][request["workflow"]]["comparison_fields"]
         signatures.append(
             (request["workflow"], {k: request["settings"][k] for k in fields})
