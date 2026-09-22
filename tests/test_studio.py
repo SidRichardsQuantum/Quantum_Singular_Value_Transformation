@@ -39,7 +39,7 @@ def request(workflow="sign", **settings):
 
 
 @pytest.fixture(scope="module")
-def real_reports():
+def cookbook_reports():
     outputs = {}
     for preset in catalogue()["presets"]:
         if not preset["source"].startswith("examples/"):
@@ -53,6 +53,12 @@ def real_reports():
         )
         outputs[preset["workflow"]] = (req, json_safe(adapter.execute_request(req)))
     return outputs
+
+
+@pytest.fixture
+def real_reports(cookbook_reports):
+    # Each consumer gets isolated data without repeating scientific execution.
+    return copy.deepcopy(cookbook_reports)
 
 
 def test_adapter_maps_exact_settings_to_public_api(monkeypatch):
@@ -458,7 +464,7 @@ def test_hamiltonian_rejects_unsupported_settings(settings):
 
 
 @pytest.mark.parametrize("preset", catalogue()["presets"], ids=lambda p: p["id"])
-def test_presets_are_complete_and_meet_their_declared_outcome(preset):
+def test_presets_are_complete_and_meet_their_declared_outcome(preset, real_reports):
     fields = catalogue()["workflows"][preset["workflow"]]["settings"]
     assert set(preset["settings"]) == set(fields)
     raw = {
@@ -467,7 +473,11 @@ def test_presets_are_complete_and_meet_their_declared_outcome(preset):
         "settings": preset["settings"],
     }
     assert validate_request(raw) == raw
-    report = adapter.execute_request(raw)
+    if preset["source"].startswith("examples/"):
+        saved_request, report = real_reports[preset["workflow"]]
+        assert saved_request == raw
+    else:
+        report = adapter.execute_request(raw)
     expected = preset["expected"]
     if expected == "finite_qsvt":
         assert report["acceptance"]["full_qsvt_acceptance"] is True

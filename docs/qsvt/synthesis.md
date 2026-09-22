@@ -94,6 +94,22 @@ The iterative solvers may require additional dependencies supplied by
 PennyLane. A polynomial can pass structural realizability checks and still fail
 numerical synthesis; the result preserves that distinction.
 
+### Constant polynomials and solver output validation
+
+QSVT synthesis supports exact constant polynomials in `[-1, 1]`, including
+zero and arrays padded with trailing zeros. The result uses one projector phase
+`arccos(c)` with no signal queries and records `angle_solver="analytic-constant"`.
+Its real signal block is `c`; this does not claim that the full complex block
+is the real constant. QSP constant synthesis retains the backend's limitations.
+Mixed-parity synthesis uses the same constant sequence and reports its one
+projector phase and zero signal calls, replacing the previous empty phase array.
+
+Built-in solvers and external adapters must return a nonempty, one-dimensional
+array of finite real phases. Invalid outputs produce structured failures with
+`angles=None`; complex phases are rejected rather than silently cast to real.
+Reconstruction grids require an integer of at least two points, including when
+using the cache or an adapter.
+
 ### Solver completion and reconstruction quality
 
 `succeeded` records whether synthesis returned phases. It does not assert that
@@ -196,6 +212,11 @@ qsvt phase-solver-benchmark \
   --repeats 3
 ```
 
+Benchmark rows retain `successes` and `converged` as solver-completion fields
+for compatibility. `validated_successes` and `all_reconstructions_passed`
+separately assess sampled reconstruction against `reconstruction_tolerance`
+(default `1e-6`). QSP results without reconstruction remain unvalidated.
+
 Timings cover classical angle synthesis only. They are not quantum-circuit or
 hardware runtime measurements.
 
@@ -284,3 +305,32 @@ decomposition permits. The lower-level component executor accepts a
 ```bash
 qsvt mixed-parity-synthesis --poly "0.5,0.5"
 ```
+
+## Workflow synthesis stress regression
+
+Run the repository benchmark from an installed source checkout:
+
+```bash
+python scripts/benchmark_synthesis_workflows.py \
+  --output /tmp/qsvt-synthesis-workflows.json --repeats 1
+```
+
+The 16 cases compare root-finding and iterative synthesis on sign, inverse,
+and filter designs through degree 25, Hamiltonian cosine/sine designs through
+degree 24, degree-16/32 Chebyshev polynomials at two boundedness margins, and
+zero/boundary constants. Reports preserve the original coefficients, conditioning
+proxies, solver completion, reconstruction quality, timings, and dependency
+versions. Constants exercise the analytic path for either requested solver.
+Failures are diagnostic results, not a reason to change coefficients or relax
+accuracy thresholds. High-degree monomial conditioning can affect both
+boundedness assessment and synthesis. This command writes a new report and
+does not refresh the committed notebook snapshots.
+
+In the PennyLane 0.45.1 investigation, iterative reconstruction passed `1e-6`
+for all six sign/inverse/filter cases and both Hamiltonian sine cases. The
+same run retained the degree-10 root-finding filter residual near `0.075`.
+The degree-24 cosine fit exceeded one by roughly `1e-15` and both backends
+rejected it; degree-32 Chebyshev cases exposed monomial conditioning and
+reconstruction failures. These are environment-specific observations, not
+solver guarantees. Regression tests cover the higher-degree iterative successes
+without changing their coefficients.

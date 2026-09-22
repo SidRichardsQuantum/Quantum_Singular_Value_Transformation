@@ -109,6 +109,7 @@ def test_synthesis_returns_actionable_mixed_parity_failure():
     assert result.error_type == "PolynomialRealizabilityError"
     assert result.realizability.requires_parity_decomposition is True
     assert "mixed parity" in result.error
+    assert result.quality_report()["status"] == "solver_failed"
 
     with pytest.raises(ValueError, match="mixed parity"):
         synthesize([0.5, 0.5], raise_on_failure=True)
@@ -157,6 +158,7 @@ def test_phase_solver_stress_matrix_compares_conditioning_regimes():
         solvers=["root-finding"],
         repeats=1,
         reconstruction_num_points=17,
+        reconstruction_tolerance=1e-3,
     )
     report = stress.as_report()
 
@@ -171,6 +173,10 @@ def test_phase_solver_stress_matrix_compares_conditioning_regimes():
     }
     assert [row["degree"] for row in report["rows"]] == [1, 5]
     assert all(row["max_reconstruction_error"] < 1e-9 for row in report["rows"])
+    for row in report["rows"]:
+        assert row["reconstruction_tolerance"] == 1e-3
+        assert row["validated_successes"] == 1
+        assert row["all_reconstructions_passed"]
     assert report["truth_contract"]["is_hardware_runtime"] is False
 
 
@@ -190,6 +196,8 @@ def test_mixed_parity_synthesis_reports_components_and_lcu_proxy():
     assert result.succeeded is True
     assert result.even_synthesis is not None
     assert result.even_synthesis.angle_solver == "analytic-constant"
+    assert result.even_synthesis.quality_report()["reconstruction_passed"]
+    assert report["component_resource_proxy"]["even_phase_count"] == 1
     assert result.odd_synthesis is not None
     assert result.odd_synthesis.succeeded is True
     assert result.lcu_normalization == pytest.approx(1.0)
@@ -226,22 +234,144 @@ def test_synthesis_quality_does_not_confuse_returned_phases_with_accuracy():
         replace(result, angles=np.array([float("nan")])).quality_report()["status"]
         == "solver_failed"
     )
-    assert synthesize_phases([0.5, 0.5]).quality_report()["status"] == "solver_failed"
     for tolerance in (-1, float("nan"), float("inf")):
         with pytest.raises(ValueError):
             result.quality_report(tolerance)
 
 
-@pytest.mark.parametrize("kind", ["sign", "inverse", "filter"])
-def test_iterative_synthesis_reconstructs_studio_boundary_polynomials(kind):
+@pytest.mark.parametrize(
+    "kind,degree",
+    [
+        ("sign", 13),
+        ("sign", 25),
+        ("inverse", 13),
+        ("inverse", 25),
+        ("filter", 10),
+        ("filter", 24),
+    ],
+)
+def test_iterative_synthesis_reconstructs_studio_boundary_polynomials(kind, degree):
     # These unchanged polynomials expose root-finding failures or poor
     # reconstruction on supported PennyLane versions. Do not rescale them.
     result = design_workflow(
         kind,
-        degree=13 if kind != "filter" else 10,
+        degree=degree,
         num_points=401,
         attempt_synthesis=False,
     )
     synthesis = result.synthesize(angle_solver="iterative")
     np.testing.assert_array_equal(synthesis.coeffs, result.coeffs)
     assert synthesis.quality_report(1e-6)["reconstruction_passed"] is True
+
+
+@pytest.mark.parametrize("constant", [-1.0, -0.3, 0.0, 0.7, 1.0])
+def test_constant_qsvt_has_one_projector_and_no_signal_queries(constant):
+    import pennylane as qml
+
+    result = synthesize_phases([constant, 0.0, 0.0], reconstruction_num_points=5)
+    assert result.succeeded
+    assert result.angles.size == 1
+    assert result.angle_solver == "analytic-constant"
+    assert result.implementation_kind == "analytic-constant-projector-phase"
+    assert result.quality_report(1e-14)["reconstruction_passed"]
+    for x in (-1.0, -0.2, 0.0, 0.8, 1.0):
+        operator = qml.QSVT(
+            qml.RX(2 * np.arccos(x), wires=0),
+            [qml.PCPhase(result.angles[0], dim=1, wires=0)],
+        )
+        assert qml.matrix(operator)[0, 0].real == pytest.approx(constant)
+        assert len(operator.decomposition()) == 1
+
+
+@pytest.mark.parametrize("angles", [[], [np.nan], [np.inf], [[0.1]], [0.2j]])
+def test_invalid_backend_phases_become_structured_failures(monkeypatch, angles):
+    monkeypatch.setattr("qsvt.synthesis.qml.poly_to_angles", lambda *a, **k: angles)
+    result = synthesize_phases([0.0, 0.5])
+    assert not result.succeeded
+    assert result.angles is None
+    assert result.error_type == "ValueError"
+    assert result.reconstruction_max_error is None
+    with pytest.raises(ValueError, match="angles"):
+        synthesize_phases([0.0, 0.5], raise_on_failure=True)
+
+
+@pytest.mark.parametrize("points", [True, 1, 2.5, np.nan, np.inf])
+def test_reconstruction_grid_validation_precedes_cache_and_adapter(points):
+    from qsvt.synthesis import synthesize_phases_cached, synthesize_phases_with_adapter
+
+    for run in (synthesize_phases, synthesize_phases_cached, synthesize_mixed_parity):
+        with pytest.raises(ValueError, match="integer"):
+            run([0.0, 0.5], reconstruction_num_points=points)
+    with pytest.raises(ValueError, match="integer"):
+        synthesize_phases_with_adapter(
+            [0.0, 0.5], adapter="missing", reconstruction_num_points=points
+        )
+
+
+def test_benchmark_distinguishes_inaccurate_phases_from_solver_completion(monkeypatch):
+    monkeypatch.setattr(
+        "qsvt.synthesis.qml.poly_to_angles", lambda *a, **k: np.array([0.0, 0.0])
+    )
+    row = benchmark_phase_solvers([0.0, 0.5], solvers=["root-finding"], repeats=1).rows[
+        0
+    ]
+    assert row["converged"] is True
+    assert row["successes"] == 1
+    assert row["validated_successes"] == 0
+    assert row["all_reconstructions_passed"] is False
+    assert row["max_reconstruction_error"] > row["reconstruction_tolerance"]
+
+
+def test_benchmark_qsp_without_reconstruction_is_unvalidated():
+    row = benchmark_phase_solvers(
+        [0.0, 0.5], routine="QSP", solvers=["root-finding"], repeats=1
+    ).rows[0]
+    assert row["converged"] is True
+    assert row["validated_successes"] == 0
+    assert row["all_reconstructions_passed"] is False
+
+
+@pytest.mark.parametrize("tolerance", [-1, np.nan, np.inf])
+def test_benchmark_rejects_invalid_reconstruction_tolerance(tolerance):
+    with pytest.raises(ValueError, match="reconstruction_tolerance"):
+        benchmark_phase_solver_stress_matrix(
+            {"linear": [0.0, 0.5]}, reconstruction_tolerance=tolerance
+        )
+
+
+@pytest.mark.parametrize("degree", [12, 24])
+def test_iterative_hamiltonian_sine_reconstruction_preserves_coefficients(degree):
+    from qsvt.matrix_functions import design_real_time_evolution_polynomials
+
+    polynomial = design_real_time_evolution_polynomials(
+        1.4, 1.0, degree=degree, num_points=401
+    ).sin_coeffs
+    result = synthesize_phases(polynomial, angle_solver="iterative")
+    np.testing.assert_array_equal(result.coeffs, polynomial)
+    assert result.quality_report(1e-6)["reconstruction_passed"]
+
+
+@pytest.mark.parametrize("angles", [[], [np.nan], [np.inf], [[0.1]], [0.2j]])
+def test_adapter_rejects_invalid_raw_and_converted_phases(angles):
+    from qsvt.synthesis import (
+        register_phase_solver_adapter,
+        synthesize_phases_with_adapter,
+        unregister_phase_solver_adapter,
+    )
+
+    for converted in (False, True):
+        register_phase_solver_adapter(
+            "invalid-regression",
+            lambda *a, converted=converted, **k: [0.1, 0.2] if converted else angles,
+            convention="test convention" if converted else "pennylane-qsvt-projector",
+            converter=(lambda *a: angles) if converted else None,
+        )
+        try:
+            result = synthesize_phases_with_adapter(
+                [0.0, 0.5], adapter="invalid-regression"
+            )
+            assert not result.succeeded
+            assert result.angles is None
+            assert result.error_type == "ValueError"
+        finally:
+            unregister_phase_solver_adapter("invalid-regression")

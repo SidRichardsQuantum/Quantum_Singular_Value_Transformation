@@ -1,5 +1,43 @@
 # Changelog
 
+## [0.2.27] – 22nd September 2026
+
+### Fixed
+
+- synthesize bounded constant QSVT polynomials analytically with one projector
+  phase and zero signal queries, including zero and trailing-zero coefficients
+- use the same validated constant sequence for mixed-parity components instead
+  of reporting success with an empty phase array
+- reject empty, non-vector, non-finite, and complex solver phase outputs as
+  structured failures consistently across built-in solvers and external adapters
+- validate reconstruction grid sizes before solver execution and cache lookup
+  instead of silently truncating fractional counts
+
+### Added
+
+- add tolerance-based reconstruction success fields to solver benchmarks while
+  retaining the existing solver-completion fields
+- add a reproducible 16-case workflow synthesis stress command comparing
+  root-finding and iterative methods, with original coefficients, conditioning
+  diagnostics, reconstruction errors, and dependency provenance
+- add focused regressions for constant circuits, malformed phase outputs,
+  reconstruction-grid validation, and misleading solver-completion results
+- extend iterative reconstruction regressions to degree-25 sign/inverse,
+  degree-24 filter, and degree-12/24 Hamiltonian sine polynomials
+
+### Documentation
+
+- document constant synthesis, phase validation, and accuracy-aware benchmarks
+- synchronize current-release documentation with package version `0.2.27`;
+  existing notebook and benchmark snapshots retain their original provenance
+
+### Tests
+
+- reuse isolated copies of freshly computed Studio cookbook reports across
+  preset and storage checks instead of executing the same four presets twice
+- consolidate redundant stress-tolerance and mixed-parity failure checks, and
+  reduce repeated constant-polynomial sampling while retaining circuit checks
+
 ## [0.2.26] – 21st September 2026
 
 ### Added

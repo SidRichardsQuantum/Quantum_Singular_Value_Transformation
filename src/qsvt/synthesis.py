@@ -205,7 +205,11 @@ class PhaseSynthesisResult:
                 "is_end_to_end_quantum_algorithm": False,
                 "implemented_components": [
                     "polynomial_realizability_classification",
-                    "pennylane_phase_synthesis",
+                    (
+                        "analytic_constant_phase"
+                        if self.angle_solver == "analytic-constant"
+                        else "pennylane_phase_synthesis"
+                    ),
                     (
                         "scalar_phase_sequence_reconstruction"
                         if self.routine == "QSVT"
@@ -597,8 +601,7 @@ def synthesize_phases(
     if normalized_routine not in {"QSP", "QSVT"}:
         raise ValueError("routine must be 'QSP' or 'QSVT'.")
     routine = cast(SynthesisRoutine, normalized_routine)
-    if reconstruction_num_points < 2:
-        raise ValueError("reconstruction_num_points must be at least 2.")
+    _validate_reconstruction_points(reconstruction_num_points)
 
     realizability = classify_polynomial_realizability(
         poly,
@@ -619,38 +622,46 @@ def synthesize_phases(
                     f"Invalid angle solver method: {angle_solver!r}. "
                     f"Supported solvers: {list(_SUPPORTED_ANGLE_SOLVERS)}"
                 )
-            angles = np.asarray(
-                qml.poly_to_angles(
-                    realizability.coeffs,
-                    routine,
-                    angle_solver=angle_solver,
-                    **solver_kwargs,
-                ),
-                dtype=float,
-            )
+            if routine == "QSVT" and not np.any(realizability.coeffs[1:]):
+                constant = float(realizability.coeffs[0])
+                if abs(constant) > 1.0:
+                    raise ValueError("constant polynomial must lie in [-1, 1].")
+                # One projector phase has real signal block cos(phi), with
+                # no signal queries. Preserve even zero and padded constants.
+                angles = np.array([np.arccos(constant)])
+                angle_solver = "analytic-constant"
+            else:
+                angles = _validated_angles(
+                    qml.poly_to_angles(
+                        realizability.coeffs.copy(),
+                        routine,
+                        angle_solver=angle_solver,
+                        **solver_kwargs,
+                    )
+                )
         except Exception as exc:  # PennyLane exposes solver-specific failures.
             error_type = type(exc).__name__
             error = str(exc)
+            angles = None
 
     elapsed = perf_counter() - start
-    max_error: float | None = None
-    rms_error: float | None = None
-    if angles is not None and routine == "QSVT":
-        xs = np.linspace(-1.0, 1.0, int(reconstruction_num_points))
-        reconstructed = np.asarray(
-            [_evaluate_qsvt_phase_sequence(float(x), angles) for x in xs],
-            dtype=float,
-        )
-        target = np.asarray(eval_polynomial(realizability.coeffs, xs), dtype=float)
-        errors = reconstructed - target
-        max_error = float(np.max(np.abs(errors)))
-        rms_error = float(np.sqrt(np.mean(np.abs(errors) ** 2)))
+    max_error, rms_error = _phase_reconstruction_errors(
+        realizability.coeffs,
+        angles,
+        routine=routine,
+        num_points=reconstruction_num_points,
+    )
 
     result = PhaseSynthesisResult(
         coeffs=realizability.coeffs,
         routine=routine,
         angle_solver=str(angle_solver),
         solver_kwargs=dict(solver_kwargs),
+        implementation_kind=(
+            "analytic-constant-projector-phase"
+            if angle_solver == "analytic-constant"
+            else "pennylane-poly-to-angles"
+        ),
         realizability=realizability,
         succeeded=angles is not None,
         angles=angles,
@@ -694,6 +705,7 @@ def synthesize_phases_cached(
 ) -> PhaseSynthesisResult:
     """Synthesize phases with an in-process cache for repeatable design sweeps."""
     global _PHASE_SYNTHESIS_CACHE_HITS, _PHASE_SYNTHESIS_CACHE_MISSES
+    _validate_reconstruction_points(reconstruction_num_points)
     coeffs = tuple(float(value) for value in np.asarray(list(poly), dtype=float))
     key = (
         coeffs,
@@ -798,6 +810,7 @@ def synthesize_phases_with_adapter(
     **solver_kwargs: Any,
 ) -> PhaseSynthesisResult:
     """Run a built-in or registered solver and validate its converted phases."""
+    _validate_reconstruction_points(reconstruction_num_points)
     if adapter.startswith("pennylane:"):
         return synthesize_phases_cached(
             poly,
@@ -842,14 +855,11 @@ def synthesize_phases_with_adapter(
                 raw_angles, metadata = raw
             else:
                 raw_angles = raw
-            angles = np.asarray(raw_angles, dtype=float)
+            angles = _validated_angles(raw_angles)
             if registered.converter is not None:
-                angles = np.asarray(
-                    registered.converter(angles, resolved_routine),
-                    dtype=float,
+                angles = _validated_angles(
+                    registered.converter(angles, resolved_routine)
                 )
-            if angles.ndim != 1 or angles.size == 0 or not np.all(np.isfinite(angles)):
-                raise ValueError("phase solver adapter returned invalid angles.")
         except Exception as exc:
             error_type = type(exc).__name__
             error = str(exc)
@@ -897,8 +907,12 @@ def benchmark_phase_solvers(
     repeats: int = 3,
     reconstruction_num_points: int = 65,
     solver_kwargs: dict[str, dict[str, Any]] | None = None,
+    reconstruction_tolerance: float = 1e-6,
 ) -> PhaseSolverBenchmarkResult:
     """Compare phase solvers by convergence, timing, and reconstruction error."""
+    if not np.isfinite(reconstruction_tolerance) or reconstruction_tolerance < 0:
+        raise ValueError("reconstruction_tolerance must be finite and non-negative.")
+    _validate_reconstruction_points(reconstruction_num_points)
     if repeats < 1:
         raise ValueError("repeats must be positive.")
     if not solvers:
@@ -940,6 +954,23 @@ def benchmark_phase_solvers(
                 "attempts": int(repeats),
                 "successes": len(succeeded),
                 "converged": len(succeeded) == int(repeats),
+                "reconstruction_tolerance": float(reconstruction_tolerance),
+                "validated_successes": sum(
+                    bool(
+                        attempt.quality_report(reconstruction_tolerance)[
+                            "reconstruction_passed"
+                        ]
+                    )
+                    for attempt in attempts
+                ),
+                "all_reconstructions_passed": all(
+                    bool(
+                        attempt.quality_report(reconstruction_tolerance)[
+                            "reconstruction_passed"
+                        ]
+                    )
+                    for attempt in attempts
+                ),
                 "best_time_seconds": min(times),
                 "mean_time_seconds": float(np.mean(times)),
                 "max_reconstruction_error": max(errors) if errors else None,
@@ -977,6 +1008,7 @@ def benchmark_phase_solver_stress_matrix(
     repeats: int = 3,
     reconstruction_num_points: int = 65,
     solver_kwargs: dict[str, dict[str, Any]] | None = None,
+    reconstruction_tolerance: float = 1e-6,
 ) -> PhaseSolverStressResult:
     """Benchmark phase solvers across named polynomials and conditioning regimes."""
     if not cases:
@@ -1000,6 +1032,7 @@ def benchmark_phase_solver_stress_matrix(
                     repeats=repeats,
                     reconstruction_num_points=reconstruction_num_points,
                     solver_kwargs=solver_kwargs,
+                    reconstruction_tolerance=reconstruction_tolerance,
                 ),
             )
         )
@@ -1020,6 +1053,7 @@ def synthesize_mixed_parity(
     The component norms become LCU weights. The returned postselection value is
     the idealized ``1 / lambda**2`` proxy for ``lambda = weight_even + weight_odd``.
     """
+    _validate_reconstruction_points(reconstruction_num_points)
     coeffs = np.asarray(list(poly), dtype=float)
     classification = classify_polynomial_realizability(coeffs)
     even, odd = classification.even_coeffs, classification.odd_coeffs
@@ -1097,6 +1131,25 @@ def _freeze_cache_value(value: Any) -> object:
     return cast(object, value)
 
 
+def _validate_reconstruction_points(num_points: int) -> None:
+    if (
+        isinstance(num_points, (bool, np.bool_))
+        or not isinstance(num_points, (int, np.integer))
+        or num_points < 2
+    ):
+        raise ValueError("reconstruction_num_points must be an integer of at least 2.")
+
+
+def _validated_angles(raw: Any) -> np.ndarray:
+    values = np.asarray(raw)
+    if np.iscomplexobj(values) and np.any(values.imag != 0):
+        raise ValueError("phase solver returned complex angles.")
+    angles = np.asarray(values.real, dtype=float)
+    if angles.ndim != 1 or angles.size == 0 or not np.all(np.isfinite(angles)):
+        raise ValueError("phase solver returned invalid angles.")
+    return angles
+
+
 def _phase_reconstruction_errors(
     coeffs: np.ndarray,
     angles: np.ndarray | None,
@@ -1106,8 +1159,7 @@ def _phase_reconstruction_errors(
 ) -> tuple[float | None, float | None]:
     if angles is None or routine != "QSVT":
         return None, None
-    if num_points < 2:
-        raise ValueError("reconstruction_num_points must be at least 2.")
+    _validate_reconstruction_points(num_points)
     xs = np.linspace(-1.0, 1.0, int(num_points))
     reconstructed = np.asarray(
         [_evaluate_qsvt_phase_sequence(float(x), angles) for x in xs],
@@ -1169,22 +1221,6 @@ def _synthesize_normalized_component(
     if weight <= 1e-15:
         return None
     normalized = coeffs / weight
-    if np.count_nonzero(np.abs(normalized[1:]) > 1e-14) == 0:
-        realizability = classify_polynomial_realizability(normalized)
-        return PhaseSynthesisResult(
-            coeffs=normalized,
-            routine="QSVT",
-            angle_solver="analytic-constant",
-            solver_kwargs={},
-            realizability=realizability,
-            succeeded=True,
-            angles=np.asarray([], dtype=float),
-            synthesis_time_seconds=0.0,
-            reconstruction_max_error=0.0,
-            reconstruction_rms_error=0.0,
-            reconstruction_num_points=reconstruction_num_points,
-            convention="Analytic constant branch; no signal queries are required.",
-        )
     return synthesize_phases(
         normalized,
         angle_solver=angle_solver,
