@@ -139,16 +139,18 @@ degree-10 soft filter returned phases but had about `0.075` reconstruction
 error. These observations are backend/version-dependent, not guarantees that
 root-finding always fails on those inputs.
 
-Regression tests verify that the iterative solver reconstructs the same,
-unmodified polynomials within a `1e-4` cross-platform regression threshold.
-The stress benchmark retains its stricter `1e-6` diagnostic threshold and
-reports the measured residual without modifying coefficients. This separates a
-portable solver regression from environment-sensitive research measurements.
-The Studio exposes the iterative method explicitly and preserves root-finding
-failures and reconstruction residuals. It does not patch PennyLane internals,
-rescale coefficients to hide failures, or change the stable facade's default
-solver. Mixed-parity interval designs still need a multi-sequence construction;
-switching solvers does not remove that condition.
+Regression tests verify that the iterative solver reconstructs the degree-13
+sign/inverse and degree-10 filter polynomials within `1e-6`. At degree 24/25,
+the optional backend can either return accurate phases or fail to converge
+across supported Python and NumPy combinations. Stress regressions preserve the
+exact coefficients and require either reconstruction within `1e-4` or a
+complete structured failure. The benchmark retains its stricter `1e-6`
+diagnostic threshold and reports every measured residual and failure without
+modifying coefficients. The Studio exposes the iterative method explicitly and
+preserves solver failures and reconstruction residuals. It does not patch
+PennyLane internals, rescale coefficients to hide failures, or change the stable
+facade's default solver. Mixed-parity interval designs still need a
+multi-sequence construction; switching solvers does not remove that condition.
 
 The CLI exposes the same workflow:
 
