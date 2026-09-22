@@ -95,6 +95,8 @@ def check_history_browser(browser, url):
         lambda route: route.fulfill(json={**records[0], "report": {}}),
     )
     page.locator(".card").first.get_by_role("button", name="View", exact=True).click()
+    # Clicking View starts an asynchronous fetch; wait for the rendered report.
+    expect(page.locator("#report-reproducibility")).to_be_visible()
     page.evaluate("""() => {
       const section = document.querySelector('#report-reproducibility');
       const summary = section.querySelector('details:last-of-type summary');
