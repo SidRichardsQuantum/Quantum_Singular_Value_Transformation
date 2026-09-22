@@ -140,11 +140,15 @@ error. These observations are backend/version-dependent, not guarantees that
 root-finding always fails on those inputs.
 
 Regression tests verify that the iterative solver reconstructs the same,
-unmodified polynomials within `1e-6`. The Studio exposes this method explicitly
-and preserves root-finding failures and reconstruction residuals. It does not
-patch PennyLane internals, rescale coefficients to hide failures, or change the
-stable facade's default solver. Mixed-parity interval designs still need a
-multi-sequence construction; switching solvers does not remove that condition.
+unmodified polynomials within `1e-6`, except for a `2e-6` portability margin on
+the degree-24 filter across supported Python and NumPy combinations. The stress
+benchmark retains its stricter `1e-6` diagnostic threshold and reports the
+measured residual without modifying coefficients. The Studio exposes this method
+explicitly and preserves root-finding failures and reconstruction residuals. It
+does not patch PennyLane internals, rescale coefficients to hide failures, or
+change the stable facade's default solver. Mixed-parity interval designs still
+need a multi-sequence construction; switching solvers does not remove that
+condition.
 
 The CLI exposes the same workflow:
 

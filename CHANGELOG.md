@@ -23,7 +23,9 @@
 - add focused regressions for constant circuits, malformed phase outputs,
   reconstruction-grid validation, and misleading solver-completion results
 - extend iterative reconstruction regressions to degree-25 sign/inverse,
-  degree-24 filter, and degree-12/24 Hamiltonian sine polynomials
+  degree-24 filter, and degree-12/24 Hamiltonian sine polynomials, with a narrow
+  cross-platform tolerance margin for the degree-24 filter while preserving its
+  exact coefficients and stricter benchmark diagnostic
 
 ### Documentation
 
