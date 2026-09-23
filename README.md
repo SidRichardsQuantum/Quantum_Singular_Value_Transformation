@@ -333,9 +333,9 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.2.30`
+Current release: `0.2.31`
 
-On `main`, Ordered Actions runs lint first, then runs the Python test matrix,
+On `main`, Ordered Actions runs lint, the Python test matrix,
 dependency compatibility, integration, Studio browser, and notebook/documentation
 checks in parallel. Packaging and wheel validation require all checks to pass.
 Tagged releases publish the artifacts from a successful Ordered Actions push run
@@ -365,10 +365,11 @@ These visible sections and the machine-readable notebook role metadata are
 kept consistent by `python scripts/normalize_notebooks.py --check`.
 
 Real physics examples live in `notebooks/real_examples/`. The curated
-eight-notebook gallery covers Poisson inversion, Hamiltonian simulation,
+eleven-notebook gallery covers Poisson inversion, Hamiltonian simulation,
 Green's functions, Ising filtering, electronic occupations, topological band
-projectors, singular-value deblurring, and matrix-log graph entropy. Each
-notebook identifies the physical system, QSVT implementation strategy, and
+projectors, singular-value deblurring, matrix-log graph entropy, phonon density
+of states, thermal Heisenberg observables, and disordered transport. Each notebook identifies the
+physical system, QSVT implementation strategy, and
 classical validation boundary.
 
 Benchmark notebooks live in `notebooks/benchmarks/` and compare classical

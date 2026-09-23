@@ -361,3 +361,43 @@ def test_new_cli_commands_emit_machine_readable_reports(capsys):
     assert poisson_report["mode"] == "poisson-qsvt-flagship"
     assert poisson_report["execution"] is None
     assert poisson_report["acceptance"]["accepted_for_stated_scope"] is False
+
+
+def test_flagship_synthesis_preserves_fallback_attempts_and_failure_evidence(
+    monkeypatch,
+):
+    from dataclasses import replace
+
+    import qsvt.flagship as flagship
+    from qsvt.synthesis import synthesize_phases
+
+    good = synthesize_phases([0.0, 0.5])
+    bad = replace(
+        good,
+        succeeded=False,
+        angles=None,
+        error="solver failed",
+        failure_stage="solver",
+    )
+    attempts = iter([bad, good])
+    monkeypatch.setattr(
+        flagship, "synthesize_phases_cached", lambda *a, **k: next(attempts)
+    )
+    selected = flagship._synthesize_with_fallback(
+        np.array([0.0, 0.5]),
+        ("root-finding", "iterative"),
+        reconstruction_tolerance=1e-6,
+    )
+    saved = selected.as_report()["attempts"]
+    assert len(saved) == 2
+    assert saved[0]["quality"]["failure_stage"] == "solver"
+    assert saved[1]["quality"]["reconstruction_passed"]
+    assert good.attempt_reports == ()  # Cached results are not mutated.
+    inaccurate = replace(selected, reconstruction_max_error=0.1)
+    with pytest.raises(ValueError) as error:
+        flagship._require_execution_quality(inaccurate, 1e-6)
+    assert (
+        error.value.qsvt_evidence["synthesis_quality"]["failure_stage"]
+        == "reconstruction"
+    )
+    assert len(error.value.qsvt_evidence["synthesis"]["attempts"]) == 2

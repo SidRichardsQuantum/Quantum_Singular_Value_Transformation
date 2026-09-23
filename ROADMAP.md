@@ -50,44 +50,47 @@ QSVT primitive, diagnostic, or report component. Generic domain constructors,
 classical solvers, plotting code, and application-specific analysis should stay
 with the examples or repository documentation.
 
-### Adjacent quantum algorithms
+### Repository clients and experimental tooling
 
-HHL and quantum-walk algorithms are experimental comparisons and tutorials, not
-core QSVT implementations or stable-package milestones. They may be maintained
-to explain algorithmic tradeoffs and validate comparisons, but they should not
-have independent roadmap tracks that compete with QSVT work.
+Examples, notebooks, adjacent-algorithm comparisons, declarative research
+sweeps, benchmarks, and the local Experiment Studio support the package and
+remain repository tooling. They do not expand the stable QSVT facade or define
+separate product roadmaps.
 
-### Research infrastructure
+#### Experiment Studio UX and workflow improvements
 
-Declarative sweeps, resumable trials, statistical aggregation, standardized
-plots, and Pareto-front generation are repository research and benchmark
-tooling. Existing experimental helpers may support the repository, but this
-infrastructure is not part of the stable QSVT facade and should not grow into a
-general experiment-management framework.
+The repository-only Studio should remain a local, single-user scientific
+workbench and continue to focus on package-backed workflows rather than a
+separate product surface. Targeted improvements in scope for the repo include:
 
-### Experiment Studio
+- richer run-history navigation with search, filters, saved queries, and
+  tagging for workflow families, failure modes, and compatibility outcomes,
+- more expressive run summaries that distinguish queued, executing,
+  synthesizing, reconstructing, and failed states without hiding the underlying
+  package evidence,
+- better management of comparison and reuse workflows, including side-by-side
+  diffs for request settings, package reports, and numerical diagnostics,
+- clearer progress feedback for long jobs, including lifecycle acknowledgements,
+  cancellation confirmation, and a compact execution log for each run,
+- stronger export and portability tools for configurations, reports, and plots,
+  including JSON/CSV/PNG outputs that match saved workspace artifacts,
+- improved onboarding for new users via recommended presets, quick-start
+  examples, and explicit guidance on when a run is a design-only study versus an
+  executed finite QSVT workflow,
+- tighter failure communication: the Studio should make it obvious when a run
+  failed because of synthesis, reconstruction, acceptance, sampling, or
+  execution limits while preserving the exact package report for inspection,
+- local workspace ergonomics such as filtered favorites, run retention policy,
+  and better handling of large result collections without introducing a remote
+  service or multi-user backend.
 
-The Studio is a local, single-user repository client of the public package
-APIs. It owns configuration, saved-run browsing, comparison, and visualization
-of package reports. Numerical algorithms, acceptance criteria, and scientific
-claims remain owned by the package. The Studio is not shipped in the package
-distributions and does not introduce hosted services or provider management.
+These refinements belong in the repository tooling layer: they improve the
+scientific workflow and reproducibility story without expanding the package's
+stable API or introducing separate product responsibilities.
 
-### Hardware and providers
+## Stable Educational Milestone
 
-Experimental hardware support is limited to finite-shot execution on a
-caller-supplied PennyLane device, local preflight and decomposition checks, and
-portable result and resource reports.
-
-Provider accounts, credential handling, provider-specific plugin orchestration,
-job persistence, submission queues, retries, cancellation, billing, and paid
-execution management are outside the package scope. Users and provider plugins
-own those responsibilities.
-
-## Stable Educational and Research Milestone
-
-The package may be described as stable for its stated educational and research
-scope when:
+The package may be described as stable for its stated educational scope when:
 
 - the compact stable API documents input shapes, error semantics, report
   schemas, examples, and deprecation guarantees,
@@ -107,7 +110,7 @@ scope when:
   versions, and dependency ranges.
 
 This milestone means that the supported package workflows are stable; it does
-not imply that QSVT research or all possible applications are complete.
+not imply that all possible applications are complete.
 
 ## Priorities
 
@@ -119,6 +122,19 @@ projector conventions. All three flagship workflows now have finite executable
 acceptance paths, and the repository Studio exposes each through public package
 APIs. The immediate goal is to harden synthesis, access-model support, and
 execution/report contracts across those workflows.
+
+The support matrix in `docs/qsvt/flagship_workflows.md` now has
+statevector and finite-shot regressions for all eight advertised high-level
+workflow/encoding pairs. FABLE Hamiltonian scaling and non-finite synthesis
+residual rejection are covered explicitly. Shared caller-supplied `BlockEncodingSpec` inputs and backend decomposition
+remain separate work; the support matrix does not claim those are complete.
+Finite-shot runs now have a separate conditional-probability acceptance scope
+with simultaneous confidence bounds and postselection evidence. General
+observable measurements and statevector validation from shots remain outside
+that scope. Studio now provides saved request/report differences and structured
+failure and synthesis-attempt inspection.
+Synthesis stress reports retain per-attempt failure stages and reconstruction
+evidence, with focused near-boundary and cosine-fit regressions.
 
 #### Shared implementation and execution interfaces
 
@@ -222,7 +238,103 @@ distinct QSVT capabilities.
 - consider a beta-quality `0.3` line only after the three flagship acceptance
   clients pass their versioned contracts across every advertised access model.
 
+#### Additional real-world notebook clients
+
+Add a small number of application notebooks only when they exercise a distinct
+package workflow and remain near-pure clients. Phonon density of states and
+finite-temperature Heisenberg observables are now maintained clients in
+notebooks 09 and 10. Finite disordered transport is covered by notebook 11,
+with executed coherent QSVT and transport-observable validation. The remaining
+candidates are:
+
+- ground-state preparation and overlap estimation for a finite Heisenberg
+  chain, using the ground-state filtering workflow,
+- occupied/unoccupied band separation in a disordered material model, using
+  spectral thresholding.
+
+Each candidate should include a physical observable, a dense classical
+reference, package-generated polynomial results, an application-level error
+comparison, and explicit finite-simulator and access-model boundaries. Domain
+constructors, plotting, and application-specific analysis should remain in the
+notebook unless they become reusable QSVT primitives.
+
 #### Additional validation clients
+
+##### Real-measurement deblurring feasibility study
+
+Use genuinely blurred camera images to test whether a bounded singular-value
+filter can recover useful information from real optical measurements, and to
+measure the additional error and cost introduced when that filter is
+implemented through QSVT. The practical objective is improved text
+recognition; the scientific objective is to isolate the accuracy and resource
+requirements of the QSVT contribution. This is not, by itself, evidence of a
+quantum speedup.
+
+The proposed pilot uses the Helsinki Deblur Challenge dataset, which provides
+focused and deliberately defocused photographs, calibration targets for
+estimating blur, and text transcriptions for evaluating readability. Begin
+with a modest subset spanning mild, moderate, and strong blur. Define the
+evaluation before tuning, keep crops from one photograph in the same split,
+separate calibration and parameter selection from final testing, and freeze
+the OCR system. Character-recognition error is the primary outcome; image
+reconstruction error and forward-model residuals are supporting diagnostics.
+Report failures and uncertainty across images rather than selecting attractive
+reconstructions.
+
+The study should proceed in the following order:
+
+1. **Validate the physical model.** Represent the measurement as
+   \(y = Bx + \eta\), where \(x\) is the sharp image, \(B\) is optical blur,
+   and \(\eta\) is measurement noise. Estimate \(B\) from calibration targets
+   and validate alignment, intensity scaling, boundary treatment, and
+   predictions on independent sharp references. Do not proceed to more
+   accurate QSVT execution if the forward model is not trustworthy.
+2. **Establish classical references.** Compare the blurred input with
+   truncated SVD on small problems and with Tikhonov or Wiener reconstruction.
+   Select regularization on development data and evaluate only after the
+   settings are frozen.
+3. **Evaluate the package polynomial.** Use
+   `docs/qsvt/workflow_singular_value_pseudoinverse.md` as the starting point,
+   while labeling its dense-SVD path as a polynomial validation study rather
+   than a complete deblurring circuit. Investigate a smooth filter such as
+   \(f_\lambda(\sigma) = \sigma/(\sigma^2+\lambda)\), with explicit checks for
+   normalization, parity, approximation error, and behavior over the full
+   signal domain. Separate inverse-problem and regularization error from
+   polynomial-approximation error.
+4. **Audit reduced quantum instances.** Derive small representative instances
+   from the measured data with explicit boundary conditions. Verify block
+   encodings, synthesize phases, execute ideal and finite-shot circuits with
+   controlled noise, and compare against the identical classical
+   transformation. Distinguish these experiments from larger classical image
+   reconstructions.
+5. **Define an honest readout boundary.** Basis probabilities are not
+   reconstructed image amplitudes: finite-shot checks do not establish pixel
+   intensities, signs, or global normalization. Image reconstruction therefore
+   requires an explicit readout procedure, or the quantum experiment must use a
+   narrower directly measurable output. Audit state preparation, decomposition,
+   depth, postselection, measurement, and resource costs before considering
+   physical hardware. Simulator-oriented encodings and
+   hardware-decomposable alternatives must remain clearly distinguished.
+
+The repository work should include a dataset manifest, calibration and
+preprocessing, a fixed evaluation protocol, reproducible parameter sweeps,
+classical baselines, validated regularization-filter design, an audited circuit
+path for the selected matrix and adjoint conventions, readout and uncertainty
+validation, and a thin Studio client for package reports, comparisons, and
+failures. Imaging-specific constructors, OCR, plotting, and analysis stay in
+repository tooling; only reusable QSVT primitives and diagnostics belong in
+the package.
+
+Use structured or matrix-free convolution for larger classical studies. A
+32–64 GB workstation is an initial planning assumption rather than a measured
+requirement: a dense float64 blur matrix for a million-pixel image would
+require roughly 8 TB. More compute does not resolve phase-synthesis
+difficulties, quantum data-loading costs, deep circuits, or image-readout
+costs. The first deliverable is a small reproducible feasibility study with
+real blurred images, independently calibrated blur, held-out readability
+results, polynomial-versus-classical comparisons, and a resource-audited
+reduced-instance circuit demonstration. Use its evidence to decide whether a
+larger experiment is justified.
 
 - promote existing resolvent, regularized pseudoinverse, deblurring, spectral
   density, band-projector, thermal, and graph-matrix-function studies to
@@ -255,10 +367,6 @@ workflows.
   hardware devices,
 - keep live-provider tests explicitly opt-in and outside default package
   validation.
-
-The package will not manage provider credentials, provider-native job
-lifecycles, submission costs, queues, retries, cancellation, calibration
-records, or provider-specific mitigation.
 
 ## Repository and Documentation Policies
 

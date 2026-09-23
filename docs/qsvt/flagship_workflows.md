@@ -6,6 +6,104 @@ classical validation, observables, resources, and an error ledger.
 
 Every result report includes a versioned `acceptance` section.
 
+## Tested encoding and execution support
+
+The high-level flagship support matrix below is exercised by
+`tests/test_flagship_acceptance.py::test_flagship_encoding_support_matrix`.
+Each row runs both statevector and finite-shot execution on `default.qubit`.
+This is a finite simulator contract; backend decomposition and physical-device
+support require a separate device audit.
+
+| flagship | encoding argument | input and normalization | statevector acceptance | finite shots |
+| --- | --- | --- | --- | --- |
+| Poisson | `access_model="dense"` | finite Dirichlet matrix; spectral-norm normalization | tested | probabilities and uncertainty |
+| Poisson | `access_model="fable"` | real matrix; FABLE entry/dimension normalization | tested | probabilities and uncertainty |
+| Poisson | `access_model="prepselprep"` | Pauli decomposition; LCU one-norm; power-of-two point count | tested | probabilities and uncertainty |
+| Poisson | `access_model="qubitization"` | Pauli decomposition; LCU one-norm; power-of-two point count | tested | probabilities and uncertainty |
+| Spectral filtering | `block_encoding="prepselprep"` | Hermitian Pauli operator; LCU one-norm | tested | probabilities and uncertainty |
+| Spectral filtering | `block_encoding="qubitization"` | Hermitian Pauli operator; LCU one-norm | tested | probabilities and uncertainty |
+| Hamiltonian simulation | `block_encoding="embedding"` | finite Hermitian matrix; affine spectral scaling | tested | probabilities and uncertainty |
+| Hamiltonian simulation | `block_encoding="fable"` | real symmetric matrix; affine scaling widened for FABLE | tested | probabilities and uncertainty |
+
+The matrix tests use a four-point Poisson system, a two-qubit Pauli filter,
+and a non-diagonal two-level Hamiltonian with a complex input state. These
+are representative acceptance regressions, not guarantees for arbitrary
+degree, tolerance, dimension, or conditioning. FABLE can require a higher
+polynomial degree because its normalization changes the signal domain. The
+Poisson regression uses degree 13 for FABLE and degree 5 for the other encodings.
+
+### Finite-shot scientific acceptance
+
+Acceptance schema `1.2` adds the `finite_shot_probabilities` scope for executed
+shot-based runs. `accepted_for_stated_scope` can pass when conditional
+computational-basis probabilities agree with the normalized exact workflow
+output, including uncertainty. `full_qsvt_acceptance` remains false: measuring
+basis probabilities does not validate phases, amplitudes, or statevector error.
+Statevector runs retain the existing `finite_qsvt` criteria. Historical `1.0`
+and `1.1` reports remain readable and retain their original verdicts.
+
+All three flagship APIs accept `sampling_tolerance=0.05` (maximum absolute
+basis-probability error) and `sampling_confidence=0.95`. These are independent
+of polynomial, statevector, and phase-reconstruction tolerances. The CLI exposes
+`--sampling-tolerance` and `--sampling-confidence`; Studio exposes the same
+package-backed controls.
+
+The package recovers integer counts from the measured full-register
+probabilities and records total shots, accepted shots, logical postselection
+rate, conditional probabilities, exact reference probabilities, simultaneous
+confidence intervals, and the maximum probability-error bound. For failure
+budget `alpha = 1 - confidence`, the postselection radius is
+`sqrt(log(4 / alpha) / (2 * shots))`; each conditional probability radius is
+`sqrt(log(4 * dimension / alpha) / (2 * accepted_shots))`. Clipped intervals
+use a union bound over all basis outcomes and the postselection rate. This
+uses [Hoeffding's inequality](https://doi.org/10.1080/01621459.1963.10500830)
+and assumes independent identically distributed shots.
+
+Acceptance requires the entire probability interval to lie within the caller's
+error tolerance and a positive lower confidence bound on postselection.
+Polynomial accuracy, validated phase synthesis, references, and resources
+remain required. Sparse samples cannot pass merely because a wide interval
+contains the reference. The evidence distinguishes `accepted`,
+`insufficient_shots`, `distribution_mismatch` (a confidence interval excludes
+the allowed reference band), `invalid_evidence`, and `unavailable`.
+
+This scope validates the probabilities of basis-state projectors. It does not
+certify arbitrary observables, a solution norm, the ideal postselection rate,
+or tomography. Poisson and filtering single-sequence circuits can retain a
+complex response: successful real-polynomial reconstruction does not guarantee
+that their raw probabilities match the normalized physical reference. Such
+runs must earn measurement acceptance independently and may fail it even when
+the statevector real-part check passes. No imaginary component is discarded
+from shot data. Hamiltonian coherent component-LCU measurements include logical
+and selector postselection directly.
+
+Example:
+
+```bash
+qsvt hamiltonian-simulation --matrix "-0.5,0;0,0.5" --state "1,0" \
+  --time 0.3 --degree 5 --acceptance-tolerance 0.001 --shots 10000 \
+  --sampling-tolerance 0.05 --sampling-confidence 0.95
+```
+
+### Wire, projector, and unsupported-input boundaries
+
+- Poisson and Hamiltonian simulation construct their own encoding wires and
+  projectors. The high-level APIs do not accept custom `BlockEncodingSpec`
+  objects or caller-supplied projectors.
+- Spectral filtering preserves the operator's wire labels and accepts explicit
+  encoding wires. The support test uses string labels; encoding wires must be
+  distinct and disjoint from system wires. Projectors are inferred from the
+  encoding and synthesized PennyLane QSVT phases.
+- Custom circuits, explicit projector factories, alternative wire orders,
+  and rectangular singular-value transforms belong to the lower-level
+  `execute_qsvt_from_spec` / `execute_qsvt_component_lcu_from_spec` contracts.
+  Their tests in `tests/test_execution.py` do not imply high-level flagship
+  support. Coherent rectangular transforms remain outside the advertised path.
+- Unsupported encoding names, overlapping or duplicate filter wires, and
+  non-power-of-two Poisson Pauli-LCU dimensions are rejected explicitly.
+  An executable encoding does not guarantee that a chosen polynomial can meet
+  its approximation or phase-reconstruction tolerance.
+
 ## Acceptance matrix
 
 | workflow | stated scope | required acceptance evidence | current full-QSVT boundary |
@@ -16,7 +114,7 @@ Every result report includes a versioned `acceptance` section.
 
 The machine-readable source is
 `qsvt.acceptance.flagship_acceptance_matrix()`. Acceptance reports use schema
-`qsvt-flagship-acceptance` version `1.1`; historical `1.0` reports remain
+`qsvt-flagship-acceptance` version `1.2`; historical `1.0` and `1.1` reports remain
 readable. `accepted_for_stated_scope` evaluates
 only criteria required by the declared scope; `full_qsvt_acceptance` evaluates
 all criteria needed for the finite QSVT circuit claim.
@@ -43,6 +141,11 @@ calls, and actual finite-circuit resources. It can reach
 `full_qsvt_acceptance = true` for its finite matrix-encoding scope; scalable
 Hamiltonian access, application state preparation, amplitude amplification,
 and readout remain omitted.
+
+For FABLE, the workflow widens the affine signal scale to satisfy its
+entry/dimension normalization requirement before designing cosine and sine.
+The physical Hamiltonian, evolution time, and dense reference remain the same;
+the reported `scaled_operator.scale` and `scaled_time` reflect the encoding.
 
 ## Pauli-Hamiltonian spectral filter
 

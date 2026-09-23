@@ -160,6 +160,10 @@ payload as `1.1` therefore fails validation; use the migration helper.
 - `plot_approximation_report(report, ax=None)`
 - `save_report_plot(report, path)`
 
+Flagship acceptance reports support versions `1.0`, `1.1`, and `1.2`. Version
+`1.2` records a separate finite-shot probability scope and sampling evidence;
+historical verdicts are not upgraded or reinterpreted.
+
 Versioned machine-readable reports currently include
 `qsvt-algorithm-workflow` at schema versions `1.0` and `1.1`, plus
 `qsvt-problem-workflow`, `block-encoding-qsvt-execution`,

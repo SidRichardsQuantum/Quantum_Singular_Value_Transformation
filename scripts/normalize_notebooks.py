@@ -99,6 +99,15 @@ FOCUS = {
     "real_examples/08_matrix_log_entropy_graph_laplacian.ipynb": (
         "approximate a graph matrix logarithm and entropy"
     ),
+    "real_examples/09_phonon_density_of_states.ipynb": (
+        "estimate the phonon density of states of a mass-spring chain"
+    ),
+    "real_examples/10_thermal_heisenberg_chain.ipynb": (
+        "estimate thermal observables of a finite Heisenberg spin chain"
+    ),
+    "real_examples/11_disordered_transport_localization.ipynb": (
+        "validate finite-chain transport observables with coherent QSVT"
+    ),
     "benchmarks/01_linear_system_classical_vs_qsvt_proxy.ipynb": (
         "compare linear-system baselines, finite HHL, and QSVT proxies"
     ),

@@ -796,3 +796,95 @@ def test_iterative_flagship_method_is_validated_on_the_same_problem(workflow):
     for quality in qualities.values():
         assert quality["angle_solver"] == "iterative"
         assert quality["status"] == "passed"
+
+
+def test_comparison_diffs_preserve_missing_null_and_saved_requests(tmp_path):
+    from studio.records import comparison_report
+
+    store = Store(tmp_path)
+    req = request("sign", attempt_synthesis=False)
+    original = {"diagnostics": {"max_error": 0.1}, "old_field": None}
+    a = save_run(store, req, original)
+    changed = copy.deepcopy(req)
+    changed["settings"]["degree"] = 9
+    b = save_run(store, changed, {"diagnostics": {"max_error": 0.2}})
+    payload = comparison_report(compare(store, [a, b]))
+    rows = {row["path"]: row for row in payload["differences"]["report"]}
+    assert rows["old_field"]["cells"] == [
+        {"present": True, "value": None},
+        {"present": False, "value": None},
+    ]
+    assert rows["diagnostics.max_error"]["different"]
+    assert store.read(a, report=True)["report"] == original
+    assert any(
+        row["path"] == "settings.degree" and row["different"]
+        for row in payload["differences"]["request"]
+    )
+
+
+def test_failure_diagnosis_separates_sampling_reconstruction_and_execution():
+    from studio.records import failure_diagnosis
+
+    run = {
+        "report": {
+            "synthesis": {
+                "succeeded": True,
+                "attempts": [
+                    {
+                        "succeeded": False,
+                        "failure_stage": "solver",
+                        "error": "first attempt",
+                    },
+                    {
+                        "succeeded": True,
+                        "quality": {
+                            "reconstruction_passed": False,
+                            "failure_stage": "reconstruction",
+                        },
+                    },
+                ],
+            },
+            "execution": {"succeeded": False, "error": "device failure"},
+            "acceptance": {
+                "checks": [
+                    {
+                        "id": "finite_qsvt_execution",
+                        "passed": False,
+                        "required_for_scope": False,
+                    },
+                    {
+                        "id": "finite_shot_probability_accuracy",
+                        "passed": False,
+                        "required_for_scope": True,
+                        "observed": {"status": "insufficient_shots"},
+                    },
+                ]
+            },
+        }
+    }
+    findings = failure_diagnosis(run)
+    assert [f["stage"] for f in findings] == [
+        "solver",
+        "reconstruction",
+        "execution",
+        "sampling",
+    ]
+    assert findings[-1]["evidence"]["observed"]["status"] == "insufficient_shots"
+    assert run["report"]["synthesis"]["attempts"][0]["error"] == "first attempt"
+
+
+def test_worker_preserves_structured_synthesis_failure(tmp_path, monkeypatch):
+    from studio.server import _package_worker
+
+    class FailedSynthesis(ValueError):
+        qsvt_evidence = {"synthesis_quality": {"failure_stage": "reconstruction"}}
+
+    def fail(_):
+        raise FailedSynthesis("cannot reconstruct")
+
+    monkeypatch.setattr("studio.server.execute_request", fail)
+    output, error = tmp_path / "report.json", tmp_path / "error.json"
+    _package_worker({}, output, error)
+    saved = json.loads(error.read_text())
+    assert saved["evidence"] == FailedSynthesis.qsvt_evidence
+    assert not output.exists()

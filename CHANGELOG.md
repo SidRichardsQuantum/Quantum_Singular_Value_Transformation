@@ -1,5 +1,60 @@
 # Changelog
 
+## [0.2.31] – 23rd September 2026
+
+### Added
+
+- add acceptance schema 1.2 with finite-shot conditional-probability acceptance,
+  simultaneous confidence bounds, postselection evidence, and independent
+  sampling tolerance/confidence controls in Python, CLI, and Studio
+- add Studio saved request/report differences and structured failure inspection;
+  retain flagship fallback synthesis attempts and errors across worker failures
+- add a disordered-transport notebook with six executed coherent QSVT circuits,
+  independent exact transport references, observable checks, and resource evidence
+- retain failure stages and per-attempt phase/reconstruction evidence in
+  synthesis diagnostics and stress benchmark reports
+- add a real-example notebook for thermal energy and nearest-neighbor
+  correlations in a finite Heisenberg spin chain using
+  `thermal_gibbs_workflow`
+- add the phonon density-of-states notebook to the maintained real-example
+  gallery and roadmap
+
+### Changed
+
+- advance the project and current-release documentation markers to `0.2.31`
+
+### Fixed
+
+- widen Hamiltonian FABLE signal scaling before polynomial design so its
+  normalization condition is satisfied without changing the physical evolution
+- reject unsupported flagship encoding names, overlapping filter wires, and
+  non-finite phase tolerances; prevent unvalidated phase residuals from
+  authorizing flagship execution
+- plot Heisenberg thermal populations in the Hamiltonian energy eigenbasis,
+  with matching energy coordinates, and refresh the published plot
+- align the Heisenberg takeaway with the generated notebook contract
+
+### Tests
+
+- cover all eight advertised flagship/encoding pairs in statevector and
+  finite-shot modes, including truthful incomplete shot-based acceptance
+- test near-boundary phase reconstruction at independent nodes and retain
+  structured degree-24 cosine-fit rejection evidence without changing inputs
+- execute the expanded real-example notebook suite, including the phonon and
+  thermal spin-chain clients
+- update the curated gallery inventory for ten real examples and 37 notebooks
+- validate plotted Heisenberg populations against normalized Boltzmann weights
+  and check that they reproduce the thermal energy
+
+### Documentation
+
+- publish the tested flagship support matrix and explicit wire, projector,
+  finite-shot, and backend boundaries; update completed roadmap items
+- synchronize the README gallery description and result-page counts with ten
+  real examples, 37 maintained notebooks, and 16 real-example plots
+- add both new notebooks to the documentation index and result inventory;
+  correct the README description of parallel CI validation
+
 ## [0.2.30] – 23rd September 2026
 
 ### Changed

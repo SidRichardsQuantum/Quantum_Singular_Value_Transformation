@@ -21,7 +21,14 @@ from urllib.parse import parse_qs, urlsplit
 
 from .adapter import execute_request
 from .catalogue import catalogue, validate_request
-from .records import Store, canonical_json, compare, metrics
+from .records import (
+    Store,
+    canonical_json,
+    compare,
+    comparison_report,
+    failure_diagnosis,
+    metrics,
+)
 
 STATIC = Path(__file__).parent / "static"
 
@@ -34,7 +41,13 @@ def _package_worker(request, result_path, error_path):
         )
     except BaseException as exc:  # Preserve a useful child-process failure record.
         Path(error_path).write_text(
-            canonical_json({"type": type(exc).__name__, "message": str(exc)}),
+            canonical_json(
+                {
+                    "type": type(exc).__name__,
+                    "message": str(exc),
+                    "evidence": getattr(exc, "qsvt_evidence", None),
+                }
+            ),
             encoding="utf-8",
         )
 
@@ -317,7 +330,8 @@ def handler(studio):
             if parts[:2] == ["api", "runs"] and len(parts) in (3, 4):
                 run_id = parts[2]
                 if len(parts) == 3:
-                    return self.send(200, studio.store.read(run_id, report=True))
+                    run = studio.store.read(run_id, report=True)
+                    return self.send(200, {**run, "diagnosis": failure_diagnosis(run)})
                 filename = parts[3]
                 if filename == "reuse":
                     return self.send(200, studio.store.reuse(run_id))
@@ -370,22 +384,7 @@ def handler(studio):
                     return self.send(200, validate_request(raw))
                 if path == "/api/compare":
                     runs = compare(studio.store, raw.get("ids"))
-                    return self.send(
-                        200,
-                        {
-                            "runs": [
-                                {
-                                    "id": r["id"],
-                                    "request": r["request"],
-                                    "metrics": metrics(r["report"]),
-                                    "package_call_seconds": r.get(
-                                        "package_call_seconds"
-                                    ),
-                                }
-                                for r in runs
-                            ]
-                        },
-                    )
+                    return self.send(200, comparison_report(runs))
                 parts = path.strip("/").split("/")
                 if (
                     len(parts) == 4

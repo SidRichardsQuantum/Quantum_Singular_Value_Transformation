@@ -52,6 +52,9 @@ def test_real_example_gallery_is_curated():
         "06_topological_band_projector_chern_marker.ipynb",
         "07_singular_value_pseudoinverse_deblurring.ipynb",
         "08_matrix_log_entropy_graph_laplacian.ipynb",
+        "09_phonon_density_of_states.ipynb",
+        "10_thermal_heisenberg_chain.ipynb",
+        "11_disordered_transport_localization.ipynb",
     }
 
 
@@ -60,7 +63,7 @@ def test_every_notebook_has_concise_variable_definitions():
         path for directory in NOTEBOOK_DIRS for path in directory.glob("*.ipynb")
     )
 
-    assert len(notebook_paths) == 35
+    assert len(notebook_paths) == 38
     for path in notebook_paths:
         notebook = json.loads(path.read_text(encoding="utf-8"))
         markdown_cells = [

@@ -1,0 +1,202 @@
+{
+  "accepted_for_stated_scope": false,
+  "checks": [
+    {
+      "description": "The exact spectral projector and postselected reference state are present and finite.",
+      "id": "classical_reference",
+      "observed": {
+        "projector_shape": [
+          4,
+          4
+        ],
+        "reference_success_probability": 0.9472135954999575
+      },
+      "passed": true,
+      "required_for_full_qsvt": true,
+      "required_for_scope": true
+    },
+    {
+      "description": "The selected band-filter polynomial meets the caller's operator relative-error tolerance.",
+      "id": "polynomial_accuracy",
+      "observed": 0.008823945199384946,
+      "passed": true,
+      "required_for_full_qsvt": true,
+      "required_for_scope": true,
+      "threshold": 0.02
+    },
+    {
+      "description": "Phase synthesis succeeds and reconstruction meets the declared phase tolerance.",
+      "id": "phase_synthesis",
+      "observed": 6.005276687037764e-08,
+      "passed": true,
+      "required_for_full_qsvt": true,
+      "required_for_scope": true,
+      "threshold": 1e-06
+    },
+    {
+      "description": "The requested Pauli-LCU QNode executes and agrees with the polynomial output within the workflow tolerance.",
+      "id": "finite_qsvt_execution",
+      "observed": {
+        "circuit_vs_polynomial_error": null,
+        "execution_requested": true,
+        "execution_succeeded": true
+      },
+      "passed": false,
+      "required_for_full_qsvt": true,
+      "required_for_scope": false,
+      "threshold": 0.02
+    },
+    {
+      "description": "The report includes success probabilities, observables, component errors, normalization, and encoding-aware resources.",
+      "id": "diagnostics_and_resources",
+      "observed": {
+        "error_components": [
+          "additive_error_proxy",
+          "circuit_vs_polynomial_error",
+          "discretization_error",
+          "maximum_sampling_standard_error",
+          "phase_reconstruction_error",
+          "polynomial_approximation_error"
+        ],
+        "normalization_alpha": 0.8999999999999999,
+        "observables": [
+          "hamiltonian"
+        ],
+        "polynomial_success_probability": 0.9467070829518873
+      },
+      "passed": true,
+      "required_for_full_qsvt": true,
+      "required_for_scope": true
+    },
+    {
+      "description": "Conditional basis probabilities meet the sampling tolerance with simultaneous confidence bounds and resolved postselection.",
+      "id": "finite_shot_probability_accuracy",
+      "observed": {
+        "accepted_shots": 98,
+        "assumption": "independent identically distributed shots",
+        "conditional_probabilities": [
+          0.0,
+          0.8877551020408163,
+          0.0,
+          0.11224489795918367
+        ],
+        "confidence": 0.95,
+        "logical_counts": [
+          0,
+          87,
+          0,
+          11
+        ],
+        "maximum_probability_error": 0.05945849345914167,
+        "maximum_probability_error_bound": 0.23101084454245713,
+        "measurement": "conditional_computational_basis_probabilities",
+        "method": "simultaneous_hoeffding",
+        "passed": false,
+        "postselection_interval": [
+          0.8319792812699202,
+          1.0
+        ],
+        "postselection_probability": 0.98,
+        "probability_intervals": [
+          [
+            0.0,
+            0.17155235108331543
+          ],
+          [
+            0.7162027509575009,
+            1.0
+          ],
+          [
+            0.0,
+            0.17155235108331543
+          ],
+          [
+            0.0,
+            0.2837972490424991
+          ]
+        ],
+        "reason": "uncertainty_exceeds_tolerance_or_postselection_unresolved",
+        "reference": "normalized_exact_workflow_output",
+        "reference_probabilities": [
+          0.0,
+          0.947213595499958,
+          0.0,
+          0.05278640450004206
+        ],
+        "shots": 100,
+        "simultaneous_probability_radius": 0.17155235108331543,
+        "statevector_validated": false,
+        "status": "insufficient_shots",
+        "tolerance": 0.05
+      },
+      "passed": false,
+      "required_for_full_qsvt": false,
+      "required_for_scope": true,
+      "threshold": 0.05
+    }
+  ],
+  "full_qsvt_acceptance": false,
+  "sampling": {
+    "accepted_shots": 98,
+    "assumption": "independent identically distributed shots",
+    "conditional_probabilities": [
+      0.0,
+      0.8877551020408163,
+      0.0,
+      0.11224489795918367
+    ],
+    "confidence": 0.95,
+    "logical_counts": [
+      0,
+      87,
+      0,
+      11
+    ],
+    "maximum_probability_error": 0.05945849345914167,
+    "maximum_probability_error_bound": 0.23101084454245713,
+    "measurement": "conditional_computational_basis_probabilities",
+    "method": "simultaneous_hoeffding",
+    "passed": false,
+    "postselection_interval": [
+      0.8319792812699202,
+      1.0
+    ],
+    "postselection_probability": 0.98,
+    "probability_intervals": [
+      [
+        0.0,
+        0.17155235108331543
+      ],
+      [
+        0.7162027509575009,
+        1.0
+      ],
+      [
+        0.0,
+        0.17155235108331543
+      ],
+      [
+        0.0,
+        0.2837972490424991
+      ]
+    ],
+    "reason": "uncertainty_exceeds_tolerance_or_postselection_unresolved",
+    "reference": "normalized_exact_workflow_output",
+    "reference_probabilities": [
+      0.0,
+      0.947213595499958,
+      0.0,
+      0.05278640450004206
+    ],
+    "shots": 100,
+    "simultaneous_probability_radius": 0.17155235108331543,
+    "statevector_validated": false,
+    "status": "insufficient_shots",
+    "tolerance": 0.05
+  },
+  "schema_name": "qsvt-flagship-acceptance",
+  "schema_version": "1.2",
+  "scope": "finite_shot_probabilities",
+  "status": "acceptance_criteria_not_met",
+  "workflow": "spectral_filter_qsvt"
+}

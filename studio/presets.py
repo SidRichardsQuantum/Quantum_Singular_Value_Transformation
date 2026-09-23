@@ -29,6 +29,8 @@ POISSON = {
     "access_model": "prepselprep",
     "source_kind": "sine",
     "shots": None,
+    "sampling_tolerance": 0.05,
+    "sampling_confidence": 0.95,
 }
 PAULI = {
     "lower": -0.4,
@@ -49,6 +51,8 @@ PAULI = {
     "x0_coefficient": 0.2,
     "input_state": "uniform",
     "shots": None,
+    "sampling_tolerance": 0.05,
+    "sampling_confidence": 0.95,
 }
 HAMILTONIAN = {
     "n_sites": 6,
@@ -66,6 +70,8 @@ HAMILTONIAN = {
     "block_encoding": "embedding",
     "device_name": "default.qubit",
     "shots": None,
+    "sampling_tolerance": 0.05,
+    "sampling_confidence": 0.95,
 }
 
 
@@ -88,7 +94,7 @@ def presets():
             {
                 "id": id,
                 "revision": (
-                    2
+                    3
                     if workflow
                     in {"poisson", "spectral_filter", "hamiltonian_simulation"}
                     else 1

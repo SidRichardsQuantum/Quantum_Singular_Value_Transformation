@@ -90,6 +90,8 @@ def cmd_spectral_filter_qsvt(args: argparse.Namespace) -> dict[str, object]:
         execute=args.execute,
         device_name=args.device,
         shots=args.shots,
+        sampling_tolerance=args.sampling_tolerance,
+        sampling_confidence=args.sampling_confidence,
         num_points=args.num_points,
     )
     return result.as_report()
@@ -110,6 +112,8 @@ def cmd_poisson_qsvt(args: argparse.Namespace) -> dict[str, object]:
         execute=args.execute,
         device_name=args.device,
         shots=args.shots,
+        sampling_tolerance=args.sampling_tolerance,
+        sampling_confidence=args.sampling_confidence,
         num_points=args.num_points,
     )
     return result.as_report()
@@ -129,6 +133,8 @@ def cmd_hamiltonian_simulation(args: argparse.Namespace) -> dict[str, object]:
         block_encoding=args.block_encoding,
         device_name=args.device,
         shots=args.shots,
+        sampling_tolerance=args.sampling_tolerance,
+        sampling_confidence=args.sampling_confidence,
     )
     return result.as_report()
 
@@ -314,6 +320,8 @@ def _add_execution_args(
     parser.set_defaults(execute=True)
     parser.add_argument("--device", default="default.qubit")
     parser.add_argument("--shots", type=int, default=None)
+    parser.add_argument("--sampling-tolerance", type=float, default=0.05)
+    parser.add_argument("--sampling-confidence", type=float, default=0.95)
     if block_choices is not None:
         parser.add_argument(
             "--block-encoding",

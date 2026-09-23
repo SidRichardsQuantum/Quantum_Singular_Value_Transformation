@@ -340,3 +340,32 @@ rejected it; degree-32 Chebyshev cases exposed monomial conditioning and
 reconstruction failures. These are environment-specific observations, not
 solver guarantees. Regression tests cover the higher-degree iterative successes
 without changing their coefficients.
+
+### Failure evidence and boundary regressions
+
+Synthesis results now retain an optional `failure_stage`: `realizability`,
+`solver_selection`, `solver`, `phase_validation`, or `convention_conversion`.
+The original exception type and message remain available. A backend boundedness
+assertion is a solver rejection; it is not automatically described as failure to
+converge. Existing `succeeded` and quality `status` meanings are unchanged.
+`quality_report(tolerance)` additionally identifies `reconstruction` when
+returned phases fail the requested sampled error threshold or reconstruction
+is unavailable. Its `failure_stage` is null when validation passes.
+
+Each per-case benchmark includes `attempt_reports`, retaining coefficients,
+phases, conventions, exceptions, and the quality assessment at the declared
+tolerance for every requested solver and zero-indexed repeat. Summary rows
+remain compact for CSV export. Aggregate completion counts still describe solver
+completion; `validated_successes` counts passing reconstructions. Older saved
+benchmark snapshots do not contain this additional evidence.
+
+Focused regressions cover degree-16 Chebyshev and degree-9 monomial targets
+with margins of `0.05` and `1e-8`, comparing phase-sequence values at independent
+Chebyshev nodes against analytic targets. The degree-24 Hamiltonian cosine fit
+must either reconstruct accurately or preserve a structured rejection with
+unchanged coefficients. No automatic clipping or coefficient rescaling is
+introduced into direct synthesis.
+
+Flagship fallback and execution gates use the same quality predicate. Returned
+phases with an excessive, missing, or non-finite residual cannot authorize
+execution; phase tolerances must also be positive and finite.

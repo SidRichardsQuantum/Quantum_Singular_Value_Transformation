@@ -8,9 +8,9 @@ This generated page displays embedded setup schematics, diagnostic plots, and te
 ## Current Status
 
 - Source notebooks: `notebooks/real_examples/`
-- Notebooks displayed: `8`
-- Embedded plot artefacts displayed: `14`
-- Plain-text notebook results displayed: `22`
+- Notebooks displayed: `11`
+- Embedded plot artefacts displayed: `17`
+- Plain-text notebook results displayed: `29`
 - Plot manifest: [`results/tables/real_examples_plot_manifest.csv`](../../results/tables/real_examples_plot_manifest.csv)
 
 ## Related Pages
@@ -71,21 +71,21 @@ Condition Number: 19.1956693580892
 Output 3 (cell 13):
 
 ```text
-Relative Error: 0.014154496734875139
+Relative Error: 0.014154496729101443
 ```
 
 Output 4 (cell 16):
 
 ```text
-Gamma: 0.05209508360168687
-Condition Number: 19.195669358089283
+Gamma: 0.052095083601687325
+Condition Number: 19.195669358089113
 Matrix Shape [rows, cols]: (36, 36)
 ```
 
 Output 5 (cell 18):
 
 ```text
-Relative Error: 0.03496500256208569
+Relative Error: 0.03496500256208683
 ```
 
 Output 6 (cell 21):
@@ -95,8 +95,8 @@ Poisson solver comparison
 -------------------------
 solver              relative solution error  residual norm
 ------------------  -----------------------  -------------
-dense direct        0                        1.29e-15
-conjugate gradient  2.81e-16                 1.04e-15
+dense direct        0                        2.94e-16
+conjugate gradient  3.02e-16                 6.18e-16
 QSVT polynomial     0.325                    0.5139
 QSVT circuit        0.325                    0.5139
 Component error ledger
@@ -156,7 +156,7 @@ polynomial_accuracy        True                True                    True
 norm_preservation          True                True                    True
 finite_qsvt_execution      True                True                    True
 diagnostics_and_resources  True                True                    True
-State Error: 2.8210884267026026e-15
+State Error: 1.803564790220685e-15
 acceptance: accepted_for_stated_scope (scope=finite_qsvt, full_qsvt=True)
 ```
 
@@ -172,7 +172,7 @@ Source: [`notebooks/real_examples/03_greens_function_response.ipynb`](../../note
 Output 1 (cell 5):
 
 ```text
-Response Error: 0.0012364154973827407
+Response Error: 0.0012364423166573806
 ```
 
 ### `04_ising_phase_transition_filtering.ipynb`
@@ -209,7 +209,7 @@ Output 2 (cell 10):
 
 ```text
 Projector eigenweights [probability]: [0.7761 0.2239 0.0087 0.1109 0.1143]
-Projector error: 0.528681239779227
+Projector error: 0.528680971809469
 ```
 
 Output 3 (cell 13):
@@ -222,7 +222,7 @@ quantity                        value
 selected degree                 14
 polynomial operator error       0.3853
 polynomial state error          0.004764
-circuit vs polynomial error     9.98e-13
+circuit vs polynomial error     9.99e-13
 reference success probability   0.9615
 polynomial success probability  0.3658
 reference <M_z^2>               0.6923
@@ -238,7 +238,7 @@ phase_synthesis            True                True
 finite_qsvt_execution      True                True
 diagnostics_and_resources  True                True
 normalization alpha: 6.000000
-phase reconstruction error: 8.187e-13
+phase reconstruction error: 1.102e-12
 resource model: pauli-lcu-qubitization
 acceptance: accepted_for_stated_scope (scope=finite_qsvt, full_qsvt=True)
 ```
@@ -266,9 +266,9 @@ Source: [`notebooks/real_examples/05_fermi_dirac_electronic_occupations.ipynb`](
 Output 1 (cell 6):
 
 ```text
-Occupation Error: 0.00040589869353275295
-Exact Particle Number [electrons]: 9.38572322708158
-Polynomial Particle Number [electrons]: 9.386398856204215
+Occupation Error: 0.00040589862007499734
+Exact Particle Number [electrons]: 9.385723227081566
+Polynomial Particle Number [electrons]: 9.386398855833445
 ```
 
 Output 2 (cell 8):
@@ -298,23 +298,23 @@ Output 1 (cell 7):
 
 ```text
 Dimension [states]: 50
-Spectral range [model energy units]: (-2.800243765865765, 2.8002437658657637)
-Gap around zero [model energy units]: 0.13742301418061872
+Spectral range [model energy units]: (-2.8002437658657637, 2.800243765865763)
+Gap around zero [model energy units]: 0.13742301418061825
 ```
 
 Output 2 (cell 11):
 
 ```text
-Scaled gap: 0.04907537545686846
-Projector relative error: 0.10636399000740762
+Scaled gap: 0.049075375456869255
+Projector relative error: 0.10636398982704895
 ```
 
 Output 3 (cell 13):
 
 ```text
-Marker relative error: 0.4552686433282826
-Bulk exact marker [Chern marker]: 0.9583268200049557
-Bulk polynomial marker [Chern marker]: 0.643019128521274
+Marker relative error: 0.45526864362669894
+Bulk exact marker [Chern marker]: 0.9583268200049536
+Bulk polynomial marker [Chern marker]: 0.6430191279999029
 ```
 
 ### `07_singular_value_pseudoinverse_deblurring.ipynb`
@@ -339,7 +339,7 @@ Output 2 (cell 8):
 ```text
 polynomial_vs_truncated_svd_error: 0.1145
 regularized_signal_error: 0.2002
-naive_least_squares_signal_error: 899062.8902
+naive_least_squares_signal_error: 899062.8897
 validation: passed
 ```
 
@@ -357,14 +357,159 @@ Output 1 (cell 6):
 ```text
 reference entropy: 1.938678
 polynomial entropy: 1.938678
-log operator relative error: 1.735e-08
-entropy operator relative error: 1.300e-09
+log operator relative error: 4.336e-09
+entropy operator relative error: 2.444e-09
 ```
 
 Output 2 (cell 8):
 
 ```text
 regularized_entropy: 1.938678
-polynomial_entropy_error: 1.851e-09
+polynomial_entropy_error: 1.701e-09
 validation: passed
+```
+
+### `09_phonon_density_of_states.ipynb`
+
+Source: [`notebooks/real_examples/09_phonon_density_of_states.ipynb`](../../notebooks/real_examples/09_phonon_density_of_states.ipynb)
+
+```{image} ../../results/plots/real_examples/09_phonon_density_of_states-plot-01.png
+:alt: Phonon Density of States of a Mass-Spring Chain plot 1
+:width: 760px
+```
+
+Output 1 (cell 6):
+
+```text
+masses: 24
+squared-frequency range: 0.0958 to 4.0642
+frequency range: 0.3095 to 2.0160
+polynomial degree: 24
+```
+
+Output 2 (cell 8):
+
+```text
+trace-density relative error: 1.503e-02
+maximum exact window response: 0.1579
+maximum polynomial response: 0.1579
+validation: passed
+```
+
+### `10_thermal_heisenberg_chain.ipynb`
+
+Source: [`notebooks/real_examples/10_thermal_heisenberg_chain.ipynb`](../../notebooks/real_examples/10_thermal_heisenberg_chain.ipynb)
+
+```{image} ../../results/plots/real_examples/10_thermal_heisenberg_chain-plot-01.png
+:alt: Thermal Observables of a Heisenberg Spin Chain plot 1
+:width: 760px
+```
+
+Output 1 (cell 6):
+
+```text
+spins: 4
+inverse temperature: 0.60
+energy range: -6.4641 to 3.0000
+reference partition function: 86.235695
+reference thermal energy: -4.958058
+polynomial thermal energy: -4.958058
+reference mean ZZ correlation: -0.550895
+polynomial mean ZZ correlation: -0.550895
+```
+
+Output 2 (cell 8):
+
+```text
+Gibbs density-matrix relative error: 3.496e-15
+thermal energy absolute error: 2.132e-14
+mean ZZ correlation absolute error: 2.442e-15
+validation: passed
+```
+
+### `11_disordered_transport_localization.ipynb`
+
+Source: [`notebooks/real_examples/11_disordered_transport_localization.ipynb`](../../notebooks/real_examples/11_disordered_transport_localization.ipynb)
+
+```{image} ../../results/plots/real_examples/11_disordered_transport_localization-plot-01.png
+:alt: Disordered Transport and Wavepacket Localization plot 1
+:width: 760px
+```
+
+Output 1 (cell 7):
+
+```text
+sites: 8; initial site: 3; disorder seed: 42
+disorder widths: (0.0, 6.0); polynomial degree limit: 19
+disordered site energies: [ 1.6437 -0.3667  2.1516  1.1842 -2.4349  2.8537  1.5668  1.7164]
+```
+
+Output 2 (cell 11):
+
+```text
+Transport observables from conditional QSVT output
+--------------------------------------------------
+W  t    return    displacement  return_error  displacement_error
+-  ---  --------  ------------  ------------  ------------------
+0  0.4  0.7162    0.32          5.25e-08      4.40e-08
+0  0.8  0.2074    1.279         8.55e-08      2.98e-07
+0  1.2  5.85e-06  2.854         2.81e-14      1.13e-07
+6  0.4  0.7398    0.2924        2.42e-08      2.33e-08
+6  0.8  0.3863    0.9344        2.50e-09      1.98e-09
+6  1.2  0.2304    1.65          4.27e-08      3.00e-09
+Independent polynomial, synthesis, circuit, and acceptance evidence
+-------------------------------------------------------------------
+W  t    polynomial_probability_error  phase_error  circuit_error  success  accepted
+-  ---  ----------------------------  -----------  -------------  -------  --------
+0  0.4  1.33e-15                      1.67e-07     7.60e-08       0.3531   True
+0  0.8  7.91e-16                      4.51e-07     2.97e-07       0.2506   True
+0  1.2  1.17e-15                      7.21e-08     2.79e-08       0.25     True
+6  0.4  1.25e-15                      1.35e-07     5.74e-08       0.2588   True
+6  0.8  1.44e-15                      6.90e-08     1.20e-08       0.25     True
+6  1.2  1.73e-13                      3.62e-07     1.32e-07       0.25     True
+observable validation: passed
+```
+
+Output 3 (cell 15):
+
+```text
+W=0, t=1.2
+signal offset: -0.000000
+signal scale: 1.879385
+scaled time: 2.255262
+polynomial operator relative error: 2.700e-15
+polynomial norm drift: 8.882e-16
+Logical circuit resources (before hardware decomposition)
+---------------------------------------------------------
+field                        value
+---------------------------  --------------------------------------------------------------------------------------------------------------------------------------------------------
+total_wire_count             6
+total_phase_count            78
+total_signal_operator_calls  74
+num_gates                    8
+depth                        7
+logical_success_probability  0.25
+omitted_costs                application_state_preparation, amplitude_amplification, application_readout_or_tomography, provider_compilation_and_routing, error_correction_cycle_time
+
+W=6, t=1.2
+signal offset: 0.394409
+signal scale: 3.271529
+scaled time: 3.925835
+polynomial operator relative error: 8.623e-13
+polynomial norm drift: 3.184e-13
+Logical circuit resources (before hardware decomposition)
+---------------------------------------------------------
+field                        value
+---------------------------  --------------------------------------------------------------------------------------------------------------------------------------------------------
+total_wire_count             6
+total_phase_count            78
+total_signal_operator_calls  74
+num_gates                    8
+depth                        7
+logical_success_probability  0.25
+omitted_costs                application_state_preparation, amplitude_amplification, application_readout_or_tomography, provider_compilation_and_routing, error_correction_cycle_time
+
+Final exact displacement: clean=2.854421, disordered=1.650268
+Largest return-probability error: 8.548e-08
+Largest displacement error: 2.981e-07
 ```

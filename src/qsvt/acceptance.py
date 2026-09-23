@@ -8,8 +8,10 @@ from typing import Any, cast
 
 import numpy as np
 
+from ._sampling_acceptance import probability_acceptance
+
 FLAGSHIP_ACCEPTANCE_SCHEMA_NAME = "qsvt-flagship-acceptance"
-FLAGSHIP_ACCEPTANCE_SCHEMA_VERSION = "1.1"
+FLAGSHIP_ACCEPTANCE_SCHEMA_VERSION = "1.2"
 
 _MATRIX: dict[str, dict[str, object]] = {
     "poisson_qsvt": {
@@ -261,7 +263,20 @@ def evaluate_poisson_acceptance(result: Any) -> dict[str, object]:
             },
         ),
     }
-    return _build_report("poisson_qsvt", checks)
+    return _build_report(
+        "poisson_qsvt",
+        checks,
+        sampling=(
+            None
+            if result.execution is None or result.execution.shots is None
+            else probability_acceptance(
+                result.execution,
+                result.direct_solution,
+                tolerance=result.sampling_tolerance,
+                confidence=result.sampling_confidence,
+            )
+        ),
+    )
 
 
 def evaluate_spectral_filter_acceptance(result: Any) -> dict[str, object]:
@@ -336,7 +351,20 @@ def evaluate_spectral_filter_acceptance(result: Any) -> dict[str, object]:
             },
         ),
     }
-    return _build_report("spectral_filter_qsvt", checks)
+    return _build_report(
+        "spectral_filter_qsvt",
+        checks,
+        sampling=(
+            None
+            if result.execution is None or result.execution.shots is None
+            else probability_acceptance(
+                result.execution,
+                result.reference_state,
+                tolerance=result.sampling_tolerance,
+                confidence=result.sampling_confidence,
+            )
+        ),
+    )
 
 
 def evaluate_hamiltonian_simulation_acceptance(result: Any) -> dict[str, object]:
@@ -440,7 +468,32 @@ def evaluate_hamiltonian_simulation_acceptance(result: Any) -> dict[str, object]
             },
         ),
     }
-    return _build_report("hamiltonian_simulation", checks)
+    checks["phase_synthesis"] = _observed_check(
+        bool(
+            execution is not None
+            and execution.component_syntheses
+            and all(
+                synthesis.quality_report(phase_tolerance)["reconstruction_passed"]
+                for _, synthesis in execution.component_syntheses
+            )
+        ),
+        observed=phase_errors,
+        threshold=phase_tolerance,
+    )
+    return _build_report(
+        "hamiltonian_simulation",
+        checks,
+        sampling=(
+            None
+            if result.qsvt_execution is None or result.qsvt_execution.shots is None
+            else probability_acceptance(
+                result.qsvt_execution,
+                result.reference_state,
+                tolerance=result.sampling_tolerance,
+                confidence=result.sampling_confidence,
+            )
+        ),
+    )
 
 
 def _observed_check(
@@ -458,6 +511,8 @@ def _observed_check(
 def _build_report(
     workflow: str,
     observed_checks: Mapping[str, Mapping[str, object]],
+    *,
+    sampling: dict[str, Any] | None = None,
 ) -> dict[str, object]:
     contract = FLAGSHIP_ACCEPTANCE_MATRIX[workflow]
     criteria = {
@@ -469,15 +524,48 @@ def _build_report(
         observed = observed_checks[criterion_id]
         checks.append({**dict(criterion), **dict(observed)})
 
+    if sampling is not None:
+        if workflow == "hamiltonian_simulation":
+            checks.append(
+                {
+                    "id": "phase_synthesis",
+                    "description": (
+                        "Every coherent component has validated phase reconstruction."
+                    ),
+                    "required_for_scope": True,
+                    "required_for_full_qsvt": True,
+                    **dict(observed_checks["phase_synthesis"]),
+                }
+            )
+        for check in checks:
+            if check["id"] == "finite_qsvt_execution":
+                check["required_for_scope"] = False
+        checks.append(
+            {
+                "id": "finite_shot_probability_accuracy",
+                "description": (
+                    "Conditional basis probabilities meet the sampling tolerance "
+                    "with simultaneous confidence bounds and resolved postselection."
+                ),
+                "required_for_scope": True,
+                "required_for_full_qsvt": False,
+                "passed": sampling["passed"],
+                "observed": sampling,
+                "threshold": sampling["tolerance"],
+            }
+        )
     required = [check for check in checks if bool(check["required_for_scope"])]
     full = [check for check in checks if bool(check["required_for_full_qsvt"])]
     accepted = all(bool(check["passed"]) for check in required)
-    full_accepted = all(bool(check["passed"]) for check in full)
+    full_accepted = sampling is None and all(bool(check["passed"]) for check in full)
     return {
         "schema_name": FLAGSHIP_ACCEPTANCE_SCHEMA_NAME,
         "schema_version": FLAGSHIP_ACCEPTANCE_SCHEMA_VERSION,
         "workflow": workflow,
-        "scope": contract["scope"],
+        "scope": (
+            "finite_shot_probabilities" if sampling is not None else contract["scope"]
+        ),
+        "sampling": sampling,
         "status": (
             "accepted_for_stated_scope" if accepted else "acceptance_criteria_not_met"
         ),

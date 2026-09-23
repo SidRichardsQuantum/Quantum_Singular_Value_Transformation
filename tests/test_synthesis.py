@@ -110,6 +110,7 @@ def test_synthesis_returns_actionable_mixed_parity_failure():
     assert result.realizability.requires_parity_decomposition is True
     assert "mixed parity" in result.error
     assert result.quality_report()["status"] == "solver_failed"
+    assert result.quality_report()["failure_stage"] == "realizability"
 
     with pytest.raises(ValueError, match="mixed parity"):
         synthesize([0.5, 0.5], raise_on_failure=True)
@@ -147,6 +148,11 @@ def test_phase_solver_benchmark_reports_convergence_timing_and_conditioning():
     assert report["rows"][0]["max_reconstruction_error"] < 1e-9
     assert report["rows"][1]["converged"] is False
     assert report["rows"][1]["error_types"] == ["ValueError"]
+    attempt = report["attempt_reports"][1]
+    assert attempt["requested_solver"] == "unsupported-solver"
+    assert attempt["repeat_index"] == 0
+    assert attempt["failure_stage"] == "solver_selection"
+    assert "Supported solvers" in attempt["error"]
 
 
 def test_phase_solver_stress_matrix_compares_conditioning_regimes():
@@ -178,6 +184,13 @@ def test_phase_solver_stress_matrix_compares_conditioning_regimes():
         assert row["validated_successes"] == 1
         assert row["all_reconstructions_passed"]
     assert report["truth_contract"]["is_hardware_runtime"] is False
+    json_report = report_to_jsonable(report)
+    for case in json_report["cases"].values():
+        assert len(case["attempt_reports"]) == 1
+        attempt = case["attempt_reports"][0]
+        assert isinstance(attempt["angles"], list)
+        assert attempt["quality"]["reconstruction_passed"] is True
+    assert all("attempt_reports" not in row for row in report["rows"])
 
 
 def test_phase_solver_stress_matrix_requires_named_cases():
@@ -314,6 +327,7 @@ def test_invalid_backend_phases_become_structured_failures(monkeypatch, angles):
     assert not result.succeeded
     assert result.angles is None
     assert result.error_type == "ValueError"
+    assert result.failure_stage == "phase_validation"
     assert result.reconstruction_max_error is None
     with pytest.raises(ValueError, match="angles"):
         synthesize_phases([0.0, 0.5], raise_on_failure=True)
@@ -336,14 +350,18 @@ def test_benchmark_distinguishes_inaccurate_phases_from_solver_completion(monkey
     monkeypatch.setattr(
         "qsvt.synthesis.qml.poly_to_angles", lambda *a, **k: np.array([0.0, 0.0])
     )
-    row = benchmark_phase_solvers([0.0, 0.5], solvers=["root-finding"], repeats=1).rows[
-        0
-    ]
+    benchmark = benchmark_phase_solvers([0.0, 0.5], solvers=["root-finding"], repeats=1)
+    row = benchmark.rows[0]
     assert row["converged"] is True
     assert row["successes"] == 1
     assert row["validated_successes"] == 0
     assert row["all_reconstructions_passed"] is False
     assert row["max_reconstruction_error"] > row["reconstruction_tolerance"]
+    attempt = benchmark.attempt_reports[0]
+    assert attempt["succeeded"] is True
+    assert attempt["quality"]["failure_stage"] == "reconstruction"
+    assert attempt["quality"]["status"] == "reconstruction_failed"
+    np.testing.assert_array_equal(attempt["angles"], [0.0, 0.0])
 
 
 def test_benchmark_qsp_without_reconstruction_is_unvalidated():
@@ -403,5 +421,70 @@ def test_adapter_rejects_invalid_raw_and_converted_phases(angles):
             assert not result.succeeded
             assert result.angles is None
             assert result.error_type == "ValueError"
+            assert result.failure_stage == "phase_validation"
         finally:
             unregister_phase_solver_adapter("invalid-regression")
+
+
+@pytest.mark.parametrize("margin", [0.05, 1e-8])
+@pytest.mark.parametrize("family", ["nonic", "chebyshev-16"])
+def test_near_boundary_stress_polynomials_reconstruct_off_grid(margin, family):
+    import pennylane as qml
+
+    if family == "nonic":
+        coeffs = np.zeros(10)
+        coeffs[-1] = 1.0 - margin
+    else:
+        cheb = np.zeros(17)
+        cheb[-1] = 1.0 - margin
+        coeffs = np.polynomial.chebyshev.cheb2poly(cheb)
+    result = synthesize_phases(coeffs, reconstruction_num_points=33)
+    np.testing.assert_array_equal(result.coeffs, coeffs)
+    assert result.quality_report(1e-6)["reconstruction_passed"]
+    # Chebyshev nodes probe endpoint behavior independently of the uniform grid.
+    for x in np.cos(np.pi * (np.arange(41) + 0.5) / 41):
+        sequence = qml.QSVT(
+            qml.RX(2 * np.arccos(x), wires=0),
+            [qml.PCPhase(float(phi), dim=1, wires=0) for phi in result.angles],
+        )
+        assert qml.matrix(sequence)[0, 0].real == pytest.approx(
+            (1.0 - margin) * (x**9 if family == "nonic" else np.cos(16 * np.arccos(x))),
+            abs=1e-6,
+        )
+
+
+def test_solver_exception_retains_stage_message_and_original_polynomial(monkeypatch):
+    def fail(*args, **kwargs):
+        raise RuntimeError("iteration budget exhausted")
+
+    monkeypatch.setattr("qsvt.synthesis.qml.poly_to_angles", fail)
+    coeffs = [0.0, 1.0 - 1e-8]
+    benchmark = benchmark_phase_solvers(coeffs, repeats=1, solvers=["iterative"])
+    row = benchmark.rows[0]
+    attempt = benchmark.attempt_reports[0]
+    assert row["successes"] == row["validated_successes"] == 0
+    assert attempt["failure_stage"] == "solver"
+    assert attempt["error_type"] == "RuntimeError"
+    assert attempt["error"] == "iteration budget exhausted"
+    assert attempt["angles"] is None
+    np.testing.assert_array_equal(attempt["coeffs"], coeffs)
+
+
+@pytest.mark.parametrize("solver", ["root-finding", "iterative"])
+def test_cosine_boundary_fit_preserves_rejection_evidence(solver):
+    from qsvt.matrix_functions import design_real_time_evolution_polynomials
+
+    # The recorded stress run overshoots one at machine precision. Backends
+    # differ in whether they reject this fit; never silently clip its coefficients.
+    coeffs = design_real_time_evolution_polynomials(
+        1.4, 1.0, degree=24, num_points=401
+    ).cos_coeffs
+    result = synthesize_phases(coeffs, angle_solver=solver)
+    np.testing.assert_array_equal(result.coeffs, coeffs)
+    if result.succeeded:
+        assert result.quality_report(1e-6)["reconstruction_passed"]
+    else:
+        assert result.failure_stage in {"realizability", "solver"}
+        assert result.error_type and result.error
+        assert result.angles is None
+        assert result.reconstruction_max_error is None

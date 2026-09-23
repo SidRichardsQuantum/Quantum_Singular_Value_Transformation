@@ -25,7 +25,7 @@ _SUPPORTED_REPORT_SCHEMAS: dict[str, frozenset[str]] = {
     "qsvt-accuracy-resource-frontier": frozenset({"1.0"}),
     "qsvt-accuracy-resource-frontier-rows": frozenset({"1.0"}),
     "qsvt-algorithm-workflow": frozenset({"1.0", "1.1"}),
-    "qsvt-flagship-acceptance": frozenset({"1.0", "1.1"}),
+    "qsvt-flagship-acceptance": frozenset({"1.0", "1.1", "1.2"}),
     "qsvt-problem-workflow": frozenset({"1.0"}),
     "qsvt-research-sweep-manifest": frozenset({"1.0"}),
     "qsvt-research-sweep-spec": frozenset({"1.0"}),
@@ -636,6 +636,29 @@ def validate_report_schema(
                 for field in sorted(_REQUIRED_ALGORITHM_TRUTH_FIELDS_V1_1)
                 if field not in truth_contract
             )
+    if schema_name_text == "qsvt-flagship-acceptance" and schema_version_text == "1.2":
+        if "sampling" not in report:
+            missing_fields += ("sampling",)
+        elif report.get("scope") == "finite_shot_probabilities":
+            sampling = report["sampling"]
+            if not isinstance(sampling, Mapping):
+                missing_fields += ("sampling.<mapping>",)
+            else:
+                missing_fields += tuple(
+                    f"sampling.{field}"
+                    for field in (
+                        "status",
+                        "passed",
+                        "measurement",
+                        "method",
+                        "confidence",
+                        "tolerance",
+                        "shots",
+                        "reference",
+                        "statevector_validated",
+                    )
+                    if field not in sampling
+                )
     if missing_fields:
         missing = ", ".join(missing_fields)
         return ReportSchemaCompatibility(

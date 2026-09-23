@@ -291,6 +291,12 @@ def metrics(report):
         "resource_report.resources.estimate_kind",
         "resource_report.resources.signal_operator_calls",
         "resource_report.resources.qsp_phase_count",
+        "acceptance.sampling.status",
+        "acceptance.sampling.confidence",
+        "acceptance.sampling.tolerance",
+        "acceptance.sampling.accepted_shots",
+        "acceptance.sampling.maximum_probability_error",
+        "acceptance.sampling.maximum_probability_error_bound",
         "acceptance.status",
         "acceptance.scope",
         "acceptance.full_qsvt_acceptance",
@@ -330,3 +336,123 @@ def compare(store: Store, ids):
             "target settings before comparing."
         )
     return runs
+
+
+def failure_diagnosis(run):
+    """Expose saved evidence without inferring stages from exception text."""
+    report = run.get("report") or (run.get("error") or {}).get("evidence") or {}
+    findings = []
+    if run.get("error"):
+        findings.append(
+            {"stage": "package_call", "source": "error", "evidence": run["error"]}
+        )
+    syntheses = [
+        ("synthesis", report.get("synthesis"), report.get("synthesis_quality"))
+    ]
+    for name, component in (
+        (report.get("qsvt_execution") or {}).get("components", {}).items()
+    ):
+        syntheses.append(
+            (
+                f"qsvt_execution.components.{name}.synthesis",
+                component.get("synthesis"),
+                report.get("component_synthesis_quality", {}).get(name),
+            )
+        )
+    for source, synthesis, quality in syntheses:
+        if not synthesis:
+            continue
+        # Keep every saved attempt, including failures before successful fallback.
+        attempts = synthesis.get("attempts") or [synthesis]
+        for index, attempt in enumerate(attempts):
+            assessment = (
+                attempt.get("quality") or (quality if len(attempts) == 1 else {}) or {}
+            )
+            failed = (
+                attempt.get("succeeded") is False
+                or assessment.get("reconstruction_passed") is False
+            )
+            findings.append(
+                {
+                    "stage": assessment.get("failure_stage")
+                    or attempt.get("failure_stage")
+                    or ("synthesis" if failed else "synthesis_attempt"),
+                    "source": source,
+                    "attempt": index + 1,
+                    "failed": failed,
+                    "evidence": {"synthesis": attempt, "quality": assessment},
+                }
+            )
+    for key in ("execution", "qsvt_execution"):
+        execution = report.get(key) or {}
+        if execution.get("succeeded") is False:
+            findings.append(
+                {
+                    "stage": "execution",
+                    "source": key,
+                    "failed": True,
+                    "evidence": execution,
+                }
+            )
+    acceptance = report.get("acceptance") or {}
+    for check in acceptance.get("checks", []):
+        if check.get("passed") is False and check.get("required_for_scope"):
+            findings.append(
+                {
+                    "stage": (
+                        "sampling"
+                        if check["id"] == "finite_shot_probability_accuracy"
+                        else "acceptance"
+                    ),
+                    "source": f"acceptance.checks.{check['id']}",
+                    "failed": True,
+                    "evidence": check,
+                }
+            )
+    return findings
+
+
+def comparison_report(runs):
+    """Compare original saved fields; missing differs from explicit null."""
+
+    def flatten(value, path=""):
+        if isinstance(value, dict) and value:
+            return {
+                key: item
+                for name, child in value.items()
+                for key, item in flatten(
+                    child, f"{path}.{name}" if path else name
+                ).items()
+            }
+        return {path: value}
+
+    result: dict[str, Any] = {
+        "runs": [
+            {
+                "id": run["id"],
+                "request": run["request"],
+                "metrics": metrics(run["report"]),
+                "package_call_seconds": run.get("package_call_seconds"),
+                "diagnosis": failure_diagnosis(run),
+            }
+            for run in runs
+        ]
+    }
+    differences = {}
+    for section in ("request", "report"):
+        values = [flatten(run[section]) for run in runs]
+        rows = []
+        for path in sorted(set().union(*(value.keys() for value in values))):
+            cells = [
+                {"present": path in value, "value": value.get(path)} for value in values
+            ]
+            rows.append(
+                {
+                    "path": path,
+                    "different": any(cell != cells[0] for cell in cells[1:]),
+                    "cells": cells,
+                }
+            )
+        differences[section] = rows
+    result["differences"] = differences
+    return result

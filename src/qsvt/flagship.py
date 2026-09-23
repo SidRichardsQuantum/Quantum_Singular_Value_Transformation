@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any, Literal, cast
 
 import numpy as np
 import pennylane as qml
 
+from ._sampling_acceptance import validate_sampling_contract
 from .acceptance import (
     evaluate_poisson_acceptance,
     evaluate_spectral_filter_acceptance,
@@ -65,6 +66,8 @@ class SpectralFilterQSVTResult:
     execution: BlockEncodingQSVTExecutionResult | None
     observable_values: dict[str, dict[str, float | complex | None]]
     error_budget: dict[str, float | None]
+    sampling_tolerance: float = 0.05
+    sampling_confidence: float = 0.95
 
     def as_report(self) -> dict[str, object]:
         """Return the complete spectral-filter workflow report."""
@@ -142,6 +145,8 @@ class PoissonQSVTResult:
     physical_observables: dict[str, dict[str, float | complex | None]]
     continuum_relative_error: float | None
     error_budget: dict[str, float | None]
+    sampling_tolerance: float = 0.05
+    sampling_confidence: float = 0.95
 
     def as_report(self) -> dict[str, object]:
         """Return the complete Poisson workflow report."""
@@ -213,6 +218,8 @@ def spectral_filter_qsvt_workflow(
     execute: bool = True,
     device_name: str = "default.qubit",
     shots: int | None = None,
+    sampling_tolerance: float = 0.05,
+    sampling_confidence: float = 0.95,
     observables: Mapping[str, np.ndarray] | None = None,
     num_points: int = 2001,
     gate_set: tuple[str, ...] | None = None,
@@ -222,7 +229,12 @@ def spectral_filter_qsvt_workflow(
     The physical Hamiltonian is encoded as ``H / alpha``. Consequently the
     polynomial interval is ``[lower / alpha, upper / alpha]``; the report keeps
     this normalization and its impact on degree and success probability visible.
+    Finite-shot acceptance bounds conditional basis-probability errors using
+    ``sampling_tolerance`` and ``sampling_confidence``; it does not certify phases.
     """
+    validate_sampling_contract(sampling_tolerance, sampling_confidence)
+    if block_encoding not in {"prepselprep", "qubitization"}:
+        raise ValueError("block_encoding must be 'prepselprep' or 'qubitization'.")
     if not isinstance(operator, qml.operation.Operator):
         raise TypeError("operator must be a PennyLane Operator.")
     system_wires = list(operator.wires)
@@ -240,6 +252,8 @@ def spectral_filter_qsvt_workflow(
             max(1, int((term_count - 1).bit_length())),
             occupied=system_wires,
         )
+    if set(encoding_wires).intersection(system_wires):
+        raise ValueError("encoding_wires must be disjoint from operator wires.")
     spec = pennylane_operator_block_encoding_spec(
         operator,
         encoding_wires=list(encoding_wires),
@@ -363,6 +377,8 @@ def spectral_filter_qsvt_workflow(
         polynomial_state_error=state_error,
         execution_requested=bool(execute),
         phase_reconstruction_tolerance=float(phase_reconstruction_tolerance),
+        sampling_tolerance=float(sampling_tolerance),
+        sampling_confidence=float(sampling_confidence),
         execution=execution_result,
         observable_values=observable_values,
         error_budget=error_budget,
@@ -389,10 +405,18 @@ def poisson_qsvt_workflow(
     execute: bool = True,
     device_name: str = "default.qubit",
     shots: int | None = None,
+    sampling_tolerance: float = 0.05,
+    sampling_confidence: float = 0.95,
     num_points: int = 2001,
     gate_set: tuple[str, ...] | None = None,
 ) -> PoissonQSVTResult:
-    """Solve ``-u'' = f`` with Dirichlet boundaries and an explicit QSVT model."""
+    """Solve ``-u'' = f`` with Dirichlet boundaries and an explicit QSVT model.
+
+    Finite-shot acceptance uses ``sampling_tolerance`` (absolute probability
+    error) and simultaneous ``sampling_confidence``. It does not certify the
+    solution amplitudes, phases, or norm from sampled basis probabilities.
+    """
+    validate_sampling_contract(sampling_tolerance, sampling_confidence)
     grid, matrix = dirichlet_laplacian_1d(n_points, length=length)
     if source is None:
         rhs = np.sin(np.pi * grid / length)
@@ -555,6 +579,8 @@ def poisson_qsvt_workflow(
         resource_estimate=resources,
         execution_requested=bool(execute),
         phase_reconstruction_tolerance=float(phase_reconstruction_tolerance),
+        sampling_tolerance=float(sampling_tolerance),
+        sampling_confidence=float(sampling_confidence),
         execution=execution_result,
         circuit_solution=(
             None if circuit_solution is None else np.real_if_close(circuit_solution)
@@ -675,10 +701,23 @@ def _synthesize_with_fallback(
 ) -> PhaseSynthesisResult:
     if not solvers:
         raise ValueError("angle_solvers must contain at least one solver.")
-    if reconstruction_tolerance <= 0.0:
-        raise ValueError("phase_reconstruction_tolerance must be positive.")
+    if not np.isfinite(reconstruction_tolerance) or reconstruction_tolerance <= 0.0:
+        raise ValueError("phase_reconstruction_tolerance must be positive and finite.")
     attempts: list[PhaseSynthesisResult] = []
     adapters = set(available_phase_solver_adapters())
+
+    def with_attempts(selected: PhaseSynthesisResult) -> PhaseSynthesisResult:
+        return replace(
+            selected,
+            attempt_reports=tuple(
+                {
+                    **attempt.as_report(),
+                    "quality": attempt.quality_report(reconstruction_tolerance),
+                }
+                for attempt in attempts
+            ),
+        )
+
     for solver in solvers:
         result = (
             synthesize_phases_with_adapter(
@@ -694,15 +733,11 @@ def _synthesize_with_fallback(
             )
         )
         attempts.append(result)
-        if (
-            result.succeeded
-            and result.reconstruction_max_error is not None
-            and result.reconstruction_max_error <= reconstruction_tolerance
-        ):
-            return result
+        if result.quality_report(reconstruction_tolerance)["reconstruction_passed"]:
+            return with_attempts(result)
     succeeded = [attempt for attempt in attempts if attempt.succeeded]
     if succeeded:
-        return min(
+        selected = min(
             succeeded,
             key=lambda attempt: (
                 np.inf
@@ -710,7 +745,8 @@ def _synthesize_with_fallback(
                 else attempt.reconstruction_max_error
             ),
         )
-    return attempts[-1]
+        return with_attempts(selected)
+    return with_attempts(attempts[-1])
 
 
 def _projectors(
@@ -739,17 +775,33 @@ def _projectors(
     ]
 
 
+class _PhaseExecutionError(ValueError):
+    """Preserve package synthesis evidence when execution cannot be authorized."""
+
+    def __init__(self, message: str, synthesis: PhaseSynthesisResult, tolerance: float):
+        super().__init__(message)
+        self.qsvt_evidence = {
+            "synthesis": synthesis.as_report(),
+            "synthesis_quality": synthesis.quality_report(tolerance),
+        }
+
+
 def _require_execution_quality(
     synthesis: PhaseSynthesisResult,
     reconstruction_tolerance: float,
 ) -> None:
     if not synthesis.succeeded:
-        raise ValueError(synthesis.error or "phase synthesis failed")
-    if (
-        synthesis.reconstruction_max_error is None
-        or synthesis.reconstruction_max_error > reconstruction_tolerance
-    ):
-        raise ValueError("phase synthesis did not meet phase_reconstruction_tolerance.")
+        raise _PhaseExecutionError(
+            synthesis.error or "phase synthesis failed",
+            synthesis,
+            reconstruction_tolerance,
+        )
+    if not synthesis.quality_report(reconstruction_tolerance)["reconstruction_passed"]:
+        raise _PhaseExecutionError(
+            "phase synthesis did not meet phase_reconstruction_tolerance.",
+            synthesis,
+            reconstruction_tolerance,
+        )
 
 
 def _filter_observable_values(

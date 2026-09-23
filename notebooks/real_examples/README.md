@@ -1,6 +1,6 @@
 # Curated Real-World Examples
 
-These eight notebooks are the maintained application gallery for
+These eleven notebooks are the maintained application gallery for
 `qsvt-pennylane`. Together they cover the package's main end-to-end paths
 without repeating closely related spectral-filter, lattice, and PDE surveys.
 
@@ -14,6 +14,9 @@ without repeating closely related spectral-filter, lattice, and PDE surveys.
 | `06_topological_band_projector_chern_marker.ipynb` | topological band projectors | projector design and observable diagnostics |
 | `07_singular_value_pseudoinverse_deblurring.ipynb` | inverse imaging | singular-value pseudoinverse workflow |
 | `08_matrix_log_entropy_graph_laplacian.ipynb` | graph entropy | matrix-log workflow and spectral reference |
+| `09_phonon_density_of_states.ipynb` | phonon density of states | Gaussian-window spectral-density workflow |
+| `10_thermal_heisenberg_chain.ipynb` | thermal spin-chain observables | thermal Gibbs workflow |
+| `11_disordered_transport_localization.ipynb` | disorder and finite-chain transport | coherent Hamiltonian simulation and observable validation |
 
 All notebooks are thin clients of tested package functionality. Shared
 presentation and output-path helpers live in `notebooks._support`; they are not

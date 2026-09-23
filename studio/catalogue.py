@@ -424,6 +424,21 @@ def catalogue() -> dict[str, Any]:
     for entry in workflows.values():
         fields = entry["settings"]
         api = entry["api"]
+        if api != "design":
+            fields["sampling_tolerance"] = number(
+                api, "sampling_tolerance", "Validation", 0.001, 0.5
+            )
+            fields["sampling_confidence"] = number(
+                api, "sampling_confidence", "Validation", 0.5, 0.999
+            )
+            fields["sampling_tolerance"]["help"] = (
+                "Maximum absolute conditional basis-probability error, "
+                "including sampling uncertainty."
+            )
+            fields["sampling_confidence"]["help"] = (
+                "Simultaneous confidence for basis probabilities and "
+                "postselection; assumes independent shots."
+            )
         if api == "design":
             fields["angle_solver"] = {
                 "label": "Phase solver",

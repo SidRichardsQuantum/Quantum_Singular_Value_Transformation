@@ -347,6 +347,32 @@ values appear as em dashes. Logical resource estimates retain their model
 names; no conversion to physical gate cost is made. Comparison JSON is
 exportable.
 
+Comparison now includes **Request differences** and **Package report differences**
+with a **Show differences only** toggle. Fields come from the original saved
+requests and reports, not reconstructed defaults or cached metric summaries.
+Missing fields are labeled **Not recorded** and remain distinct from explicit
+`null`. Arrays and structured values can be expanded. Exported comparison JSON
+contains the full differences, presence flags, numerical summaries, and saved
+failure evidence; historical reports are not rewritten.
+
+**Failure diagnosis and saved attempts** exposes package failure stages,
+reconstruction assessments, all recorded fallback synthesis attempts, execution
+errors, and required acceptance checks that failed. A failed optional statevector
+check in a finite-shot run is not presented as a failed measurement criterion.
+When execution is blocked by flagship phase quality, the worker preserves the
+structured synthesis evidence with its error. Historical errors without stage
+evidence remain labeled as package-call failures rather than guessed causes.
+
+Shot-based flagship runs display the package's `finite_shot_probabilities`
+acceptance scope, confidence, accepted-shot count, probability-error bound,
+and sampling status. The **Sampling tolerance** and **Sampling confidence**
+controls apply to conditional basis probabilities. Insufficient shots remain
+inconclusive, not a scientific pass. Statevector/full-QSVT validation is displayed
+separately; see [the measurement contract](flagship_workflows.md#finite-shot-scientific-acceptance).
+Existing schema-1.2 configurations remain reusable; absent optional sampling
+controls resolve to the explicit package defaults. Current flagship presets
+pin these settings in revision 3.
+
 Individual runs also produce applicable auxiliary artifacts: synthesized phase
 sequences, stored hard-projector versus polynomial-operator response maps, and
 model-labelled resource count charts. These plots use values already present

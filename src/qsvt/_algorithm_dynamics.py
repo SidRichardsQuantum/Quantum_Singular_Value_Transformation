@@ -18,6 +18,7 @@ from ._algorithm_shared import (
     _state_error,
     _validate_state,
 )
+from ._sampling_acceptance import validate_sampling_contract
 from .acceptance import evaluate_hamiltonian_simulation_acceptance
 from .block_encoding import matrix_block_encoding_spec
 from .diagnostics import operator_error
@@ -67,6 +68,8 @@ class HamiltonianSimulationWorkflowResult:
     qsvt_execution: CoherentQSVTExecutionResult | None
     component_error_ledger: dict[str, float | None]
     circuit_resource_ledger: dict[str, object] | None
+    sampling_tolerance: float = 0.05
+    sampling_confidence: float = 0.95
 
     def as_report(self) -> dict[str, Any]:
         """
@@ -316,10 +319,19 @@ def hamiltonian_simulation_workflow(
     angle_solver: str = "root-finding",
     device_name: str = "default.qubit",
     shots: int | None = None,
+    sampling_tolerance: float = 0.05,
+    sampling_confidence: float = 0.95,
 ) -> HamiltonianSimulationWorkflowResult:
     """
     Approximate real-time evolution ``exp(-i H t)|psi>`` with polynomial pairs.
+
+    Shot runs use a separate conditional basis-probability acceptance scope,
+    with absolute ``sampling_tolerance`` and simultaneous ``sampling_confidence``.
+    Statevector validation remains separate from these measurement checks.
     """
+    validate_sampling_contract(sampling_tolerance, sampling_confidence)
+    if block_encoding not in {"embedding", "fable"}:
+        raise ValueError("block_encoding must be 'embedding' or 'fable'.")
     acceptance_tolerance = float(acceptance_tolerance)
     if not np.isfinite(acceptance_tolerance) or acceptance_tolerance <= 0.0:
         raise ValueError("acceptance_tolerance must be positive and finite.")
@@ -332,6 +344,17 @@ def hamiltonian_simulation_workflow(
             "phase_reconstruction_tolerance must be finite and non-negative."
         )
     scaled = rescale_hermitian_to_unit_interval(matrix)
+    if block_encoding == "fable":
+        # FABLE encodes entries divided by the padded matrix dimension.
+        # Design against that actual signal scale, preserving physical H and t.
+        dimension = 2 ** int(np.ceil(np.log2(scaled.matrix.shape[0])))
+        factor = max(1.0, float(dimension * np.max(np.abs(scaled.matrix))))
+        scaled = ScaledOperator(
+            matrix=scaled.matrix / factor,
+            offset=scaled.offset,
+            scale=scaled.scale * factor,
+            eigenvalue_bounds=scaled.eigenvalue_bounds,
+        )
     psi = _normalize_state(_validate_state(state, scaled.matrix.shape[0]))
     polynomials = design_real_time_evolution_polynomials(
         time=time,
@@ -422,6 +445,8 @@ def hamiltonian_simulation_workflow(
         operator_relative_error=polynomial_operator_error,
         norm_drift=float(abs(np.linalg.norm(evolved) - 1.0)),
         acceptance_tolerance=acceptance_tolerance,
+        sampling_tolerance=float(sampling_tolerance),
+        sampling_confidence=float(sampling_confidence),
         phase_reconstruction_tolerance=phase_reconstruction_tolerance,
         qsvt_execution=qsvt_execution,
         component_error_ledger=component_error_ledger,

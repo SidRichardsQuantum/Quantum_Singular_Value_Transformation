@@ -123,7 +123,7 @@ or polynomial matrix evaluation.
 ## Real physics examples
 
 Real physics examples live in `notebooks/real_examples/`. The gallery is
-deliberately limited to eight complementary flagships. Each starts with a short
+a curated set of eleven complementary application clients. Each starts with a short
 orientation block identifying the physical system, the QSVT implementation,
 and the classical reference or quantum-relevance context.
 
@@ -137,6 +137,9 @@ and the classical reference or quantum-relevance context.
 | `06_topological_band_projector_chern_marker.ipynb` | topological band projectors and Chern markers | [Spectral filters](spectral_filters.md) |
 | `07_singular_value_pseudoinverse_deblurring.ipynb` | singular-value pseudoinverse deblurring | [Linear systems](linear_systems.md), [Spectral filters](spectral_filters.md) |
 | `08_matrix_log_entropy_graph_laplacian.ipynb` | matrix-log graph entropy | [Algorithm notes](algorithms.md), [Spectral filters](spectral_filters.md) |
+| `09_phonon_density_of_states.ipynb` | mass-spring phonon density of states | [Spectral density workflow](workflow_spectral_density.md) |
+| `10_thermal_heisenberg_chain.ipynb` | thermal populations, energy, and spin correlations | [Thermal Gibbs workflow](workflow_thermal_gibbs.md) |
+| `11_disordered_transport_localization.ipynb` | return probability and spatial spreading in clean and disordered chains | [Time evolution and response](time_evolution_and_response.md), [Executable flagship workflows](flagship_workflows.md) |
 
 See the repository notebook directory for executable files:
 [notebooks](https://github.com/SidRichardsQuantum/Quantum_Singular_Value_Transformation/tree/main/notebooks).

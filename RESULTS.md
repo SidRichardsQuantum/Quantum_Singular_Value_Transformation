@@ -1,9 +1,9 @@
 # Results
 
-Current release: `0.2.30`
+Current release: `0.2.31`
 
-The current release retains the notebook and benchmark snapshots from
-`0.2.25`; their refresh versions below describe artifact provenance.
+The current release expands and refreshes the real-example notebook gallery.
+Other retained snapshots record their refresh versions below.
 
 This repository is notebook-first: executable notebooks are the source of truth
 for demonstrations, plots, and numerical checks. Use this page as the root
@@ -58,6 +58,9 @@ the real-example plot ledger.
 | `notebooks/real_examples/06_topological_band_projector_chern_marker.ipynb` | committed plots | QWZ lattice schematic and Chern-marker diagnostics |
 | `notebooks/real_examples/07_singular_value_pseudoinverse_deblurring.ipynb` | committed plot | singular-value pseudoinverse deblurring |
 | `notebooks/real_examples/08_matrix_log_entropy_graph_laplacian.ipynb` | committed plot | matrix-log graph entropy |
+| `notebooks/real_examples/09_phonon_density_of_states.ipynb` | committed plot | mass-spring phonon spectrum and Gaussian-window density |
+| `notebooks/real_examples/10_thermal_heisenberg_chain.ipynb` | committed plot | energy-eigenstate thermal populations and Heisenberg energy |
+| `notebooks/real_examples/11_disordered_transport_localization.ipynb` | committed plot | executed QSVT return probabilities, displacement, and disordered site populations |
 
 ## Committed Release Artefacts
 
@@ -119,7 +122,7 @@ The complete machine-readable manifest is
 
 | artefact | notebook | result type | notes |
 | --- | --- | --- | --- |
-| `results/tables/real_examples_plot_manifest.csv` | curated real-example notebooks | table | manifest for 14 extracted plots |
+| `results/tables/real_examples_plot_manifest.csv` | curated real-example notebooks | table | manifest for 17 extracted plots |
 | `results/plots/real_examples/01_poisson_equation_pde-plot-01.png` | `01_poisson_equation_pde.ipynb` | plot | representative PDE setup output |
 | `results/plots/real_examples/04_ising_phase_transition_filtering-plot-01.png` | `04_ising_phase_transition_filtering.ipynb` | plot | representative spin-chain output |
 | `results/plots/real_examples/06_topological_band_projector_chern_marker-plot-01.png` | `06_topological_band_projector_chern_marker.ipynb` | plot | representative QWZ lattice setup schematic |

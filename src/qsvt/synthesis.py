@@ -134,6 +134,8 @@ class PhaseSynthesisResult:
     error_type: str | None = None
     error: str | None = None
     implementation_kind: str = "pennylane-poly-to-angles"
+    failure_stage: str | None = None
+    attempt_reports: tuple[dict[str, object], ...] = ()
 
     def quality_report(self, tolerance: float = 1e-6) -> dict[str, object]:
         """Assess sampled reconstruction separately from solver completion.
@@ -167,6 +169,12 @@ class PhaseSynthesisResult:
         )
         return {
             "status": status,
+            "failure_stage": (
+                None
+                if passed
+                else self.failure_stage
+                or ("solver" if not returned else "reconstruction")
+            ),
             "solver_returned_phases": returned,
             "reconstruction_passed": passed,
             "tolerance": float(tolerance),
@@ -185,6 +193,7 @@ class PhaseSynthesisResult:
         """Return a machine-readable phase-synthesis report."""
         return {
             "mode": "phase-synthesis-report",
+            "attempts": list(self.attempt_reports),
             "implementation_kind": self.implementation_kind,
             "coeffs": self.coeffs,
             "routine": self.routine,
@@ -199,6 +208,7 @@ class PhaseSynthesisResult:
             "reconstruction_rms_error": self.reconstruction_rms_error,
             "reconstruction_num_points": self.reconstruction_num_points,
             "realizability": self.realizability.as_report(),
+            "failure_stage": self.failure_stage,
             "error_type": self.error_type,
             "error": self.error,
             "truth_contract": {
@@ -251,6 +261,7 @@ class PhaseSolverBenchmarkResult:
     repeats: int
     rows: tuple[dict[str, object], ...]
     realizability: PolynomialRealizability
+    attempt_reports: tuple[dict[str, object], ...] = ()
 
     def as_report(self) -> dict[str, object]:
         """Return compact solver timing, convergence, and error rows."""
@@ -261,6 +272,7 @@ class PhaseSolverBenchmarkResult:
             "routine": self.routine,
             "repeats": self.repeats,
             "rows": list(self.rows),
+            "attempt_reports": list(self.attempt_reports),
             "realizability": self.realizability.as_report(),
             "conditioning_proxies": {
                 "degree": self.realizability.degree,
@@ -612,16 +624,19 @@ def synthesize_phases(
     error_type: str | None = None
     error: str | None = None
 
+    failure_stage: str | None = "realizability"
     if not realizability.single_sequence_realizable:
         error_type = "PolynomialRealizabilityError"
         error = _realizability_interpretation(realizability.kind)
     else:
         try:
+            failure_stage = "solver_selection"
             if angle_solver not in _SUPPORTED_ANGLE_SOLVERS:
                 raise ValueError(
                     f"Invalid angle solver method: {angle_solver!r}. "
                     f"Supported solvers: {list(_SUPPORTED_ANGLE_SOLVERS)}"
                 )
+            failure_stage = "solver"
             if routine == "QSVT" and not np.any(realizability.coeffs[1:]):
                 constant = float(realizability.coeffs[0])
                 if abs(constant) > 1.0:
@@ -631,14 +646,15 @@ def synthesize_phases(
                 angles = np.array([np.arccos(constant)])
                 angle_solver = "analytic-constant"
             else:
-                angles = _validated_angles(
-                    qml.poly_to_angles(
-                        realizability.coeffs.copy(),
-                        routine,
-                        angle_solver=angle_solver,
-                        **solver_kwargs,
-                    )
+                raw_angles = qml.poly_to_angles(
+                    realizability.coeffs.copy(),
+                    routine,
+                    angle_solver=angle_solver,
+                    **solver_kwargs,
                 )
+                failure_stage = "phase_validation"
+                angles = _validated_angles(raw_angles)
+            failure_stage = None
         except Exception as exc:  # PennyLane exposes solver-specific failures.
             error_type = type(exc).__name__
             error = str(exc)
@@ -677,6 +693,7 @@ def synthesize_phases(
         ),
         error_type=error_type,
         error=error,
+        failure_stage=failure_stage,
     )
     if raise_on_failure and not result.succeeded:
         raise ValueError(error or "phase synthesis failed")
@@ -836,16 +853,19 @@ def synthesize_phases_with_adapter(
     error_type: str | None = None
     error: str | None = None
     metadata: dict[str, object] = {}
+    failure_stage: str | None = "realizability"
     if not realizability.single_sequence_realizable:
         error_type = "PolynomialRealizabilityError"
         error = _realizability_interpretation(realizability.kind)
     else:
         try:
+            failure_stage = "convention_conversion"
             if resolved_routine == "QSP" and registered.converter is None:
                 raise ValueError(
                     "an adapter that directly emits PennyLane QSVT projector phases "
                     "requires a converter before it can be used for QSP."
                 )
+            failure_stage = "solver"
             raw = registered.solver(
                 realizability.coeffs.copy(),
                 resolved_routine,
@@ -855,11 +875,14 @@ def synthesize_phases_with_adapter(
                 raw_angles, metadata = raw
             else:
                 raw_angles = raw
+            failure_stage = "phase_validation"
             angles = _validated_angles(raw_angles)
             if registered.converter is not None:
-                angles = _validated_angles(
-                    registered.converter(angles, resolved_routine)
-                )
+                failure_stage = "convention_conversion"
+                converted_angles = registered.converter(angles, resolved_routine)
+                failure_stage = "phase_validation"
+                angles = _validated_angles(converted_angles)
+            failure_stage = None
         except Exception as exc:
             error_type = type(exc).__name__
             error = str(exc)
@@ -896,6 +919,7 @@ def synthesize_phases_with_adapter(
         error_type=error_type,
         error=error,
         implementation_kind=f"external-phase-solver-adapter:{registered.name}",
+        failure_stage=failure_stage,
     )
 
 
@@ -919,6 +943,7 @@ def benchmark_phase_solvers(
         raise ValueError("solvers must contain at least one solver name.")
     realizability = classify_polynomial_realizability(poly)
     rows: list[dict[str, object]] = []
+    attempt_reports: list[dict[str, object]] = []
     kwargs_by_solver = solver_kwargs or {}
     for solver in solvers:
         attempts = [
@@ -942,6 +967,15 @@ def benchmark_phase_solvers(
             for _ in range(int(repeats))
         ]
         succeeded = [attempt for attempt in attempts if attempt.succeeded]
+        attempt_reports.extend(
+            {
+                **attempt.as_report(),
+                "requested_solver": solver,
+                "repeat_index": index,
+                "quality": attempt.quality_report(reconstruction_tolerance),
+            }
+            for index, attempt in enumerate(attempts)
+        )
         times = [attempt.synthesis_time_seconds for attempt in attempts]
         errors = [
             attempt.reconstruction_max_error
@@ -997,6 +1031,7 @@ def benchmark_phase_solvers(
         repeats=int(repeats),
         rows=tuple(rows),
         realizability=realizability,
+        attempt_reports=tuple(attempt_reports),
     )
 
 

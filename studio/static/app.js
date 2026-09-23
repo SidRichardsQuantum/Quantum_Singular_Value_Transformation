@@ -187,6 +187,10 @@ function outcomes(run) {
   const qualities = [["", m["synthesis_quality.status"]], ["Cosine: ", m["component_synthesis_quality.cosine.status"]], ["Sine: ", m["component_synthesis_quality.sine.status"]]].filter(([, value]) => value !== undefined);
   add("Phase reconstruction", qualities.length ? qualities.map(([name, value]) => name + (labels[value] || value)).join(" · ") : "No assessment recorded", qualities.some(([, value]) => value !== "passed") ? "error" : "");
   add("Scientific acceptance", m["acceptance.status"] === undefined ? "No acceptance verdict recorded" : String(m["acceptance.status"]).replaceAll("_", " "), m["acceptance.status"] === "acceptance_criteria_not_met" ? "error" : "");
+  if (m["acceptance.scope"] === "finite_shot_probabilities") {
+    add("Measurement scope", "Conditional basis probabilities; statevector accuracy is not validated");
+    add("Sampling evidence", `${m["acceptance.sampling.status"] || "unavailable"} · accepted shots: ${m["acceptance.sampling.accepted_shots"] ?? "unavailable"} · error bound: ${format(m["acceptance.sampling.maximum_probability_error_bound"])}`);
+  }
   panel.append(el("p", "Completion means a report was saved. Reconstruction and acceptance apply only to their stated checks.", "muted"));
   return panel;
 }
@@ -218,7 +222,7 @@ async function showRun(id, updating=false) {
   const sameRun = state.viewing === id;
   state.viewing = id; state.viewerKey = key;
   state.viewerActive = !["completed", "failed", "cancelled"].includes(run.status);
-  const {report: ignoredReport, ...summary} = run;
+  const {report: ignoredReport, diagnosis: ignoredDiagnosis, ...summary} = run;
   state.viewerSummaryKey = JSON.stringify(summary);
   const scroll = sameRun ? $("viewer").scrollTop : 0;
   $("viewer-title").textContent = `${workflow(run.request.workflow).name} · ${id.slice(0,8)}`;
@@ -242,6 +246,21 @@ async function showRun(id, updating=false) {
   if (run.report?.acceptance) {
     const a = run.report.acceptance;
     sections.accuracy.append(el("div", `${a.status} · scope: ${a.scope} · full_qsvt_acceptance: ${a.full_qsvt_acceptance}. See all required checks and omitted components below.`, "acceptance"));
+  }
+  if (run.diagnosis?.length) {
+    overview.append(el("h4", "Failure diagnosis and saved attempts"));
+    for (const finding of run.diagnosis) {
+      const title = `${finding.stage} · ${finding.source}${finding.attempt ? ` · attempt ${finding.attempt}` : ""}`;
+      const entry = detail(title, finding.evidence);
+      entry.classList.add("diagnosis");
+      if (finding.failed || finding.source === "error") entry.classList.add("error");
+      overview.append(entry);
+    }
+  }
+  if (run.report?.acceptance?.sampling) {
+    const evidence = run.report.acceptance.sampling;
+    sections.accuracy.append(el("p", `Sampling: ${evidence.status}. Confidence: ${format(evidence.confidence)}. Accepted shots: ${evidence.accepted_shots ?? "unavailable"}. Maximum conditional probability error bound: ${format(evidence.maximum_probability_error_bound)}; tolerance: ${format(evidence.tolerance)}.`));
+    sections.accuracy.append(detail("Measurement acceptance evidence", evidence, true));
   }
   if (run.report?.synthesis_quality) sections.phases.append(qualityPanel("Phase synthesis", run.report.synthesis_quality));
   for (const [name, quality] of Object.entries(run.report?.component_synthesis_quality || {})) sections.phases.append(qualityPanel(`${name} phase synthesis`, quality));
@@ -291,6 +310,36 @@ async function showComparison() {
   const ids = [...state.selected], result = await api("/api/compare", {ids});
   const body = $("comparison-body"); body.replaceChildren(el("p", "Same target/problem. Errors retain their package definitions. Logical resource estimates are distinct from executed circuit evidence. Wall time includes Python simulation and diagnostics.", "muted"));
   const plot = el("img", undefined, "large-plot"); plot.src = `/api/compare.png?${ids.map(id => `id=${id}`).join("&")}`; plot.alt = "Stored scientific curves overlaid for compatible experiments"; body.append(plot);
+  const controls = el("label", undefined, "difference-controls");
+  const changedOnly = el("input"); changedOnly.type = "checkbox"; changedOnly.checked = true;
+  controls.append(changedOnly, document.createTextNode(" Show differences only")); body.append(controls);
+  const differences = el("div"); body.append(differences);
+  const drawDifferences = () => {
+    differences.replaceChildren();
+    for (const [section, fields] of Object.entries(result.differences || {})) {
+      differences.append(el("h3", section === "request" ? "Request differences" : "Package report differences"));
+      const visible = fields.filter(field => !changedOnly.checked || field.different);
+      if (!visible.length) { differences.append(el("p", "No differences in saved fields.")); continue; }
+      const table = el("table"), header = el("tr");
+      header.append(el("th", "Saved field")); result.runs.forEach(run => header.append(el("th", run.id.slice(0, 8)))); table.append(header);
+      for (const field of visible) {
+        const row = el("tr", undefined, field.different ? "different" : ""); row.append(el("th", field.path));
+        for (const cell of field.cells) {
+          const td = el("td");
+          if (!cell.present) td.textContent = "Not recorded";
+          else if (cell.value !== null && typeof cell.value === "object") td.append(detail("Saved value", cell.value));
+          else td.textContent = cell.value === null ? "null" : String(cell.value);
+          row.append(td);
+        }
+        table.append(row);
+      }
+      const wrap = el("div", undefined, "table-wrap"); wrap.append(table); differences.append(wrap);
+    }
+  };
+  changedOnly.addEventListener("change", drawDifferences); drawDifferences();
+  body.append(el("h3", "Failure diagnosis and saved attempts"));
+  result.runs.forEach(run => body.append(detail(run.id.slice(0,8), run.diagnosis || [])));
+  body.append(el("h3", "Numerical diagnostic summary"));
   const rows = result.runs.map(r => ({...Object.fromEntries(Object.entries(r.request.settings).map(([k,v]) => [`request.${k}`,v])), ...r.metrics, "package_call_seconds (wall time)": r.package_call_seconds}));
   const keys = [...new Set(rows.flatMap(r => Object.keys(r)))];
   const table = el("table"), head = el("tr"); head.append(el("th", "Stored field")); result.runs.forEach(r => head.append(el("th", r.id.slice(0,8)))); table.append(head);

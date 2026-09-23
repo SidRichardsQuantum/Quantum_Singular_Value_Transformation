@@ -234,6 +234,19 @@ def main():
         expect(page.locator("#comparison-body")).to_contain_text(
             "diagnostics.max_error"
         )
+        expect(page.locator("#comparison-body")).to_contain_text("Request differences")
+        expect(page.locator("#comparison-body")).to_contain_text(
+            "Package report differences"
+        )
+        expect(page.locator("#comparison-body")).to_contain_text("settings.degree")
+        toggle = page.get_by_label("Show differences only")
+        expect(toggle).to_be_checked()
+        toggle.uncheck()
+        expect(page.locator("#comparison-body")).to_contain_text("settings.gamma")
+        with page.expect_download() as exported:
+            page.get_by_role("button", name="Export comparison table (JSON)").click()
+        comparison = json.loads(Path(exported.value.path()).read_text())
+        assert comparison["differences"]["request"]
         expect(page.locator("#comparison-body .large-plot")).to_be_visible()
         check_image(page, "#comparison-body img")
         page.click("#close-comparison")
@@ -335,6 +348,9 @@ def main():
         expect(page.locator(".card .status.completed")).to_have_count(1, timeout=60000)
         page.locator(".card").get_by_role("button", name="View", exact=True).click()
         expect(page.locator("#viewer-body")).to_contain_text("Solver failed")
+        expect(page.locator("#viewer-body .diagnosis").first).to_contain_text(
+            "realizability"
+        )
         page.click("#close-viewer")
         page.select_option("#workflow", "hamiltonian_simulation")
         expect(page.locator("#setting-device_name")).to_have_attribute("type", "hidden")
@@ -350,6 +366,13 @@ def main():
         expect(page.locator(".card .status.completed")).to_have_count(1, timeout=60000)
         expect(page.locator(".card")).to_contain_text("100 shots")
         page.locator(".card").get_by_role("button", name="View", exact=True).click()
+        expect(page.locator("#viewer-body")).to_contain_text(
+            "finite_shot_probabilities"
+        )
+        expect(page.locator("#viewer-body")).to_contain_text("insufficient_shots")
+        expect(page.locator("#viewer-body")).to_contain_text(
+            "Measurement acceptance evidence"
+        )
         expect(page.locator('#viewer-body img[src$="phases.png"]')).to_be_visible()
         expect(page.locator('#viewer-body img[src$="spectrum.png"]')).to_be_visible()
         check_image(page, "#viewer-body img")
