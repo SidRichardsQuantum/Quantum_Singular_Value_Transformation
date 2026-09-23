@@ -18,6 +18,7 @@
   design when QSVT execution is not required
 - classify synthesis failures consistently in Studio compatibility reports,
   including structured error details and failure reasons
+- keep the Studio compatibility-report copy type-safe under mypy
 
 ### Tests
 

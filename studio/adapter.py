@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 import pennylane as qml
@@ -54,7 +54,7 @@ def execute_request(raw: dict[str, Any]) -> dict[str, Any]:
             report["synthesis"] = synthesis.as_report()
             report["synthesis_quality"] = synthesis.quality_report(tolerance)
             if solver != "root-finding":
-                compat = dict(report["compatibility"])
+                compat = cast(dict[str, Any], report["compatibility"]).copy()
                 compat["attempted_pennylane_synthesis"] = True
                 compat["pennylane_synthesis_succeeded"] = synthesis.succeeded
                 if not synthesis.succeeded:
