@@ -221,14 +221,12 @@ def main():
             ).last.click()
         request = json.loads(Path(downloaded.value.path()).read_text())
         page.get_by_role("button", name="Reuse configuration", exact=True).click()
+        expect(page.locator("#notice")).to_contain_text("Saved configuration restored")
         expect(page.locator("#setting-degree")).to_have_value("13")
         assert page.locator("#setting-attempt_synthesis").is_checked() is False
         assert request["settings"]["degree"] == 13
-        page.locator("#setting-degree").evaluate("""element => {
-                element.value = "9";
-                element.dispatchEvent(new Event("input", {bubbles: true}));
-                element.dispatchEvent(new Event("change", {bubbles: true}));
-            }""")
+        page.locator("#setting-degree").fill("9")
+        page.locator("#setting-degree").press("Tab")
         expect(page.locator("#setting-degree")).to_have_value("9")
         page.click("#run")
         expect(page.locator(".card .status.completed")).to_have_count(2, timeout=60000)
