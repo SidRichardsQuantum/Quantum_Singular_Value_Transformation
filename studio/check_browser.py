@@ -224,9 +224,15 @@ def main():
         expect(page.locator("#setting-degree")).to_have_value("13")
         assert page.locator("#setting-attempt_synthesis").is_checked() is False
         assert request["settings"]["degree"] == 13
-        page.fill("#setting-degree", "9")
+        page.locator("#setting-degree").evaluate("""element => {
+                element.value = "9";
+                element.dispatchEvent(new Event("input", {bubbles: true}));
+                element.dispatchEvent(new Event("change", {bubbles: true}));
+            }""")
+        expect(page.locator("#setting-degree")).to_have_value("9")
         page.click("#run")
         expect(page.locator(".card .status.completed")).to_have_count(2, timeout=60000)
+        expect(page.locator(".card").filter(has_text="degree = 9")).to_have_count(1)
         for card in page.locator(".card").all():
             card.get_by_role("button", name="Compare", exact=True).click()
         page.click("#compare")
