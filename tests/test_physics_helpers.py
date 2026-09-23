@@ -3,13 +3,11 @@ import pytest
 
 from qsvt.algorithms import (
     GroundStateFilteringWorkflowResult,
-    HamiltonianSimulationWorkflowResult,
     LinearSystemWorkflowResult,
     ResolventWorkflowResult,
     SpectralDensityWorkflowResult,
     ThermalGibbsWorkflowResult,
     ground_state_filtering_workflow,
-    hamiltonian_simulation_workflow,
     linear_system_workflow,
     resolvent_workflow,
     spectral_density_workflow,
@@ -341,25 +339,6 @@ def test_ground_state_filtering_workflow_improves_ground_overlap():
     assert result.reference_state_error < 1e-3
     assert result.operator_relative_error < 1e-3
     assert result.as_report()["mode"] == "ground-state-filtering-workflow"
-
-
-def test_hamiltonian_simulation_workflow_matches_exact_evolution():
-    H = np.diag([-1.0, 0.25, 1.0])
-    state = np.array([1.0, 1.0j, -0.5])
-
-    result = hamiltonian_simulation_workflow(
-        H,
-        state,
-        time=0.7,
-        degree=16,
-        num_points=501,
-    )
-
-    assert isinstance(result, HamiltonianSimulationWorkflowResult)
-    assert result.state_relative_error < 1e-8
-    assert result.operator_relative_error < 1e-8
-    assert result.norm_drift < 1e-8
-    assert result.as_report()["mode"] == "hamiltonian-simulation-workflow"
 
 
 def test_resolvent_workflow_matches_exact_green_function_response():

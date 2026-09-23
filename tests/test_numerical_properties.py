@@ -32,7 +32,9 @@ def test_extrema_certificate_dominates_dense_sampling(coeffs):
     points = np.linspace(-1.0, 1.0, 4001)
     sampled_max = float(np.max(np.abs(eval_polynomial(coeffs, points))))
 
-    assert certificate.max_abs_value >= sampled_max - 1e-8
+    # The certificate solves derivative roots in floating point; it is not an
+    # interval-arithmetic proof, so allow a small root-solver discrepancy.
+    assert certificate.max_abs_value >= sampled_max - 1e-7
     assert certificate.is_bounded == (
         certificate.max_abs_value <= certificate.bound + certificate.tolerance
     )

@@ -43,6 +43,33 @@ PR release checks and Ordered Actions both call the reusable package workflow;
 keep build, metadata, wheel-smoke, and artifact-upload behavior centralized
 there so the published artifact is validated by the same path.
 
+PRs and Ordered Actions also share the lint and test workflows. On main pushes,
+lint, tests (including dependency compatibility and integration), Studio, and
+docs/notebooks start independently. Packaging still waits for all of them to
+succeed. There are no scheduled/cron workflow triggers.
+
+Each Python test-matrix job uses two isolated pytest-xdist workers, limits
+BLAS/OpenMP numerical libraries to one thread per worker, and reports the 20
+slowest tests. pytest-cov combines worker coverage before enforcing the same
+branch-coverage floor. Notebook, integration, and browser checks retain their
+existing execution modes. To profile the unit/regression suite locally:
+
+```bash
+python -m pip install -e ".[test]"
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1
+python -m pytest -n 2 --dist worksteal --durations=20 --cov=qsvt --cov-report=term-missing
+```
+
+For a serial baseline, omit `-n 2 --dist worksteal`. Ordinary `pytest -q` and
+the local release preflight remain serial by default.
+
+When scripting local formatting and release commands, use `set -euo pipefail`
+at the start of a Bash script so any failed command stops the release. A single
+`$?` check after several commands only checks the last command. After pushing
+the release commit to main, wait for that commit's Ordered Actions run to pass
+before pushing its version tag; Publish downloads the validated wheel from
+that run.
+
 Studio browser checks use the same reusable workflow on pull requests and in
 Ordered Actions. See the checks section in `docs/qsvt/studio.md` to run the
 browser check locally against disposable storage. Browser tooling is separate

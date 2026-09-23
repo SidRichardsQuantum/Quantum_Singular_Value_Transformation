@@ -333,7 +333,7 @@ See [ROADMAP.md](ROADMAP.md) for the current development direction.
 - [docs/qsvt/notebooks.md](docs/qsvt/notebooks.md): tutorial, benchmark, and
   real-example notebook index
 
-Current release: `0.2.29`
+Current release: `0.2.30`
 
 On `main`, Ordered Actions runs lint first, then runs the Python test matrix,
 dependency compatibility, integration, Studio browser, and notebook/documentation

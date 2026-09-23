@@ -1,5 +1,42 @@
 # Changelog
 
+## [0.2.30] – 23rd September 2026
+
+### Changed
+
+- report iterative Studio synthesis failures in compatibility evidence instead
+  of allowing solver completion to appear as a compatible result
+- reuse the pull-request lint and test workflows from Ordered Actions, with
+  validation jobs running independently before packaging
+- run the Python regression matrix with two bounded pytest-xdist workers and
+  one numerical-library thread per worker, retaining slow-test diagnostics
+  without changing the serial release preflight
+
+### Fixed
+
+- keep the Hamiltonian simulation helper regression focused on polynomial
+  design when QSVT execution is not required
+- classify synthesis failures consistently in Studio compatibility reports,
+  including structured error details and failure reasons
+
+### Tests
+
+- move the higher-degree synthesis and Hamiltonian reconstruction cases into
+  the integration gate while retaining focused unit coverage
+- verify shared workflow definitions, complete release validation gates, and
+  the absence of scheduled workflow triggers
+- remove redundant pytest-xdist installation declarations and make the
+  floating-point extrema property test robust to its documented numerical
+  root-solver tolerance; remove a duplicate Hamiltonian exact-evolution
+  regression already covered by the workflow/acceptance regression
+
+### Documentation
+
+- document reusable CI validation, bounded parallel test execution, release
+  ordering, and safer shell scripting guidance
+- synchronize current-release markers with package version `0.2.30`; existing
+  notebook and benchmark snapshots retain their recorded provenance
+
 ## [0.2.29] – 22nd September 2026
 
 ### Added

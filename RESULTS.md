@@ -1,6 +1,6 @@
 # Results
 
-Current release: `0.2.29`
+Current release: `0.2.30`
 
 The current release retains the notebook and benchmark snapshots from
 `0.2.25`; their refresh versions below describe artifact provenance.

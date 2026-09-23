@@ -262,6 +262,7 @@ def test_iterative_synthesis_reconstructs_studio_boundary_polynomials(kind, degr
     assert quality["reconstruction_passed"] is True, quality
 
 
+@pytest.mark.integration
 @pytest.mark.parametrize(
     "kind,degree",
     [("sign", 25), ("inverse", 25), ("filter", 24)],
@@ -362,7 +363,13 @@ def test_benchmark_rejects_invalid_reconstruction_tolerance(tolerance):
         )
 
 
-@pytest.mark.parametrize("degree", [12, 24])
+@pytest.mark.parametrize(
+    "degree",
+    [
+        12,
+        pytest.param(24, marks=pytest.mark.integration),
+    ],
+)
 def test_iterative_hamiltonian_sine_reconstruction_preserves_coefficients(degree):
     from qsvt.matrix_functions import design_real_time_evolution_polynomials
 

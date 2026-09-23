@@ -215,8 +215,8 @@ def test_publish_gated_ci_runs_compatibility_notebooks_and_wheel_smoke():
     publish = _read_text(".github/workflows/publish.yml")
     release_check = _read_text(".github/workflows/release-check.yml")
 
-    assert "dependency-compatibility:" in ordered
-    assert 'pennylane-constraint: "pennylane>=0.42,<0.43"' in ordered
+    assert "uses: ./.github/workflows/tests.yml" in ordered
+    assert "dependency-compatibility:" in pull_request
     assert 'pennylane-constraint: "pennylane>=0.42,<0.43"' in pull_request
     assert "pytest -m notebook tests/test_real_example_notebooks.py" in ordered
     assert "uses: ./.github/workflows/package.yml" in ordered
@@ -226,18 +226,26 @@ def test_publish_gated_ci_runs_compatibility_notebooks_and_wheel_smoke():
     assert 'workflow_id: "ordered-actions.yml"' in publish
 
 
-def test_pull_request_and_publish_compatibility_smoke_suites_match():
-    command_pattern = r'run: (pytest -m "not notebook"[^\n]+)'
-    ordered = re.findall(
-        command_pattern,
-        _read_text(".github/workflows/ordered-actions.yml"),
-    )
-    pull_request = re.findall(
-        command_pattern,
-        _read_text(".github/workflows/tests.yml"),
-    )
-
-    assert ordered == pull_request
+def test_pull_request_and_publish_share_all_test_and_lint_checks():
+    ordered = yaml.safe_load(_read_text(".github/workflows/ordered-actions.yml"))
+    for name in ("lint", "tests"):
+        assert ordered["jobs"][name]["uses"] == f"./.github/workflows/{name}.yml"
+        shared = yaml.safe_load(_read_text(f".github/workflows/{name}.yml"))
+        # PyYAML's YAML 1.1 loader interprets the unquoted Actions key 'on' as True.
+        assert {"pull_request", "workflow_call"} <= shared[True].keys()
+    checks = yaml.safe_load(_read_text(".github/workflows/tests.yml"))["jobs"]
+    assert set(checks) == {"test", "integration", "dependency-compatibility"}
+    assert checks["test"]["strategy"]["matrix"]["python-version"] == [
+        "3.10",
+        "3.11",
+        "3.12",
+        "3.13",
+    ]
+    for check in checks.values():
+        assert "if" not in check
+        assert not check.get("continue-on-error", False)
+        for step in check["steps"]:
+            assert not step.get("continue-on-error", False)
 
 
 def test_release_artifacts_require_every_ordered_validation_to_succeed():
@@ -251,6 +259,15 @@ def test_release_artifacts_require_every_ordered_validation_to_succeed():
     assert package["with"]["upload_artifact"] is True
     for job in jobs.values():
         assert not job.get("continue-on-error", False)
+    for name, job in jobs.items():
+        if name != "package":
+            assert "needs" not in job
+
+
+def test_workflows_have_no_scheduled_triggers():
+    for path in (REPO_ROOT / ".github" / "workflows").glob("*.yml"):
+        workflow = yaml.safe_load(path.read_text(encoding="utf-8"))
+        assert "schedule" not in workflow[True], path.name
 
 
 def test_coverage_configuration_enforces_branch_regressions():

@@ -40,7 +40,7 @@ def execute_request(raw: dict[str, Any]) -> dict[str, Any]:
                 compatibility=qsvt_compatibility_report(
                     result.coeffs,
                     bounded_num_points=settings["bounded_num_points"],
-                    attempt_synthesis=attempt,
+                    attempt_synthesis=False,
                     angle_solver=solver,
                 ),
             )
@@ -53,6 +53,19 @@ def execute_request(raw: dict[str, Any]) -> dict[str, Any]:
             )
             report["synthesis"] = synthesis.as_report()
             report["synthesis_quality"] = synthesis.quality_report(tolerance)
+            if solver != "root-finding":
+                compat = dict(report["compatibility"])
+                compat["attempted_pennylane_synthesis"] = True
+                compat["pennylane_synthesis_succeeded"] = synthesis.succeeded
+                if not synthesis.succeeded:
+                    compat["compatible"] = False
+                    reasons = list(compat.get("reasons", []))
+                    if "synthesis_failed" not in reasons:
+                        reasons.append("synthesis_failed")
+                    compat["reasons"] = reasons
+                    compat["synthesis_error_type"] = synthesis.error_type
+                    compat["synthesis_error"] = synthesis.error
+                report["compatibility"] = compat
         return report
     if "angle_solvers" in settings:
         settings["angle_solvers"] = tuple(settings["angle_solvers"])

@@ -459,13 +459,14 @@ def main(argv: Sequence[str] | None = None) -> None:
     )
     checks.append(
         _run_check(
-            "Cookbook integration",
+            "Cookbook and synthesis integration",
             lambda: _run(
                 _python_module(
                     "pytest",
                     "-m",
                     "integration",
                     "tests/test_cookbook_examples.py",
+                    "tests/test_synthesis.py",
                 )
             ),
             summarize=_pytest_summary,
